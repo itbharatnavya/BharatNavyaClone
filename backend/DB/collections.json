@@ -1,0 +1,47 @@
+[
+  {
+    "id": "col_best-of-metals-and-steel",
+    "slug": "best-of-metals-and-steel",
+    "title": "Best of Metals & Steel",
+    "subtitle": "Top steel, alloys and metal suppliers",
+    "coverImage": "/demo/steel-1.jpg",
+    "listingIds": [],
+    "categorySlugs": [
+      "metals-steel-alloys"
+    ],
+    "brandSlugs": [],
+    "order": 0,
+    "status": "published",
+    "createdAt": "2026-07-31T14:07:02.019Z"
+  },
+  {
+    "id": "col_electricals-and-electronics-picks",
+    "slug": "electricals-and-electronics-picks",
+    "title": "Electricals & Electronics Picks",
+    "subtitle": "Trusted components and hardware",
+    "coverImage": "/demo/electronics-2.jpg",
+    "listingIds": [],
+    "categorySlugs": [
+      "electronics-electrical"
+    ],
+    "brandSlugs": [],
+    "order": 1,
+    "status": "published",
+    "createdAt": "2026-07-31T14:07:02.048Z"
+  },
+  {
+    "id": "col_textiles-and-fabrics",
+    "slug": "textiles-and-fabrics",
+    "title": "Textiles & Fabrics",
+    "subtitle": "Mills and fabric suppliers across India",
+    "coverImage": "/demo/textile-3.jpg",
+    "listingIds": [],
+    "categorySlugs": [
+      "textiles-fabrics-yarn"
+    ],
+    "brandSlugs": [],
+    "order": 2,
+    "status": "published",
+    "createdAt": "2026-07-31T14:07:02.078Z"
+  }
+]

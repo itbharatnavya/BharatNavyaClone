@@ -1,0 +1,74 @@
+[
+  {
+    "id": "blog_001",
+    "sellerId": "usr_s002",
+    "title": "How to Choose the Right Corrugated Box for Export Shipping",
+    "slug": "how-to-choose-corrugated-box-export-shipping",
+    "coverImage": null,
+    "body": "# Choosing the Right Corrugated Box\n\nPicking the correct corrugated box protects your goods and cuts freight costs.\n\n## 1. Understand ply and flute\n- **3-ply** suits light domestic parcels.\n- **5-ply** is the workhorse for e-commerce and export.\n- **7-ply** is for heavy or fragile machinery parts.\n\n## 2. Match the bursting strength\nAsk your supplier for the **Bursting Strength (BS)** and **Edge Crush Test (ECT)** values. For export, a BS of 16–20 kgf/cm2 is a safe baseline.\n\n## 3. Size it to the product, not the shelf\nOversized boxes waste void-fill and volumetric weight. Share exact product dimensions so the box is built to fit.\n\n## 4. Certifications that matter\nLook for **ISO 9001** manufacturing and **FSC** certification if your buyer has sustainability requirements.\n\n> Tip: order a small sample batch before committing to a large MOQ.",
+    "categoryId": "cat_packaging-printing",
+    "tags": [
+      "packaging",
+      "export",
+      "corrugated-boxes",
+      "buyer-guide"
+    ],
+    "status": "published",
+    "publishedAt": "2025-11-12T09:30:00Z",
+    "views": 214
+  },
+  {
+    "id": "blog_002",
+    "sellerId": "usr_s003",
+    "title": "A Buyer's Guide to Sourcing Precision-Machined Auto Components",
+    "slug": "buyers-guide-sourcing-precision-machined-auto-components",
+    "coverImage": null,
+    "body": "# Sourcing Precision-Machined Auto Components\n\nWhen you buy machined parts, the datasheet matters as much as the price.\n\n## Confirm the tolerances\nAsk for the drawing and the achievable tolerance band (e.g. **±10 microns**). A supplier who can't state this can't hold it.\n\n## Ask about inspection\n- Coordinate Measuring Machine (CMM) reports\n- Magnetic-particle or dye-penetrant inspection for forged parts\n- Material test certificates (MTC)\n\n## Verify the quality system\nFor automotive, **IATF 16949** is the standard to insist on, alongside **ISO 14001** for environmental compliance.\n\n## Plan for volume\nDiscuss MOQ, lead time, and whether the supplier can scale from prototype to series production without re-tooling delays.",
+    "categoryId": "cat_automotive-parts-accessories",
+    "tags": [
+      "automotive",
+      "machining",
+      "quality",
+      "buyer-guide"
+    ],
+    "status": "published",
+    "publishedAt": "2025-12-03T11:00:00Z",
+    "views": 168
+  },
+  {
+    "id": "blog_003",
+    "sellerId": "usr_s005",
+    "title": "PCB Sourcing 101: What Every Hardware Buyer Should Check",
+    "slug": "pcb-sourcing-101-what-hardware-buyers-should-check",
+    "coverImage": null,
+    "body": "# PCB Sourcing 101\n\nA great design can still fail if the board is fabricated wrong. Here is what to verify before you place an order.\n\n## Send clean Gerbers\nProvide complete **Gerber + drill files**, a fab drawing, and a stackup note. Ambiguity leads to remakes.\n\n## Specify the finish\n- **HASL** is economical for through-hole.\n- **ENIG** is flatter and better for fine-pitch and BGAs.\n\n## Don't skip compliance\nInsist on **RoHS** compliance and, where relevant, **UL** marking. Ask for the **ISO 9001** certificate of the fab.\n\n## Quick-turn vs volume\nPrototype houses optimise for speed; volume houses optimise for yield and cost. Choose the partner that matches your stage.",
+    "categoryId": "cat_electronics-electrical",
+    "tags": [
+      "electronics",
+      "pcb",
+      "hardware",
+      "buyer-guide"
+    ],
+    "status": "published",
+    "publishedAt": "2026-01-18T08:15:00Z",
+    "views": 332
+  },
+  {
+    "id": "blog_004",
+    "sellerId": "usr_s010",
+    "title": "TMT Bars Explained: Fe-500 vs Fe-550 for Your Project",
+    "slug": "tmt-bars-explained-fe-500-vs-fe-550",
+    "coverImage": null,
+    "body": "# TMT Bars: Fe-500 vs Fe-550\n\nChoosing the right grade of reinforcement steel balances strength, ductility and cost.\n\n## What the grade means\nThe number is the **yield strength in N/mm2**. Fe-550 is stronger but less ductile than Fe-500.\n\n## When to use which\n- **Fe-500 / Fe-500D** — residential and general construction; better ductility for seismic zones.\n- **Fe-550** — high-rise and heavily loaded structures where you want to reduce steel quantity.\n\n## Always check certification\nBuy only **BIS-certified** bars (IS 1786) and ask for the mill test certificate with each lot.\n\n## Storage matters\nKeep bars off the ground and covered to avoid rust that weakens the bond with concrete.",
+    "categoryId": "cat_building-construction",
+    "tags": [
+      "construction",
+      "tmt-bars",
+      "steel",
+      "buyer-guide"
+    ],
+    "status": "published",
+    "publishedAt": "2026-02-09T10:45:00Z",
+    "views": 123
+  }
+]

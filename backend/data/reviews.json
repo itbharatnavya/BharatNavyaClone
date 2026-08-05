@@ -1,0 +1,137 @@
+[
+  {
+    "id": "rev_001",
+    "supplierId": "sup_001",
+    "buyerName": "Rohan Mehta",
+    "rating": 5,
+    "reviewText": "Consistent fabric quality and on-time delivery across three orders. Their combed cotton is export grade.",
+    "status": "approved",
+    "createdAt": "2026-04-12T09:00:00Z"
+  },
+  {
+    "id": "rev_002",
+    "supplierId": "sup_001",
+    "buyerName": "Priya Nair",
+    "rating": 4,
+    "reviewText": "Good material and pricing. Communication could be a little faster during peak season.",
+    "status": "approved",
+    "createdAt": "2026-03-30T09:00:00Z"
+  },
+  {
+    "id": "rev_003",
+    "supplierId": "sup_002",
+    "buyerName": "Karan Singh",
+    "rating": 5,
+    "reviewText": "Boxes were sturdy and the print quality was excellent. Will reorder for our next shipment.",
+    "status": "approved",
+    "createdAt": "2026-04-02T09:00:00Z"
+  },
+  {
+    "id": "rev_004",
+    "supplierId": "sup_002",
+    "buyerName": "Sneha Iyer",
+    "rating": 4,
+    "reviewText": "Reliable supplier for laminated pouches. Lead time was as promised.",
+    "status": "approved",
+    "createdAt": "2026-03-18T09:00:00Z"
+  },
+  {
+    "id": "rev_005",
+    "supplierId": "sup_003",
+    "buyerName": "Aman Verma",
+    "rating": 5,
+    "reviewText": "Tight tolerances held perfectly on the bearing housings. Strong engineering team and quick quotes.",
+    "status": "approved",
+    "createdAt": "2026-05-01T09:00:00Z"
+  },
+  {
+    "id": "rev_006",
+    "supplierId": "sup_003",
+    "buyerName": "Rohan Mehta",
+    "rating": 5,
+    "reviewText": "Excellent machined parts and packaging. One of the most dependable component suppliers we use.",
+    "status": "approved",
+    "createdAt": "2026-04-22T09:00:00Z"
+  },
+  {
+    "id": "rev_007",
+    "supplierId": "sup_004",
+    "buyerName": "Priya Nair",
+    "rating": 4,
+    "reviewText": "Solvent purity met spec sheets. Documentation was thorough for our pharma audit.",
+    "status": "approved",
+    "createdAt": "2026-04-15T09:00:00Z"
+  },
+  {
+    "id": "rev_008",
+    "supplierId": "sup_005",
+    "buyerName": "Aman Verma",
+    "rating": 5,
+    "reviewText": "Quick-turn PCB fabrication saved our project timeline. Quality was spot on.",
+    "status": "approved",
+    "createdAt": "2026-05-08T09:00:00Z"
+  },
+  {
+    "id": "rev_009",
+    "supplierId": "sup_005",
+    "buyerName": "Sneha Iyer",
+    "rating": 4,
+    "reviewText": "Sensor modules worked out of the box. Good RoHS documentation included.",
+    "status": "approved",
+    "createdAt": "2026-04-28T09:00:00Z"
+  },
+  {
+    "id": "rev_010",
+    "supplierId": "sup_006",
+    "buyerName": "Karan Singh",
+    "rating": 4,
+    "reviewText": "Rotavator is rugged and well-built for the price. After-sales support was helpful.",
+    "status": "approved",
+    "createdAt": "2026-05-14T09:00:00Z"
+  },
+  {
+    "id": "rev_011",
+    "supplierId": "sup_007",
+    "buyerName": "Sneha Iyer",
+    "rating": 5,
+    "reviewText": "Fully compliant medical disposables with flawless sterilization records. Our go-to supplier.",
+    "status": "approved",
+    "createdAt": "2026-05-20T09:00:00Z"
+  },
+  {
+    "id": "rev_012",
+    "supplierId": "sup_007",
+    "buyerName": "Priya Nair",
+    "rating": 5,
+    "reviewText": "Gloves and syringes always arrive on schedule with proper batch certificates.",
+    "status": "approved",
+    "createdAt": "2026-04-30T09:00:00Z"
+  },
+  {
+    "id": "rev_013",
+    "supplierId": "sup_009",
+    "buyerName": "Aman Verma",
+    "rating": 5,
+    "reviewText": "The VMC was installed and commissioned smoothly. Training for our operators was excellent.",
+    "status": "approved",
+    "createdAt": "2026-05-25T09:00:00Z"
+  },
+  {
+    "id": "rev_014",
+    "supplierId": "sup_010",
+    "buyerName": "Karan Singh",
+    "rating": 4,
+    "reviewText": "TMT bars were BIS certified and delivered on time. Pricing was competitive for bulk.",
+    "status": "approved",
+    "createdAt": "2026-05-30T09:00:00Z"
+  },
+  {
+    "id": "rev_015",
+    "supplierId": "sup_008",
+    "buyerName": "Rohan Mehta",
+    "rating": 4,
+    "reviewText": "Saree fabric colours were vibrant and consistent across the roll. Good mill-direct pricing.",
+    "status": "approved",
+    "createdAt": "2026-05-18T09:00:00Z"
+  }
+]

@@ -1,0 +1,49 @@
+[
+  {
+    "id": "inq_000001",
+    "buyerName": "Tester",
+    "buyerMobile": "9800000000",
+    "buyerEmail": "",
+    "productName": "steel",
+    "quantity": "500",
+    "message": "need bulk",
+    "listingId": null,
+    "categoryId": "metals-steel-raw-materials",
+    "intent": null,
+    "sellerId": null,
+    "createdAt": "2026-07-31T07:09:45.378Z",
+    "stage": "New"
+  },
+  {
+    "id": "inq_000002",
+    "buyerId": "usr_s003",
+    "buyerName": "",
+    "buyerMobile": "",
+    "buyerEmail": "",
+    "productName": "Cotton fabric bulk",
+    "quantity": "500 meters",
+    "message": "Need best price",
+    "listingId": "lst_p001",
+    "categoryId": null,
+    "intent": null,
+    "sellerId": "usr_s001",
+    "createdAt": "2026-07-31T13:54:21.171Z",
+    "stage": "New"
+  },
+  {
+    "id": "inq_000003",
+    "buyerId": "usr_s003",
+    "buyerName": "",
+    "buyerMobile": "",
+    "buyerEmail": "",
+    "productName": "Cotton fabric",
+    "quantity": "200m",
+    "message": "Need quote",
+    "listingId": "lst_p001",
+    "categoryId": null,
+    "intent": null,
+    "sellerId": "usr_s001",
+    "createdAt": "2026-07-31T15:42:52.407Z",
+    "stage": "New"
+  }
+]

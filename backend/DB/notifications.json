@@ -1,0 +1,123 @@
+[
+  {
+    "id": "ntf_000001",
+    "userId": "usr_s002",
+    "type": "new_follower",
+    "data": {
+      "followerId": "usr_admin",
+      "name": "BharatSource Admin"
+    },
+    "read": false,
+    "createdAt": "2026-07-31T06:37:45.211Z"
+  },
+  {
+    "id": "ntf_000002",
+    "userId": "usr_s003",
+    "type": "new_follower",
+    "data": {
+      "followerId": "usr_000002",
+      "name": "9812340000"
+    },
+    "read": false,
+    "createdAt": "2026-07-31T07:09:45.385Z"
+  },
+  {
+    "id": "ntf_000003",
+    "userId": "usr_s001",
+    "type": "new_lead",
+    "data": {
+      "name": "A buyer",
+      "buyerId": "usr_s003",
+      "inquiryId": "inq_000003",
+      "productName": "Cotton fabric",
+      "message": "New lead — A buyer is looking for Cotton fabric. Respond with a quote.",
+      "link": "/dashboard?tab=leads"
+    },
+    "read": false,
+    "createdAt": "2026-07-31T15:42:52.410Z"
+  },
+  {
+    "id": "ntf_000004",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000001",
+      "name": "Test Buyer",
+      "packageTitle": null,
+      "message": "New consultation request from Test Buyer.",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T06:04:45.577Z"
+  },
+  {
+    "id": "ntf_000005",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000002",
+      "name": "Test User",
+      "packageTitle": null,
+      "message": "New consultation request from Test User.",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T06:07:55.780Z"
+  },
+  {
+    "id": "ntf_000006",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000003",
+      "name": "Alpesh Test",
+      "packageTitle": null,
+      "message": "New consultation request from Alpesh Test.",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T06:24:48.643Z"
+  },
+  {
+    "id": "ntf_000007",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000004",
+      "name": "Priya Nair",
+      "packageTitle": null,
+      "message": "New consultation request from Priya Nair.",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T09:13:19.366Z"
+  },
+  {
+    "id": "ntf_000008",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000005",
+      "name": "Rohan Mehta",
+      "packageTitle": "GST Registration & Monthly Return Filing",
+      "message": "New consultation request from Rohan Mehta for \"GST Registration & Monthly Return Filing\".",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T09:13:19.392Z"
+  },
+  {
+    "id": "ntf_000009",
+    "userId": "usr_svc1",
+    "type": "consultation_request",
+    "data": {
+      "bookingId": "booking_000006",
+      "name": "Anjali Verma",
+      "packageTitle": "Income Tax Return (ITR) Filing",
+      "message": "New consultation request from Anjali Verma for \"Income Tax Return (ITR) Filing\".",
+      "link": "/dashboard?tab=consultations"
+    },
+    "read": false,
+    "createdAt": "2026-08-03T09:13:19.413Z"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "po_001",
+    "poNumber": "PO-2026-0481",
+    "quotationId": "quo_002",
+    "supplierId": "sup_002",
+    "buyerName": "Priya Nair",
+    "buyerMobile": "9811112202",
+    "productName": "Corrugated Shipping Boxes 5-Ply",
+    "quantity": 5000,
+    "unitPrice": 28,
+    "total": 165200,
+    "currency": "INR",
+    "status": "In Production",
+    "expectedDelivery": "2026-06-24",
+    "createdAt": "2026-06-11T09:30:00Z"
+  },
+  {
+    "id": "po_002",
+    "poNumber": "PO-2026-0455",
+    "quotationId": null,
+    "supplierId": "sup_007",
+    "buyerName": "Sneha Iyer",
+    "buyerMobile": "9811112204",
+    "productName": "Sterile Disposable Syringes",
+    "quantity": 50000,
+    "unitPrice": 3,
+    "total": 177000,
+    "currency": "INR",
+    "status": "Delivered",
+    "expectedDelivery": "2026-06-05",
+    "createdAt": "2026-05-29T10:00:00Z"
+  },
+  {
+    "id": "po_003",
+    "poNumber": "PO-2026-0502",
+    "quotationId": null,
+    "supplierId": "sup_001",
+    "buyerName": "Rohan Mehta",
+    "buyerMobile": "9811112201",
+    "productName": "Polyester Viscose Suiting",
+    "quantity": 600,
+    "unitPrice": 210,
+    "total": 148680,
+    "currency": "INR",
+    "status": "Confirmed",
+    "expectedDelivery": "2026-06-28",
+    "createdAt": "2026-06-12T14:00:00Z"
+  }
+]

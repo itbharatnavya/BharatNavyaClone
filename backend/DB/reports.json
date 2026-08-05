@@ -1,0 +1,31 @@
+[
+  {
+    "id": "rpt_000001",
+    "listingId": "lst_p001",
+    "reporterId": "usr_admin",
+    "reason": "spam",
+    "details": "test flag",
+    "status": "open",
+    "createdAt": "2026-07-31T06:29:51.865Z"
+  },
+  {
+    "id": "rpt_000002",
+    "listingId": "lst_p002",
+    "reporterId": "usr_admin",
+    "reason": "other",
+    "details": "",
+    "status": "open",
+    "createdAt": "2026-07-31T06:30:11.288Z"
+  },
+  {
+    "id": "rpt_000003",
+    "listingId": "lst_p003",
+    "reporterId": "usr_000002",
+    "reason": "spam",
+    "details": "",
+    "status": "resolved",
+    "createdAt": "2026-07-31T07:09:45.396Z",
+    "resolvedBy": "usr_admin",
+    "resolvedAt": "2026-07-31T07:09:45.399Z"
+  }
+]

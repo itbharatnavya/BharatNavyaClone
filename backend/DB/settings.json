@@ -1,0 +1,71 @@
+{
+  "wOrganic": 0.7,
+  "wPaid": 0.3,
+  "tierBaseline": {
+    "none": 0,
+    "premium": 10,
+    "star": 25,
+    "leader": 40
+  },
+  "maxSponsoredPerPage": 3,
+  "relevanceFloorThreshold": 0.1,
+  "sponsoredRowEnabled": true,
+  "branding": {
+    "siteName": "BharatSource",
+    "tagline": "India's marketplace for everything — products, services & trusted vendors.",
+    "logoText": "BharatSource",
+    "accentBlue": "#2563EB",
+    "accentOrange": "#F97316"
+  },
+  "homepage": {
+    "heroTitle": "Find any vendor. Sell anything.",
+    "heroSubtitle": "From a CA for GST filing to a supplier of steel or flour — describe what you need and let AI find the right vendor.",
+    "heroExamples": [
+      "CA in Pune for GST filing",
+      "stainless steel sheet suppliers",
+      "robotic vacuum cleaner distributor",
+      "wheat flour (atta) wholesaler"
+    ],
+    "featuredCategorySlugs": [
+      "textiles-fabrics-yarn",
+      "professional-consulting-services",
+      "electronics-electrical",
+      "packaging-printing",
+      "building-construction",
+      "automotive-parts-accessories",
+      "home-local-services",
+      "accounting"
+    ],
+    "showStories": true,
+    "showTrending": true,
+    "showFeaturedSellers": true,
+    "showCategoryGrid": true
+  },
+  "featureFlags": {
+    "chat": true,
+    "ai": true,
+    "voiceSearch": true,
+    "aiAutofill": true,
+    "stories": true,
+    "storyHighlights": true,
+    "blogs": true,
+    "referral": true,
+    "follow": true,
+    "notifications": true,
+    "reviews": true,
+    "reports": true,
+    "nearMe": true,
+    "mapView": true,
+    "multiLanguage": true,
+    "ads": true,
+    "featuredListings": true
+  },
+  "contact": {
+    "email": "hello@bharatsource.in",
+    "phone": "+91 00000 00000",
+    "address": "India"
+  },
+  "footer": {
+    "about": "BharatSource connects buyers, sellers and service providers across India. A mediator platform — we do not process payments or hold inventory."
+  }
+}

@@ -1,0 +1,108 @@
+[
+  {
+    "id": "quo_001",
+    "inquiryId": "inq_003",
+    "supplierId": "sup_003",
+    "buyerName": "Aman Verma",
+    "buyerMobile": "9811112203",
+    "productName": "Precision Machined Bearing Housing",
+    "items": [
+      {
+        "description": "Bearing Housing (as per drawing)",
+        "quantity": 1000,
+        "unitPrice": 480,
+        "total": 480000
+      }
+    ],
+    "subtotal": 480000,
+    "taxPercent": 18,
+    "tax": 86400,
+    "total": 566400,
+    "currency": "INR",
+    "validUntil": "2026-06-30",
+    "status": "Sent",
+    "notes": "Lead time 4 weeks ex-works Pune.",
+    "createdAt": "2026-06-09T10:00:00Z"
+  },
+  {
+    "id": "quo_002",
+    "inquiryId": "inq_007",
+    "supplierId": "sup_002",
+    "buyerName": "Priya Nair",
+    "buyerMobile": "9811112202",
+    "productName": "Corrugated Shipping Boxes 5-Ply",
+    "items": [
+      {
+        "description": "5-Ply Box 400x300x300mm, 2-colour print",
+        "quantity": 5000,
+        "unitPrice": 28,
+        "total": 140000
+      }
+    ],
+    "subtotal": 140000,
+    "taxPercent": 18,
+    "tax": 25200,
+    "total": 165200,
+    "currency": "INR",
+    "validUntil": "2026-06-25",
+    "status": "Approved",
+    "notes": "Includes custom printing plates.",
+    "createdAt": "2026-06-08T11:00:00Z"
+  },
+  {
+    "id": "quo_003",
+    "inquiryId": "inq_001",
+    "supplierId": "sup_001",
+    "buyerName": "Rohan Mehta",
+    "buyerMobile": "9811112201",
+    "productName": "Combed Cotton Woven Fabric",
+    "items": [
+      {
+        "description": "Combed Cotton Shirting 140 GSM - White",
+        "quantity": 1200,
+        "unitPrice": 145,
+        "total": 174000
+      },
+      {
+        "description": "Combed Cotton Shirting 140 GSM - Sky Blue",
+        "quantity": 800,
+        "unitPrice": 148,
+        "total": 118400
+      }
+    ],
+    "subtotal": 292400,
+    "taxPercent": 5,
+    "tax": 14620,
+    "total": 307020,
+    "currency": "INR",
+    "validUntil": "2026-06-28",
+    "status": "Draft",
+    "notes": "Greige available at lower rate on request.",
+    "createdAt": "2026-06-13T09:00:00Z"
+  },
+  {
+    "id": "quo_004",
+    "inquiryId": "inq_006",
+    "supplierId": "sup_010",
+    "buyerName": "Karan Singh",
+    "buyerMobile": "9811112205",
+    "productName": "TMT Reinforcement Bars Fe-500",
+    "items": [
+      {
+        "description": "Fe-500D TMT Bars assorted 8-25mm",
+        "quantity": 40,
+        "unitPrice": 54000,
+        "total": 2160000
+      }
+    ],
+    "subtotal": 2160000,
+    "taxPercent": 18,
+    "tax": 388800,
+    "total": 2548800,
+    "currency": "INR",
+    "validUntil": "2026-06-22",
+    "status": "Sent",
+    "notes": "Price firm for 7 days, mill-loading basis.",
+    "createdAt": "2026-06-10T12:00:00Z"
+  }
+]

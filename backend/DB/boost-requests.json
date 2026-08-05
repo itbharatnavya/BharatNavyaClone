@@ -1,0 +1,13 @@
+[
+  {
+    "sellerId": "usr_s001",
+    "listingId": "lst_p001",
+    "boostType": "feature",
+    "days": 15,
+    "amount": null,
+    "status": "active",
+    "createdAt": "2026-07-31T15:33:15.221Z",
+    "id": "br_000001",
+    "approvedAt": "2026-07-31T15:33:47.919Z"
+  }
+]

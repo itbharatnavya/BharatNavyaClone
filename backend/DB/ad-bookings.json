@@ -1,0 +1,100 @@
+[
+  {
+    "id": "adb_demo1",
+    "adSlotId": "category_top",
+    "sellerId": "usr_pv1",
+    "placementType": "category_top",
+    "creativeImageUrl": "/demo/steel-2.jpg",
+    "targetUrl": "/seller/jindal-steel-metals-depot",
+    "headline": "Jindal Steel & Metals — Bulk SS/MS/TMT at factory rates",
+    "categoryIds": [
+      "metals-steel-alloys",
+      "building-construction"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "priority": 10,
+    "status": "active",
+    "amount": 5000,
+    "impressionsServed": 0,
+    "clicks": 0
+  },
+  {
+    "id": "adb_demo2",
+    "adSlotId": "category_top",
+    "sellerId": "usr_pv2",
+    "placementType": "category_top",
+    "creativeImageUrl": "/demo/electronics-4.jpg",
+    "targetUrl": "/seller/bright-electricals-electronics",
+    "headline": "Bright Electricals — LED, wires & switchgear at wholesale",
+    "categoryIds": [
+      "electronics-electrical"
+    ],
+    "startDate": null,
+    "endDate": null,
+    "priority": 8,
+    "status": "active",
+    "amount": 4000,
+    "impressionsServed": 0,
+    "clicks": 0
+  },
+  {
+    "id": "adb_demo3",
+    "adSlotId": "category_top",
+    "sellerId": "usr_svc1",
+    "placementType": "category_top",
+    "creativeImageUrl": "/demo/business-5.jpg",
+    "targetUrl": "/seller/sharma-associates-chartered-accountants",
+    "headline": "Sharma & Associates CA — GST, ITR & audit for your business",
+    "categoryIds": [],
+    "startDate": null,
+    "endDate": null,
+    "priority": 5,
+    "status": "active",
+    "amount": 3000,
+    "impressionsServed": 0,
+    "clicks": 0
+  },
+  {
+    "placementType": "category_top",
+    "adSlotId": "category_top",
+    "slotId": null,
+    "sellerId": null,
+    "listingId": null,
+    "categoryIds": [
+      "metals-steel-alloys"
+    ],
+    "creativeImageUrl": "/demo/steel-1.jpg",
+    "headline": "Test Ad 2",
+    "targetUrl": null,
+    "startDate": null,
+    "endDate": null,
+    "priority": 5,
+    "amount": null,
+    "paymentRecordId": null,
+    "status": "paused",
+    "createdAt": "2026-07-31T11:48:59.642Z",
+    "id": "adb_000001"
+  },
+  {
+    "placementType": "category_top",
+    "adSlotId": "category_top",
+    "slotId": null,
+    "sellerId": "usr_s001",
+    "listingId": null,
+    "categoryIds": [
+      "textiles-fabrics-yarn"
+    ],
+    "creativeImageUrl": "/uploads/up_1785502689429_omec0s.png",
+    "headline": "Arvind Textiles — premium fabrics",
+    "targetUrl": null,
+    "startDate": null,
+    "endDate": null,
+    "priority": 0,
+    "amount": null,
+    "paymentRecordId": null,
+    "status": "pending",
+    "createdAt": "2026-07-31T12:58:09.460Z",
+    "id": "adb_000002"
+  }
+]

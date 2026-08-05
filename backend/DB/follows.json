@@ -1,0 +1,14 @@
+[
+  {
+    "followerId": "usr_admin",
+    "followingId": "usr_s002",
+    "createdAt": "2026-07-31T06:37:45.208Z",
+    "id": "flw_000001"
+  },
+  {
+    "followerId": "usr_000002",
+    "followingId": "usr_s003",
+    "createdAt": "2026-07-31T07:09:45.384Z",
+    "id": "flw_000002"
+  }
+]

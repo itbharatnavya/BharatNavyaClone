@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sug_000001",
+    "name": "Marine Ropes & Rigging",
+    "note": "",
+    "context": "",
+    "suggestedBy": "usr_s001",
+    "status": "pending",
+    "count": 1,
+    "createdAt": "2026-07-31T11:48:59.594Z",
+    "updatedAt": "2026-07-31T11:48:59.594Z"
+  },
+  {
+    "id": "sug_000002",
+    "name": "Aaaa",
+    "note": "",
+    "context": "product",
+    "suggestedBy": "usr_admin",
+    "status": "pending",
+    "count": 1,
+    "createdAt": "2026-07-31T13:54:12.522Z",
+    "updatedAt": "2026-07-31T13:54:12.522Z"
+  }
+]

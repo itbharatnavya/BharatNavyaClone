@@ -1,0 +1,112 @@
+[
+  {
+    "id": "sub_001",
+    "supplierId": "sup_001",
+    "companyName": "Arvind Textiles Pvt Ltd",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2024-01-15",
+    "endDate": "2027-01-15",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_002",
+    "supplierId": "sup_002",
+    "companyName": "Mumbai Packaging Solutions",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2024-02-02",
+    "endDate": "2027-02-02",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_003",
+    "supplierId": "sup_003",
+    "companyName": "Pune Auto Components",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2023-11-20",
+    "endDate": "2026-11-20",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_004",
+    "supplierId": "sup_004",
+    "companyName": "Vadodara Chemicals Ltd",
+    "plan": "free",
+    "status": "active",
+    "startDate": "2024-03-11",
+    "endDate": null,
+    "amount": 0,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_005",
+    "supplierId": "sup_005",
+    "companyName": "Delhi Electronics Hub",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2023-12-05",
+    "endDate": "2026-12-05",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_006",
+    "supplierId": "sup_006",
+    "companyName": "Rajkot Agri Equipment",
+    "plan": "free",
+    "status": "active",
+    "startDate": "2024-04-18",
+    "endDate": null,
+    "amount": 0,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_007",
+    "supplierId": "sup_007",
+    "companyName": "Chennai MedTech Supplies",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2023-10-09",
+    "endDate": "2026-10-09",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_008",
+    "supplierId": "sup_008",
+    "companyName": "Surat Synthetic Fabrics",
+    "plan": "free",
+    "status": "active",
+    "startDate": "2024-05-02",
+    "endDate": null,
+    "amount": 0,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_009",
+    "supplierId": "sup_009",
+    "companyName": "Hyderabad Industrial Machines",
+    "plan": "premium",
+    "status": "active",
+    "startDate": "2023-09-22",
+    "endDate": "2026-09-22",
+    "amount": 24000,
+    "currency": "INR"
+  },
+  {
+    "id": "sub_010",
+    "supplierId": "sup_010",
+    "companyName": "Kolkata Construction Materials",
+    "plan": "free",
+    "status": "active",
+    "startDate": "2024-01-30",
+    "endDate": null,
+    "amount": 0,
+    "currency": "INR"
+  }
+]

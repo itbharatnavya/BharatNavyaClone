@@ -1,0 +1,15 @@
+[
+  {
+    "id": "q_000001",
+    "inquiryId": "inq_000002",
+    "sellerId": "usr_s001",
+    "price": 142,
+    "unit": "meter",
+    "moq": 300,
+    "deliveryDays": 7,
+    "note": "Grade A, ex-Ahmedabad",
+    "validUntil": null,
+    "status": "sent",
+    "createdAt": "2026-07-31T13:54:21.254Z"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "fu_001",
+    "supplierId": "sup_001",
+    "buyerName": "Rohan Mehta",
+    "buyerMobile": "9811112201",
+    "relatedInquiryId": "inq_001",
+    "type": "WhatsApp",
+    "note": "Share greige price and dispatch sample swatches.",
+    "dueDate": "2026-06-16",
+    "status": "Pending",
+    "createdAt": "2026-06-13T09:10:00Z"
+  },
+  {
+    "id": "fu_002",
+    "supplierId": "sup_001",
+    "buyerName": "Priya Nair",
+    "buyerMobile": "9811112202",
+    "relatedInquiryId": "inq_002",
+    "type": "Call",
+    "note": "Confirm PV suiting shade approval before production.",
+    "dueDate": "2026-06-15",
+    "status": "Pending",
+    "createdAt": "2026-06-11T10:00:00Z"
+  },
+  {
+    "id": "fu_003",
+    "supplierId": "sup_003",
+    "buyerName": "Aman Verma",
+    "buyerMobile": "9811112203",
+    "relatedInquiryId": "inq_003",
+    "type": "Email",
+    "note": "Send revised quotation with bulk discount slab.",
+    "dueDate": "2026-06-17",
+    "status": "Pending",
+    "createdAt": "2026-06-09T11:00:00Z"
+  },
+  {
+    "id": "fu_004",
+    "supplierId": "sup_002",
+    "buyerName": "Priya Nair",
+    "buyerMobile": "9811112202",
+    "relatedInquiryId": "inq_007",
+    "type": "Meeting",
+    "note": "Production kickoff call for box printing.",
+    "dueDate": "2026-06-14",
+    "status": "Done",
+    "createdAt": "2026-06-08T12:00:00Z"
+  }
+]

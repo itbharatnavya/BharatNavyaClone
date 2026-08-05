@@ -1,0 +1,47 @@
+[
+  {
+    "id": "req_001",
+    "productName": "Cotton Knitted Fabric for T-Shirts",
+    "quantity": "5000",
+    "unit": "kg",
+    "targetPrice": "300",
+    "deliveryLocation": "Tiruppur, Tamil Nadu",
+    "timeline": "Within 30 days",
+    "description": "Looking for 180-200 GSM single jersey cotton knit in assorted colours for a bulk t-shirt order. Need consistent quality and reactive dyeing.",
+    "buyerName": "Rohan Mehta",
+    "buyerMobile": "9811112201",
+    "buyerEmail": "rohan.mehta@example.com",
+    "status": "open",
+    "createdAt": "2026-06-11T10:00:00Z"
+  },
+  {
+    "id": "req_002",
+    "productName": "Industrial Safety Gloves",
+    "quantity": "20000",
+    "unit": "pairs",
+    "targetPrice": "45",
+    "deliveryLocation": "Pune, Maharashtra",
+    "timeline": "Within 15 days",
+    "description": "Require cut-resistant industrial safety gloves for a manufacturing facility. Need samples and compliance certificates before order.",
+    "buyerName": "Aman Verma",
+    "buyerMobile": "9811112203",
+    "buyerEmail": "aman.verma@example.com",
+    "status": "open",
+    "createdAt": "2026-06-12T14:30:00Z"
+  },
+  {
+    "id": "req_003",
+    "productName": "Ready Mix Concrete Grade M25",
+    "quantity": "300",
+    "unit": "cubic meters",
+    "targetPrice": "5200",
+    "deliveryLocation": "Lucknow, Uttar Pradesh",
+    "timeline": "Immediate",
+    "description": "Need M25 grade ready mix concrete delivered on site for a foundation pour. Continuous supply over three days required.",
+    "buyerName": "Karan Singh",
+    "buyerMobile": "9811112205",
+    "buyerEmail": "karan.singh@example.com",
+    "status": "open",
+    "createdAt": "2026-06-13T09:15:00Z"
+  }
+]
