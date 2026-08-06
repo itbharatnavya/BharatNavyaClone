@@ -878,7 +878,8 @@
       "sampleAvailable": false,
       "brand": "Polycab"
     },
-    "service": null
+    "service": null,
+    "views": 1
   },
   {
     "id": "lst_p013",
@@ -1025,7 +1026,8 @@
       "sampleAvailable": false,
       "brand": "Kajaria"
     },
-    "service": null
+    "service": null,
+    "views": 1
   },
   {
     "id": "lst_p015",
@@ -3788,7 +3790,8 @@
       "sampleAvailable": true,
       "condition": "new"
     },
-    "service": null
+    "service": null,
+    "views": 1
   },
   {
     "id": "usr_pv4c",
@@ -8533,5 +8536,68 @@
       ]
     },
     "views": 1
+  },
+  {
+    "sellerId": "usr_000004",
+    "type": "service",
+    "title": "Api creators",
+    "slug": "api-creators",
+    "description": "What We Do\nBuild test software.\nMake trial apps.\nShow product features.\nHelp clients try tools.\n\nWhy Choose Us\nSafe test space.\nNo real data risk.\nClear software views.\nFast system checks.",
+    "categoryId": "cat_it-software-services",
+    "legacyCategory": null,
+    "categoryPath": [],
+    "keywords": [
+      "it company",
+      "it",
+      "website",
+      "application",
+      "software"
+    ],
+    "media": [
+      {
+        "type": "image",
+        "url": "https://media.licdn.com/dms/image/v2/C560BAQHRRXs59RaK8g/company-logo_200_200/company-logo_200_200/0/1631431144370?e=2147483647&v=beta&t=ltTo__jTGdkYQ5LLVzyuMJunQ-JXAd2_8hfJpm_F-mA"
+      }
+    ],
+    "location": {
+      "panIndia": true
+    },
+    "locationId": null,
+    "panIndia": true,
+    "serviceCities": [],
+    "status": "active",
+    "createdAt": "2026-08-05T09:30:22.080Z",
+    "rating": 0,
+    "reviewCount": 0,
+    "isVerifiedSeller": false,
+    "isFeatured": false,
+    "featuredStartDate": null,
+    "featuredEndDate": null,
+    "rankBoostScore": 0,
+    "isSponsored": false,
+    "boostToTopLastUsed": null,
+    "manualPinRank": null,
+    "product": null,
+    "service": {
+      "rateCard": [],
+      "pricingModel": "quote",
+      "serviceArea": [
+        "Ahmedabad",
+        "pune",
+        "mumbai"
+      ],
+      "serviceMode": "onsite",
+      "availabilitySchedule": "Mon–Sat, 9am–7pm\n",
+      "credentials": [],
+      "experienceYears": 10,
+      "teamSize": null,
+      "portfolio": [],
+      "sla": null,
+      "warranty": null,
+      "bookingType": "enquiry"
+    },
+    "productKey": "api-creators",
+    "id": "lst_000055",
+    "views": 3
   }
 ]

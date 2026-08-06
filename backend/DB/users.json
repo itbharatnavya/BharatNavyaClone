@@ -2887,5 +2887,96 @@
       }
     },
     "createdAt": "2026-08-03T06:04:20.711Z"
+  },
+  {
+    "id": "usr_000004",
+    "name": "Anand",
+    "mobile": "8989767878",
+    "email": "anand.dentist@yopmail.com",
+    "passwordHash": "$2b$10$x8GAC6j9YEdJhWBUbq8JXOtLzrGb8wrFi5wmsx2CXAH22eBMgi30G",
+    "avatarUrl": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "roles": [
+      "user"
+    ],
+    "sellerProfile": {
+      "companyName": "Anand",
+      "slug": "anand-usr000004",
+      "about": "",
+      "logo": null,
+      "coverImage": null,
+      "gstNumber": null,
+      "yearEstablished": null,
+      "employeeCount": null,
+      "certifications": [],
+      "website": null,
+      "contactMobile": "8989767878",
+      "contactEmail": "anand.dentist@yopmail.com",
+      "location": {
+        "city": "Ahmedabad",
+        "state": "Gujarat",
+        "pincode": null
+      },
+      "legacyCategories": [],
+      "status": "rejected",
+      "isVerified": false,
+      "trustSealVerified": false,
+      "verifiedBadgeExpiry": null,
+      "rating": 0,
+      "reviewCount": 0,
+      "responseRate": 0,
+      "performance": {},
+      "planId": null,
+      "planTier": "free",
+      "planStartDate": null,
+      "planEndDate": null,
+      "planStatus": "inactive",
+      "listingLimit": null,
+      "leadQuotaPerCycle": null,
+      "leadsConsumed": 0,
+      "leadQuotaResetDate": null,
+      "featuredCredits": 0,
+      "perLeadPrice": null,
+      "rankBoostScore": 0,
+      "priorityTier": "none",
+      "isFeaturedSeller": false,
+      "featuredStartDate": null,
+      "featuredEndDate": null,
+      "boostCategoryIds": [],
+      "boostKeywords": [],
+      "boostGeoLocations": [],
+      "analyticsEnabled": false,
+      "accountManagerId": null,
+      "adminNotes": null
+    },
+    "createdAt": "2026-08-05T09:19:32.108Z"
+  },
+  {
+    "id": "usr_000005",
+    "name": "Explorer",
+    "mobile": "7878787878",
+    "email": null,
+    "passwordHash": null,
+    "avatarUrl": null,
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "roles": [
+      "user"
+    ],
+    "sellerProfile": null,
+    "createdAt": "2026-08-05T10:09:59.740Z",
+    "interests": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "silk-fabric",
+      "synthetic-fabric",
+      "woolen-fabric",
+      "yarn-thread",
+      "printing-machinery",
+      "surgical-instruments",
+      "income-tax-services"
+    ],
+    "contactVisibility": "on_request"
   }
 ]
