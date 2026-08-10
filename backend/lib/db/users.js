@@ -1,0 +1,238 @@
+/**
+ * users.js — composite relational mapper for users.json.
+ *
+ * users (1) --< seller_profiles (1:1, optional)
+ *                 |--< seller_locations (array)
+ *                 \--- expert_profiles (1:1, optional)
+ *                         \--< expert_case_studies (array)
+ * users (1) --- user_legacy (1:1, optional)
+ *
+ * Update semantics match the original file-store: a shallow merge of the patch into
+ * the existing doc ({...existing, ...patch, id}) — so patching `sellerProfile` REPLACES
+ * the whole sub-object (and, transitively, its own children), same as the old
+ * {...row, ...patch} behaviour with a plain JSON array.
+ *
+ * The top-level `users` row is always upserted in place (INSERT ... ON CONFLICT DO
+ * UPDATE), never delete+reinsert — dozens of other tables hold FKs to users.id, and a
+ * delete would cascade through all of it. Child/owned tables (nothing outside this
+ * doc's own subtree references them) are safely replaced via delete+reinsert.
+ */
+
+const { docToRow, rowToDoc, quoteIdent, insertParts, withTransaction, upsertRow, replaceChildRows, nestedToRow, nestedFromRow } = require("./util");
+
+const t = "text", i = "int", n = "numeric", b = "bool", ts = "timestamptz", arr = "textArray";
+const col = (c, type) => ({ col: c, type });
+
+const USER_COLUMNS = {
+  id: col("id", t), name: col("name", t), mobile: col("mobile", t), email: col("email", t),
+  passwordHash: col("password_hash", t), avatarUrl: col("avatar_url", t), city: col("city", t),
+  state: col("state", t), roles: col("roles", arr), interests: col("interests", arr),
+  contactVisibility: col("contact_visibility", t), createdAt: col("created_at", ts),
+};
+
+const SELLER_COLUMNS = {
+  companyName: col("company_name", t), slug: col("slug", t), about: col("about", t), logo: col("logo", t),
+  coverImage: col("cover_image", t), gstNumber: col("gst_number", t), yearEstablished: col("year_established", i),
+  employeeCount: col("employee_count", t), certifications: col("certifications", arr), website: col("website", t),
+  contactMobile: col("contact_mobile", t), contactEmail: col("contact_email", t),
+  legacyCategories: col("legacy_categories", arr), status: col("status", t), isVerified: col("is_verified", b),
+  trustSealVerified: col("trust_seal_verified", b), verifiedBadgeExpiry: col("verified_badge_expiry", ts),
+  rating: col("rating", n), reviewCount: col("review_count", i), responseRate: col("response_rate", n),
+  planId: col("plan_id", t), planTier: col("plan_tier", t), planStartDate: col("plan_start_date", ts),
+  planEndDate: col("plan_end_date", ts), planStatus: col("plan_status", t), listingLimit: col("listing_limit", i),
+  leadQuotaPerCycle: col("lead_quota_per_cycle", i), leadsConsumed: col("leads_consumed", i),
+  leadQuotaResetDate: col("lead_quota_reset_date", ts), featuredCredits: col("featured_credits", i),
+  perLeadPrice: col("per_lead_price", n), rankBoostScore: col("rank_boost_score", n),
+  priorityTier: col("priority_tier", t), isFeaturedSeller: col("is_featured_seller", b),
+  featuredStartDate: col("featured_start_date", ts), featuredEndDate: col("featured_end_date", ts),
+  boostCategoryIds: col("boost_category_ids", arr), boostKeywords: col("boost_keywords", arr),
+  boostGeoLocations: col("boost_geo_locations", arr), analyticsEnabled: col("analytics_enabled", b),
+  accountManagerId: col("account_manager_id", t), adminNotes: col("admin_notes", t),
+  panNumber: col("pan_number", t), cinNumber: col("cin_number", t), annualTurnover: col("annual_turnover", t),
+  natureOfBusiness: col("nature_of_business", t),
+};
+const SELLER_NESTED = [
+  { docKey: "location", fields: { city: col("location_city", t), state: col("location_state", t), pincode: col("location_pincode", t) } },
+  { docKey: "performance", fields: {
+    onTimeDelivery: col("perf_on_time_delivery", n), avgResponseTimeHours: col("perf_avg_response_time_hrs", n),
+    repeatBuyers: col("perf_repeat_buyers", i), orderCompletion: col("perf_order_completion", n),
+    performanceScore: col("perf_performance_score", n),
+  } },
+];
+
+const EXPERT_COLUMNS = {
+  profession: col("profession", t), professionKey: col("profession_key", t), headline: col("headline", t),
+  registrationBody: col("registration_body", t), registrationNo: col("registration_no", t),
+  credentialVerified: col("credential_verified", b), specializations: col("specializations", arr),
+  languages: col("languages", arr), experienceYears: col("experience_years", i),
+  consultationModes: col("consultation_modes", arr), responseTime: col("response_time", t),
+  freeIntroCall: col("free_intro_call", b), clientsServed: col("clients_served", i),
+};
+
+const LEGACY_COLUMNS = {
+  company: col("company", t), gstNumber: col("gst_number", t), website: col("website", t),
+  annualTurnover: col("annual_turnover", t), activeYears: col("active_years", i), trustScore: col("trust_score", n),
+};
+const LEGACY_NESTED = [
+  { docKey: "verification", fields: {
+    gstVerified: col("gst_verified", b), websiteVerified: col("website_verified", b),
+    phoneVerified: col("phone_verified", b), emailVerified: col("email_verified", b),
+    linkedinPresence: col("linkedin_presence", b),
+  } },
+];
+
+function createUsersStore(pool, nextId) {
+  async function hydrate(client, userRow) {
+    const doc = rowToDoc(userRow, USER_COLUMNS);
+    doc.sellerProfile = null;
+    doc.legacy = undefined;
+
+    const sellerRes = await client.query(`SELECT * FROM seller_profiles WHERE user_id = $1`, [userRow.id]);
+    if (sellerRes.rowCount) {
+      const sellerRow = sellerRes.rows[0];
+      const sp = rowToDoc(sellerRow, SELLER_COLUMNS);
+      nestedFromRow(sellerRow, SELLER_NESTED, sp);
+
+      const locRes = await client.query(
+        `SELECT * FROM seller_locations WHERE seller_id = $1 ORDER BY position ASC`,
+        [userRow.id]
+      );
+      if (locRes.rowCount) {
+        sp.locations = locRes.rows.map((r) => ({
+          id: r.id, label: r.label, city: r.city, state: r.state, pincode: r.pincode, address: r.address,
+        }));
+      }
+
+      const expertRes = await client.query(`SELECT * FROM expert_profiles WHERE user_id = $1`, [userRow.id]);
+      if (expertRes.rowCount) {
+        const expertRow = expertRes.rows[0];
+        const expert = rowToDoc(expertRow, EXPERT_COLUMNS);
+        const csRes = await client.query(
+          `SELECT * FROM expert_case_studies WHERE expert_id = $1 ORDER BY position ASC`,
+          [userRow.id]
+        );
+        expert.caseStudies = csRes.rows.map((r) => ({ title: r.title, result: r.result }));
+        sp.expert = expert;
+      }
+      doc.sellerProfile = sp;
+    }
+
+    const legacyRes = await client.query(`SELECT * FROM user_legacy WHERE user_id = $1`, [userRow.id]);
+    if (legacyRes.rowCount) {
+      const legacyRow = legacyRes.rows[0];
+      const legacy = rowToDoc(legacyRow, LEGACY_COLUMNS);
+      nestedFromRow(legacyRow, LEGACY_NESTED, legacy);
+      doc.legacy = legacy;
+    } else {
+      delete doc.legacy;
+    }
+    return doc;
+  }
+
+  async function getByIdWith(client, id) {
+    const res = await client.query(`SELECT * FROM users WHERE id = $1`, [id]);
+    if (!res.rowCount) return null;
+    return hydrate(client, res.rows[0]);
+  }
+
+  async function upsertDoc(client, doc) {
+    const userRow = docToRow(doc, USER_COLUMNS);
+    await upsertRow(client, "users", "id", userRow);
+
+    if (doc.sellerProfile) {
+      const sp = doc.sellerProfile;
+      const sellerRow = docToRow(sp, SELLER_COLUMNS);
+      sellerRow.user_id = doc.id;
+      nestedToRow(sp, SELLER_NESTED, sellerRow);
+      await upsertRow(client, "seller_profiles", "user_id", sellerRow);
+
+      const locations = (sp.locations || []).map((loc, idx) => ({
+        id: loc.id, seller_id: doc.id, label: loc.label ?? null, city: loc.city ?? null,
+        state: loc.state ?? null, pincode: loc.pincode ?? null, address: loc.address ?? null, position: idx,
+      }));
+      await replaceChildRows(client, "seller_locations", "seller_id", doc.id, locations);
+
+      if (sp.expert) {
+        const expertRow = docToRow(sp.expert, EXPERT_COLUMNS);
+        expertRow.user_id = doc.id;
+        await upsertRow(client, "expert_profiles", "user_id", expertRow);
+        const caseStudies = (sp.expert.caseStudies || []).map((cs, idx) => ({
+          expert_id: doc.id, title: cs.title ?? null, result: cs.result ?? null, position: idx,
+        }));
+        await replaceChildRows(client, "expert_case_studies", "expert_id", doc.id, caseStudies);
+      } else {
+        // Cascades to expert_case_studies too.
+        await client.query(`DELETE FROM expert_profiles WHERE user_id = $1`, [doc.id]);
+      }
+    } else {
+      // Cascades to seller_locations / expert_profiles / expert_case_studies.
+      await client.query(`DELETE FROM seller_profiles WHERE user_id = $1`, [doc.id]);
+    }
+
+    if (doc.legacy) {
+      const legacyRow = docToRow(doc.legacy, LEGACY_COLUMNS);
+      legacyRow.user_id = doc.id;
+      nestedToRow(doc.legacy, LEGACY_NESTED, legacyRow);
+      await upsertRow(client, "user_legacy", "user_id", legacyRow);
+    } else {
+      await client.query(`DELETE FROM user_legacy WHERE user_id = $1`, [doc.id]);
+    }
+  }
+
+  return {
+    async all() {
+      const res = await pool.query(`SELECT * FROM users ORDER BY id ASC`);
+      const docs = [];
+      for (const row of res.rows) docs.push(await hydrate(pool, row));
+      return docs;
+    },
+    async findOne(predicate) {
+      const rows = await this.all();
+      return rows.find(predicate) || null;
+    },
+    async findMany(predicate) {
+      const rows = await this.all();
+      return rows.filter(predicate);
+    },
+    async getById(id) {
+      return getByIdWith(pool, id);
+    },
+    async insert(doc, idPrefix) {
+      const id = doc.id || (idPrefix ? await nextId(idPrefix) : undefined);
+      const full = { ...doc, ...(id ? { id } : {}) };
+      return withTransaction(pool, async (client) => {
+        await upsertDoc(client, full);
+        return getByIdWith(client, full.id);
+      });
+    },
+    async update(id, patch) {
+      return withTransaction(pool, async (client) => {
+        const existing = await getByIdWith(client, id);
+        if (!existing) return null;
+        const merged = { ...existing, ...patch, id };
+        await upsertDoc(client, merged);
+        return getByIdWith(client, id);
+      });
+    },
+    async remove(id) {
+      const res = await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
+      return res.rowCount > 0;
+    },
+    async writeJson(docs) {
+      await withTransaction(pool, async (client) => {
+        const ids = [];
+        for (const doc of docs) {
+          await upsertDoc(client, doc);
+          ids.push(doc.id);
+        }
+        if (ids.length) {
+          await client.query(`DELETE FROM users WHERE id != ALL($1)`, [ids]);
+        } else {
+          await client.query(`DELETE FROM users`);
+        }
+      });
+    },
+  };
+}
+
+module.exports = { createUsersStore };

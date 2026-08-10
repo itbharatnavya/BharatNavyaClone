@@ -5893,5 +5893,665 @@
     ],
     "listingCount": 0,
     "order": 8
+  },
+  {
+    "id": "cat_combed-cotton",
+    "name": "Combed Cotton",
+    "slug": "combed-cotton",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "combed-cotton"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Combed Cotton from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_organic-cotton",
+    "name": "Organic Cotton",
+    "slug": "organic-cotton",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "organic-cotton"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Organic Cotton from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_cotton-canvas",
+    "name": "Cotton Canvas",
+    "slug": "cotton-canvas",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "cotton-canvas"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cotton Canvas from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_formal-shirts",
+    "name": "Formal Shirts",
+    "slug": "formal-shirts",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "formal-shirts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Formal Shirts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_t-shirts",
+    "name": "T-Shirts",
+    "slug": "t-shirts",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "t-shirts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source T-Shirts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_trousers",
+    "name": "Trousers",
+    "slug": "trousers",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "trousers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Trousers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_cnc-milling-machines",
+    "name": "CNC Milling Machines",
+    "slug": "cnc-milling-machines",
+    "parentId": "cat_cnc-machines",
+    "path": [
+      "industrial-machinery-equipment",
+      "cnc-machines",
+      "cnc-milling-machines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source CNC Milling Machines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_cnc-lathe-machines",
+    "name": "CNC Lathe Machines",
+    "slug": "cnc-lathe-machines",
+    "parentId": "cat_cnc-machines",
+    "path": [
+      "industrial-machinery-equipment",
+      "cnc-machines",
+      "cnc-lathe-machines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source CNC Lathe Machines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_pcb-connectors",
+    "name": "PCB Connectors",
+    "slug": "pcb-connectors",
+    "parentId": "cat_pcb-components",
+    "path": [
+      "electronics-electrical",
+      "pcb-components",
+      "pcb-connectors"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PCB Connectors from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_pcb-relays",
+    "name": "PCB Relays",
+    "slug": "pcb-relays",
+    "parentId": "cat_pcb-components",
+    "path": [
+      "electronics-electrical",
+      "pcb-components",
+      "pcb-relays"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PCB Relays from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_fe-500-tmt-bars",
+    "name": "Fe 500 TMT Bars",
+    "slug": "fe-500-tmt-bars",
+    "parentId": "cat_tmt-bars-steel",
+    "path": [
+      "building-construction",
+      "tmt-bars-steel",
+      "fe-500-tmt-bars"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fe 500 TMT Bars from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_fe-550-tmt-bars",
+    "name": "Fe 550 TMT Bars",
+    "slug": "fe-550-tmt-bars",
+    "parentId": "cat_tmt-bars-steel",
+    "path": [
+      "building-construction",
+      "tmt-bars-steel",
+      "fe-550-tmt-bars"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fe 550 TMT Bars from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_living-room-furniture",
+    "name": "Living Room Furniture",
+    "slug": "living-room-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "living-room-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Living Room Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_bedroom-furniture",
+    "name": "Bedroom Furniture",
+    "slug": "bedroom-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "bedroom-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bedroom Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_dining-furniture",
+    "name": "Dining Furniture",
+    "slug": "dining-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "dining-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dining Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_income-tax-filing",
+    "name": "Income Tax Filing",
+    "slug": "income-tax-filing",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "income-tax-filing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Income Tax Filing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_gst-filing",
+    "name": "GST Filing",
+    "slug": "gst-filing",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-filing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Filing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_tds-compliance",
+    "name": "TDS Compliance",
+    "slug": "tds-compliance",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "tds-compliance"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified TDS Compliance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_contract-drafting",
+    "name": "Contract Drafting",
+    "slug": "contract-drafting",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "contract-drafting"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Contract Drafting providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_trademark-registration",
+    "name": "Trademark Registration",
+    "slug": "trademark-registration",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "trademark-registration"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Trademark Registration providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_corporate-legal-advisory",
+    "name": "Corporate Legal Advisory",
+    "slug": "corporate-legal-advisory",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "corporate-legal-advisory"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Corporate Legal Advisory providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_deep-cleaning",
+    "name": "Deep Cleaning",
+    "slug": "deep-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "deep-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Deep Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_sofa-cleaning",
+    "name": "Sofa Cleaning",
+    "slug": "sofa-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "sofa-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Sofa Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_bathroom-cleaning",
+    "name": "Bathroom Cleaning",
+    "slug": "bathroom-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "bathroom-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Bathroom Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_face-wash-and-cleansers",
+    "name": "Face Wash & Cleansers",
+    "slug": "face-wash-and-cleansers",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "face-wash-and-cleansers"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Face Wash & Cleansers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_moisturizers-and-creams",
+    "name": "Moisturizers & Creams",
+    "slug": "moisturizers-and-creams",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "moisturizers-and-creams"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Moisturizers & Creams from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_sunscreen",
+    "name": "Sunscreen",
+    "slug": "sunscreen",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "sunscreen"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Sunscreen from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
   }
 ]

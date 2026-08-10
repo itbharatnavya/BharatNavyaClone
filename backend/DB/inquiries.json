@@ -45,5 +45,21 @@
     "sellerId": "usr_s001",
     "createdAt": "2026-07-31T15:42:52.407Z",
     "stage": "New"
+  },
+  {
+    "id": "inq_000004",
+    "buyerId": null,
+    "buyerName": "Test Buyer",
+    "buyerMobile": "9999999999",
+    "buyerEmail": "t@example.com",
+    "productName": "Test Product",
+    "quantity": "10",
+    "message": "test migration write path",
+    "listingId": "lst_p001",
+    "categoryId": null,
+    "intent": null,
+    "sellerId": "usr_s001",
+    "createdAt": "2026-08-10T10:20:43.682Z",
+    "stage": "New"
   }
 ]

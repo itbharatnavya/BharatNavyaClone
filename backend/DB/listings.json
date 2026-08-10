@@ -6,10 +6,12 @@
     "title": "Combed Cotton Woven Fabric",
     "slug": "combed-cotton-woven-fabric",
     "description": "Premium combed cotton woven fabric, 140 GSM, suitable for shirting and apparel. Available in solid dyed and greige.",
-    "categoryId": "cat_textiles-fabrics-yarn",
+    "categoryId": "cat_combed-cotton",
     "legacyCategory": "Textiles",
     "categoryPath": [
-      "textiles-fabrics-yarn"
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "combed-cotton"
     ],
     "keywords": [
       "cotton fabric",
@@ -75,7 +77,7 @@
     },
     "service": null,
     "locationId": "loc_1785504101174_0_cjr23b",
-    "views": 6
+    "views": 7
   },
   {
     "id": "lst_p002",
@@ -157,10 +159,11 @@
     "title": "Cotton Knitted Jersey",
     "slug": "cotton-knitted-jersey",
     "description": "Single jersey knitted cotton, 180 GSM, soft handfeel for t-shirts and casual wear. Reactive dyed colours.",
-    "categoryId": "cat_textiles-fabrics-yarn",
+    "categoryId": "cat_cotton-fabric",
     "legacyCategory": "Textiles",
     "categoryPath": [
-      "textiles-fabrics-yarn"
+      "textiles-fabrics-yarn",
+      "cotton-fabric"
     ],
     "keywords": [
       "jersey",
@@ -814,10 +817,11 @@
     "title": "Double-Sided FR4 PCB",
     "slug": "double-sided-fr4-pcb",
     "description": "Double-sided FR4 printed circuit boards, 1.6mm, HASL finish. Quick-turn fabrication from gerber files.",
-    "categoryId": "cat_electronics-electrical",
+    "categoryId": "cat_pcb-components",
     "legacyCategory": "Electronics",
     "categoryPath": [
-      "electronics-electrical"
+      "electronics-electrical",
+      "pcb-components"
     ],
     "keywords": [
       "pcb",
@@ -962,10 +966,12 @@
     "title": "Multi-Pin Board Connectors",
     "slug": "multi-pin-board-connectors",
     "description": "2.54mm pitch multi-pin board-to-board connectors, gold-plated contacts. RoHS compliant, bulk supply.",
-    "categoryId": "cat_electronics-electrical",
+    "categoryId": "cat_pcb-connectors",
     "legacyCategory": "Electronics",
     "categoryPath": [
-      "electronics-electrical"
+      "electronics-electrical",
+      "pcb-components",
+      "pcb-connectors"
     ],
     "keywords": [
       "connector",
@@ -1472,10 +1478,12 @@
     "title": "CNC Vertical Machining Center",
     "slug": "cnc-vertical-machining-center",
     "description": "3-axis CNC vertical machining center with 1000mm travel, Fanuc control. Installation and training included.",
-    "categoryId": "cat_industrial-machinery-equipment",
+    "categoryId": "cat_cnc-milling-machines",
     "legacyCategory": "Industrial Machinery",
     "categoryPath": [
-      "industrial-machinery-equipment"
+      "industrial-machinery-equipment",
+      "cnc-machines",
+      "cnc-milling-machines"
     ],
     "keywords": [
       "cnc machine",
@@ -1618,10 +1626,12 @@
     "title": "TMT Reinforcement Bars Fe-500",
     "slug": "tmt-reinforcement-bars-fe-500",
     "description": "Fe-500D grade TMT bars in 8mm to 25mm, BIS certified. High ductility for seismic-resistant structures.",
-    "categoryId": "cat_building-construction",
+    "categoryId": "cat_fe-500-tmt-bars",
     "legacyCategory": "Construction",
     "categoryPath": [
-      "building-construction"
+      "building-construction",
+      "tmt-bars-steel",
+      "fe-500-tmt-bars"
     ],
     "keywords": [
       "tmt bars",
@@ -1837,10 +1847,12 @@
     "title": "GST Registration & Monthly Return Filing",
     "slug": "gst-registration-monthly-return-filing",
     "description": "End-to-end GST registration and monthly GSTR-1/3B filing for businesses.",
-    "categoryId": "cat_accounting",
+    "categoryId": "cat_gst-filing",
     "legacyCategory": null,
     "categoryPath": [
-      "accounting"
+      "accounting",
+      "taxation",
+      "gst-filing"
     ],
     "keywords": [
       "gst",
@@ -1916,10 +1928,12 @@
     "title": "Income Tax Return (ITR) Filing",
     "slug": "income-tax-return-itr-filing",
     "description": "ITR filing for individuals and businesses with expert review.",
-    "categoryId": "cat_accounting",
+    "categoryId": "cat_income-tax-filing",
     "legacyCategory": null,
     "categoryPath": [
-      "accounting"
+      "accounting",
+      "taxation",
+      "income-tax-filing"
     ],
     "keywords": [
       "income",
@@ -2143,10 +2157,12 @@
     "title": "Trademark Registration & IP Filing",
     "slug": "trademark-registration-ip-filing",
     "description": "Trademark search, filing and objection handling.",
-    "categoryId": "cat_professional-consulting-services",
+    "categoryId": "cat_trademark-registration",
     "legacyCategory": null,
     "categoryPath": [
-      "professional-consulting-services"
+      "professional-consulting-services",
+      "legal-services",
+      "trademark-registration"
     ],
     "keywords": [
       "trademark",
@@ -2446,10 +2462,12 @@
     "title": "Home Deep Cleaning",
     "slug": "home-deep-cleaning",
     "description": "Full-home deep cleaning — kitchen, bathrooms, sofa & more.",
-    "categoryId": "cat_home-local-services",
+    "categoryId": "cat_deep-cleaning",
     "legacyCategory": null,
     "categoryPath": [
-      "home-local-services"
+      "home-local-services",
+      "home-cleaning",
+      "deep-cleaning"
     ],
     "keywords": [
       "home",
@@ -5003,10 +5021,12 @@
     "title": "Cotton Round-Neck T-Shirts (Bulk)",
     "slug": "cotton-round-neck-t-shirts-bulk-1200",
     "description": "Cotton Round-Neck T-Shirts (Bulk). Quality-checked stock available for bulk orders. (demo seed)",
-    "categoryId": "cat_apparel-clothing-garments",
+    "categoryId": "cat_t-shirts",
     "legacyCategory": null,
     "categoryPath": [
-      "apparel-clothing-garments"
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "t-shirts"
     ],
     "keywords": [
       "cotton",
@@ -5066,10 +5086,12 @@
     "title": "Corporate Formal Shirts",
     "slug": "corporate-formal-shirts-1201",
     "description": "Corporate Formal Shirts. Quality-checked stock available for bulk orders. (demo seed)",
-    "categoryId": "cat_apparel-clothing-garments",
+    "categoryId": "cat_formal-shirts",
     "legacyCategory": null,
     "categoryPath": [
-      "apparel-clothing-garments"
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "formal-shirts"
     ],
     "keywords": [
       "corporate",
@@ -5740,10 +5762,12 @@
     "title": "Herbal Face Wash (Bulk)",
     "slug": "herbal-face-wash-bulk-1500",
     "description": "Herbal Face Wash (Bulk). Quality-checked stock available for bulk orders. (demo seed)",
-    "categoryId": "cat_beauty-personal-care-wellness",
+    "categoryId": "cat_face-wash-and-cleansers",
     "legacyCategory": null,
     "categoryPath": [
-      "beauty-personal-care-wellness"
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "face-wash-and-cleansers"
     ],
     "keywords": [
       "herbal",
@@ -5983,10 +6007,11 @@
     "title": "Office Ergonomic Chair",
     "slug": "office-ergonomic-chair-1600",
     "description": "Office Ergonomic Chair. Quality-checked stock available for bulk orders. (demo seed)",
-    "categoryId": "cat_home-furniture-furnishings",
+    "categoryId": "cat_furniture",
     "legacyCategory": null,
     "categoryPath": [
-      "home-furniture-furnishings"
+      "home-furniture-furnishings",
+      "furniture"
     ],
     "keywords": [
       "office",

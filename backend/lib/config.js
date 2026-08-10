@@ -56,4 +56,5 @@ module.exports = {
   // When there's no API key, the AI paths fall back to the locally authenticated
   // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
   AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
+  PG_URL: process.env.PG_URL || process.env.DATABASE_URL || null,
 };

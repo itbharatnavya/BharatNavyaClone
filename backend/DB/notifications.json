@@ -119,5 +119,20 @@
     },
     "read": false,
     "createdAt": "2026-08-03T09:13:19.413Z"
+  },
+  {
+    "id": "ntf_000010",
+    "userId": "usr_s001",
+    "type": "new_lead",
+    "data": {
+      "name": "Test Buyer",
+      "buyerId": null,
+      "inquiryId": "inq_000004",
+      "productName": "Test Product",
+      "message": "New lead — Test Buyer is looking for Test Product. Respond with a quote.",
+      "link": "/dashboard?tab=leads"
+    },
+    "read": false,
+    "createdAt": "2026-08-10T10:20:43.807Z"
   }
 ]
