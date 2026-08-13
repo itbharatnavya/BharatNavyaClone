@@ -10,6 +10,14 @@
 -- common columns plus an `extra jsonb` catch-all; tighten once real data exists.
 --
 -- Every statement is idempotent (IF NOT EXISTS) — safe to re-run.
+--
+-- This file is the BASELINE for a brand-new database (`npm run setup-pg-schema`).
+-- Once a database exists, schema CHANGES go through lib/db/schema-migrations/ instead
+-- (run with `npm run migrate-schema`) — each new column/table gets its own numbered
+-- .sql file there, tracked in a `schema_migrations` table so it runs exactly once.
+-- This file still gets updated to match (so a *fresh* install doesn't need the old
+-- migrations replayed), but an existing database is never assumed to be caught up
+-- just because this file changed.
 
 -- ── counters (id generation, replaces DB/_counters.json) ─────────────────────────
 CREATE TABLE IF NOT EXISTS counters (
@@ -207,7 +215,11 @@ CREATE TABLE IF NOT EXISTS listings (
   views                  INTEGER, -- optional in source data (view tracking added later); nullable, not defaulted
   pan_india              BOOLEAN,
   product_key            TEXT,
-  service_cities         TEXT[] NOT NULL DEFAULT '{}'
+  service_cities         TEXT[] NOT NULL DEFAULT '{}',
+  -- AI-VERIFICATION GATE (backend/lib/listingVerification.js): the whole
+  -- { status, score, aiRan, deterministicChecks, ai, summary, reviewedBy, ... }
+  -- object, round-tripped as-is (mirrors the file-DB shape 1:1).
+  verification           JSONB
 );
 CREATE INDEX IF NOT EXISTS listings_seller_idx ON listings(seller_id);
 CREATE INDEX IF NOT EXISTS listings_category_idx ON listings(category_id);

@@ -23,6 +23,8 @@ import type {
   AdBooking,
   SubscriptionPlan,
   AdSlot,
+  MediaItem,
+  ListingVerification,
 } from "@/lib/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -581,4 +583,121 @@ export function adminRejectVerification(id: string): Promise<AdminVerification> 
     `/api/admin/moderation/verifications/${id}/reject`,
     { method: "POST" }
   );
+}
+
+// ============================================================
+// Listing AI-verification queue (routes/adminListings.js)
+// Mounted at /api/admin/listings (self-guarded). Every listing is scored on submit
+// (backend/lib/listingVerification.js) — >=70% + AI OK auto-publishes; everything
+// else lands here as "pending" for a human decision.
+// ============================================================
+export type AdminListingStatusFilter =
+  | "active"
+  | "pending"
+  | "rejected"
+  | "inactive"
+  | "sold"
+  | "all";
+export type AdminListingVerificationFilter =
+  | "auto_approved"
+  | "needs_review"
+  | "admin_approved"
+  | "rejected"
+  | "unverified" // pre-dates this feature — no verification block at all
+  | "all";
+
+export interface AdminListingRow {
+  id: string;
+  type: "product" | "service";
+  title: string;
+  slug: string;
+  status: string;
+  sellerId: string;
+  sellerCompany: string;
+  categoryId: string | null;
+  category: string | null;
+  price: number | null;
+  media: MediaItem[];
+  verification: ListingVerification | null;
+  createdAt: string;
+}
+
+export interface AdminListingQuery {
+  status?: AdminListingStatusFilter;
+  verification?: AdminListingVerificationFilter;
+  category?: string; // categoryId
+  q?: string; // search: title or seller company
+  dateFrom?: string; // ISO date, inclusive
+  dateTo?: string; // ISO date, inclusive
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminListingPage {
+  items: AdminListingRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export function adminGetListingDetail(id: string): Promise<import("@/lib/types").Listing & { sellerCompany: string }> {
+  return req(`/api/admin/listings/${id}`);
+}
+export function adminGetListings(query: AdminListingQuery = {}): Promise<AdminListingPage> {
+  const usp = new URLSearchParams();
+  if (query.status && query.status !== "all") usp.set("status", query.status);
+  if (query.verification && query.verification !== "all") usp.set("verification", query.verification);
+  if (query.category) usp.set("category", query.category);
+  if (query.q) usp.set("q", query.q);
+  if (query.dateFrom) usp.set("dateFrom", query.dateFrom);
+  if (query.dateTo) usp.set("dateTo", query.dateTo);
+  usp.set("page", String(query.page || 1));
+  usp.set("limit", String(query.limit || 20));
+  return req<AdminListingPage>(`/api/admin/listings?${usp.toString()}`);
+}
+export function adminApproveListing(id: string): Promise<AdminListingRow> {
+  return req<AdminListingRow>(`/api/admin/listings/${id}/approve`, { method: "POST" });
+}
+export function adminRejectListing(id: string, reason?: string): Promise<AdminListingRow> {
+  return req<AdminListingRow>(`/api/admin/listings/${id}/reject`, {
+    method: "POST",
+    body: JSON.stringify({ reason: reason || undefined }),
+  });
+}
+export function adminReverifyListing(id: string): Promise<AdminListingRow> {
+  return req<AdminListingRow>(`/api/admin/listings/${id}/reverify`, { method: "POST" });
+}
+
+// ---- bulk actions (checkbox-select flow) ----
+export interface BulkApproveResult {
+  approved: number;
+  errors: { id: string; message: string }[];
+}
+export interface BulkRejectResult {
+  rejected: number;
+  errors: { id: string; message: string }[];
+}
+export interface BulkReverifyResult {
+  checked: number;
+  results: { id: string; status: string; verificationStatus?: string }[];
+  errors: { id: string; message: string }[];
+}
+
+export function adminBulkApproveListings(ids: string[]): Promise<BulkApproveResult> {
+  return req<BulkApproveResult>(`/api/admin/listings/bulk/approve`, {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
+}
+export function adminBulkRejectListings(ids: string[], reason?: string): Promise<BulkRejectResult> {
+  return req<BulkRejectResult>(`/api/admin/listings/bulk/reject`, {
+    method: "POST",
+    body: JSON.stringify({ ids, reason: reason || undefined }),
+  });
+}
+export function adminBulkReverifyListings(ids: string[]): Promise<BulkReverifyResult> {
+  return req<BulkReverifyResult>(`/api/admin/listings/bulk/reverify`, {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
 }

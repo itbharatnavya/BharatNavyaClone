@@ -43,6 +43,7 @@ app.use("/api/inquiries", require("./routes/inquiries"));
 app.use("/api/admin/boosts", require("./routes/boosts")); // self-serve boosts admin (guarded inside; before /api/admin)
 app.use("/api/boosts", require("./routes/boosts")); // seller self-serve boost requests
 app.use("/api/admin/moderation", require("./routes/moderation")); // content moderation + verification queue (guarded inside; before /api/admin)
+app.use("/api/admin/listings", require("./routes/adminListings")); // AI listing verification queue (guarded inside; before /api/admin)
 app.use("/api/admin", require("./routes/admin")); // authGuard + requireRole applied inside
 app.use("/api/ai", require("./routes/ai"));
 app.use("/api/assistant", require("./routes/assistant"));

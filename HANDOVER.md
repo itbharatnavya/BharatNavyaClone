@@ -115,6 +115,26 @@ backend by `next.config.mjs`, so you don't call :4000 directly.
   ```
   If a fresh rebuild misbehaves, the shipped `backend/DB/` is the source of truth — copy it back.
 
+### Postgres (optional — when `PG_URL` is set in `.env`)
+
+If `backend/.env` has `PG_URL` set, the backend runs on Postgres instead of `backend/DB/`
+(`lib/store.js` picks `lib/pg-store.js`). Two different scripts, don't mix them up:
+
+- **Schema (table structure)**: `npm run setup-pg-schema` bootstraps a brand-new database from
+  `lib/db/schema.sql`. After that, structure changes ship as numbered files in
+  `lib/db/schema-migrations/` — run `npm run migrate-schema` to apply whatever's pending (tracked
+  in a `schema_migrations` table, so it's safe to run repeatedly / on every deploy).
+  `npm run migrate-schema:status` shows what's applied vs. pending without changing anything.
+- **Data**: `node scripts/migrate-all.js` (or the individual `migrate-users.js` /
+  `migrate-sellers-listings.js`) copies the JSON files in `backend/DB/` into Postgres — a one-time
+  load, not a schema change.
+
+**Deploying a schema change to production**: apply the migration to the prod database *before*
+deploying app code that depends on it (`PG_URL=<prod> npm run migrate-schema`, run from wherever
+you can reach the prod DB — a CI step or a one-off from a machine with the prod `.env`). New
+columns should be additive/nullable so the currently-deployed code keeps working during the gap
+between "migration applied" and "new code live".
+
 ---
 
 ## Day-to-day checks (the project's definition of "done")

@@ -337,7 +337,14 @@ export default function SellPage() {
       }
 
       const created = await createListing(body);
-      addToast("Listing published.", "success");
+      if (created.status === "active") {
+        addToast("Listing verified automatically — it's live now.", "success");
+      } else {
+        addToast(
+          "Listing submitted. It's being verified (AI first, then our team if needed) and will go live once approved.",
+          "info"
+        );
+      }
       router.push(`/listing/${created.id}`);
     } catch (e) {
       addToast(e instanceof Error ? e.message : "Failed to publish listing.", "error");

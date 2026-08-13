@@ -13,6 +13,7 @@ import SellersTab from "@/components/admin/SellersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
 import ModerationTab from "@/components/admin/ModerationTab";
 import VerificationTab from "@/components/admin/VerificationTab";
+import ListingVerificationTab from "@/components/admin/ListingVerificationTab";
 import PlansTab from "@/components/admin/PlansTab";
 import AdsTab from "@/components/admin/AdsTab";
 import BoostsTab from "@/components/admin/BoostsTab";
@@ -29,6 +30,7 @@ type TabKey =
   | "reports"
   | "moderation"
   | "verification"
+  | "listingVerification"
   | "plans"
   | "ads"
   | "boosts"
@@ -66,6 +68,7 @@ const NAV: NavItem[] = [
   { key: "reports", label: "Reports", icon: icon("M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1v13ZM4 22v-7") },
   { key: "moderation", label: "Moderation", icon: icon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z") },
   { key: "verification", label: "Verification", icon: icon("M9 12l2 2 4-4M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4Z") },
+  { key: "listingVerification", label: "Listing AI Check", icon: icon("M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 13v8") },
   { key: "plans", label: "Plans", icon: icon("M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82ZM7 7h.01") },
   { key: "ads", label: "Ads", icon: icon("M3 11l18-5v12L3 14v-3ZM11.6 16.8a3 3 0 1 1-5.8-1.6") },
   { key: "boosts", label: "Boosts", icon: icon("M12 19V5M5 12l7-7 7 7") },
@@ -83,6 +86,7 @@ const TITLES: Record<TabKey, string> = {
   reports: "Reports",
   moderation: "Moderation",
   verification: "Verification",
+  listingVerification: "Listing AI Check",
   plans: "Plans",
   ads: "Ads",
   boosts: "Boosts",
@@ -188,6 +192,7 @@ export default function AdminPage() {
           {tab === "reports" && <ReportsTab />}
           {tab === "moderation" && <ModerationTab />}
           {tab === "verification" && <VerificationTab />}
+          {tab === "listingVerification" && <ListingVerificationTab />}
           {tab === "plans" && <PlansTab />}
           {tab === "ads" && <AdsTab />}
           {tab === "boosts" && <BoostsTab />}

@@ -8,7 +8,9 @@
     "start": "node index.js",
     "dev": "node index.js",
     "setup-pg-schema": "node scripts/setup-pg-schema.js",
-    "migrate-all": "node scripts/migrate-all.js"
+    "migrate-all": "node scripts/migrate-all.js",
+    "migrate-schema": "node scripts/migrate-schema.js",
+    "migrate-schema:status": "node scripts/migrate-schema.js --status"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",

@@ -35,7 +35,30 @@ const STATUS_VARIANT: Record<string, "verified" | "new" | "neutral" | "sponsored
   draft: "neutral",
   inactive: "neutral",
   pending: "neutral",
+  rejected: "neutral",
 };
+
+/** Short, seller-facing line explaining where a listing stands in the AI/admin
+ * verification flow (see backend/lib/listingVerification.js). */
+function verificationLine(l: Listing): string | null {
+  const v = l.verification;
+  if (!v) return null;
+  if (l.status === "active" && v.status === "auto_approved") {
+    return `Verified automatically (AI score ${v.score}/100)`;
+  }
+  if (l.status === "active" && v.status === "admin_approved") {
+    return "Verified by our team";
+  }
+  if (l.status === "rejected") {
+    return v.rejectionReason ? `Not approved — ${v.rejectionReason}` : "Not approved by our team";
+  }
+  if (l.status === "pending") {
+    return v.aiRan
+      ? `Under review (AI score ${v.score}/100) — our team will confirm`
+      : "Under review by our team";
+  }
+  return null;
+}
 
 export default function ListingsTab({ user }: Props) {
   const tr = useTr();
@@ -207,6 +230,17 @@ export default function ListingsTab({ user }: Props) {
                     {priceLabel(l)}
                     {l.location?.city ? ` · ${l.location.city}` : ""}
                   </div>
+                  {verificationLine(l) && (
+                    <div
+                      style={{
+                        fontSize: 12.5,
+                        marginTop: 4,
+                        color: l.status === "rejected" ? "var(--error)" : "var(--muted)",
+                      }}
+                    >
+                      {verificationLine(l)}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -270,17 +304,39 @@ export default function ListingsTab({ user }: Props) {
               hint={tr("dashboard.listings.priceHint", "Leave blank to keep as 'Ask price'.")}
             />
           )}
-          <Select
-            label={tr("dashboard.listings.fieldStatus", "Status")}
-            value={fStatus}
-            onChange={(e) => setFStatus(e.target.value as ListingStatus)}
-            options={[
-              { value: "active", label: "Active" },
+          {(() => {
+            const vStatus = editing?.verification?.status;
+            const awaitingVerification = vStatus === "needs_review" || vStatus === "rejected";
+            const base: { value: string; label: string }[] = [
+              ...(awaitingVerification ? [] : [{ value: "active", label: "Active" }]),
               { value: "inactive", label: "Inactive" },
               { value: "draft", label: "Draft" },
               { value: "sold", label: "Sold" },
-            ]}
-          />
+            ];
+            // Keep the select's value in sync even while still pending/rejected —
+            // surface the real status as a read-only option rather than silently
+            // showing nothing selected.
+            const options =
+              awaitingVerification && (fStatus === "pending" || fStatus === "rejected")
+                ? [{ value: fStatus, label: fStatus === "pending" ? "Pending verification" : "Not approved" }, ...base]
+                : base;
+            return (
+              <Select
+                label={tr("dashboard.listings.fieldStatus", "Status")}
+                value={fStatus}
+                onChange={(e) => setFStatus(e.target.value as ListingStatus)}
+                hint={
+                  awaitingVerification
+                    ? tr(
+                        "dashboard.listings.statusAwaitingVerification",
+                        "This listing hasn't been verified yet, so it can't be set to Active until our team reviews it."
+                      )
+                    : undefined
+                }
+                options={options}
+              />
+            );
+          })()}
         </div>
       </Modal>
 

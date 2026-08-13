@@ -143,7 +143,44 @@ export type ListingStatus =
   | "inactive"
   | "pending"
   | "draft"
-  | "sold";
+  | "sold"
+  | "rejected";
+
+// ============================================================
+// Listing AI verification (backend/lib/listingVerification.js)
+// ============================================================
+export type ListingVerificationStatus =
+  | "auto_approved"
+  | "needs_review"
+  | "admin_approved"
+  | "rejected";
+
+export interface ListingVerificationCheck {
+  key: string;
+  pass: boolean;
+  detail: string;
+}
+
+export interface ListingVerificationAI {
+  score: number;
+  contentOk: boolean;
+  imagePlausible: boolean;
+  flags: string[];
+  reason: string;
+}
+
+export interface ListingVerification {
+  status: ListingVerificationStatus;
+  score: number;
+  aiRan: boolean;
+  deterministicChecks: ListingVerificationCheck[];
+  ai: ListingVerificationAI | null;
+  summary: string;
+  createdAt: string;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+  rejectionReason?: string | null;
+}
 export type PricingModel = "fixed" | "hourly" | "quote";
 export type BookingType = "instant" | "enquiry" | "quote";
 
@@ -261,6 +298,9 @@ export interface Listing {
 
   product?: ProductDetail | null;
   service?: ServiceDetail | null;
+
+  // AI verification gate — stamped on create, updated by admin approve/reject/reverify.
+  verification?: ListingVerification | null;
 
   // convenience (may be denormalized by the API)
   seller?: ListingSeller;

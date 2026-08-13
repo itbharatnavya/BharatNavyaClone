@@ -19,6 +19,7 @@ const { searchListings, computeFacets, slugify } = require("../lib/search");
 const { rankListings } = require("../lib/ranking");
 const { coordsForCity, distanceKm } = require("../lib/geo");
 const { resolveSellerLocations } = require("./users");
+const { verifyListing } = require("../lib/listingVerification");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
 const DEFAULT_LIMIT = 12;
@@ -27,7 +28,9 @@ const DEFAULT_LIMIT = 12;
 const BULK_MAX_ROWS = 200;
 
 // Listing lifecycle statuses; "sold" was added in the §12 reconciliation.
-const VALID_LISTING_STATUSES = new Set(["active", "inactive", "sold"]);
+// "pending" (awaiting AI/admin verification) and "rejected" (admin declined) were
+// added for the AI-VERIFICATION flow — see lib/listingVerification.js.
+const VALID_LISTING_STATUSES = new Set(["active", "inactive", "sold", "pending", "rejected"]);
 // Product condition (§12 reconciliation); anything unknown normalizes to "na".
 const VALID_CONDITIONS = new Set(["new", "used", "refurbished", "na"]);
 
@@ -641,7 +644,7 @@ router.post("/", authGuard, async (req, res, next) => {
       locationId,
       panIndia,
       serviceCities,
-      status: "active",
+      status: "pending", // gated live by verification below
       createdAt: new Date().toISOString(),
       rating: 0,
       reviewCount: 0,
@@ -660,6 +663,25 @@ router.post("/", authGuard, async (req, res, next) => {
     // Stamp the multi-vendor grouping key so this listing groups with other sellers'
     // matching products (same brand + title) without any schema migration.
     listing.productKey = productKeyOf(listing);
+
+    // AI-VERIFICATION GATE: a new listing is never published blind. It's scored by
+    // deterministic checks + (when the local `claude` CLI is available) a semantic
+    // review — see lib/listingVerification.js. >=70% AND no AI flags → goes live
+    // immediately; otherwise it's held as "pending" for an admin to review in
+    // /admin#listing-verification. The seller sees which happened in the response.
+    const verification = await verifyListing(listing);
+    listing.status = verification.status === "auto_approved" ? "active" : "pending";
+    listing.verification = {
+      status: verification.status, // auto_approved | needs_review (→ admin_approved | rejected later)
+      score: verification.score,
+      aiRan: verification.aiRan,
+      deterministicChecks: verification.deterministic.checks,
+      ai: verification.ai,
+      summary: verification.summary,
+      createdAt: verification.checkedAt,
+      reviewedBy: null,
+      reviewedAt: null,
+    };
 
     const saved = await store.insert("listings.json", listing, "lst");
     return res.json({ success: true, data: saved });
@@ -871,11 +893,26 @@ router.put("/:id", authGuard, async (req, res, next) => {
     // Never allow the client to move ownership / rewrite identity via merge.
     const { id, sellerId, createdAt, ...patch } = req.body || {};
 
-    // status may be set to active | inactive | sold (§12 reconciliation).
+    // status may be set to active | inactive | sold (§12 reconciliation), or
+    // pending | rejected (AI-verification flow, admin/system-set only below).
     if (patch.status !== undefined && !VALID_LISTING_STATUSES.has(patch.status)) {
       return res
         .status(400)
-        .json({ success: false, error: "status must be one of active|inactive|sold" });
+        .json({ success: false, error: "status must be one of active|inactive|sold|pending|rejected" });
+    }
+    // AI-VERIFICATION GATE: a non-admin owner can freely toggle active<->inactive/sold
+    // once a listing has cleared verification, but can't self-publish a listing that's
+    // still needs_review/rejected by simply PUTting status:"active" — only the AI (at
+    // create time) or an admin (POST /api/admin/listings/:id/approve) may do that.
+    const isAdmin = (req.user.roles || []).includes("admin");
+    if (!isAdmin && patch.status === "active") {
+      const vStatus = listing.verification && listing.verification.status;
+      if (vStatus === "needs_review" || vStatus === "rejected") {
+        return res.status(403).json({
+          success: false,
+          error: "This listing is still awaiting verification — an admin needs to approve it first.",
+        });
+      }
     }
     // Normalize/default product.condition when a product block is supplied.
     if (patch.product && typeof patch.product === "object") {

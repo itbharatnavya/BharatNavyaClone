@@ -261,6 +261,32 @@ export default function ListingDetailPage() {
   return (
     <div style={{ paddingTop: 64 }}>
       <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>
+        {(listing.status === "pending" || listing.status === "rejected") && (
+          <div
+            className="card card-flat"
+            style={{
+              marginBottom: 20,
+              padding: "12px 16px",
+              borderColor: listing.status === "rejected" ? "var(--error)" : "var(--action)",
+              background: listing.status === "rejected" ? "#fef2f2" : "var(--action-tint)",
+              color: listing.status === "rejected" ? "#b91c1c" : "var(--ink)",
+              fontSize: 13.5,
+            }}
+          >
+            {listing.status === "rejected" ? (
+              <>
+                <b>Not listed.</b> Our team reviewed this listing and it wasn&apos;t approved
+                {listing.verification?.rejectionReason ? `: ${listing.verification.rejectionReason}` : "."}{" "}
+                Only you (and admins) can see this page.
+              </>
+            ) : (
+              <>
+                <b>Verification in progress.</b> This listing isn&apos;t visible to buyers yet — it&apos;s
+                being checked by AI first, then our team if needed. It&apos;ll go live automatically once approved.
+              </>
+            )}
+          </div>
+        )}
         <div className="ld-layout">
           {/* MAIN */}
           <div style={{ minWidth: 0 }}>
