@@ -78,6 +78,33 @@ function productKeyOf(listing) {
   return slugify(`${brand} ${title}`.trim());
 }
 
+/**
+ * Resolve the canonical categoryPath/legacyCategory for a listing from its
+ * categoryId (falling back to an explicit category slug/name), by looking the
+ * category up in categories.json. This is the SERVER-SIDE source of truth —
+ * category browse pages filter listings by categoryPath (see lib/search.js
+ * matchesCategorySlug), so a listing whose categoryPath was left empty (e.g. a
+ * client that only sent categoryId) would silently never appear on its own
+ * category page even though it's active and the seller is approved.
+ */
+async function resolveCategoryFields({ categoryId, categorySlugOrName }) {
+  const categories = await store.all("categories.json");
+  let cat = null;
+  if (categoryId) {
+    cat = categories.find((c) => c.id === categoryId) || null;
+  }
+  if (!cat && categorySlugOrName) {
+    const s = slugify(categorySlugOrName);
+    cat = categories.find((c) => c.slug === s || slugify(c.name) === s) || null;
+  }
+  if (!cat) return { categoryId: categoryId || null, categoryPath: [], legacyCategory: null };
+  return {
+    categoryId: cat.id,
+    categoryPath: Array.isArray(cat.path) && cat.path.length ? cat.path : [cat.slug],
+    legacyCategory: cat.name || null,
+  };
+}
+
 function isOwnerOrAdmin(user, listing) {
   if (!user) return false;
   if ((user.roles || []).includes("admin")) return true;
@@ -542,7 +569,16 @@ router.post("/", authGuard, async (req, res, next) => {
     const sp = user.sellerProfile || {};
 
     const category = body.category ? String(body.category) : null;
-    const legacyCategory = body.legacyCategory || body.category || null;
+
+    // Resolve categoryId/categoryPath/legacyCategory from categories.json so a
+    // listing is always findable on its category page, regardless of whether the
+    // client sent a full categoryPath (bulk upload) or just a categoryId (the
+    // /sell form). Explicit client values win when present.
+    const resolvedCategory = await resolveCategoryFields({
+      categoryId: body.categoryId || null,
+      categorySlugOrName: category,
+    });
+    const legacyCategory = body.legacyCategory || body.category || resolvedCategory.legacyCategory || null;
 
     // Location precedence: PAN India → specific service cities → a chosen branch →
     // a raw location/city+state. PAN India serves the whole country (no city).
@@ -590,10 +626,12 @@ router.post("/", authGuard, async (req, res, next) => {
       title: String(body.title).trim(),
       slug: body.slug ? slugify(body.slug) : slugify(body.title),
       description: body.description || "",
-      categoryId: body.categoryId || null,
+      categoryId: body.categoryId || resolvedCategory.categoryId || null,
       legacyCategory,
-      categoryPath: Array.isArray(body.categoryPath)
+      categoryPath: Array.isArray(body.categoryPath) && body.categoryPath.length
         ? body.categoryPath
+        : resolvedCategory.categoryPath.length
+        ? resolvedCategory.categoryPath
         : category
         ? [slugify(category)]
         : [],
@@ -845,6 +883,19 @@ router.put("/:id", authGuard, async (req, res, next) => {
         ...patch.product,
         condition: normalizeCondition(patch.product.condition),
       };
+    }
+
+    // Re-resolve categoryPath/legacyCategory whenever categoryId changes without an
+    // explicit categoryPath — same gap as the create route (see resolveCategoryFields).
+    if (patch.categoryId !== undefined && !(Array.isArray(patch.categoryPath) && patch.categoryPath.length)) {
+      const resolvedCategory = await resolveCategoryFields({
+        categoryId: patch.categoryId,
+        categorySlugOrName: patch.category ? String(patch.category) : null,
+      });
+      patch.categoryPath = resolvedCategory.categoryPath;
+      if (!patch.legacyCategory && resolvedCategory.legacyCategory) {
+        patch.legacyCategory = resolvedCategory.legacyCategory;
+      }
     }
 
     // PAN India: serves the whole country — clear any branch/city and store the flag.

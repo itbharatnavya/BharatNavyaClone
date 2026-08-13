@@ -27,6 +27,29 @@ const { spawn } = require("child_process");
 let _binResolved = false;
 let _binPath = null;
 
+const IS_WIN = process.platform === "win32";
+
+/**
+ * Candidate spawn targets for a PATH directory `d` that might hold the `claude`
+ * launcher. On POSIX, npm installs a shebang script at `d/claude` that the kernel
+ * execs directly — no change needed. On Windows, npm installs `claude` (a bash
+ * shebang script — NOT directly spawnable; child_process.spawn has no shebang
+ * support and fails with ENOENT) plus `claude.cmd`/`claude.ps1` shims. Spawning a
+ * `.cmd` needs `shell:true`, which would reopen the exact shell-injection risk
+ * this module is designed to avoid (prompts are arbitrary user text). Instead we
+ * target the REAL native executable the `.cmd` shim itself calls — npm's global
+ * install always places it at `<prefix>/node_modules/@anthropic-ai/claude-code/
+ * bin/claude.exe` — so `d` is npm's global prefix here. That keeps every spawn
+ * argv-array, no-shell.
+ */
+function candidatesForDir(d) {
+  if (!IS_WIN) return [path.join(d, "claude")];
+  return [
+    path.join(d, "claude.exe"),
+    path.join(d, "node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe"),
+  ];
+}
+
 /** Resolve an executable `claude` on PATH (or a couple of sane fallbacks). Cached. */
 function resolveBin() {
   if (_binResolved) return _binPath;
@@ -37,11 +60,14 @@ function resolveBin() {
   if (process.env.CLAUDE_CLI_BIN) candidates.push(process.env.CLAUDE_CLI_BIN);
   // Every directory on PATH.
   const dirs = String(process.env.PATH || "").split(path.delimiter).filter(Boolean);
-  for (const d of dirs) candidates.push(path.join(d, "claude"));
+  for (const d of dirs) candidates.push(...candidatesForDir(d));
   // Common global-install locations (in case the server env has a trimmed PATH).
   if (process.env.HOME) {
-    candidates.push(path.join(process.env.HOME, ".npm-global", "bin", "claude"));
-    candidates.push(path.join(process.env.HOME, ".local", "bin", "claude"));
+    candidates.push(...candidatesForDir(path.join(process.env.HOME, ".npm-global", "bin")));
+    candidates.push(...candidatesForDir(path.join(process.env.HOME, ".local", "bin")));
+  }
+  if (IS_WIN && process.env.APPDATA) {
+    candidates.push(...candidatesForDir(path.join(process.env.APPDATA, "npm")));
   }
   candidates.push("/usr/local/bin/claude", "/opt/homebrew/bin/claude");
 
