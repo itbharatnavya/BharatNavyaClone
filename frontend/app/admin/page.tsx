@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import AdminLogin from "@/components/admin/AdminLogin";
 import OverviewTab from "@/components/admin/OverviewTab";
+import UsersTab from "@/components/admin/UsersTab";
 import SellersTab from "@/components/admin/SellersTab";
 import ReportsTab from "@/components/admin/ReportsTab";
 import ModerationTab from "@/components/admin/ModerationTab";
@@ -26,6 +27,7 @@ import SiteConfigTab from "@/components/admin/SiteConfigTab";
 
 type TabKey =
   | "overview"
+  | "users"
   | "sellers"
   | "reports"
   | "moderation"
@@ -62,9 +64,14 @@ const icon = (d: string) => (
   </svg>
 );
 
+// "sellers" is intentionally left out of NAV — its functionality (approve/
+// reject/suspend + plan & monetization) now lives inside the Users tab's
+// detail modal for seller accounts. The SellersTab component, its route,
+// TabKey and TITLES entry are kept working (reachable via #sellers) so
+// nothing is deleted, just unlinked from the visible nav.
 const NAV: NavItem[] = [
   { key: "overview", label: "Overview", icon: icon("M3 13h8V3H3v10Zm10 8h8V3h-8v18ZM3 21h8v-6H3v6Z") },
-  { key: "sellers", label: "Sellers", icon: icon("M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75") },
+  { key: "users", label: "Users", icon: icon("M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z") },
   { key: "reports", label: "Reports", icon: icon("M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1v13ZM4 22v-7") },
   { key: "moderation", label: "Moderation", icon: icon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z") },
   { key: "verification", label: "Verification", icon: icon("M9 12l2 2 4-4M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4Z") },
@@ -82,6 +89,7 @@ const NAV: NavItem[] = [
 
 const TITLES: Record<TabKey, string> = {
   overview: "Overview",
+  users: "Users",
   sellers: "Sellers",
   reports: "Reports",
   moderation: "Moderation",
@@ -188,6 +196,7 @@ export default function AdminPage() {
         {/* Content */}
         <main className="min-w-0 flex-1">
           {tab === "overview" && <OverviewTab />}
+          {tab === "users" && <UsersTab />}
           {tab === "sellers" && <SellersTab />}
           {tab === "reports" && <ReportsTab />}
           {tab === "moderation" && <ModerationTab />}

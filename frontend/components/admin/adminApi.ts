@@ -25,6 +25,9 @@ import type {
   AdSlot,
   MediaItem,
   ListingVerification,
+  User,
+  SellerStatus,
+  PlanTier,
 } from "@/lib/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -71,6 +74,56 @@ export const adminSuspend = api.adminSuspend;
 export const adminMonetization = api.adminMonetization;
 export const getCategories = api.getCategories;
 export const getListings = api.getListings;
+
+// ============================================================
+// Unified user directory — GET /api/admin/users (routes/admin.js)
+// Server-paginated, filterable by account type (plain user vs seller) and,
+// for sellers, by approval status. A seller is still a normal user underneath
+// (accountType just reflects whether sellerProfile is attached).
+// ============================================================
+export type AdminUserTypeFilter = "all" | "user" | "seller";
+
+export interface AdminUserRow extends User {
+  accountType: "user" | "seller";
+}
+
+export type AdminUserFeaturedFilter = "all" | "yes" | "no";
+
+export interface AdminUserQuery {
+  type?: AdminUserTypeFilter;
+  status?: SellerStatus | "all";
+  planTier?: PlanTier | "all";
+  featured?: AdminUserFeaturedFilter;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminUserSummary {
+  total: number;
+  users: number;
+  sellers: number;
+}
+
+export interface AdminUserPage {
+  items: AdminUserRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+  summary: AdminUserSummary;
+}
+
+export function adminGetUsers(query: AdminUserQuery = {}): Promise<AdminUserPage> {
+  const usp = new URLSearchParams();
+  if (query.type && query.type !== "all") usp.set("type", query.type);
+  if (query.status && query.status !== "all") usp.set("status", query.status);
+  if (query.planTier && query.planTier !== "all") usp.set("planTier", query.planTier);
+  if (query.featured && query.featured !== "all") usp.set("featured", query.featured);
+  if (query.q) usp.set("q", query.q);
+  usp.set("page", String(query.page || 1));
+  usp.set("limit", String(query.limit || 20));
+  return req<AdminUserPage>(`/api/admin/users?${usp.toString()}`);
+}
 
 // ============================================================
 // Subscription plans — real subscription-plans.json shape (drives /pricing)

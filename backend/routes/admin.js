@@ -87,9 +87,71 @@ router.get("/analytics", async (req, res, next) => {
 });
 
 /* =================================================================== users == */
+// GET /users?type=all|user|seller&status=&planTier=&featured=&q=&page=&limit=
+// Unified, paginated user directory. `type` splits accounts into plain users
+// (no sellerProfile) vs sellers (sellerProfile present — a seller is still a
+// normal user underneath, just with the seller block attached). `status`,
+// `planTier` and `featured` (yes|no) all filter on sellerProfile fields and are
+// ignored for plain users, which have none of these. Sensitive fields
+// (passwordHash) are stripped.
+function sanitizeUser(u) {
+  const { passwordHash, ...rest } = u;
+  return { ...rest, accountType: isSeller(u) ? "seller" : "user" };
+}
+
 router.get("/users", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.all("users.json") });
+    const type = req.query.type;
+    const status = req.query.status;
+    const planTier = req.query.planTier;
+    const featured = req.query.featured;
+    const q = typeof req.query.q === "string" ? req.query.q.trim().toLowerCase() : "";
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+
+    const all = await store.all("users.json");
+    const summary = {
+      total: all.length,
+      users: all.filter((u) => !isSeller(u)).length,
+      sellers: all.filter(isSeller).length,
+    };
+
+    let list = all;
+    if (type === "seller") list = list.filter(isSeller);
+    else if (type === "user") list = list.filter((u) => !isSeller(u));
+
+    if (status && status !== "all") {
+      list = list.filter((u) => isSeller(u) && u.sellerProfile.status === status);
+    }
+
+    if (planTier && planTier !== "all") {
+      list = list.filter((u) => isSeller(u) && (u.sellerProfile.planTier || "free") === planTier);
+    }
+
+    if (featured === "yes" || featured === "no") {
+      const want = featured === "yes";
+      list = list.filter((u) => isSeller(u) && !!u.sellerProfile.isFeaturedSeller === want);
+    }
+
+    if (q) {
+      list = list.filter((u) => {
+        return (
+          (u.name || "").toLowerCase().includes(q) ||
+          (u.email || "").toLowerCase().includes(q) ||
+          (u.mobile || "").toLowerCase().includes(q) ||
+          (u.sellerProfile?.companyName || "").toLowerCase().includes(q)
+        );
+      });
+    }
+
+    list = list.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    const total = list.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    const items = list.slice(start, start + limit).map(sanitizeUser);
+
+    return res.json({ success: true, data: { items, total, page, totalPages, summary } });
   } catch (err) {
     next(err);
   }
