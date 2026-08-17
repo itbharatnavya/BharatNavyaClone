@@ -12,6 +12,7 @@ const { createUsersStore } = require("./db/users");
 const { createListingsStore } = require("./db/listings");
 const { createChatSupport, isMessagesPath, isReadStatePath } = require("./db/chat");
 const { createLeadsLedgerStore } = require("./db/leads-ledger");
+const { createSearchEventsStore } = require("./db/search-events");
 const { createSettingsStore } = require("./db/settings");
 
 const pool = new Pool({ connectionString: config.PG_URL, max: 10 });
@@ -78,6 +79,7 @@ const usersStore = createUsersStore(pool, nextId);
 const listingsStore = createListingsStore(pool, nextId);
 const chatSupport = createChatSupport(pool);
 const leadsLedgerStore = createLeadsLedgerStore(pool);
+const searchEventsStore = createSearchEventsStore(pool);
 const settingsStore = createSettingsStore(pool);
 
 function resolveCollectionStore(name) {
@@ -127,12 +129,14 @@ async function writeJson(name, data) {
 
 async function appendJsonl(name, obj) {
   if (name === "leads-ledger.jsonl") return leadsLedgerStore.append(obj);
+  if (name === "search-events.jsonl") return searchEventsStore.append(obj);
   if (isMessagesPath(name)) return chatSupport.appendMessage(name, obj);
   throw new Error(`appendJsonl: no relational mapping for log ${name}`);
 }
 
 async function readJsonl(name) {
   if (name === "leads-ledger.jsonl") return leadsLedgerStore.readAll();
+  if (name === "search-events.jsonl") return searchEventsStore.readAll();
   if (isMessagesPath(name)) return chatSupport.readMessages(name);
   throw new Error(`readJsonl: no relational mapping for log ${name}`);
 }

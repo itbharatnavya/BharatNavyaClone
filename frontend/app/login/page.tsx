@@ -302,7 +302,7 @@ export default function LoginPage() {
           <div style={{ textAlign: "center", fontSize: 14, color: "var(--muted)" }}>
             {t("auth.newHere", "New to")} {branding.siteName}?{" "}
             <Link href="/register" className="hover:text-brand" style={{ color: "var(--brand)", fontWeight: 600 }}>
-              {t("auth.createAccountLink", "Create an account")}
+              {t("auth.createAccountLink", "Join us")}
             </Link>
           </div>
         </div>

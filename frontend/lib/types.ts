@@ -448,6 +448,34 @@ export interface Review {
   createdAt: string;
 }
 
+// Directory homepage "Trending searches" / "Popular searches" — see
+// backend/routes/searchTrends.js. `isFallback` marks a curated demo entry
+// used to pad out real search-event aggregation so the section is never
+// empty; `count` is 0 for those.
+export interface SearchTrendItem {
+  query: string;
+  categorySlug: string | null;
+  count: number;
+  isFallback: boolean;
+}
+
+// Directory homepage "Recent Activity" — GET /api/reviews/recent, a review
+// joined with the reviewed seller's business info + a representative photo.
+export interface RecentActivityItem {
+  reviewId: string;
+  rating: number;
+  reviewText: string;
+  createdAt: string;
+  buyerName: string;
+  buyerAvatarUrl: string | null;
+  sellerId: string;
+  sellerSlug: string | null;
+  sellerName: string;
+  sellerCity: string;
+  whatsappNumber: string | null;
+  image: string | null;
+}
+
 // ============================================================
 // Reach tools — Blog & Story
 // ============================================================

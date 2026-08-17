@@ -476,7 +476,7 @@
     "id": "leads",
     "name": "Lead-Gen (Pay per Inquiry)",
     "group": "Monetization",
-    "description": "Businesses receive/pay for qualified inquiries (JustDial-style).",
+    "description": "Businesses receive/pay for qualified inquiries.",
     "audience": "seller",
     "plans": [
       "silver",

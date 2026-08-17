@@ -1,10 +1,10 @@
 "use client";
 
 // /register — create one unified account (name, mobile, email, optional
-// password) then redirect to /dashboard. Optional referral code is redeemed
-// right after signup (non-fatal if it fails).
+// password) then redirect to ?next (if present) or /dashboard. Optional
+// referral code is redeemed right after signup (non-fatal if it fails).
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -21,6 +21,12 @@ export default function RegisterPage() {
   const { addToast } = useToast();
   const { register } = useAuth();
   const { branding, featureFlags } = useConfig();
+
+  const [next, setNext] = useState("/");
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("next");
+    if (p) setNext(p);
+  }, []);
 
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -62,7 +68,7 @@ export default function RegisterPage() {
       }
 
       addToast("Account created. Welcome to BharatSource.", "success");
-      router.push("/dashboard");
+      router.push(next);
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to create account.", "error");
       setSubmitting(false);
@@ -212,7 +218,7 @@ export default function RegisterPage() {
           <div className="divider" style={{ margin: "24px 0" }} />
           <div style={{ textAlign: "center", fontSize: 14, color: "var(--muted)" }}>
             {t("auth.haveAccount", "Already have an account?")}{" "}
-            <Link href="/login" style={{ color: "var(--brand)", fontWeight: 600 }}>
+            <Link href={next !== "/" ? `/login?next=${encodeURIComponent(next)}` : "/login"} style={{ color: "var(--brand)", fontWeight: 600 }}>
               {t("auth.login", "Log in")}
             </Link>
           </div>

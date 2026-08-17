@@ -34,7 +34,7 @@ export default function CollectionsPage() {
     };
   }, []);
 
-  const crumbs: Crumb[] = [{ label: "Home", href: "/" }, { label: "Collections" }];
+  const crumbs: Crumb[] = [{ label: "Directory", href: "/directory" }, { label: "Collections" }];
 
   return (
     <div>

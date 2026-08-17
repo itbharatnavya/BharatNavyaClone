@@ -104,7 +104,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
   const { category, children, ancestors } = node;
 
   const crumbs: Crumb[] = [
-    { label: t("nav.home", "Home"), href: "/" },
+    { label: t("nav.directoryCrumb", "Directory"), href: "/directory" },
     ...(ancestors || []).map((a) => ({ label: a.name, href: `/${a.slug}` })),
     city ? { label: category.name, href: `/${category.slug}` } : { label: category.name },
   ];

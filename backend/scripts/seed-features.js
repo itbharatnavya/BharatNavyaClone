@@ -73,7 +73,7 @@ const features = [
   // Monetization (the sales offering)
   F("featured", "Featured / Boosted Listings", "Monetization", "Sellers pay to rank higher in category/city/search (labeled Sponsored).", { audience: "seller", plans: ["silver", "gold"], phase: 3 }),
   F("subscriptions", "Business Subscription Plans", "Monetization", "Free / Silver / Gold tiers unlock listings, leads, badges, analytics.", { audience: "seller", phase: 3 }),
-  F("leads", "Lead-Gen (Pay per Inquiry)", "Monetization", "Businesses receive/pay for qualified inquiries (JustDial-style).", { audience: "seller", plans: ["silver", "gold"], phase: 3 }),
+  F("leads", "Lead-Gen (Pay per Inquiry)", "Monetization", "Businesses receive/pay for qualified inquiries.", { audience: "seller", plans: ["silver", "gold"], phase: 3 }),
   F("ads", "In-App Ads", "Monetization", "Sponsored banner/slots on home, category, and city pages.", { audience: "seller", plans: ["gold"], phase: 3 }),
   F("analytics", "Seller Analytics", "Monetization", "Performance dashboard for paid sellers.", { audience: "seller", plans: ["silver", "gold"], phase: 3 }),
 

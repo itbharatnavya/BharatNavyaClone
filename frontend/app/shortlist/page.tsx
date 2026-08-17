@@ -56,7 +56,7 @@ export default function ShortlistPage() {
   const resolving = ids.length > 0 && ids.some((id) => items[id] === undefined);
   const showSkeleton = loading || resolving;
 
-  const crumbs = [{ label: "Home", href: "/" }, { label: "Shortlist" }];
+  const crumbs = [{ label: "Directory", href: "/directory" }, { label: "Shortlist" }];
 
   return (
     <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>

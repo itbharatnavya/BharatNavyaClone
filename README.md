@@ -1,6 +1,6 @@
 # BharatSource
 
-A Zoho-style product **suite** for India — an umbrella brand over several products that share
+A multi-product **suite** for India — an umbrella brand over several products that share
 one account. Built with **Next.js 14 (App Router) + TypeScript** on the frontend and
 **Node.js + Express with file-based JSON storage** on the backend (no external database).
 

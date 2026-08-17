@@ -4,7 +4,7 @@
  *  2. Complete, realistic company details (GST / PAN / CIN / turnover / certs / website)
  *     on all seller profiles.
  *  3. Six well-branded product vendors + ~24 branded products (with specs) so category
- *     pages fill up Moglix-style, and each vendor has multiple products ("more from seller").
+ *     pages fill up realistically, and each vendor has multiple products ("more from seller").
  * Run: node scripts/seed-demo2.js
  */
 

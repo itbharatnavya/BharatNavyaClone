@@ -28,7 +28,7 @@ const store = require("../lib/store");
 const config = require("../lib/config");
 const { parseQuery } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
-const { authGuard } = require("../middleware/authGuard");
+const { authGuard, optionalAuth } = require("../middleware/authGuard");
 
 const router = express.Router();
 
@@ -379,18 +379,52 @@ async function cliResolve({ query, parsed, categories }) {
   };
 }
 
+/* ------------------------------------------------- search-event logging ---- */
+/**
+ * Fire-and-forget log of every search, feeding GET /api/search/trending and
+ * /popular (routes/searchTrends.js). Never allowed to affect the search
+ * response — any failure here is swallowed, same NEVER-BLANK guarantee as
+ * the rest of this router.
+ */
+async function logSearchEvent({ query, parsed, result, userId }) {
+  try {
+    const q = String(query || "").trim();
+    if (!q) return;
+    await store.appendJsonl("search-events.jsonl", {
+      id: await store.nextId("srch"),
+      query: q,
+      categorySlug: (result && result.navigateTo && result.navigateTo.categorySlug) || parsed.category || null,
+      city: parsed.city || null,
+      userId: userId || null,
+      createdAt: new Date().toISOString(),
+    });
+  } catch (_err) {
+    // Logging must never break search — silently drop.
+  }
+}
+
 /* --------------------------------------------------------------- route ----- */
 
 // Public: the hero search must work before any auth wall (DESIGN §1.8).
-router.post("/search", async (req, res, next) => {
+// optionalAuth attaches req.user when a token is present but never blocks a
+// guest request — used only to tag search-event logs with a userId when known.
+router.post("/search", optionalAuth, async (req, res, next) => {
   try {
     const query =
       req.body && typeof req.body.query === "string" ? req.body.query : "";
     const categories = await store.all("categories.json"); // [] if not seeded yet
     const parsed = parseQuery(query, categories);
 
+    // Directory's own search bar opts out of AI refinement entirely (explicit
+    // `ai:false`) — pure deterministic category+keyword search, guaranteed no
+    // Claude/API call. Consultations and the suite home hero don't send this
+    // flag, so they keep today's AI-refined behavior unchanged.
+    const noAi = req.body && req.body.ai === false;
+
     let result;
-    if (config.ANTHROPIC_API_KEY) {
+    if (noAi) {
+      result = await deterministicResolve({ query, parsed });
+    } else if (config.ANTHROPIC_API_KEY) {
       try {
         result = await aiResolve({ query, parsed, categories });
       } catch (_err) {
@@ -408,6 +442,8 @@ router.post("/search", async (req, res, next) => {
     } else {
       result = await deterministicResolve({ query, parsed });
     }
+
+    logSearchEvent({ query, parsed, result, userId: req.user && req.user.id }); // fire-and-forget
 
     res.json({ success: true, data: result });
   } catch (err) {

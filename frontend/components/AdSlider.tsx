@@ -35,6 +35,12 @@ export interface AdSliderProps {
   /** Auto-advance interval in ms (default 5000). */
   intervalMs?: number;
   className?: string;
+  /** Fill the parent's height (100%) instead of the fixed clamp() height, and
+   *  skip the bottom margin — for embedding inside a CSS Grid row with
+   *  stretch alignment so the ad card matches sibling cards' height exactly
+   *  (e.g. PromoBanner). Default false keeps the original fixed-height
+   *  standalone banner sizing (e.g. category pages). */
+  fillHeight?: boolean;
 }
 
 const OVERLAY_GRADIENT =
@@ -46,6 +52,7 @@ export default function AdSlider({
   ads: adsProp,
   intervalMs = 5000,
   className,
+  fillHeight = false,
 }: AdSliderProps) {
   const t = useTr();
   const controlled = adsProp !== undefined;
@@ -143,7 +150,7 @@ export default function AdSlider({
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
       onKeyDown={onKeyDown}
-      style={{ marginBottom: 24, minWidth: 0 }}
+      style={{ marginBottom: fillHeight ? 0 : 24, minWidth: 0, height: fillHeight ? "100%" : undefined }}
     >
       <div
         className="card card-flat"
@@ -152,7 +159,7 @@ export default function AdSlider({
           overflow: "hidden",
           padding: 0,
           minWidth: 0,
-          height: "clamp(120px, 42vw, 180px)",
+          height: fillHeight ? "100%" : "clamp(120px, 42vw, 180px)",
         }}
       >
         {ads.map((ad, i) => {

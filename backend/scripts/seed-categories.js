@@ -1,7 +1,7 @@
 /**
  * seed-categories.js — Phase 2 seed: the nested category taxonomy.
  *
- * Builds a credible horizontal-marketplace tree (IndiaMART/JustDial-style) from the
+ * Builds a credible horizontal-marketplace tree from the
  * taxonomy R&D summarized in DESIGN.md §3.3 (~24 top-level categories, product +
  * service verticals) and fully drills the four deep spikes named there:
  *

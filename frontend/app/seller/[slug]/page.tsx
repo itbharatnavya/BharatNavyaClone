@@ -277,7 +277,7 @@ export default function SellerProfilePage() {
       <div className="container-bs" style={{ paddingTop: 20, paddingBottom: 96 }}>
         <Breadcrumbs
           items={[
-            { label: t("nav.home", "Home"), href: "/" },
+            { label: t("nav.directoryCrumb", "Directory"), href: "/directory" },
             { label: t("seller.crumbSellers", "Sellers") },
             { label: seller.companyName },
           ]}

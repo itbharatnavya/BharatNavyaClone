@@ -8,7 +8,7 @@ You are picking up **BharatSource**, a production-bound web app, with no prior c
 
 ## 1. What this is
 
-**BharatSource** is a Zoho-style product **SUITE** (an umbrella brand over several products), aimed at a mostly non-technical, mobile-first Indian audience.
+**BharatSource** is a multi-product **SUITE** (an umbrella brand over several products), aimed at a mostly non-technical, mobile-first Indian audience.
 
 | Product | Route | Status | What it is |
 |---|---|---|---|
@@ -134,7 +134,7 @@ Full detail in **DIRECTORY.md §Data model**. The essentials:
 
 The Directory and Consultations are **feature-built as a POC** — the next job is to **productionize + finish**, not build from scratch (see DIRECTORY.md roadmap). Working end-to-end today:
 - Directory: category browse, keyword + AI concierge search, listing detail with view tracking, brands, multi-vendor "also offered by N sellers", compare, shortlist, follow, enquiry + broad RFQ fan-out → leads, quotes, reviews, collections/concepts.
-- Seller: register → become-seller → profile, create/edit/bulk-upload listings, multi-location/PAN-India, verification, trust score, and a tabbed dashboard (overview/analytics/listings/leads & RFQs/promote-boosts/advertise/subscription/referral/reviews/blogs/stories/profile).
+- Seller: register (main user, no company fields; own basic account lives at `/profile`, separate from anything Directory) → become-seller from the Directory dashboard's Profile tab (`/dashboard?tab=profile`) or auto-stubbed on first `/sell` listing → create/edit/bulk-upload listings, multi-location/PAN-India, verification, trust score, and a tabbed dashboard (overview/analytics/listings/leads & RFQs/promote-boosts/advertise/subscription/referral/reviews/blogs/stories/profile) — unlocked only once a `sellerProfile` exists.
 - Consultations: expert directory with native-select filters, dedicated expert profile (packages, credentials, reviews, case studies), book-a-consultation modal (lead only), and an expert-side "Consultation requests" dashboard tab.
 - Admin (`/admin`): sellers approve/suspend, categories CRUD, monetization/plans, ad slots, boost approval, moderation queue, verification queue, collections, feature catalog + entitlements matrix, site config.
 

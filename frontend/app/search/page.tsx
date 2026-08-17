@@ -54,7 +54,7 @@ function SearchInner() {
 
       {showAI && (
         <div style={{ maxWidth: 720, marginBottom: 30 }}>
-          <AISearchBar size="compact" examples={[]} />
+          <AISearchBar size="compact" examples={[]} aiEnabled={false} />
         </div>
       )}
 
@@ -69,7 +69,7 @@ function SearchInner() {
         emptyTitle={t("search.empty.title", "No matches found")}
         emptyMessage={t(
           "search.empty.message",
-          "Try different keywords, remove a filter, or describe what you need in the AI search above."
+          "Try different keywords or remove a filter, or post a requirement and let sellers come to you."
         )}
       />
     </div>

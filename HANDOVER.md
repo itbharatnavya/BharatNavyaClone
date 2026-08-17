@@ -11,7 +11,7 @@ read **DIRECTORY.md**.
 
 ## What you're getting
 
-A Zoho-style **suite** of products under one brand and one account:
+A multi-product **suite** of products under one brand and one account:
 - **Directory** (live) — a lead-based B2B/B2C marketplace (no payments/cart).
 - **Consultations** (live) — hire experts with fixed-price packages (lead-based booking).
 - **Credit Card** & **Mutual** (coming-soon placeholders).

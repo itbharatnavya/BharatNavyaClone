@@ -110,7 +110,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
             <Breadcrumbs
               items={[
-                { label: "Home", href: "/" },
+                { label: "Directory", href: "/directory" },
                 { label: "Brands", href: "/brands" },
                 { label: "Not found" },
               ]}
@@ -152,7 +152,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
   const { brand } = data;
   const crumbs: Crumb[] = [
-    { label: "Home", href: "/" },
+    { label: "Directory", href: "/directory" },
     { label: "Brands", href: "/brands" },
     { label: brand.name },
   ];

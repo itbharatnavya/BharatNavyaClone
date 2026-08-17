@@ -64,7 +64,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
             <Breadcrumbs
               items={[
-                { label: "Home", href: "/" },
+                { label: "Directory", href: "/directory" },
                 { label: "Collections", href: "/collections" },
                 { label: "Not found" },
               ]}
@@ -109,7 +109,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   const cover = data.coverImage;
 
   const crumbs: Crumb[] = [
-    { label: "Home", href: "/" },
+    { label: "Directory", href: "/directory" },
     { label: "Collections", href: "/collections" },
     { label: data.title },
   ];

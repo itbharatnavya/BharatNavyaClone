@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import type { User, Category, SellerProfile } from "@/lib/types";
+import React, { useState } from "react";
+import type { User, SellerProfile } from "@/lib/types";
 import {
-  getCategories,
-  updateProfile,
   becomeSeller,
   updateSellerProfile,
   requestVerification,
@@ -17,13 +15,11 @@ import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import LocationsManager from "@/components/seller/LocationsManager";
 import { statesList, citiesForState } from "@/lib/indiaGeo";
-import { PanelHeader, Icon, useTr } from "./shared";
+import { PanelHeader, useTr } from "./shared";
 
 interface Props {
   user: User;
 }
-
-type ContactVisibility = "public" | "on_request" | "hidden";
 
 const STATE_OPTIONS = statesList().map((s) => ({ value: s, label: s }));
 const OTHER_CITY = "__other__";
@@ -84,16 +80,6 @@ function CityField({
   );
 }
 
-// interests / contactVisibility aren't in the User type yet — read defensively.
-function readInterests(u: User): string[] {
-  const v = (u as unknown as { interests?: unknown }).interests;
-  return Array.isArray(v) ? (v as string[]) : [];
-}
-function readVisibility(u: User): ContactVisibility {
-  const v = (u as unknown as { contactVisibility?: string }).contactVisibility;
-  return v === "on_request" || v === "hidden" ? v : "public";
-}
-
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div className="card card-flat" style={{ padding: 22 }}>
@@ -110,16 +96,6 @@ export default function ProfileTab({ user }: Props) {
   const tr = useTr();
   const { addToast } = useToast();
   const { refresh } = useAuth();
-
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  // account fields
-  const [name, setName] = useState(user.name || "");
-  const [city, setCity] = useState(user.city || "");
-  const [state, setState] = useState(user.state || "");
-  const [interests, setInterests] = useState<string[]>(readInterests(user));
-  const [visibility, setVisibility] = useState<ContactVisibility>(readVisibility(user));
-  const [savingAccount, setSavingAccount] = useState(false);
 
   // seller fields
   const sp = user.sellerProfile;
@@ -217,41 +193,6 @@ export default function ProfileTab({ user }: Props) {
     persistServiceAreas(serviceAreas.filter((_, i) => i !== idx));
   }
 
-  useEffect(() => {
-    let alive = true;
-    getCategories()
-      .then((c) => {
-        if (alive) setCategories(c);
-      })
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  function toggleInterest(slug: string) {
-    setInterests((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
-  }
-
-  async function saveAccount() {
-    setSavingAccount(true);
-    try {
-      await updateProfile({
-        name: name.trim(),
-        city: city.trim(),
-        state: state.trim(),
-        interests,
-        contactVisibility: visibility,
-      });
-      await refresh();
-      addToast(tr("dashboard.profile.saved", "Profile updated"), "success");
-    } catch (e) {
-      addToast((e as Error).message || "Update failed", "error");
-    } finally {
-      setSavingAccount(false);
-    }
-  }
-
   async function saveSeller() {
     if (!companyName.trim()) {
       addToast(tr("dashboard.profile.companyRequired", "Company name is required"), "error");
@@ -288,84 +229,10 @@ export default function ProfileTab({ user }: Props) {
     <div>
       <PanelHeader
         title={tr("dashboard.profile.title", "Profile")}
-        subtitle={tr("dashboard.profile.subtitle", "Manage your identity, interests and seller details.")}
+        subtitle={tr("dashboard.profile.subtitle", "Manage your business/company details, verification and locations.")}
       />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-        {/* Account & preferences */}
-        <Section
-          title={tr("dashboard.profile.account", "Account & preferences")}
-          subtitle={tr("dashboard.profile.accountHint", "One identity across buying and selling.")}
-        >
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
-            <Input label={tr("dashboard.profile.name", "Name")} value={name} onChange={(e) => setName(e.target.value)} />
-            <Select
-              label={tr("dashboard.profile.state", "State")}
-              placeholder="Select state"
-              value={state}
-              onChange={(e) => {
-                setState(e.target.value);
-                setCity("");
-              }}
-              options={STATE_OPTIONS}
-            />
-            <CityField
-              key={`acct-city-${state}`}
-              label={tr("dashboard.profile.city", "City")}
-              state={state}
-              city={city}
-              onChange={setCity}
-              idPrefix="acct"
-            />
-            <Select
-              label={tr("dashboard.profile.visibility", "Contact visibility")}
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value as ContactVisibility)}
-              options={[
-                { value: "public", label: "Public" },
-                { value: "on_request", label: "On request" },
-                { value: "hidden", label: "Hidden" },
-              ]}
-            />
-          </div>
-
-          <div style={{ marginTop: 18 }}>
-            <label className="field-label">{tr("dashboard.profile.interests", "Interests")}</label>
-            <p style={{ fontSize: 12, color: "var(--faint)", marginTop: -2, marginBottom: 10 }}>
-              {tr("dashboard.profile.interestsHint", "Pick categories you buy or sell in — we'll tailor your feed.")}
-            </p>
-            {categories.length === 0 ? (
-              <span style={{ fontSize: 13, color: "var(--faint)" }}>
-                {tr("dashboard.profile.loadingCats", "Loading categories…")}
-              </span>
-            ) : (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {categories.map((c) => {
-                  const active = interests.includes(c.slug);
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      className={active ? "chip chip-active" : "chip"}
-                      aria-pressed={active}
-                      onClick={() => toggleInterest(c.slug)}
-                    >
-                      {active && <Icon name="check" size={13} />}
-                      {c.name}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          <div style={{ marginTop: 18 }}>
-            <Button variant="primary" onClick={saveAccount} disabled={savingAccount}>
-              {savingAccount ? tr("common.saving", "Saving…") : tr("dashboard.profile.saveAccount", "Save changes")}
-            </Button>
-          </div>
-        </Section>
-
         {/* Seller profile */}
         <Section
           title={sp ? tr("dashboard.profile.sellerEdit", "Seller profile") : tr("dashboard.profile.becomeSeller", "Become a seller")}

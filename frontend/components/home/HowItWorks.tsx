@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTr } from "@/components/discovery/hooks";
+import Reveal from "@/components/Reveal";
 
 function SearchIcon() {
   return (
@@ -58,7 +59,8 @@ export default function HowItWorks() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {steps.map((s, i) => (
-        <div key={i} className="card card-flat card-pad">
+        <Reveal key={i} delay={i * 90}>
+        <div className="card card-flat card-pad">
           <div
             style={{
               display: "flex",
@@ -97,6 +99,7 @@ export default function HowItWorks() {
           </h3>
           <p style={{ fontSize: 14, color: "var(--muted)" }}>{s.body}</p>
         </div>
+        </Reveal>
       ))}
     </div>
   );

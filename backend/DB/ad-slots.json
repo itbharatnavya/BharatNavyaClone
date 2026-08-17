@@ -26,5 +26,19 @@
     "placementType": "sidebar",
     "defaultSize": "300x250",
     "isActive": true
+  },
+  {
+    "id": "home_hero",
+    "name": "Directory Home Hero",
+    "placementType": "banner",
+    "defaultSize": "1200x300",
+    "isActive": true
+  },
+  {
+    "id": "search_top",
+    "name": "Search Top Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x150",
+    "isActive": true
   }
 ]

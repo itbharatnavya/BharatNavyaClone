@@ -238,8 +238,13 @@ export default function ListingDetailPage() {
     );
   }
 
+  // Services belong to Consultations, products to the Directory (CLAUDE.md) —
+  // this view is shared by both, so the root crumb reflects whichever
+  // product this listing actually belongs to, not a generic suite "Home".
   const crumbs = [
-    { label: t("nav.home", "Home"), href: "/" },
+    listing.type === "service"
+      ? { label: t("nav.consultationsCrumb", "Consultations"), href: "/consultations" }
+      : { label: t("nav.directoryCrumb", "Directory"), href: "/directory" },
     ...(listing.categoryPath || []).map((slug) => ({
       label: prettifySlug(slug),
       href: `/${slug}`,

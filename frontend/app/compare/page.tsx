@@ -137,7 +137,7 @@ export default function ComparePage() {
     return Array.from(set).slice(0, 20);
   }, [listings]);
 
-  const crumbs = [{ label: "Home", href: "/" }, { label: "Compare" }];
+  const crumbs = [{ label: "Directory", href: "/directory" }, { label: "Compare" }];
 
   return (
     <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 120 }}>

@@ -1,25 +1,37 @@
 "use client";
 
 // Directory — the marketplace product landing within the BharatSource suite.
-// This is EXACTLY the composition that used to be the site homepage (HomeHero /
-// TrustBar / ValueProps / FeaturedSellers / TopBrands / Trending / Featured
-// Categories / HowItWorks / FinalCta) — reusing the same components/home/* pieces
-// unchanged. The only addition is a slim breadcrumb/eyebrow band up top so it
-// reads as the "Directory" product. All CTAs still point at the marketplace
-// routes (search, /categories, /register, category pages), which are unchanged.
-// No emojis anywhere — inline SVG icons only.
+// Section order is deliberate (v9 rework — see frontend-design-guide.md): a
+// classic attention → interest → desire → action funnel rather than a flat
+// stack of unrelated blocks. Browse (categories + trending/popular) comes
+// right after the trust bar so visitors can act immediately; "How it works"
+// sits before the social-proof block to remove friction about the lead
+// model before showing sellers/reviews/brands; "Why BharatSource" moves to
+// just before the final CTA as the persuasive close, once real proof has
+// already been shown. Backgrounds alternate white/tinted bands instead of
+// one flat white page, and every section enters via the shared Reveal
+// primitive (components/Reveal.tsx) — the same motion language already used
+// on the suite homepage (app/page.tsx). No emojis anywhere — inline SVG
+// icons only.
 
 import React, { useEffect, useMemo, useState } from "react";
 import type { Category } from "@/lib/types";
 import { getCategories } from "@/lib/api";
+import { buildTree } from "@/lib/categoryTree";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import Reveal from "@/components/Reveal";
 import StoryRail from "@/components/StoryRail";
 import SectionHeading from "@/components/home/SectionHeading";
 import HomeHero from "@/components/home/HomeHero";
+import PromoBanner from "@/components/home/PromoBanner";
+import CategoryIconGrid from "@/components/home/CategoryIconGrid";
+import CategoryGroupGrid from "@/components/home/CategoryGroupGrid";
 import TrustBar from "@/components/home/TrustBar";
 import ValueProps from "@/components/home/ValueProps";
-import FeaturedCategories from "@/components/home/FeaturedCategories";
 import TrendingRail from "@/components/home/TrendingRail";
+import TrendingSearches from "@/components/home/TrendingSearches";
+import PopularSearches from "@/components/home/PopularSearches";
+import RecentActivity from "@/components/home/RecentActivity";
 import FeaturedSellers from "@/components/home/FeaturedSellers";
 import TopBrands from "@/components/home/TopBrands";
 import HowItWorks from "@/components/home/HowItWorks";
@@ -44,7 +56,6 @@ export default function DirectoryPage() {
   const storiesOn = useFlag("stories");
 
   const homepage = config.homepage || {};
-  const branding = config.branding || {};
 
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [sellersEmpty, setSellersEmpty] = useState(false);
@@ -74,13 +85,10 @@ export default function DirectoryPage() {
   }, [allCategories, homepage.featuredCategorySlugs]);
 
   const heroTitle = homepage.heroTitle || t("home.hero.title", "Find any vendor. Sell anything.");
-  const heroSubtitle =
-    homepage.heroSubtitle ||
-    t(
-      "home.hero.subtitle",
-      "Describe what you need and let AI find the right verified supplier across every Indian industry — products and services, one catalog."
-    );
-  const heroEyebrow = branding.tagline || branding.siteName || "Source anything across India";
+
+  // getCategories() returns a FLAT list; CategoryGroupGrid needs real
+  // sub-categories nested under each top-level category to render tiles.
+  const categoryTree = useMemo(() => buildTree(allCategories), [allCategories]);
 
   return (
     <div>
@@ -99,97 +107,162 @@ export default function DirectoryPage() {
         </div>
       </section>
 
-      {/* ---------------- 1 · HERO ---------------- */}
+      {/* ---------------- 1 · HERO — attention ---------------- */}
       <HomeHero
-        eyebrow={heroEyebrow}
         title={heroTitle}
-        subtitle={heroSubtitle}
         examples={homepage.heroExamples || []}
       />
 
       {/* ---------------- 2 · TRUST BAR (live stats) ---------------- */}
-      <section className="container-bs" style={{ marginTop: "clamp(-40px, -4vw, -24px)", position: "relative", zIndex: 1 }}>
-        <TrustBar />
+      <section className="container-bs" style={{ paddingTop: 22 }}>
+        <Reveal>
+          <TrustBar />
+        </Reveal>
       </section>
+
+      {/* ---------------- 3 · ADVERTISEMENT + CATEGORY QUICK NAV ---------------- */}
+      <section className="container-bs" style={{ paddingTop: 28 }}>
+        <Reveal>
+          <PromoBanner />
+        </Reveal>
+      </section>
+      <section className="container-bs" style={{ paddingTop: 30, paddingBottom: 8 }}>
+        <Reveal>
+          <CategoryIconGrid categories={featuredCategories} />
+        </Reveal>
+      </section>
+
+      {/* ---------------- 4 · BROWSE BY CATEGORY — interest (tinted band) ---------------- */}
+      {shown(homepage.showCategoryGroups) && (
+        <section style={{ background: "var(--bg-subtle)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+          <div className="container-bs section-pad-sm">
+            <Reveal>
+              <SectionHeading
+                title="Browse by category"
+                subtitle="Real sub-categories from our own catalog, not a generic list."
+              />
+            </Reveal>
+            <CategoryGroupGrid categories={categoryTree} />
+          </div>
+        </section>
+      )}
+
+      {/* ---------------- 5 · TRENDING + POPULAR SEARCHES — what people want ---------------- */}
+      {shown(homepage.showTrendingSearches) && (
+        <section className="container-bs section-pad-sm">
+          <Reveal>
+            <TrendingSearches />
+          </Reveal>
+        </section>
+      )}
+      {shown(homepage.showPopularSearches) && (
+        <section className="container-bs section-pad-sm">
+          <PopularSearches />
+        </section>
+      )}
 
       {/* ---------------- STORIES (flag-gated) ---------------- */}
       {storiesOn && shown(homepage.showStories) && (
         <section className="container-bs" style={{ paddingTop: 36 }}>
-          <StoryRail />
+          <Reveal>
+            <StoryRail />
+          </Reveal>
         </section>
       )}
 
-      {/* ---------------- 3 · VALUE PROPS ---------------- */}
-      <section className="container-bs section-pad">
-        <SectionHeading
-          eyebrow={t("home.value.eyebrow", "Why BharatSource")}
-          title={t("home.value.title", "One platform to buy and to sell")}
-          subtitle={t("home.value.subtitle", "A single account, a lead-and-directory model, and an AI concierge doing the searching for you.")}
-        />
-        <ValueProps />
-      </section>
-
-      {/* ---------------- 4 · SOCIAL PROOF: FEATURED SELLERS ---------------- */}
-      {shown(homepage.showFeaturedSellers) && !sellersEmpty && (
-        <section className="container-bs section-pad-sm">
-          <SectionHeading
-            eyebrow={t("home.sellers.eyebrow", "Trusted")}
-            title={t("home.sellers.title", "Featured verified sellers")}
-            subtitle={t("home.sellers.subtitle", "Established businesses with strong ratings and fast response times.")}
-          />
-          <FeaturedSellers limit={4} onEmpty={() => setSellersEmpty(true)} />
-        </section>
-      )}
-
-      {/* ---------------- 4 · SOCIAL PROOF: TOP BRANDS (self-hiding) ---------------- */}
-      <TopBrands />
-
-      {/* ---------------- 4 · SOCIAL PROOF: TRENDING ---------------- */}
-      {shown(homepage.showTrending) && (
-        <section className="container-bs section-pad-sm">
-          <SectionHeading
-            eyebrow={t("home.trending.eyebrow", "Fresh")}
-            title={t("home.trending.title", "Trending now")}
-            subtitle={t("home.trending.subtitle", "The newest listings from sellers across India.")}
-            actionLabel={t("home.trending.action", "View all")}
-            actionHref="/search"
-          />
-          <TrendingRail city={homepage.trendingCity} limit={8} />
-        </section>
-      )}
-
-      {/* ---------------- 5 · EXPLORE CATEGORIES (curated) ---------------- */}
-      {shown(homepage.showCategoryGrid) && featuredCategories.length > 0 && (
-        <section className="container-bs section-pad-sm">
-          <SectionHeading
-            eyebrow={t("home.categories.eyebrow", "Browse")}
-            title={t("home.categories.title", "Explore top categories")}
-            subtitle={t("home.categories.subtitle", "From raw materials to professional services — every industry.")}
-            actionLabel={t("home.categories.action", "Browse all categories")}
-            actionHref="/categories"
-          />
-          <FeaturedCategories categories={featuredCategories} />
-        </section>
-      )}
-
-      {/* ---------------- 6 · HOW IT WORKS ---------------- */}
+      {/* ---------------- 6 · HOW IT WORKS — remove friction before proof (tinted band) ---------------- */}
       {shown(homepage.showHowItWorks) && (
         <section style={{ background: "var(--bg-subtle)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
           <div className="container-bs section-pad">
-            <SectionHeading
-              eyebrow={t("home.how.eyebrow", "How it works")}
-              title={t("home.how.title", "Sourcing made simple")}
-              subtitle={t("home.how.subtitle", "No checkout, no middlemen taking a cut — just direct connections.")}
-            />
+            <Reveal>
+              <SectionHeading
+                eyebrow={t("home.how.eyebrow", "How it works")}
+                title={t("home.how.title", "Sourcing made simple")}
+                subtitle={t("home.how.subtitle", "No checkout, no middlemen taking a cut — just direct connections.")}
+              />
+            </Reveal>
             <HowItWorks />
           </div>
         </section>
       )}
 
-      {/* ---------------- 7 · FINAL CTA BAND ---------------- */}
+      {/* ---------------- 7 · SOCIAL PROOF: FEATURED SELLERS — desire ---------------- */}
+      {shown(homepage.showFeaturedSellers) && !sellersEmpty && (
+        <section className="container-bs section-pad-sm">
+          <Reveal>
+            <SectionHeading
+              eyebrow={t("home.sellers.eyebrow", "Trusted")}
+              title={t("home.sellers.title", "Featured verified sellers")}
+              subtitle={t("home.sellers.subtitle", "Established businesses with strong ratings and fast response times.")}
+            />
+          </Reveal>
+          <FeaturedSellers limit={4} onEmpty={() => setSellersEmpty(true)} />
+        </section>
+      )}
+
+      {/* ---------------- 8 · RECENT ACTIVITY — real reviews, right next to the sellers they're about ---------------- */}
+      {shown(homepage.showRecentActivity) && (
+        <section
+          style={{
+            position: "relative",
+            background:
+              "radial-gradient(48% 60% at 100% 0%, rgba(30,158,82,0.06) 0%, rgba(30,158,82,0) 70%)," +
+              "radial-gradient(40% 50% at 0% 100%, rgba(26,79,174,0.05) 0%, rgba(26,79,174,0) 70%)," +
+              "var(--canvas)",
+          }}
+        >
+          <div className="container-bs section-pad-sm">
+            <Reveal>
+              <SectionHeading
+                eyebrow={t("home.activity.eyebrow", "Live")}
+                title={t("home.activity.title", "Recent activity")}
+                subtitle={t("home.activity.subtitle", "Real reviews from buyers across the marketplace.")}
+              />
+            </Reveal>
+            <RecentActivity limit={6} />
+          </div>
+        </section>
+      )}
+
+      {/* ---------------- 9 · TOP BRANDS (self-hiding) ---------------- */}
+      <TopBrands />
+
+      {/* ---------------- 10 · TRENDING NOW — freshness signal ---------------- */}
+      {shown(homepage.showTrending) && (
+        <section className="container-bs section-pad-sm">
+          <Reveal>
+            <SectionHeading
+              eyebrow={t("home.trending.eyebrow", "Fresh")}
+              title={t("home.trending.title", "Trending now")}
+              subtitle={t("home.trending.subtitle", "The newest listings from sellers across India.")}
+              actionLabel={t("home.trending.action", "View all")}
+              actionHref="/search"
+            />
+          </Reveal>
+          <TrendingRail city={homepage.trendingCity} limit={8} />
+        </section>
+      )}
+
+      {/* ---------------- 11 · VALUE PROPS — persuasive recap, right before the ask (tinted band) ---------------- */}
+      <section style={{ background: "var(--bg-subtle)", borderTop: "1px solid var(--border)" }}>
+        <div className="container-bs section-pad">
+          <Reveal>
+            <SectionHeading
+              eyebrow={t("home.value.eyebrow", "Why BharatSource")}
+              title={t("home.value.title", "One platform to buy and to sell")}
+              subtitle={t("home.value.subtitle", "A single account, a lead-and-directory model, and an AI concierge doing the searching for you.")}
+            />
+          </Reveal>
+          <ValueProps />
+        </div>
+      </section>
+
+      {/* ---------------- 12 · FINAL CTA BAND — action ---------------- */}
       {shown(homepage.showSellCta) && (
         <section className="container-bs section-pad">
-          <FinalCta />
+          <Reveal>
+            <FinalCta />
+          </Reveal>
         </section>
       )}
     </div>

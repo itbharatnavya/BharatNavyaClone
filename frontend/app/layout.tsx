@@ -7,6 +7,7 @@ import { ConfigProvider } from "@/lib/config";
 import { LanguageProvider } from "@/lib/i18n";
 import { CompareProvider } from "@/lib/compare";
 import { ShortlistProvider } from "@/lib/shortlist";
+import { SearchDockProvider } from "@/lib/searchDock";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
@@ -38,13 +39,15 @@ export default function RootLayout({
               <AuthProvider>
                 <CompareProvider>
                   <ShortlistProvider>
-                    <div className="flex min-h-screen flex-col">
-                      <Navbar />
-                      <main className="flex-1">{children}</main>
-                      <Footer />
-                    </div>
-                    <ChatAssistant />
-                    <CompareBar />
+                    <SearchDockProvider>
+                      <div className="flex min-h-screen flex-col">
+                        <Navbar />
+                        <main className="flex-1">{children}</main>
+                        <Footer />
+                      </div>
+                      <ChatAssistant />
+                      <CompareBar />
+                    </SearchDockProvider>
                   </ShortlistProvider>
                 </CompareProvider>
               </AuthProvider>

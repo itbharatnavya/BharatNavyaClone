@@ -21,6 +21,8 @@ import type {
   Quote,
   Lead,
   Review,
+  SearchTrendItem,
+  RecentActivityItem,
   Conversation,
   Message,
   Blog,
@@ -386,10 +388,10 @@ export function deleteListing(id: string): Promise<{ deleted: boolean }> {
 // ============================================================
 // AI concierge search
 // ============================================================
-export function aiSearch(query: string): Promise<AiSearchResult> {
+export function aiSearch(query: string, opts?: { ai?: boolean }): Promise<AiSearchResult> {
   return request<AiSearchResult>(`/api/ai/search`, {
     method: "POST",
-    body: JSON.stringify({ query }),
+    body: JSON.stringify(opts?.ai === false ? { query, ai: false } : { query }),
   });
 }
 
@@ -493,6 +495,22 @@ export function postReview(body: {
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+// Directory homepage "Recent Activity" — real reviews joined with seller info.
+export function getRecentActivity(params: { limit?: number; city?: string } = {}): Promise<RecentActivityItem[]> {
+  return request<RecentActivityItem[]>(`/api/reviews/recent${toQuery(params as Record<string, unknown>)}`);
+}
+
+// ============================================================
+// Trending / Popular searches (Directory homepage)
+// ============================================================
+export function getTrendingSearches(params: { city?: string; limit?: number } = {}): Promise<SearchTrendItem[]> {
+  return request<SearchTrendItem[]>(`/api/search/trending${toQuery(params as Record<string, unknown>)}`);
+}
+
+export function getPopularSearches(params: { limit?: number } = {}): Promise<SearchTrendItem[]> {
+  return request<SearchTrendItem[]>(`/api/search/popular${toQuery(params as Record<string, unknown>)}`);
 }
 
 // ============================================================

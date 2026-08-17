@@ -314,8 +314,15 @@ function categoryTokens(cat) {
 /**
  * Fuzzy "contains" match of the query token set against each category.
  * Returns { slug, score } for the best match, or null.
+ *
+ * `opts.preferGeneral` (default false, so existing callers are unaffected):
+ * when a subcategory ties a top-level category on raw score, keep the
+ * top-level one. Without it, the winner of a tie is whichever category the
+ * `categories` array happens to enumerate first — an accident of file/DB
+ * ordering, not query relevance (e.g. a broad "electronics" query landing on
+ * a random child category just because it was listed earlier that request).
  */
-function matchCategory(querySet, categories) {
+function matchCategory(querySet, categories, opts = {}) {
   let best = null;
   for (const cat of categories || []) {
     if (!cat || !cat.slug) continue;
@@ -335,8 +342,12 @@ function matchCategory(querySet, categories) {
         }
       }
     }
-    if (score > 0 && (!best || score > best.score)) {
-      best = { slug: cat.slug, score, max: catToks.length * 2 };
+    if (score > 0) {
+      if (!best || score > best.score) {
+        best = { slug: cat.slug, score, max: catToks.length * 2, parentId: cat.parentId || null };
+      } else if (opts.preferGeneral && score === best.score && !cat.parentId && best.parentId) {
+        best = { slug: cat.slug, score, max: catToks.length * 2, parentId: null };
+      }
     }
   }
   return best;
@@ -344,7 +355,7 @@ function matchCategory(querySet, categories) {
 
 /* ----------------------------------------------------------- parseQuery ---- */
 
-function parseQuery(text, categories = []) {
+function parseQuery(text, categories = [], opts = {}) {
   const original = String(text == null ? "" : text);
   const rawTokens = tokenize(original);
   const expanded = expandTokens(rawTokens);
@@ -358,7 +369,7 @@ function parseQuery(text, categories = []) {
   if (expanded.some((t) => SERVICE_WORDS.has(t))) type = "service";
   else if (expanded.some((t) => PRODUCT_WORDS.has(t))) type = "product";
 
-  const catMatch = matchCategory(querySet, categories);
+  const catMatch = matchCategory(querySet, categories, opts);
   const category = catMatch ? catMatch.slug : null;
 
   // keywords: meaningful, expanded terms minus stopwords / budget words / city / numbers.

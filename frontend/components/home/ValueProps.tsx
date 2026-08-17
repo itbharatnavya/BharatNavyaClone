@@ -7,6 +7,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Reveal from "@/components/Reveal";
 
 function Check({ color }: { color: string }) {
   return (
@@ -100,9 +101,9 @@ const COLUMNS: Column[] = [
 export default function ValueProps() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {COLUMNS.map((col) => (
+      {COLUMNS.map((col, i) => (
+        <Reveal key={col.eyebrow} delay={i * 90}>
         <div
-          key={col.eyebrow}
           className="card card-flat"
           style={{
             display: "flex",
@@ -156,6 +157,7 @@ export default function ValueProps() {
             </Link>
           </div>
         </div>
+        </Reveal>
       ))}
     </div>
   );

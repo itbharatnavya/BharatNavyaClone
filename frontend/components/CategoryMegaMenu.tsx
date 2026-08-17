@@ -1,13 +1,16 @@
 "use client";
 
-// CategoryMegaMenu — a Moglix-style category mega-menu that scales to 100+
+// CategoryMegaMenu — a category mega-menu that scales to 100+
 // categories. getCategories() returns a FLAT Category[] (253 items across 24
 // top-level groups); we group by parentId into a tree client-side.
 //
 // Exports:
 //   • default CategoryMegaMenu — the DESKTOP trigger + flyout panel. Left rail
-//     lists the 24 top-level categories; hovering/focusing one reveals its
-//     sub-categories (and any grandchildren) in responsive columns on the right.
+//     lists the top-level categories (ordered by the admin-controlled
+//     `order`/priority field); hovering/focusing one reveals its
+//     sub-categories (and any grandchildren) in a panel on the right. Both
+//     columns are capped to a user-friendly viewport height and scroll
+//     internally once their content overflows.
 //   • MobileCategoryAccordion — a tap-to-expand accordion for the mobile menu.
 //   • useCategoryTree / CATEGORY_ICONS / CategoryIcon — shared helpers, reused by
 //     app/categories/page.tsx (the full 253-category directory).
@@ -20,6 +23,7 @@ import { usePathname } from "next/navigation";
 import { getCategories } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import type { Category } from "@/lib/types";
+import { buildTree, type CategoryTreeNode } from "@/lib/categoryTree";
 
 // ------------------------------------------------------------------
 // Icons — data ships icon:null and the brand uses NO emoji. We render a
@@ -100,30 +104,8 @@ const CATEGORY_GLYPHS: Record<string, GlyphName> = {
 };
 
 // ------------------------------------------------------------------
-// Tree
+// Tree — CategoryTreeNode/buildTree live in @/lib/categoryTree (shared).
 // ------------------------------------------------------------------
-export interface CategoryTreeNode extends Category {
-  children: CategoryTreeNode[];
-}
-
-const ROOT_KEY = "__root__";
-
-function buildTree(flat: Category[]): CategoryTreeNode[] {
-  const byParent = new Map<string, Category[]>();
-  for (const c of flat) {
-    const key = c.parentId ?? ROOT_KEY;
-    const bucket = byParent.get(key);
-    if (bucket) bucket.push(c);
-    else byParent.set(key, [c]);
-  }
-  const sort = (a: Category, b: Category) =>
-    (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name);
-  const build = (cat: Category): CategoryTreeNode => ({
-    ...cat,
-    children: (byParent.get(cat.id) ?? []).sort(sort).map(build),
-  });
-  return (byParent.get(ROOT_KEY) ?? []).sort(sort).map(build);
-}
 
 /** Fetch categories once and expose the top-level tree + a loaded flag. */
 export function useCategoryTree(): { tops: CategoryTreeNode[]; loaded: boolean } {
@@ -336,11 +318,14 @@ export default function CategoryMegaMenu() {
         onClick={handleTriggerClick}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink transition-colors"
-        style={{ fontWeight: 500 }}
+        className="inline-flex items-center gap-1.5 text-sm transition-colors category-strip-trigger"
       >
         <GridIcon />
-        {tr("nav.categories", "Categories")}
+        {/* Deliberately not tr("nav.categories") here — that key resolves to
+            the shorter generic "Categories" translation used elsewhere, but
+            this trigger specifically uses the fuller "All
+            Categories" wording. */}
+        All Categories
         <ChevronDown />
       </button>
 
@@ -352,30 +337,38 @@ export default function CategoryMegaMenu() {
               display: "flex",
               flexDirection: "column",
               width: "min(880px, calc(100vw - 32px))",
-              maxHeight: "min(560px, 74vh)",
               padding: 0,
-              overflow: "hidden",
             }}
           >
-            <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-              {/* LEFT rail — top-level categories */}
+            <div style={{ display: "flex", minHeight: 0 }}>
+              {/* LEFT rail — top-level categories, ordered by the
+                  admin-controlled priority (`order`) field. Tinted grey so it
+                  reads as the nav rail against the white content panel
+                  (a grey-rail/white-panel mega-menu convention common on
+                  large B2B directory sites); the active
+                  item "pops" as a white, bordered, shadowed pill rather than
+                  a flat tint, so the current selection is unambiguous. Capped
+                  to a user-friendly viewport height; scrolls internally past
+                  that. */}
               <ul
                 onKeyDown={onLeftKeyDown}
                 style={{
                   width: 250,
                   flexShrink: 0,
+                  background: "var(--bg-subtle)",
                   borderRight: "1px solid var(--border)",
-                  overflowY: "auto",
                   padding: 8,
                   margin: 0,
                   listStyle: "none",
+                  maxHeight: "min(70vh, 560px)",
+                  overflowY: "auto",
                 }}
                 aria-label={tr("nav.categories", "Categories")}
               >
                 {tops.map((top, i) => {
                   const on = i === activeIdx;
                   return (
-                    <li key={top.id}>
+                    <li key={top.id} style={{ marginBottom: 3 }}>
                       <Link
                         ref={(el) => {
                           itemRefs.current[i] = el;
@@ -390,11 +383,13 @@ export default function CategoryMegaMenu() {
                           gap: 10,
                           padding: "9px 10px",
                           borderRadius: 10,
-                          background: on ? "var(--brand-tint)" : "transparent",
+                          background: on ? "var(--surface)" : "transparent",
+                          border: on ? "1px solid var(--border)" : "1px solid transparent",
+                          boxShadow: on ? "var(--shadow-card)" : "none",
                           color: on ? "var(--brand-hover)" : "var(--ink)",
                           fontSize: 14,
                           fontWeight: on ? 600 : 500,
-                          transition: "background-color 120ms ease, color 120ms ease",
+                          transition: "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease",
                         }}
                       >
                         <CategoryIcon slug={top.slug} name={top.name} size={22} />
@@ -411,8 +406,13 @@ export default function CategoryMegaMenu() {
                 })}
               </ul>
 
-              {/* RIGHT panel — sub-categories of the active top */}
-              <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "18px 20px" }}>
+              {/* RIGHT panel — sub-categories of the hovered/focused top,
+                  laid out as a bordered tile grid (`.megamenu-cell`, see
+                  globals.css) rather than a bare list of text links, so
+                  columns/rows read as a real grid rather than loose text.
+                  Same height cap as the left rail so the flyout never grows
+                  past a comfortable viewport height; scrolls independently. */}
+              <div style={{ flex: 1, minWidth: 0, padding: "18px 20px", maxHeight: "min(70vh, 560px)", overflowY: "auto" }}>
                 {active && (
                   <>
                     <div
@@ -423,6 +423,8 @@ export default function CategoryMegaMenu() {
                         gap: 12,
                         flexWrap: "wrap",
                         marginBottom: 16,
+                        paddingBottom: 14,
+                        borderBottom: "1px solid var(--border)",
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
@@ -447,12 +449,12 @@ export default function CategoryMegaMenu() {
                       <div
                         style={{
                           display: "grid",
-                          gap: "16px 24px",
+                          gap: 10,
                           gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))",
                         }}
                       >
                         {active.children.map((child) => (
-                          <div key={child.id} style={{ minWidth: 0 }}>
+                          <div key={child.id} className="megamenu-cell">
                             <Link
                               href={`/${child.slug}`}
                               className="hover:text-brand"
@@ -469,12 +471,13 @@ export default function CategoryMegaMenu() {
                             {child.children.length > 0 && (
                               <ul
                                 style={{
-                                  margin: "6px 0 0",
-                                  padding: 0,
+                                  margin: "8px 0 0",
+                                  padding: "8px 0 0",
+                                  borderTop: "1px solid var(--border)",
                                   listStyle: "none",
                                   display: "flex",
                                   flexDirection: "column",
-                                  gap: 3,
+                                  gap: 5,
                                 }}
                               >
                                 {child.children.map((g) => (

@@ -9,6 +9,17 @@
 import React, { useEffect, useState } from "react";
 import * as api from "@/lib/api";
 import type { Category } from "@/lib/types";
+import Reveal from "@/components/Reveal";
+
+// Each stat cycles through a distinct brand colour instead of a uniform
+// blue treatment — a deliberate, low-risk way to spread the palette across
+// the page without turning any one section loud (mirrors app/page.tsx).
+const ACCENTS = [
+  { bg: "var(--brand-tint)", color: "var(--brand)" },
+  { bg: "var(--action-tint)", color: "var(--action)" },
+  { bg: "var(--tricolor-green-tint)", color: "var(--tricolor-green)" },
+  { bg: "var(--navy-tint)", color: "var(--navy)" },
+];
 
 function flattenCount(cats: Category[]): number {
   let n = 0;
@@ -137,52 +148,56 @@ export default function TrustBar() {
         padding: "clamp(14px, 3vw, 22px)",
       }}
     >
-      {stats.map((s) => (
-        <div
-          key={s.key}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            padding: "10px 14px",
-            minWidth: 0,
-          }}
-        >
-          <span
-            aria-hidden
-            style={{
-              width: 44,
-              height: 44,
-              flexShrink: 0,
-              borderRadius: 12,
-              background: "var(--brand-tint)",
-              color: "var(--brand)",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {s.icon}
-          </span>
-          <span style={{ minWidth: 0 }}>
-            <span
+      {stats.map((s, i) => {
+        const accent = ACCENTS[i % ACCENTS.length];
+        return (
+          <Reveal key={s.key} delay={i * 60}>
+            <div
               style={{
-                display: "block",
-                fontSize: "clamp(22px, 3.4vw, 28px)",
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-                color: "var(--ink)",
-                lineHeight: 1.1,
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                padding: "10px 14px",
+                minWidth: 0,
               }}
             >
-              {display(s.value)}
-            </span>
-            <span className="line-clamp-1" style={{ display: "block", fontSize: 13, color: "var(--muted)" }}>
-              {s.label}
-            </span>
-          </span>
-        </div>
-      ))}
+              <span
+                aria-hidden
+                style={{
+                  width: 44,
+                  height: 44,
+                  flexShrink: 0,
+                  borderRadius: 12,
+                  background: accent.bg,
+                  color: accent.color,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {s.icon}
+              </span>
+              <span style={{ minWidth: 0 }}>
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "clamp(22px, 3.4vw, 28px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.02em",
+                    color: accent.color,
+                    lineHeight: 1.1,
+                  }}
+                >
+                  {display(s.value)}
+                </span>
+                <span className="line-clamp-1" style={{ display: "block", fontSize: 13, color: "var(--muted)" }}>
+                  {s.label}
+                </span>
+              </span>
+            </div>
+          </Reveal>
+        );
+      })}
     </div>
   );
 }

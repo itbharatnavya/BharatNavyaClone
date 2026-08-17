@@ -555,6 +555,8 @@ export default function DiscoveryResults({
                   "Try removing a filter or broadening your search. New sellers join every day."
                 )
               }
+              actionLabel={t("results.emptyAction", "Post a requirement (RFQ)")}
+              actionHref="/rfq"
             />
           ) : view === "map" && showMapToggle ? (
             <MapView listings={displayListings} />
@@ -669,7 +671,7 @@ export default function DiscoveryResults({
         .dr-filter-btn {
           display: none;
         }
-        /* Moglix-style product grid: 3–4 cols desktop · 2 tablet · 1 phone.
+        /* Product grid: 3–4 cols desktop · 2 tablet · 1 phone.
            minmax(0,1fr) keeps every card ≤ its column so nothing overflows. */
         .dr-grid {
           display: grid;

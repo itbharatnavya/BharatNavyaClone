@@ -23,6 +23,68 @@ const REVIEW_DIRECTIONS = new Set([
   "seller_to_buyer",
 ]);
 
+/**
+ * GET /api/reviews/recent?limit=6&city= — Directory homepage "Recent Activity"
+ * feed: latest approved reviews joined with the reviewed seller's business
+ * info + a representative photo. Read-only aggregation (no writes), same
+ * shape of join as categories.js's GET /:slug. Unlike routes/searchTrends.js,
+ * this is deliberately NOT padded with any fallback/demo content — it only
+ * ever reflects real reviews (see plan discussion); it can legitimately be
+ * empty, and the frontend self-hides when it is.
+ */
+router.get("/recent", async (req, res, next) => {
+  try {
+    const limit = Math.max(1, Math.min(20, parseInt(req.query.limit, 10) || 6));
+    const city = req.query.city ? String(req.query.city).trim().toLowerCase() : null;
+
+    const [reviews, users, listings] = await Promise.all([
+      store.all("reviews.json"),
+      store.all("users.json"),
+      store.all("listings.json"),
+    ]);
+    const usersById = new Map(users.map((u) => [u.id, u]));
+
+    const approved = reviews
+      .filter((r) => r.status === "approved")
+      .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+
+    const out = [];
+    for (const r of approved) {
+      if (out.length >= limit) break;
+      const seller = usersById.get(r.targetUserId);
+      const sp = seller && seller.sellerProfile;
+      if (!sp) continue; // only show reviews of real sellers with a business profile
+
+      const sellerCity = (sp.location && sp.location.city) || seller.city || "";
+      if (city && !sellerCity.toLowerCase().includes(city)) continue;
+
+      const buyer = usersById.get(r.buyerId);
+      const sellerListing = listings.find((l) => l.sellerId === seller.id && l.media && l.media[0]);
+      const image =
+        (sellerListing && sellerListing.media[0].url) || sp.coverImage || sp.logo || null;
+
+      out.push({
+        reviewId: r.id,
+        rating: r.rating,
+        reviewText: r.reviewText || "",
+        createdAt: r.createdAt,
+        buyerName: (buyer && buyer.name) || r.buyerName || "A buyer",
+        buyerAvatarUrl: (buyer && buyer.avatarUrl) || null,
+        sellerId: seller.id,
+        sellerSlug: sp.slug || null,
+        sellerName: sp.companyName || seller.name || "Business",
+        sellerCity,
+        whatsappNumber: sp.contactMobile || seller.mobile || null,
+        image,
+      });
+    }
+
+    res.json({ success: true, data: out });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/reviews?targetUserId= (or ?sellerId= alias) — approved reviews for a user.
 router.get("/", async (req, res, next) => {
   try {

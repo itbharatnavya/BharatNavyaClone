@@ -1,6 +1,6 @@
 "use client";
 
-// Single source of truth for the BharatSource product SUITE (the Zoho-style
+// Single source of truth for the BharatSource product SUITE (the multi-product
 // umbrella). Shared by the suite homepage grid, the Navbar "Products" switcher
 // and the Footer "Products" column so the four products stay in lockstep.
 // Icons are distinct inline SVG line-glyphs (NO emoji): a directory grid, a

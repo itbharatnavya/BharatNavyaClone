@@ -46,6 +46,7 @@ app.use("/api/admin/moderation", require("./routes/moderation")); // content mod
 app.use("/api/admin/listings", require("./routes/adminListings")); // AI listing verification queue (guarded inside; before /api/admin)
 app.use("/api/admin", require("./routes/admin")); // authGuard + requireRole applied inside
 app.use("/api/ai", require("./routes/ai"));
+app.use("/api/search", require("./routes/searchTrends")); // trending/popular searches (Directory homepage)
 app.use("/api/assistant", require("./routes/assistant"));
 app.use("/api/ads", require("./routes/ads"));
 app.use("/api/chat", require("./routes/chat"));

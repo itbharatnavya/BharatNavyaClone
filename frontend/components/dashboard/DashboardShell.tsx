@@ -36,23 +36,24 @@ interface TabMeta {
   icon: string;
   flag?: string; // featureFlags key that must be truthy to show
   expertOnly?: boolean; // only for Consultations experts (sellerProfile.expert set)
+  sellerOnly?: boolean; // only once the main user has become a Directory seller (sellerProfile set)
 }
 
 const ALL_TABS: TabMeta[] = [
-  { id: "overview", label: "Overview", icon: "overview" },
-  { id: "analytics", label: "Analytics", icon: "analytics" },
-  { id: "listings", label: "My listings", icon: "listings" },
-  { id: "promote", label: "Promote", icon: "promote" },
-  { id: "bulk", label: "Bulk upload", icon: "bulk" },
-  { id: "inbox", label: "Inbox", icon: "inbox", flag: "chat" },
-  { id: "leads", label: "Leads & RFQs", icon: "leads" },
+  { id: "overview", label: "Overview", icon: "overview", sellerOnly: true },
+  { id: "analytics", label: "Analytics", icon: "analytics", sellerOnly: true },
+  { id: "listings", label: "My listings", icon: "listings", sellerOnly: true },
+  { id: "promote", label: "Promote", icon: "promote", sellerOnly: true },
+  { id: "bulk", label: "Bulk upload", icon: "bulk", sellerOnly: true },
+  { id: "inbox", label: "Inbox", icon: "inbox", flag: "chat", sellerOnly: true },
+  { id: "leads", label: "Leads & RFQs", icon: "leads", sellerOnly: true },
   { id: "consultations", label: "Consultation requests", icon: "consultations", expertOnly: true },
   { id: "myrfqs", label: "My RFQs", icon: "myrfqs" },
-  { id: "reviews", label: "Reviews", icon: "reviews" },
-  { id: "blogs", label: "Blogs", icon: "blogs" },
-  { id: "stories", label: "Stories", icon: "stories", flag: "stories" },
-  { id: "advertise", label: "Advertise", icon: "advertise" },
-  { id: "subscription", label: "Subscription", icon: "subscription" },
+  { id: "reviews", label: "Reviews", icon: "reviews", sellerOnly: true },
+  { id: "blogs", label: "Blogs", icon: "blogs", sellerOnly: true },
+  { id: "stories", label: "Stories", icon: "stories", flag: "stories", sellerOnly: true },
+  { id: "advertise", label: "Advertise", icon: "advertise", sellerOnly: true },
+  { id: "subscription", label: "Subscription", icon: "subscription", sellerOnly: true },
   { id: "referral", label: "Referral", icon: "referral", flag: "referral" },
   { id: "profile", label: "Profile", icon: "profile" },
 ];
@@ -222,19 +223,28 @@ export default function DashboardShell() {
   // The "Consultation requests" tab is only meaningful for Consultations experts
   // (sellers whose profile carries an `expert` block). Hide it for everyone else.
   const isExpert = !!(user?.sellerProfile as { expert?: unknown } | undefined)?.expert;
+  const isSeller = !!user?.sellerProfile;
   const tabs = useMemo(
     () =>
       ALL_TABS.filter((t) => {
         if (t.flag && !flags[t.flag]) return false;
         if (t.expertOnly && !isExpert) return false;
+        if (t.sellerOnly && !isSeller) return false;
         return true;
       }),
-    [flags, isExpert]
+    [flags, isExpert, isSeller]
   );
 
   const tabParam = searchParams.get("tab") as DashTabId | null;
   const convParam = searchParams.get("c");
-  const active: DashTabId = tabs.some((t) => t.id === tabParam) ? (tabParam as DashTabId) : "overview";
+  // Default landing tab: sellers land on Overview as before; a plain main user
+  // (no sellerProfile — Overview is sellerOnly and filtered out) lands on Profile,
+  // the one tab they actually have.
+  const active: DashTabId = tabs.some((t) => t.id === tabParam)
+    ? (tabParam as DashTabId)
+    : isSeller
+      ? "overview"
+      : "profile";
 
   // redirect unauthenticated users to /login
   useEffect(() => {
@@ -399,7 +409,7 @@ export default function DashboardShell() {
       case "profile":
         return <ProfileTab user={user} />;
       default:
-        return <OverviewTab user={user} onNavigate={setTab} />;
+        return isSeller ? <OverviewTab user={user} onNavigate={setTab} /> : <ProfileTab user={user} />;
     }
   }
 
@@ -419,7 +429,7 @@ export default function DashboardShell() {
       </div>
 
       <div style={{ display: "flex", flexDirection: narrow ? "column" : "row", gap: 28, alignItems: "flex-start" }}>
-        {nav}
+        {tabs.length > 1 && nav}
         <div style={{ flex: 1, minWidth: 0, width: "100%" }}>{renderActive()}</div>
       </div>
     </div>

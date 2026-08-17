@@ -29,6 +29,11 @@ export interface AppHomepage {
   showFeaturedSellers?: boolean;
   showHowItWorks?: boolean;
   showSellCta?: boolean;
+  // Directory homepage additions (frontend-design-guide.md v8).
+  showCategoryGroups?: boolean;
+  showTrendingSearches?: boolean;
+  showPopularSearches?: boolean;
+  showRecentActivity?: boolean;
 }
 
 export interface AppConfig {

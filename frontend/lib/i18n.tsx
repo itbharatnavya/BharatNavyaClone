@@ -24,12 +24,18 @@ const DICT: Record<string, { en: string; hi: string }> = {
   "nav.explore": { en: "Explore", hi: "एक्सप्लोर" },
   "nav.categories": { en: "Categories", hi: "श्रेणियाँ" },
   "nav.sell": { en: "Sell", hi: "बेचें" },
+  "nav.advertise": { en: "Advertise", hi: "विज्ञापन दें" },
   "nav.pricing": { en: "Pricing", hi: "मूल्य निर्धारण" },
   "nav.blog": { en: "Blog", hi: "ब्लॉग" },
   "nav.features": { en: "Features", hi: "विशेषताएँ" },
   "nav.login": { en: "Login", hi: "लॉगिन" },
   "nav.register": { en: "Register", hi: "रजिस्टर" },
+  "nav.joinUs": { en: "Join us", hi: "हमसे जुड़ें" },
+  "nav.about": { en: "About us", hi: "हमारे बारे में" },
   "nav.dashboard": { en: "Dashboard", hi: "डैशबोर्ड" },
+  "nav.goToDashboard": { en: "Go to dashboard", hi: "डैशबोर्ड पर जाएं" },
+  "nav.myProfile": { en: "My Profile", hi: "मेरी प्रोफ़ाइल" },
+  "nav.dashboardProfile": { en: "Profile", hi: "प्रोफ़ाइल" },
   "nav.admin": { en: "Admin", hi: "एडमिन" },
   "nav.myListings": { en: "My Listings", hi: "मेरी लिस्टिंग" },
   "nav.inbox": { en: "Inbox", hi: "इनबॉक्स" },
@@ -165,6 +171,8 @@ const DICT: Record<string, { en: string; hi: string }> = {
 
   // ---- discovery / category / results ----
   "nav.home": { en: "Home", hi: "होम" },
+  "nav.directoryCrumb": { en: "Directory", hi: "डायरेक्टरी" },
+  "nav.consultationsCrumb": { en: "Consultations", hi: "परामर्श" },
   "category.notFound.title": { en: "We couldn't find that category", hi: "हमें वह श्रेणी नहीं मिली" },
   "category.notFound.message": {
     en: "The category may have moved or been renamed. Try searching or browse from the homepage.",
@@ -357,7 +365,7 @@ const DICT: Record<string, { en: string; hi: string }> = {
   "auth.password": { en: "Password", hi: "पासवर्ड" },
   "auth.loggingIn": { en: "Logging in…", hi: "लॉग इन हो रहा है…" },
   "auth.newHere": { en: "New to", hi: "नए हैं" },
-  "auth.createAccountLink": { en: "Create an account", hi: "खाता बनाएँ" },
+  "auth.createAccountLink": { en: "Join us", hi: "हमसे जुड़ें" },
   "auth.register.asideTitle": { en: "One account. Buy and sell.", hi: "एक खाता। ख़रीदें और बेचें।" },
   "auth.register.asideCopy": {
     en: "Post requirements, list products or services, and chat with vendors — all from a single free account.",

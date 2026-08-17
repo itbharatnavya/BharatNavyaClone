@@ -2,8 +2,8 @@ import type { Config } from "tailwindcss";
 
 /**
  * BharatSource — light design system tokens.
- * Inspired by sarvam.ai: white canvas, generous whitespace, one trust accent
- * (blue) + one action accent (warm orange), hairline borders, soft shadows.
+ * White canvas, generous whitespace, one trust accent (blue) + one action
+ * accent (warm orange), hairline borders, soft shadows.
  * NO dark theme. Semantic color names extend Tailwind defaults (so gray/white/
  * transparent etc. remain available).
  */

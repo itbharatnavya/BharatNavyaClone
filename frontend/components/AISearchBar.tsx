@@ -7,6 +7,7 @@ import * as api from "@/lib/api";
 import type { AiSearchResult, Category, Listing } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { useToast } from "./Toast";
+import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 
 export interface AISearchBarProps {
   // If provided, "list" results are handed back instead of routing to /search.
@@ -16,6 +17,27 @@ export interface AISearchBarProps {
   autoFocus?: boolean;
   size?: "hero" | "compact";
   className?: string;
+  // A "[City ▾] [search…]" combined bar — opt-in since most
+  // callers (Consultations, /search) don't want a second control here.
+  showCity?: boolean;
+  // Off for the navbar-docked desktop instance (Navbar.tsx) — that copy sits
+  // in a fixed-height h-16 row with no room for a wrapped chip row, and
+  // centered flex overflow made chips spill both above and below the row.
+  showExamples?: boolean;
+  // Optional controlled query/city — used by the Directory homepage to keep
+  // the hero search box and the navbar's docked copy (Navbar.tsx +
+  // lib/searchDock.tsx) showing the SAME typed text and city instead of two
+  // independent, unsynced instances. Falls back to internal state when
+  // omitted, so every other caller (Consultations, /search…) is unaffected.
+  query?: string;
+  onQueryChange?: (query: string) => void;
+  city?: string;
+  onCityChange?: (city: string) => void;
+  // Off for the Directory-scoped instances (Navbar's docked bar, /search) —
+  // pure deterministic category+keyword search, no Claude/API call at all.
+  // Consultations and the suite home hero omit this (default true) and keep
+  // today's AI-refined behavior unchanged.
+  aiEnabled?: boolean;
 }
 
 const DEFAULT_EXAMPLES = [
@@ -55,6 +77,22 @@ function InfoIcon({ size = 20 }: { size?: number }) {
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5" />
       <path d="M12 8h.01" />
+    </svg>
+  );
+}
+function SearchGlassIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </svg>
+  );
+}
+function SpinnerIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden style={{ animation: "spin 0.7s linear infinite" }}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2.5" />
+      <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -104,11 +142,18 @@ type SugItem =
 
 export default function AISearchBar({
   onResults,
-  placeholder = "Describe what you need… e.g. 'CA in Pune for GST filing'",
+  placeholder: placeholderProp,
   examples = DEFAULT_EXAMPLES,
   autoFocus = false,
   size = "hero",
   className = "",
+  showCity = false,
+  showExamples = true,
+  query: queryProp,
+  onQueryChange,
+  city: cityProp,
+  onCityChange,
+  aiEnabled = true,
 }: AISearchBarProps) {
   const router = useRouter();
   const { t } = useT();
@@ -116,7 +161,30 @@ export default function AISearchBar({
   const hero = size === "hero";
   const baseId = useId();
 
-  const [query, setQuery] = useState("");
+  // The default placeholder is responsive rather than one fixed string: with
+  // showCity on, the city <select> + spark icon + submit button leave very
+  // little room for the input on narrow phones (~127px at 390px viewport),
+  // not nearly enough for a full descriptive sentence even though desktop
+  // has plenty of room for one. Only kicks in when the caller hasn't passed
+  // an explicit placeholder (e.g. Consultations' page keeps its own).
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 480px)");
+    const update = () => setIsNarrow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const placeholder =
+    placeholderProp ?? (isNarrow && showCity ? "Search…" : "Describe what you need…");
+
+  const [internalCity, setInternalCity] = useState(PAN_INDIA_LABEL);
+  const [internalQuery, setInternalQuery] = useState("");
+  const city = cityProp ?? internalCity;
+  const setCity = onCityChange ?? setInternalCity;
+  const query = queryProp ?? internalQuery;
+  const setQuery = onQueryChange ?? setInternalQuery;
   const [loading, setLoading] = useState(false);
   const [clarify, setClarify] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -236,12 +304,19 @@ export default function AISearchBar({
     setError(null);
     setListResults(null);
     setListMessage(null);
+    // Fold the selected city into the free-text query the AI parses — it
+    // already extracts a location from natural language, so this is the
+    // lowest-risk way to make the city selector actually filter results.
+    const withCity =
+      showCity && city !== PAN_INDIA_LABEL && !text.toLowerCase().includes(city.toLowerCase())
+        ? `${text} in ${city}`
+        : text;
     try {
-      const result = await api.aiSearch(text);
+      const result = await api.aiSearch(withCity, aiEnabled ? undefined : { ai: false });
 
       if (result.mode === "navigate" && result.navigateTo) {
         const qs = buildNavParams(result);
-        addToast("AI matched your request", "success");
+        addToast(aiEnabled ? "AI matched your request" : "Matched your search", "success");
         router.push(`/${result.navigateTo.categorySlug}${qs}`);
         return;
       }
@@ -318,17 +393,45 @@ export default function AISearchBar({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 10,
+            gap: showCity ? 4 : 10,
             background: "#fff",
             border: "1px solid var(--border-strong)",
             borderRadius: hero ? 16 : 12,
-            padding: hero ? "8px 8px 8px 18px" : "5px 5px 5px 14px",
+            padding: showCity ? "6px" : hero ? "8px 8px 8px 18px" : "5px 5px 5px 14px",
             boxShadow: hero
               ? "0 4px 24px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.06)"
               : "var(--shadow-card)",
           }}
         >
-          <span style={{ color: "var(--brand)", flexShrink: 0, display: "inline-flex" }}>
+          {showCity && (
+            <>
+              <div className="search-city-select" style={{ height: hero ? 40 : 32 }}>
+                <span aria-hidden className="search-city-icon">
+                  <LocationIcon />
+                </span>
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  aria-label="City"
+                  style={{ fontSize: hero ? 14.5 : 13.5 }}
+                >
+                  <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
+                  {ALL_CITIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+                <span aria-hidden className="search-city-chevron">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </div>
+              <span aria-hidden className="search-city-divider" />
+            </>
+          )}
+          <span style={{ color: "var(--brand)", flexShrink: 0, display: "inline-flex", marginLeft: showCity ? 4 : 0 }}>
             <SparkIcon />
           </span>
           <input
@@ -344,7 +447,7 @@ export default function AISearchBar({
             }}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            aria-label="AI vendor search"
+            aria-label={aiEnabled ? "AI vendor search" : "Vendor search"}
             role="combobox"
             aria-expanded={showDropdown}
             aria-controls={`${baseId}-listbox`}
@@ -366,13 +469,19 @@ export default function AISearchBar({
             type="submit"
             className="btn btn-primary"
             disabled={loading || !query.trim()}
+            aria-label={loading ? t("common.searching") : t("common.search")}
             style={{
               flexShrink: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
               borderRadius: hero ? 12 : 9,
-              padding: hero ? "11px 22px" : "8px 16px",
+              padding: 0,
+              width: hero ? 44 : 36,
+              height: hero ? 44 : 36,
             }}
           >
-            {loading ? t("common.searching") : t("common.search")}
+            {loading ? <SpinnerIcon size={hero ? 19 : 16} /> : <SearchGlassIcon size={hero ? 19 : 16} />}
           </button>
         </div>
       </form>
@@ -491,7 +600,7 @@ export default function AISearchBar({
                   <SparkIcon size={16} />
                 </span>
                 <span style={{ flex: 1, minWidth: 0, textAlign: "left", color: "var(--ink)" }}>
-                  <span style={{ fontWeight: 600 }}>Ask AI</span>
+                  <span style={{ fontWeight: 600 }}>{aiEnabled ? "Ask AI" : "Search"}</span>
                   <span className="line-clamp-1" style={{ color: "var(--muted)" }}> “{query.trim()}”</span>
                 </span>
                 {sugLoading && <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>…</span>}
@@ -572,7 +681,7 @@ export default function AISearchBar({
               <SparkIcon size={16} />
             </span>
             <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
-              {`AI found ${listResults.length} ${listResults.length === 1 ? "vendor" : "vendors"}`}
+              {`${aiEnabled ? "AI found" : "Found"} ${listResults.length} ${listResults.length === 1 ? "vendor" : "vendors"}`}
             </span>
             <Link
               href={`/search?q=${encodeURIComponent(query.trim())}`}
@@ -651,7 +760,7 @@ export default function AISearchBar({
       )}
 
       {/* ---- Example chips ---- */}
-      {examples.length > 0 && !listResults && (
+      {showExamples && examples.length > 0 && !listResults && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
           {examples.map((ex) => (
             <button

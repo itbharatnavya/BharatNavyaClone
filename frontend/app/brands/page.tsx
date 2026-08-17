@@ -55,7 +55,7 @@ export default function BrandsPage() {
     };
   }, [category]);
 
-  const crumbs: Crumb[] = [{ label: "Home", href: "/" }, { label: "Brands" }];
+  const crumbs: Crumb[] = [{ label: "Directory", href: "/directory" }, { label: "Brands" }];
   const activeName = useMemo(
     () => tops.find((c) => c.slug === category)?.name,
     [tops, category]

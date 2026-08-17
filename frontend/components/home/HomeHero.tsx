@@ -1,19 +1,26 @@
 "use client";
 
-// HomeHero — the #1 appeal surface. Confident, benefit-led headline, the AI
-// concierge search front-and-centre (existing AISearchBar, size="hero") with
-// example chips, and two clear CTAs (Find suppliers → focus search, Start
-// selling free → /register). Soft brand/action-tint gradient on white; clean,
-// not busy. Light theme only, no emojis — inline SVG icons.
+// HomeHero — a compact utility bar rather than a tall centered marketing
+// hero: a short, left-aligned, single-line headline sits directly above a
+// left-aligned AI search bar, with minimal vertical padding. The search bar
+// is the destination here, not a headline anyone lingers on. A short
+// brand-coloured flag mark to the left of the heading (echoing the
+// wordmark's ink/accent split in Navbar.tsx's Logo) is the one bit of
+// visual identity — everything else stays quiet. Light theme only, no
+// emojis — inline SVG icons.
+//
+// Scroll docking: once the hero search scrolls out of view, a compact copy
+// of it docks inside the sticky main navbar itself (see lib/searchDock.tsx +
+// Navbar.tsx) so search + city stay reachable without scrolling back up.
+// Both instances share showCity for the city selector.
 
-import React, { useRef } from "react";
-import Link from "next/link";
+import React, { useEffect, useRef } from "react";
 import AISearchBar from "@/components/AISearchBar";
+import { useSearchDock } from "@/lib/searchDock";
+import { PAN_INDIA_LABEL, detectNearestCity } from "@/lib/indiaGeo";
 
 export interface HomeHeroProps {
-  eyebrow?: string;
   title: string;
-  subtitle: string;
   examples: string[];
 }
 
@@ -26,159 +33,136 @@ const DEFAULT_EXAMPLES = [
   "Wedding photographer in Jaipur",
 ];
 
-function CheckShield() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 3l7 3v5c0 4.4-3 8.3-7 9.5C8 19.3 5 15.4 5 11V6l7-3z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-function SearchIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="11" cy="11" r="7" />
-      <path d="M21 21l-4.3-4.3" />
-    </svg>
-  );
-}
-function StoreIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M4 9l1-5h14l1 5" />
-      <path d="M4 9v10a1 1 0 001 1h14a1 1 0 001-1V9" />
-      <path d="M4 9a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0" />
-    </svg>
-  );
-}
-
-const TRUST_POINTS = ["Verified sellers", "Direct quotes", "No commission"];
-
-export default function HomeHero({ eyebrow, title, subtitle, examples }: HomeHeroProps) {
+export default function HomeHero({ title, examples }: HomeHeroProps) {
   const searchRef = useRef<HTMLDivElement>(null);
+  const { progress, setProgress, query, setQuery, city, setCity } = useSearchDock();
   const chips = examples && examples.length ? examples : DEFAULT_EXAMPLES;
 
-  function focusSearch() {
+  // Live ref so the async geolocation callback below can check the CURRENT
+  // city (not the one captured when the effect first ran) before overriding
+  // it — if the visitor manually picks a city while the browser's location
+  // prompt is still up, their choice wins.
+  const cityRef = useRef(city);
+  useEffect(() => {
+    cityRef.current = city;
+  }, [city]);
+
+  // Auto-detect the visitor's city from the browser's Geolocation API, only
+  // if they haven't already picked one. Silent no-op on denial/unsupported/
+  // no-close-match — this is a convenience, never a blocker, and never shows
+  // an error. Matched entirely client-side against a local city-coordinate
+  // table (lib/indiaGeo.ts) — no external reverse-geocoding service.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    if (cityRef.current !== PAN_INDIA_LABEL) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        if (cityRef.current !== PAN_INDIA_LABEL) return;
+        const match = detectNearestCity(pos.coords.latitude, pos.coords.longitude);
+        if (match) setCity(match);
+      },
+      () => {},
+      { timeout: 8000, maximumAge: 10 * 60 * 1000 }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Tell the navbar how far a compact search bar should be docked inside
+  // itself as the hero search scrolls out of view, so
+  // search + city stay reachable without scrolling back to the top. Many
+  // intersection thresholds turn intersectionRatio into a near-continuous
+  // 0→1 signal (rather than a single isIntersecting flip) so the docked bar
+  // visibly slides/fades in over the same scroll distance the hero bar takes
+  // to scroll past the sticky header, instead of snapping in one frame.
+  // Reset on unmount so leaving the Directory homepage doesn't leave the
+  // navbar stuck mid-dock.
+  useEffect(() => {
     const el = searchRef.current;
     if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    const input = el.querySelector("input");
-    if (input) window.setTimeout(() => (input as HTMLInputElement).focus(), 320);
-  }
+    const thresholds = Array.from({ length: 41 }, (_, i) => i / 40);
+    const io = new IntersectionObserver(
+      ([entry]) => setProgress(1 - entry.intersectionRatio, chips),
+      { rootMargin: "-64px 0px 0px 0px", threshold: thresholds }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      setProgress(0);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section
       style={{
         position: "relative",
-        overflow: "hidden",
+        // The search box below has a `transform` (for the docking fade/lift
+        // effect), which creates its own stacking context and traps the
+        // suggestions dropdown's z-index inside it — without this, later
+        // sibling sections (PromoBanner, CategoryIconGrid) paint over the
+        // open dropdown since they're simply later in DOM order. Giving the
+        // whole hero section an explicit stacking context above them fixes
+        // it regardless of what any child does internally.
+        zIndex: 30,
         borderBottom: "1px solid var(--border)",
-        background:
-          "radial-gradient(1100px 460px at 50% -8%, var(--brand-tint) 0%, rgba(239,246,255,0) 62%)," +
-          "radial-gradient(760px 380px at 88% 8%, var(--action-tint) 0%, rgba(255,247,237,0) 58%)," +
-          "var(--canvas)",
+        background: "linear-gradient(180deg, var(--brand-tint) 0%, var(--canvas) 100%)",
       }}
     >
       <div
         className="container-bs"
         style={{
-          position: "relative",
-          paddingTop: "clamp(48px, 8vw, 84px)",
-          paddingBottom: "clamp(40px, 7vw, 68px)",
-          textAlign: "center",
+          paddingTop: "clamp(16px, 2.6vw, 26px)",
+          paddingBottom: "clamp(16px, 2.6vw, 26px)",
         }}
       >
-        {eyebrow && (
-          <div
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+          <span aria-hidden style={{ width: 5, height: 20, borderRadius: 3, background: "var(--action)", flexShrink: 0 }} />
+          <h1
+            className="line-clamp-1"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 14px",
-              borderRadius: 999,
-              background: "#fff",
-              border: "1px solid var(--border)",
-              boxShadow: "var(--shadow-card)",
-              marginBottom: 22,
+              fontSize: "clamp(18px, 2.4vw, 24px)",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.25,
+              color: "var(--ink)",
             }}
           >
-            <span style={{ color: "var(--brand)", display: "inline-flex" }}>
-              <CheckShield />
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{eyebrow}</span>
-          </div>
-        )}
+            {title}
+          </h1>
+        </div>
 
-        <h1
+        {/* AI concierge search — the centrepiece, left-aligned rather than
+            centered. As it nears the sticky header it fully fades and lifts
+            away (not just to half-opacity in place), in sync with the docked
+            copy sliding UP into the navbar from just below its resting spot
+            (see Navbar.tsx) — both moving the same direction at the same
+            progress value, so it reads as one bar physically travelling from
+            here to there rather than one element fading out while an
+            unrelated one fades in. */}
+        <div
+          ref={searchRef}
           style={{
-            fontSize: "clamp(34px, 5.4vw, 58px)",
-            fontWeight: 800,
-            letterSpacing: "-0.035em",
-            lineHeight: 1.05,
-            color: "var(--ink)",
-            maxWidth: 880,
-            margin: "0 auto",
-          }}
-        >
-          {title}
-        </h1>
-        <p
-          style={{
-            fontSize: "clamp(16px, 2.2vw, 19px)",
-            color: "var(--muted)",
             maxWidth: 640,
-            margin: "20px auto 0",
-            lineHeight: 1.6,
+            scrollMarginTop: 96,
+            opacity: 1 - progress,
+            transform: `translateY(${progress * -26}px) scale(${1 - progress * 0.04})`,
+            transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+            // Once mostly faded, hand off interaction to the docked copy —
+            // otherwise this box would sit invisibly behind the sticky
+            // header, still clickable/tabbable.
+            pointerEvents: progress > 0.5 ? "none" : "auto",
           }}
         >
-          {subtitle}
-        </p>
-
-        {/* AI concierge search — the centrepiece */}
-        <div ref={searchRef} style={{ maxWidth: 720, margin: "34px auto 0", scrollMarginTop: 96 }}>
-          <AISearchBar size="hero" examples={chips} />
-        </div>
-
-        {/* Two clear CTAs */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: 12,
-            marginTop: 26,
-          }}
-        >
-          <button type="button" className="btn btn-brand btn-lg" onClick={focusSearch}>
-            <SearchIcon />
-            Find suppliers
-          </button>
-          <Link href="/register" className="btn btn-primary btn-lg">
-            <StoreIcon />
-            Start selling — free
-          </Link>
-        </div>
-
-        {/* Trust microcopy */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "8px 20px",
-            marginTop: 22,
-          }}
-        >
-          {TRUST_POINTS.map((p) => (
-            <span
-              key={p}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13.5, color: "var(--muted)" }}
-            >
-              <span style={{ color: "var(--success)", display: "inline-flex" }}>
-                <CheckShield />
-              </span>
-              {p}
-            </span>
-          ))}
+          <AISearchBar
+            size="hero"
+            examples={chips}
+            showCity
+            showExamples={false}
+            query={query}
+            onQueryChange={setQuery}
+            city={city}
+            onCityChange={setCity}
+          />
         </div>
       </div>
     </section>
