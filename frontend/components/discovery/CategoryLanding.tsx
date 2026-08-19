@@ -9,6 +9,8 @@ import type { CategoryNode } from "@/lib/types";
 import type { ListingFilterState } from "@/components/Filters";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import AdSlider from "@/components/AdSlider";
+import { useSearchDock } from "@/lib/searchDock";
+import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import DiscoveryResults from "./DiscoveryResults";
 import SubcategoryChips from "./SubcategoryChips";
 import SubcategoryTiles from "./SubcategoryTiles";
@@ -37,10 +39,27 @@ function HeaderBand({ children }: { children: React.ReactNode }) {
 export default function CategoryLanding({ slug, city, initialFilters, query }: CategoryLandingProps) {
   const t = useTr();
   const mapView = useFlag("mapView");
+  const {
+    query: dockedQuery,
+    setQuery: setDockedQuery,
+    city: dockedCity,
+    setCity: setDockedCity,
+  } = useSearchDock();
 
   const [node, setNode] = useState<CategoryNode | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  // Hydrate the shared search-dock query/city from the URL on first mount —
+  // a direct link or page refresh has no prior client-navigation to inherit
+  // the dock's in-memory state from. Only fills in when the dock is still
+  // empty, so it never clobbers something the user already typed elsewhere
+  // in the same session.
+  useEffect(() => {
+    if (query && !dockedQuery) setDockedQuery(query);
+    if (initialFilters?.city && dockedCity === PAN_INDIA_LABEL) setDockedCity(initialFilters.city);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -58,6 +77,12 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
       alive = false;
     };
   }, [slug]);
+
+  // NOTE: this page deliberately does NOT self-pin the search-bar chip to
+  // whatever category it's showing. Landing here isn't necessarily a search —
+  // a mega-menu click, subcategory tile, or direct link is just browsing.
+  // The chip is only ever set by an actual search action (DirectorySearchBar
+  // picking a category suggestion) — see lib/searchDock.tsx's markSearchNav.
 
   // ---- Unknown category ----
   if (!loading && (notFound || !node)) {
@@ -139,6 +164,11 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
         )}
       </HeaderBand>
 
+      {/* No embedded search bar here — the navbar's persistent copy (see
+          Navbar.tsx) is the single search entry point on every Directory
+          page, category pages included; a second bar here was redundant.
+          The category chip it shows while you're here still comes from the
+          self-pinning effect above. */}
       <div className="container-bs section-pad-sm">
         {/* Category-top ad slider (rotates all active bookings; hidden when none). */}
         <AdSlider placement="category_top" categorySlug={slug} />

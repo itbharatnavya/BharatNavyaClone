@@ -8,8 +8,8 @@
 // This is a real static route, so it wins over the app/[category] catch-all —
 // it's the target of the footer "Post an RFQ" link.
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useT } from "@/lib/i18n";
@@ -20,8 +20,9 @@ import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import RfqForm, { EMPTY_RFQ, type RfqFormState } from "@/components/rfq/RfqForm";
 
-export default function RfqPage() {
+function RfqInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { branding } = useConfig();
   const { t } = useT();
@@ -36,7 +37,9 @@ export default function RfqPage() {
       });
   }, []);
 
-  const [need, setNeed] = useState("");
+  // Arriving from search with "Post a requirement" pre-fills the free-text
+  // box with what was searched — one-time, doesn't fight further edits.
+  const [need, setNeed] = useState(() => searchParams.get("need") || "");
   const [drafting, setDrafting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [isFallback, setIsFallback] = useState(false);
@@ -293,5 +296,13 @@ export default function RfqPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function RfqPage() {
+  return (
+    <Suspense fallback={null}>
+      <RfqInner />
+    </Suspense>
   );
 }

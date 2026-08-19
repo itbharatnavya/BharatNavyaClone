@@ -274,10 +274,10 @@ p {
 }
 
 /* ============================================================
-   AISearchBar — optional city selector (showCity prop).
+   DirectorySearchBar / AISearchBar — optional city selector (showCity prop).
    A native <select> (per CLAUDE.md's "prefer native <select>" rule) styled
    as a pill segment glued to the left of the search input, divided by a
-   hairline. See components/AISearchBar.tsx.
+   hairline. See components/DirectorySearchBar.tsx / components/AISearchBar.tsx.
    ============================================================ */
 .search-city-select {
   position: relative;
@@ -475,6 +475,42 @@ p {
 }
 .btn-block {
   width: 100%;
+}
+
+/* Gradient CTA — opt-in enhancement layered on .btn-primary (orange), used by
+   the Directory listing row's "Contact" action (ListingCard layout="row").
+   Token-driven (--action/--action-hover only, no new hue) with a hover shine
+   sweep; reduced-motion users still get the gradient, just no sweep. */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--action) 0%, var(--action-hover) 100%);
+  border-color: var(--action-hover);
+  position: relative;
+  overflow: hidden;
+}
+.btn-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 42%,
+    transparent 64%
+  );
+  transform: translateX(-120%);
+  transition: transform 550ms ease;
+}
+.btn-gradient:hover:not(:disabled)::after {
+  transform: translateX(120%);
+}
+.btn-gradient:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--action-hover) 0%, var(--action) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gradient::after {
+    transition: none;
+    display: none;
+  }
 }
 
 /* ============================================================

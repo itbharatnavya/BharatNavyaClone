@@ -129,6 +129,57 @@ function createUsersStore(pool, nextId) {
     return doc;
   }
 
+  // Same shape as hydrate(), but built from maps that were already batch-
+  // fetched for every user at once (see all() below) instead of issuing up
+  // to 5 queries per row. Pure/sync — no client, no awaits.
+  function hydrateFromMaps(userRow, maps) {
+    const doc = rowToDoc(userRow, USER_COLUMNS);
+    doc.sellerProfile = null;
+    doc.legacy = undefined;
+
+    const sellerRow = maps.sellerByUser.get(userRow.id);
+    if (sellerRow) {
+      const sp = rowToDoc(sellerRow, SELLER_COLUMNS);
+      nestedFromRow(sellerRow, SELLER_NESTED, sp);
+
+      const locs = maps.locationsBySeller.get(userRow.id);
+      if (locs && locs.length) {
+        sp.locations = locs.map((r) => ({
+          id: r.id, label: r.label, city: r.city, state: r.state, pincode: r.pincode, address: r.address,
+        }));
+      }
+
+      const expertRow = maps.expertByUser.get(userRow.id);
+      if (expertRow) {
+        const expert = rowToDoc(expertRow, EXPERT_COLUMNS);
+        const cs = maps.caseStudiesByExpert.get(userRow.id) || [];
+        expert.caseStudies = cs.map((r) => ({ title: r.title, result: r.result }));
+        sp.expert = expert;
+      }
+      doc.sellerProfile = sp;
+    }
+
+    const legacyRow = maps.legacyByUser.get(userRow.id);
+    if (legacyRow) {
+      const legacy = rowToDoc(legacyRow, LEGACY_COLUMNS);
+      nestedFromRow(legacyRow, LEGACY_NESTED, legacy);
+      doc.legacy = legacy;
+    } else {
+      delete doc.legacy;
+    }
+    return doc;
+  }
+
+  /** Group an array of rows by an arbitrary column into a Map<value, row[]>. */
+  function groupBy(rows, key) {
+    const m = new Map();
+    for (const r of rows) {
+      if (!m.has(r[key])) m.set(r[key], []);
+      m.get(r[key]).push(r);
+    }
+    return m;
+  }
+
   async function getByIdWith(client, id) {
     const res = await client.query(`SELECT * FROM users WHERE id = $1`, [id]);
     if (!res.rowCount) return null;
@@ -180,11 +231,32 @@ function createUsersStore(pool, nextId) {
   }
 
   return {
+    // Batch-hydrates every user in 6 total queries (1 for users + 5 for every
+    // child table, each fetched once across all ids with = ANY($1)) instead
+    // of the previous 1 + up to 5-per-row.
     async all() {
       const res = await pool.query(`SELECT * FROM users ORDER BY id ASC`);
-      const docs = [];
-      for (const row of res.rows) docs.push(await hydrate(pool, row));
-      return docs;
+      const rows = res.rows;
+      if (rows.length === 0) return [];
+      const ids = rows.map((r) => r.id);
+
+      const [sellerRes, locRes, expertRes, csRes, legacyRes] = await Promise.all([
+        pool.query(`SELECT * FROM seller_profiles WHERE user_id = ANY($1)`, [ids]),
+        pool.query(`SELECT * FROM seller_locations WHERE seller_id = ANY($1) ORDER BY seller_id, position ASC`, [ids]),
+        pool.query(`SELECT * FROM expert_profiles WHERE user_id = ANY($1)`, [ids]),
+        pool.query(`SELECT * FROM expert_case_studies WHERE expert_id = ANY($1) ORDER BY expert_id, position ASC`, [ids]),
+        pool.query(`SELECT * FROM user_legacy WHERE user_id = ANY($1)`, [ids]),
+      ]);
+
+      const maps = {
+        sellerByUser: new Map(sellerRes.rows.map((r) => [r.user_id, r])),
+        locationsBySeller: groupBy(locRes.rows, "seller_id"),
+        expertByUser: new Map(expertRes.rows.map((r) => [r.user_id, r])),
+        caseStudiesByExpert: groupBy(csRes.rows, "expert_id"),
+        legacyByUser: new Map(legacyRes.rows.map((r) => [r.user_id, r])),
+      };
+
+      return rows.map((row) => hydrateFromMaps(row, maps));
     },
     async findOne(predicate) {
       const rows = await this.all();

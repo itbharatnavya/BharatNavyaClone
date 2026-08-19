@@ -15,7 +15,7 @@
 // Both instances share showCity for the city selector.
 
 import React, { useEffect, useRef } from "react";
-import AISearchBar from "@/components/AISearchBar";
+import DirectorySearchBar from "@/components/DirectorySearchBar";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL, detectNearestCity } from "@/lib/indiaGeo";
 
@@ -24,8 +24,9 @@ export interface HomeHeroProps {
   examples: string[];
 }
 
-// India-market defaults so the search always shows tangible suggestion chips
-// even when the admin config supplies none.
+// India-market defaults, kept for the docking-progress signal below (still
+// consumed by the navbar's docked copy) even though this bar no longer shows
+// example chips itself.
 const DEFAULT_EXAMPLES = [
   "CA in Pune for GST filing",
   "Stainless steel sheets, 2mm, Mumbai",
@@ -131,11 +132,11 @@ export default function HomeHero({ title, examples }: HomeHeroProps) {
           </h1>
         </div>
 
-        {/* AI concierge search — the centrepiece, left-aligned rather than
-            centered. As it nears the sticky header it fully fades and lifts
-            away (not just to half-opacity in place), in sync with the docked
-            copy sliding UP into the navbar from just below its resting spot
-            (see Navbar.tsx) — both moving the same direction at the same
+        {/* Search — the centrepiece, left-aligned rather than centered. As it
+            nears the sticky header it fully fades and lifts away (not just
+            to half-opacity in place), in sync with the docked copy sliding
+            UP into the navbar from just below its resting spot (see
+            Navbar.tsx) — both moving the same direction at the same
             progress value, so it reads as one bar physically travelling from
             here to there rather than one element fading out while an
             unrelated one fades in. */}
@@ -153,11 +154,9 @@ export default function HomeHero({ title, examples }: HomeHeroProps) {
             pointerEvents: progress > 0.5 ? "none" : "auto",
           }}
         >
-          <AISearchBar
+          <DirectorySearchBar
             size="hero"
-            examples={chips}
             showCity
-            showExamples={false}
             query={query}
             onQueryChange={setQuery}
             city={city}

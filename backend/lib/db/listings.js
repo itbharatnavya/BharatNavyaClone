@@ -116,6 +116,56 @@ function createListingsStore(pool, nextId) {
     return doc;
   }
 
+  // Same shape as hydrate(), but built from maps that were already batch-
+  // fetched for every listing at once (see all() below) instead of issuing
+  // 4-8 queries per row. Pure/sync — no client, no awaits.
+  function hydrateFromMaps(listingRow, maps) {
+    const doc = rowToDoc(listingRow, LISTING_COLUMNS);
+    nestedFromRow(listingRow, LISTING_NESTED, doc);
+
+    doc.media = (maps.mediaByListing.get(listingRow.id) || []).map((r) => ({ type: r.type, url: r.url }));
+
+    doc.product = null;
+    const productRow = maps.productByListing.get(listingRow.id);
+    if (productRow) {
+      const product = rowToDoc(productRow, PRODUCT_COLUMNS);
+
+      product.specifications = {};
+      for (const r of maps.specsByListing.get(listingRow.id) || []) {
+        product.specifications[r.spec_key] = r.spec_value;
+      }
+      product.priceTiers = (maps.tiersByListing.get(listingRow.id) || []).map((r) => r.extra);
+      product.variants = (maps.variantsByListing.get(listingRow.id) || []).map((r) => r.extra);
+
+      doc.product = product;
+    }
+
+    doc.service = null;
+    const serviceRow = maps.serviceByListing.get(listingRow.id);
+    if (serviceRow) {
+      const service = rowToDoc(serviceRow, SERVICE_COLUMNS);
+
+      service.rateCard = (maps.rateCardByListing.get(listingRow.id) || []).map((r) => ({
+        label: r.label, price: r.price === null ? null : Number(r.price), unit: r.unit,
+      }));
+      service.portfolio = (maps.portfolioByListing.get(listingRow.id) || []).map((r) => r.extra);
+
+      doc.service = service;
+    }
+
+    return doc;
+  }
+
+  /** Group an array of rows by `listing_id` into a Map<listing_id, row[]>. */
+  function groupByListingId(rows) {
+    const m = new Map();
+    for (const r of rows) {
+      if (!m.has(r.listing_id)) m.set(r.listing_id, []);
+      m.get(r.listing_id).push(r);
+    }
+    return m;
+  }
+
   async function getByIdWith(client, id) {
     const res = await client.query(`SELECT * FROM listings WHERE id = $1`, [id]);
     if (!res.rowCount) return null;
@@ -175,11 +225,42 @@ function createListingsStore(pool, nextId) {
   }
 
   return {
+    // Batch-hydrates every listing in 9 total queries (1 for listings + 8 for
+    // every child table, each fetched once across all ids with = ANY($1))
+    // instead of the previous 1 + up to 8-per-row — the difference between 9
+    // queries and several thousand for a few hundred listings.
     async all() {
       const res = await pool.query(`SELECT * FROM listings ORDER BY id ASC`);
-      const docs = [];
-      for (const row of res.rows) docs.push(await hydrate(pool, row));
-      return docs;
+      const rows = res.rows;
+      if (rows.length === 0) return [];
+      const ids = rows.map((r) => r.id);
+
+      const [
+        mediaRes, productRes, specRes, tierRes, variantRes,
+        serviceRes, rateRes, portfolioRes,
+      ] = await Promise.all([
+        pool.query(`SELECT * FROM listing_media WHERE listing_id = ANY($1) ORDER BY listing_id, position ASC`, [ids]),
+        pool.query(`SELECT * FROM listing_products WHERE listing_id = ANY($1)`, [ids]),
+        pool.query(`SELECT listing_id, spec_key, spec_value FROM listing_product_specifications WHERE listing_id = ANY($1) ORDER BY id ASC`, [ids]),
+        pool.query(`SELECT listing_id, extra FROM listing_product_price_tiers WHERE listing_id = ANY($1) ORDER BY listing_id, position ASC`, [ids]),
+        pool.query(`SELECT listing_id, extra FROM listing_product_variants WHERE listing_id = ANY($1) ORDER BY listing_id, position ASC`, [ids]),
+        pool.query(`SELECT * FROM listing_services WHERE listing_id = ANY($1)`, [ids]),
+        pool.query(`SELECT listing_id, label, price, unit FROM listing_service_rate_card WHERE listing_id = ANY($1) ORDER BY listing_id, position ASC`, [ids]),
+        pool.query(`SELECT listing_id, extra FROM listing_service_portfolio WHERE listing_id = ANY($1) ORDER BY listing_id, position ASC`, [ids]),
+      ]);
+
+      const maps = {
+        mediaByListing: groupByListingId(mediaRes.rows),
+        productByListing: new Map(productRes.rows.map((r) => [r.listing_id, r])),
+        specsByListing: groupByListingId(specRes.rows),
+        tiersByListing: groupByListingId(tierRes.rows),
+        variantsByListing: groupByListingId(variantRes.rows),
+        serviceByListing: new Map(serviceRes.rows.map((r) => [r.listing_id, r])),
+        rateCardByListing: groupByListingId(rateRes.rows),
+        portfolioByListing: groupByListingId(portfolioRes.rows),
+      };
+
+      return rows.map((row) => hydrateFromMaps(row, maps));
     },
     async findOne(predicate) {
       const rows = await this.all();

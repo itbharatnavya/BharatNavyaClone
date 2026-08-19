@@ -128,6 +128,166 @@ function publicSeller(user) {
   };
 }
 
+// GET /api/users/sellers?q=&limit=&page= — PUBLIC search of approved sellers by
+// company name. Powers the "Companies" bucket of the Directory search overview
+// (frontend /search page) — same shaping as /sellers/featured just below (kept
+// field-compatible with FeaturedSellers.tsx's mapSeller()), plus a text filter
+// and real pagination.
+// Active-listing counts per seller (single pass over listings) — shared by
+// /sellers and /sellers/featured, memoized on store.js's listings.json
+// version so a burst of concurrent requests to either endpoint shares one
+// scan instead of redoing it per request.
+let _activeCountsCache = null; // { listVersion, counts }
+function getActiveListingCounts(listings) {
+  const listVersion = store.getVersion("listings.json");
+  if (_activeCountsCache && _activeCountsCache.listVersion === listVersion) {
+    return _activeCountsCache.counts;
+  }
+  const counts = new Map();
+  for (const l of listings) {
+    if (l && l.status === "active" && l.sellerId) {
+      counts.set(l.sellerId, (counts.get(l.sellerId) || 0) + 1);
+    }
+  }
+  _activeCountsCache = { listVersion, counts };
+  return counts;
+}
+
+function computeApprovedSellerCards(users, listings) {
+  const activeCounts = getActiveListingCounts(listings);
+  const approved = users.filter(
+    (u) => u.sellerProfile && u.sellerProfile.status === "approved"
+  );
+
+  // Highest rating, then most reviews — same convention as /sellers/featured.
+  approved.sort((a, b) => {
+    const sa = a.sellerProfile;
+    const sb = b.sellerProfile;
+    if ((sb.rating || 0) !== (sa.rating || 0)) return (sb.rating || 0) - (sa.rating || 0);
+    return (sb.reviewCount || 0) - (sa.reviewCount || 0);
+  });
+
+  return approved.map((u) => {
+    const sp = u.sellerProfile;
+    return {
+      id: u.id,
+      name: sp.companyName || u.name,
+      slug: sp.slug,
+      city: sp.location && sp.location.city,
+      state: sp.location && sp.location.state,
+      logo: sp.logo || null,
+      rating: sp.rating,
+      reviewCount: sp.reviewCount,
+      isVerified: sp.isVerified,
+      trustSealVerified: sp.trustSealVerified,
+      gstNumber: sp.gstNumber,
+      yearEstablished: sp.yearEstablished,
+      responseRate: sp.responseRate,
+      listingCount: activeCounts.get(u.id) || 0,
+      badges: deriveBadges(sp),
+      _companyNameLc: String(sp.companyName || "").toLowerCase(),
+    };
+  });
+}
+
+// Memoized on (users.json, listings.json) versions — independent of the
+// q/limit/page query params, so every /sellers request (any query) shares
+// this same computed-and-sorted base list; filtering by q and paginating
+// stay per-request (cheap — operating on a few dozen already-sorted rows).
+let _approvedSellerCardsCache = null; // { userVersion, listVersion, cards }
+function getApprovedSellerCards(users, listings) {
+  const userVersion = store.getVersion("users.json");
+  const listVersion = store.getVersion("listings.json");
+  if (
+    _approvedSellerCardsCache &&
+    _approvedSellerCardsCache.userVersion === userVersion &&
+    _approvedSellerCardsCache.listVersion === listVersion
+  ) {
+    return _approvedSellerCardsCache.cards;
+  }
+  const cards = computeApprovedSellerCards(users, listings);
+  _approvedSellerCardsCache = { userVersion, listVersion, cards };
+  return cards;
+}
+
+router.get("/sellers", async (req, res, next) => {
+  try {
+    const q = String(req.query.q || "").trim().toLowerCase();
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 12, 1), 50);
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+
+    const [users, listings] = await Promise.all([
+      store.all("users.json"),
+      store.all("listings.json"),
+    ]);
+
+    const allCards = getApprovedSellerCards(users, listings);
+    const filtered = q ? allCards.filter((c) => c._companyNameLc.includes(q)) : allCards;
+
+    const total = filtered.length;
+    const start = (page - 1) * limit;
+    // eslint-disable-next-line no-unused-vars
+    const sellers = filtered.slice(start, start + limit).map(({ _companyNameLc, ...card }) => card);
+
+    return res.json({ success: true, data: { sellers, total } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+function computeFeaturedSellerCards(users, listings) {
+  const activeCounts = getActiveListingCounts(listings);
+  const approved = users.filter(
+    (u) => u.sellerProfile && u.sellerProfile.status === "approved"
+  );
+
+  // Featured first, then highest rating, then most reviews.
+  approved.sort((a, b) => {
+    const sa = a.sellerProfile;
+    const sb = b.sellerProfile;
+    const fa = sa.isFeaturedSeller ? 1 : 0;
+    const fb = sb.isFeaturedSeller ? 1 : 0;
+    if (fb !== fa) return fb - fa;
+    if ((sb.rating || 0) !== (sa.rating || 0)) return (sb.rating || 0) - (sa.rating || 0);
+    return (sb.reviewCount || 0) - (sa.reviewCount || 0);
+  });
+
+  return approved.slice(0, 8).map((u) => {
+    const sp = u.sellerProfile;
+    return {
+      id: u.id,
+      name: u.name,
+      slug: sp.slug,
+      city: sp.location && sp.location.city,
+      state: sp.location && sp.location.state,
+      rating: sp.rating,
+      reviewCount: sp.reviewCount,
+      isVerified: sp.isVerified,
+      responseRate: sp.responseRate,
+      listingCount: activeCounts.get(u.id) || 0,
+      badges: deriveBadges(sp),
+    };
+  });
+}
+
+// Memoized on (users.json, listings.json) versions — /sellers/featured takes
+// no query params, so the whole response can be cached and reused as-is.
+let _featuredSellerCardsCache = null; // { userVersion, listVersion, data }
+function getFeaturedSellerCards(users, listings) {
+  const userVersion = store.getVersion("users.json");
+  const listVersion = store.getVersion("listings.json");
+  if (
+    _featuredSellerCardsCache &&
+    _featuredSellerCardsCache.userVersion === userVersion &&
+    _featuredSellerCardsCache.listVersion === listVersion
+  ) {
+    return _featuredSellerCardsCache.data;
+  }
+  const data = computeFeaturedSellerCards(users, listings);
+  _featuredSellerCardsCache = { userVersion, listVersion, data };
+  return data;
+}
+
 // GET /api/users/sellers/featured — PUBLIC list of up to 8 top sellers.
 // MUST be declared BEFORE "/sellers/:slug" so "featured" isn't captured as a :slug.
 router.get("/sellers/featured", async (req, res, next) => {
@@ -137,45 +297,7 @@ router.get("/sellers/featured", async (req, res, next) => {
       store.all("listings.json"),
     ]);
 
-    // Active-listing counts per seller (single pass over listings).
-    const activeCounts = new Map();
-    for (const l of listings) {
-      if (l && l.status === "active" && l.sellerId) {
-        activeCounts.set(l.sellerId, (activeCounts.get(l.sellerId) || 0) + 1);
-      }
-    }
-
-    const approved = users.filter(
-      (u) => u.sellerProfile && u.sellerProfile.status === "approved"
-    );
-
-    // Featured first, then highest rating, then most reviews.
-    approved.sort((a, b) => {
-      const sa = a.sellerProfile;
-      const sb = b.sellerProfile;
-      const fa = sa.isFeaturedSeller ? 1 : 0;
-      const fb = sb.isFeaturedSeller ? 1 : 0;
-      if (fb !== fa) return fb - fa;
-      if ((sb.rating || 0) !== (sa.rating || 0)) return (sb.rating || 0) - (sa.rating || 0);
-      return (sb.reviewCount || 0) - (sa.reviewCount || 0);
-    });
-
-    const data = approved.slice(0, 8).map((u) => {
-      const sp = u.sellerProfile;
-      return {
-        id: u.id,
-        name: u.name,
-        slug: sp.slug,
-        city: sp.location && sp.location.city,
-        state: sp.location && sp.location.state,
-        rating: sp.rating,
-        reviewCount: sp.reviewCount,
-        isVerified: sp.isVerified,
-        responseRate: sp.responseRate,
-        listingCount: activeCounts.get(u.id) || 0,
-        badges: deriveBadges(sp),
-      };
-    });
+    const data = getFeaturedSellerCards(users, listings);
 
     return res.json({ success: true, data });
   } catch (err) {

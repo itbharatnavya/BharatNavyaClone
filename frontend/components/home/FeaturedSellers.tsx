@@ -6,9 +6,9 @@
 // section is gated by homepage.showFeaturedSellers and hides itself (via onEmpty)
 // when the endpoint returns nothing.
 
-import React, { useEffect, useRef, useState } from "react";
-import * as api from "@/lib/api";
+import React, { useEffect, useRef } from "react";
 import { useConfig } from "@/lib/config";
+import { useFeaturedSellers } from "@/lib/catalog";
 import SellerCard, { SellerCardSeller } from "@/components/SellerCard";
 
 export interface FeaturedSellersProps {
@@ -17,9 +17,11 @@ export interface FeaturedSellersProps {
   onEmpty?: () => void;
 }
 
-// The /sellers/featured summary → SellerCard shape. Defensive about field names
-// so it degrades gracefully if the endpoint's payload evolves.
-function mapSeller(s: any): SellerCardSeller | null {
+// The /sellers/featured (and /sellers search) summary → SellerCard shape.
+// Defensive about field names so it degrades gracefully if the endpoint's
+// payload evolves. Exported for reuse by GlobalSearchResults.tsx (the
+// "Companies" section of /search's global-search results).
+export function mapSeller(s: any): SellerCardSeller | null {
   if (!s) return null;
   const slug = s.slug || s.sellerSlug;
   if (!slug) return null;
@@ -45,42 +47,24 @@ export default function FeaturedSellers({ limit = 4, className = "", onEmpty }: 
   const { homepage } = useConfig();
   const enabled = homepage.showFeaturedSellers !== false;
 
-  const [sellers, setSellers] = useState<SellerCardSeller[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Sourced from the shared CatalogProvider (lib/catalog.tsx) instead of
+  // this component fetching its own copy — TrustBar wants the same data on
+  // the same page.
+  const { sellers: catalogSellers, loading: catalogLoading } = useFeaturedSellers();
+  const loading = enabled && catalogLoading;
+  const sellers = enabled
+    ? catalogSellers.map(mapSeller).filter((s): s is SellerCardSeller => !!s).slice(0, limit)
+    : [];
 
   // Keep the latest onEmpty without making it an effect dependency (avoids
-  // refetching whenever the parent re-renders with a fresh inline callback).
+  // re-running whenever the parent re-renders with a fresh inline callback).
   const onEmptyRef = useRef(onEmpty);
   onEmptyRef.current = onEmpty;
 
   useEffect(() => {
-    if (!enabled) {
-      setLoading(false);
-      return;
-    }
-    let alive = true;
-    setLoading(true);
-    api
-      .getFeaturedSellers()
-      .then((rows) => {
-        if (!alive) return;
-        const out = (rows || [])
-          .map(mapSeller)
-          .filter((s): s is SellerCardSeller => !!s)
-          .slice(0, limit);
-        setSellers(out);
-        if (out.length === 0) onEmptyRef.current?.();
-      })
-      .catch(() => {
-        if (!alive) return;
-        setSellers([]);
-        onEmptyRef.current?.();
-      })
-      .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
-  }, [limit, enabled]);
+    if (enabled && !catalogLoading && sellers.length === 0) onEmptyRef.current?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, catalogLoading, sellers.length]);
 
   if (!enabled) return null;
   if (!loading && sellers.length === 0) return null;

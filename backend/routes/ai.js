@@ -29,6 +29,7 @@ const config = require("../lib/config");
 const { parseQuery } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
+const { logSearchEvent } = require("../lib/searchEvents");
 
 const router = express.Router();
 
@@ -379,30 +380,6 @@ async function cliResolve({ query, parsed, categories }) {
   };
 }
 
-/* ------------------------------------------------- search-event logging ---- */
-/**
- * Fire-and-forget log of every search, feeding GET /api/search/trending and
- * /popular (routes/searchTrends.js). Never allowed to affect the search
- * response — any failure here is swallowed, same NEVER-BLANK guarantee as
- * the rest of this router.
- */
-async function logSearchEvent({ query, parsed, result, userId }) {
-  try {
-    const q = String(query || "").trim();
-    if (!q) return;
-    await store.appendJsonl("search-events.jsonl", {
-      id: await store.nextId("srch"),
-      query: q,
-      categorySlug: (result && result.navigateTo && result.navigateTo.categorySlug) || parsed.category || null,
-      city: parsed.city || null,
-      userId: userId || null,
-      createdAt: new Date().toISOString(),
-    });
-  } catch (_err) {
-    // Logging must never break search — silently drop.
-  }
-}
-
 /* --------------------------------------------------------------- route ----- */
 
 // Public: the hero search must work before any auth wall (DESIGN §1.8).
@@ -443,7 +420,12 @@ router.post("/search", optionalAuth, async (req, res, next) => {
       result = await deterministicResolve({ query, parsed });
     }
 
-    logSearchEvent({ query, parsed, result, userId: req.user && req.user.id }); // fire-and-forget
+    logSearchEvent({
+      query,
+      categorySlug: (result && result.navigateTo && result.navigateTo.categorySlug) || parsed.category || null,
+      city: parsed.city || null,
+      userId: req.user && req.user.id,
+    }); // fire-and-forget
 
     res.json({ success: true, data: result });
   } catch (err) {

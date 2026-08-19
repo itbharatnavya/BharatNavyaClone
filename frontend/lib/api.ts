@@ -84,8 +84,31 @@ export function clearToken(): void {
   }
 }
 
+// In-flight GET de-dup: collapses concurrent identical requests (same path,
+// fired before the first one resolves — e.g. several components on the same
+// page each requesting the same data at mount) into one shared network call.
+// Only applied to GET requests — a mutation must never be silently merged
+// with another one. Not a cache: the entry is removed as soon as the
+// request settles, so it only collapses a startup burst, never serves stale
+// data on a later, separate call.
+const _inFlightGet = new Map<string, Promise<unknown>>();
+
 // ---- core request ----
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method || "GET").toUpperCase();
+  if (method !== "GET") return doRequest<T>(path, options);
+
+  const existing = _inFlightGet.get(path);
+  if (existing) return existing as Promise<T>;
+
+  const promise = doRequest<T>(path, options).finally(() => {
+    if (_inFlightGet.get(path) === promise) _inFlightGet.delete(path);
+  });
+  _inFlightGet.set(path, promise);
+  return promise;
+}
+
+async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
@@ -188,6 +211,23 @@ export function getSeller(slug: string): Promise<SellerPublicProfile> {
 // Top verified/rated sellers for the homepage "Featured sellers" rail.
 export function getFeaturedSellers(): Promise<any[]> {
   return request<any[]>(`/api/sellers/featured`);
+}
+
+// Company/seller-name search — powers the "Companies" bucket of the Directory
+// search overview (/search). Field-compatible with getFeaturedSellers()'s
+// per-seller shape (see FeaturedSellers.tsx's mapSeller()).
+export interface SellerSearchResponse {
+  sellers: any[];
+  total: number;
+}
+export function searchSellers(query: {
+  q: string;
+  limit?: number;
+  page?: number;
+}): Promise<SellerSearchResponse> {
+  return request<SellerSearchResponse>(
+    `/api/sellers${toQuery(query as Record<string, unknown>)}`
+  );
 }
 
 export async function becomeSeller(
@@ -511,6 +551,21 @@ export function getTrendingSearches(params: { city?: string; limit?: number } = 
 
 export function getPopularSearches(params: { limit?: number } = {}): Promise<SearchTrendItem[]> {
   return request<SearchTrendItem[]>(`/api/search/popular${toQuery(params as Record<string, unknown>)}`);
+}
+
+// Logs a search event ONLY for a validated pick (a category or listing
+// suggestion actually selected) — never for a plain free-text submit, which
+// is exactly what previously polluted Popular/Trending Searches with
+// half-typed queries. Fire-and-forget from callers (see DirectorySearchBar).
+export function logSearchSelection(params: {
+  query: string;
+  categorySlug: string;
+  city?: string;
+}): Promise<void> {
+  return request<void>(`/api/search/log`, {
+    method: "POST",
+    body: JSON.stringify(params),
+  });
 }
 
 // ============================================================

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";
+import { CatalogProvider } from "@/lib/catalog";
 import { LanguageProvider } from "@/lib/i18n";
 import { CompareProvider } from "@/lib/compare";
 import { ShortlistProvider } from "@/lib/shortlist";
@@ -11,7 +12,9 @@ import { SearchDockProvider } from "@/lib/searchDock";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
+import FloatingRfqButton from "@/components/rfq/FloatingRfqButton";
 import CompareBar from "@/components/compare/CompareBar";
+import RouteProgress from "@/components/RouteProgress";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,26 +36,30 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body>
+        <RouteProgress />
         <ConfigProvider>
-          <LanguageProvider>
-            <ToastProvider>
-              <AuthProvider>
-                <CompareProvider>
-                  <ShortlistProvider>
-                    <SearchDockProvider>
-                      <div className="flex min-h-screen flex-col">
-                        <Navbar />
-                        <main className="flex-1">{children}</main>
-                        <Footer />
-                      </div>
-                      <ChatAssistant />
-                      <CompareBar />
-                    </SearchDockProvider>
-                  </ShortlistProvider>
-                </CompareProvider>
-              </AuthProvider>
-            </ToastProvider>
-          </LanguageProvider>
+          <CatalogProvider>
+            <LanguageProvider>
+              <ToastProvider>
+                <AuthProvider>
+                  <CompareProvider>
+                    <ShortlistProvider>
+                      <SearchDockProvider>
+                        <div className="flex min-h-screen flex-col">
+                          <Navbar />
+                          <main className="flex-1">{children}</main>
+                          <Footer />
+                        </div>
+                        <ChatAssistant />
+                        <FloatingRfqButton />
+                        <CompareBar />
+                      </SearchDockProvider>
+                    </ShortlistProvider>
+                  </CompareProvider>
+                </AuthProvider>
+              </ToastProvider>
+            </LanguageProvider>
+          </CatalogProvider>
         </ConfigProvider>
       </body>
     </html>

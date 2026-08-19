@@ -14,10 +14,9 @@
 // on the suite homepage (app/page.tsx). No emojis anywhere — inline SVG
 // icons only.
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { Category } from "@/lib/types";
-import { getCategories } from "@/lib/api";
-import { buildTree } from "@/lib/categoryTree";
+import { useCategories, useCategoryTree } from "@/lib/catalog";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Reveal from "@/components/Reveal";
 import StoryRail from "@/components/StoryRail";
@@ -57,18 +56,9 @@ export default function DirectoryPage() {
 
   const homepage = config.homepage || {};
 
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const { categories: allCategories } = useCategories();
+  const { tree: categoryTree } = useCategoryTree();
   const [sellersEmpty, setSellersEmpty] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    getCategories()
-      .then((c) => alive && setAllCategories(c))
-      .catch(() => alive && setAllCategories([]));
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   // Curated, featured categories only — never the full directory. Prefer the
   // admin-configured slugs; otherwise the top-level industry roots by order.
@@ -85,10 +75,6 @@ export default function DirectoryPage() {
   }, [allCategories, homepage.featuredCategorySlugs]);
 
   const heroTitle = homepage.heroTitle || t("home.hero.title", "Find any vendor. Sell anything.");
-
-  // getCategories() returns a FLAT list; CategoryGroupGrid needs real
-  // sub-categories nested under each top-level category to render tiles.
-  const categoryTree = useMemo(() => buildTree(allCategories), [allCategories]);
 
   return (
     <div>

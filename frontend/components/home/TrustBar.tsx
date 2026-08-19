@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import * as api from "@/lib/api";
 import type { Category } from "@/lib/types";
 import Reveal from "@/components/Reveal";
+import { useCategories, useBrands, useFeaturedSellers } from "@/lib/catalog";
 
 // Each stat cycles through a distinct brand colour instead of a uniform
 // blue treatment — a deliberate, low-risk way to spread the palette across
@@ -94,27 +95,21 @@ interface Stat {
 
 export default function TrustBar() {
   const [listings, setListings] = useState<number | null>(null);
-  const [sellers, setSellers] = useState<number | null>(null);
-  const [categories, setCategories] = useState<number | null>(null);
-  const [brands, setBrands] = useState<number | null>(null);
+  // Categories/brands/featured-sellers come from the shared CatalogProvider
+  // (lib/catalog.tsx) instead of this component fetching its own copy of
+  // each — only the total-listings count is genuinely specific to this bar.
+  const { categories: catalogCategories } = useCategories();
+  const { brands: catalogBrands } = useBrands();
+  const { sellers: catalogFeaturedSellers } = useFeaturedSellers();
+  const sellers = catalogFeaturedSellers.length || null;
+  const categories = catalogCategories.length ? flattenCount(catalogCategories) : null;
+  const brands = catalogBrands.length || null;
 
   useEffect(() => {
     let alive = true;
     api
       .getListings({ limit: 1 })
       .then((r) => alive && typeof r.total === "number" && setListings(r.total))
-      .catch(() => {});
-    api
-      .getFeaturedSellers()
-      .then((rows) => alive && Array.isArray(rows) && setSellers(rows.length))
-      .catch(() => {});
-    api
-      .getCategories()
-      .then((c) => alive && setCategories(flattenCount(c)))
-      .catch(() => {});
-    api
-      .getBrands()
-      .then((b) => alive && Array.isArray(b) && setBrands(b.length))
       .catch(() => {});
     return () => {
       alive = false;

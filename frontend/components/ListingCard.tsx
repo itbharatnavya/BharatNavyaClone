@@ -15,6 +15,9 @@ export interface ListingCardProps {
   href?: string; // detail link (defaults to /listing/[id])
   onContact?: (listing: Listing) => void;
   className?: string;
+  /** "grid" (default, image-forward tile) or "row" (one-by-one list row — image
+   * left, details middle, price/CTA right — used by DiscoveryResults' list view). */
+  layout?: "grid" | "row";
 }
 
 function formatINR(value: number): string {
@@ -59,7 +62,7 @@ function CardToggles({ listing }: { listing: Listing }) {
   };
 
   return (
-    <div style={{ display: "inline-flex", gap: 6 }}>
+    <div style={{ display: "inline-flex", gap: 6, flexShrink: 0 }}>
       <button
         type="button"
         className="lc-toggle"
@@ -147,24 +150,291 @@ export default function ListingCard({
   href,
   onContact,
   className = "",
+  layout = "grid",
 }: ListingCardProps) {
   const detailHref = href || `/listing/${listing.id}`;
   const image = listing.media?.find((m) => m.type !== "video")?.url || listing.media?.[0]?.url;
   const isService = listing.type === "service";
+  const product = listing.product;
+  const service = listing.service;
 
-  const verified =
-    listing.isVerifiedSeller || !!listing.seller?.isVerified;
+  const verified = listing.isVerifiedSeller || !!listing.seller?.isVerified;
 
-  // ---------- SERVICE VARIANT (rich row) ----------
+  const priceLabel =
+    product?.price != null
+      ? `₹${formatINR(product.price)}`
+      : product?.priceTiers && product.priceTiers.length > 0
+      ? `₹${formatINR(product.priceTiers[0].price)}`
+      : "Ask Price";
+  const priceUnit =
+    product?.price != null && product?.unitOfMeasure ? ` / ${product.unitOfMeasure}` : "";
+
+  const rate = service?.rateCard?.[0];
+  const rateLabel = rate
+    ? `₹${formatINR(rate.price)}`
+    : service?.pricingModel === "quote"
+    ? "On quote"
+    : "Ask rate";
+  const rateUnit = rate?.unit ? ` / ${rate.unit}` : "";
+
+  // ---------- ROW VARIANT (one-by-one list row) ----------
+  if (layout === "row") {
+    const specs: { label: string; value: string }[] = [];
+    if (!isService) {
+      if (product?.moq != null) {
+        specs.push({ label: "MOQ", value: `${product.moq} ${product.unitOfMeasure || "units"}` });
+      }
+      Object.entries(product?.specifications || {})
+        .slice(0, 2)
+        .forEach(([k, v]) => specs.push({ label: k, value: String(v) }));
+    } else {
+      if (typeof service?.experienceYears === "number") {
+        specs.push({ label: "Experience", value: `${service.experienceYears} yrs` });
+      }
+      if (service?.serviceArea && service.serviceArea.length > 0) {
+        specs.push({ label: "Serves", value: service.serviceArea.slice(0, 2).join(", ") });
+      }
+    }
+
+    const priceBlockLabel = isService ? rateLabel : priceLabel;
+    const priceBlockUnit = isService ? rateUnit : priceUnit;
+
+    return (
+      <article className={["card lc-row", className].filter(Boolean).join(" ")}>
+        <Link href={detailHref} className="lc-row-media">
+          {image ? (
+            <div className="lc-row-img" style={{ backgroundImage: `url(${image})` }} />
+          ) : (
+            <div className="lc-row-img lc-row-img-empty">
+              <span>{isService ? "Service" : "No image"}</span>
+            </div>
+          )}
+          {(listing.isSponsored || listing.isFeatured) && (
+            <span className="lc-row-imgbadge">
+              {listing.isSponsored ? (
+                <Badge variant="sponsored">Sponsored</Badge>
+              ) : (
+                <Badge variant="premium">Featured</Badge>
+              )}
+            </span>
+          )}
+        </Link>
+
+        <div className="lc-row-body">
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <Link href={detailHref} style={{ minWidth: 0, flex: 1 }}>
+              <h3 className="line-clamp-2 lc-row-title">{listing.title}</h3>
+            </Link>
+            <CardToggles listing={listing} />
+          </div>
+
+          <div className="lc-row-meta">
+            {listing.rating > 0 && <Rating value={listing.rating} count={listing.reviewCount} size={13} />}
+            <span className="line-clamp-1">{sellerName(listing)}</span>
+            {sellerCity(listing) && (
+              <span className="lc-row-city">
+                <LocationIcon /> {sellerCity(listing)}
+              </span>
+            )}
+          </div>
+
+          {(verified || listing.seller?.gstNumber || listing.seller?.yearEstablished) && (
+            <TrustBadges
+              verified={verified}
+              gst={!!listing.seller?.gstNumber}
+              years={
+                listing.seller?.yearEstablished
+                  ? new Date().getFullYear() - listing.seller.yearEstablished
+                  : null
+              }
+              size="sm"
+            />
+          )}
+
+          {specs.length > 0 && (
+            <div className="lc-row-specs">
+              {specs.map((s, i) => (
+                <span key={i} className="lc-row-spec">
+                  <strong>{s.label}:</strong> {s.value}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <p className="line-clamp-2 lc-row-desc">{listing.description}</p>
+        </div>
+
+        <div className="lc-row-aside">
+          <div className="lc-row-price">
+            <span className="lc-row-price-amount">{priceBlockLabel}</span>
+            {priceBlockUnit && <span className="lc-row-price-unit">{priceBlockUnit}</span>}
+          </div>
+          <div className="lc-row-actions">
+            {onContact ? (
+              <Button size="sm" className="btn-gradient" onClick={() => onContact(listing)}>
+                Contact
+              </Button>
+            ) : (
+              <Button size="sm" className="btn-gradient" href={detailHref}>
+                Contact
+              </Button>
+            )}
+            <Button size="sm" variant="secondary" href={detailHref}>
+              View
+            </Button>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .lc-row {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            position: relative;
+          }
+          .lc-row-media {
+            flex-shrink: 0;
+            display: block;
+            position: relative;
+          }
+          .lc-row-img {
+            width: 148px;
+            height: 148px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border);
+          }
+          .lc-row-img-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--faint);
+            font-size: 12px;
+            text-align: center;
+          }
+          .lc-row-imgbadge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+          }
+          .lc-row-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .lc-row-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.35;
+          }
+          .lc-row-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--muted);
+          }
+          .lc-row-city {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: var(--faint);
+          }
+          .lc-row-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+          }
+          .lc-row-spec {
+            font-size: 12.5px;
+            color: var(--muted);
+          }
+          .lc-row-spec strong {
+            color: var(--ink);
+            font-weight: 600;
+          }
+          .lc-row-desc {
+            font-size: 13.5px;
+            color: var(--muted);
+            margin: 0;
+          }
+          .lc-row-aside {
+            flex-shrink: 0;
+            width: 156px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            padding-left: 16px;
+            border-left: 1px solid var(--border);
+          }
+          .lc-row-price {
+            text-align: right;
+          }
+          .lc-row-price-amount {
+            display: block;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--ink);
+          }
+          .lc-row-price-unit {
+            font-size: 12px;
+            color: var(--faint);
+          }
+          .lc-row-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .lc-row-actions :global(.btn) {
+            width: 100%;
+          }
+
+          @media (max-width: 640px) {
+            .lc-row {
+              flex-wrap: wrap;
+            }
+            .lc-row-img,
+            .lc-row-img-empty {
+              width: 92px;
+              height: 92px;
+            }
+            .lc-row-aside {
+              width: 100%;
+              flex-direction: row;
+              align-items: center;
+              justify-content: space-between;
+              border-left: none;
+              border-top: 1px solid var(--border);
+              padding-left: 0;
+              padding-top: 12px;
+              margin-top: 4px;
+            }
+            .lc-row-price {
+              text-align: left;
+            }
+            .lc-row-actions {
+              flex-direction: row;
+              flex: 0 0 auto;
+            }
+            .lc-row-actions :global(.btn) {
+              width: auto;
+              flex: 1;
+            }
+          }
+        `}</style>
+      </article>
+    );
+  }
+
+  // ---------- SERVICE VARIANT (grid — rich row) ----------
   if (isService) {
-    const svc = listing.service;
-    const rate = svc?.rateCard?.[0];
-    const rateLabel = rate
-      ? `₹${formatINR(rate.price)}${rate.unit ? ` / ${rate.unit}` : ""}`
-      : svc?.pricingModel === "quote"
-      ? "On quote"
-      : "Ask rate";
-
     return (
       <article className={["card card-pad", className].filter(Boolean).join(" ")}>
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -194,9 +464,9 @@ export default function ListingCard({
               )}
             </div>
 
-            {svc?.credentials && svc.credentials.length > 0 && (
+            {service?.credentials && service.credentials.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-                {svc.credentials.slice(0, 3).map((c, i) => (
+                {service.credentials.slice(0, 3).map((c, i) => (
                   <Badge key={i} variant="neutral">
                     {c}
                   </Badge>
@@ -209,11 +479,11 @@ export default function ListingCard({
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 12 }}>
-              {typeof svc?.experienceYears === "number" && (
-                <Meta label="Experience" value={`${svc.experienceYears} yrs`} />
+              {typeof service?.experienceYears === "number" && (
+                <Meta label="Experience" value={`${service.experienceYears} yrs`} />
               )}
-              {svc?.serviceArea && svc.serviceArea.length > 0 && (
-                <Meta label="Serves" value={svc.serviceArea.slice(0, 2).join(", ")} />
+              {service?.serviceArea && service.serviceArea.length > 0 && (
+                <Meta label="Serves" value={service.serviceArea.slice(0, 2).join(", ")} />
               )}
             </div>
           </div>
@@ -229,7 +499,10 @@ export default function ListingCard({
             }}
           >
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{rateLabel}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>
+                {rateLabel}
+                {rateUnit}
+              </div>
             </div>
             {onContact ? (
               <Button size="sm" onClick={() => onContact(listing)}>
@@ -249,17 +522,7 @@ export default function ListingCard({
     );
   }
 
-  // ---------- PRODUCT VARIANT (image-forward) ----------
-  const product = listing.product;
-  const priceLabel =
-    product?.price != null
-      ? `₹${formatINR(product.price)}`
-      : product?.priceTiers && product.priceTiers.length > 0
-      ? `₹${formatINR(product.priceTiers[0].price)}`
-      : "Ask Price";
-  const priceUnit =
-    product?.price != null && product?.unitOfMeasure ? ` / ${product.unitOfMeasure}` : "";
-
+  // ---------- PRODUCT VARIANT (grid — image-forward) ----------
   return (
     <article
       className={["card", className].filter(Boolean).join(" ")}

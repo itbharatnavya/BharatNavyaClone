@@ -91,6 +91,61 @@ function isUnder(listing, slug, targetCat) {
   return false;
 }
 
+function computeBrandsList(categorySlug, categories, listings) {
+  const catById = new Map(categories.map((c) => [c.id, c]));
+  const catBySlug = new Map(categories.map((c) => [c.slug, c]));
+  const targetCat = categorySlug ? catBySlug.get(categorySlug) || null : null;
+
+  // name -> { name, count, categorySlugs:Set, sampleImage }
+  const acc = new Map();
+
+  for (const l of listings) {
+    if (!l || l.status !== "active") continue;
+    const name = brandOf(l);
+    if (!name) continue;
+    if (categorySlug && !isUnder(l, categorySlug, targetCat)) continue;
+
+    let entry = acc.get(name);
+    if (!entry) {
+      entry = { name, count: 0, categorySlugs: new Set(), sampleImage: null };
+      acc.set(name, entry);
+    }
+    entry.count += 1;
+    const top = topSlugOf(l, catById, catBySlug);
+    if (top) entry.categorySlugs.add(top);
+    if (!entry.sampleImage) {
+      const img = firstImage(l);
+      if (img) entry.sampleImage = img;
+    }
+  }
+
+  return [...acc.values()]
+    .map((e) => ({
+      name: e.name,
+      slug: slugify(e.name),
+      count: e.count,
+      categorySlugs: [...e.categorySlugs],
+      sampleImage: e.sampleImage,
+    }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+// Memoized per categorySlug (the common case is the unfiltered "" call —
+// several components fetch it at once on page load) on store.js's version
+// counters, same pattern as routes/categories.js.
+const _brandsListCache = new Map(); // categorySlug -> { catVersion, listVersion, data }
+function getBrandsList(categorySlug, categories, listings) {
+  const catVersion = store.getVersion("categories.json");
+  const listVersion = store.getVersion("listings.json");
+  const cached = _brandsListCache.get(categorySlug);
+  if (cached && cached.catVersion === catVersion && cached.listVersion === listVersion) {
+    return cached.data;
+  }
+  const data = computeBrandsList(categorySlug, categories, listings);
+  _brandsListCache.set(categorySlug, { catVersion, listVersion, data });
+  return data;
+}
+
 // GET / — distinct brands aggregated from active branded listings.
 router.get("/", async (req, res, next) => {
   try {
@@ -101,48 +156,47 @@ router.get("/", async (req, res, next) => {
       store.all("categories.json"),
     ]);
 
-    const catById = new Map(categories.map((c) => [c.id, c]));
-    const catBySlug = new Map(categories.map((c) => [c.slug, c]));
-    const targetCat = categorySlug ? catBySlug.get(categorySlug) || null : null;
-
-    // name -> { name, count, categorySlugs:Set, sampleImage }
-    const acc = new Map();
-
-    for (const l of listings) {
-      if (!l || l.status !== "active") continue;
-      const name = brandOf(l);
-      if (!name) continue;
-      if (categorySlug && !isUnder(l, categorySlug, targetCat)) continue;
-
-      let entry = acc.get(name);
-      if (!entry) {
-        entry = { name, count: 0, categorySlugs: new Set(), sampleImage: null };
-        acc.set(name, entry);
-      }
-      entry.count += 1;
-      const top = topSlugOf(l, catById, catBySlug);
-      if (top) entry.categorySlugs.add(top);
-      if (!entry.sampleImage) {
-        const img = firstImage(l);
-        if (img) entry.sampleImage = img;
-      }
-    }
-
-    const data = [...acc.values()]
-      .map((e) => ({
-        name: e.name,
-        slug: slugify(e.name),
-        count: e.count,
-        categorySlugs: [...e.categorySlugs],
-        sampleImage: e.sampleImage,
-      }))
-      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    const data = getBrandsList(categorySlug, categories, listings);
 
     return res.json({ success: true, data });
   } catch (err) {
     next(err);
   }
 });
+
+function computeBrandDetail(wanted, listings, users) {
+  const matches = listings.filter(
+    (l) => l && l.status === "active" && brandOf(l) && slugify(brandOf(l)) === wanted
+  );
+  if (matches.length === 0) return null;
+
+  // Canonical display name = the actual brand string on the listings.
+  const name = brandOf(matches[0]);
+  const userById = new Map(users.map((u) => [u.id, u]));
+
+  const enriched = matches
+    .map((l) => ({ ...l, seller: sellerMini(userById.get(l.sellerId)) }))
+    .sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0));
+
+  return {
+    brand: { name, slug: slugify(name), count: enriched.length },
+    listings: enriched,
+  };
+}
+
+// Memoized per wanted-slug on store.js's version counters.
+const _brandDetailCache = new Map(); // wanted -> { listVersion, userVersion, data }
+function getBrandDetail(wanted, listings, users) {
+  const listVersion = store.getVersion("listings.json");
+  const userVersion = store.getVersion("users.json");
+  const cached = _brandDetailCache.get(wanted);
+  if (cached && cached.listVersion === listVersion && cached.userVersion === userVersion) {
+    return cached.data;
+  }
+  const data = computeBrandDetail(wanted, listings, users);
+  _brandDetailCache.set(wanted, { listVersion, userVersion, data });
+  return data;
+}
 
 // GET /:slug — one brand (resolved by slugified name) plus its active listings.
 router.get("/:slug", async (req, res, next) => {
@@ -154,29 +208,12 @@ router.get("/:slug", async (req, res, next) => {
       store.all("users.json"),
     ]);
 
-    const matches = listings.filter(
-      (l) => l && l.status === "active" && brandOf(l) && slugify(brandOf(l)) === wanted
-    );
-
-    if (matches.length === 0) {
+    const data = getBrandDetail(wanted, listings, users);
+    if (!data) {
       return res.status(404).json({ success: false, error: "Brand not found" });
     }
 
-    // Canonical display name = the actual brand string on the listings.
-    const name = brandOf(matches[0]);
-    const userById = new Map(users.map((u) => [u.id, u]));
-
-    const enriched = matches
-      .map((l) => ({ ...l, seller: sellerMini(userById.get(l.sellerId)) }))
-      .sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0));
-
-    return res.json({
-      success: true,
-      data: {
-        brand: { name, slug: slugify(name), count: enriched.length },
-        listings: enriched,
-      },
-    });
+    return res.json({ success: true, data });
   } catch (err) {
     next(err);
   }

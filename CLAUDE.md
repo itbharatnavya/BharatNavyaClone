@@ -35,7 +35,7 @@ These come from the product owner and are enforced throughout the codebase. Brea
 - Use the **light design system** (see §6). Brand blue `--brand` #2563EB, action orange `--action` #F97316.
 
 **Data & money**
-- **File-based storage only.** JSON/JSONL under `backend/DB/`. **Do NOT introduce an external database** (Postgres, Mongo, etc.) without explicit owner approval — it's a deliberate architecture choice.
+- **Storage: Postgres is the live backend as of the 2026-08 migration** (owner-approved — see **POSTGRES-MIGRATION.md** for schema, mappers, migration scripts). `backend/.env`'s `PG_URL` (or `DATABASE_URL`) selects it; `backend/lib/store.js` dispatches transparently to `backend/lib/pg-store.js` when set, or the original file-DB (`backend/DB/*.json|jsonl`) when unset — same interface either way (`all/findOne/findMany/getById/insert/update/remove/writeJson`), so route code never branches on which backend is active. **Do NOT swap storage backends again** (a different DB engine, a new ORM, bypassing `store.js`) without explicit owner approval — the *interface* is the deliberate architecture choice, not any one implementation behind it.
 - **No payment processing.** The whole app is lead/directory based. Don't add carts, checkouts, or payment gateways.
 
 **AI**
@@ -51,14 +51,15 @@ Two processes, one origin:
 Browser ──▶ Next.js 14 (frontend, :3000)
                 │  next.config.mjs rewrites  /api/*  ─▶  Express (backend, :4000)
                 ▼
-        Express API ──▶ backend/DB/*.json|jsonl   (file-DB via lib/store.js)
-                   └──▶ `claude` CLI (spawned)     (AI search / RFQ)
+        Express API ──▶ lib/store.js ──▶ Postgres            (PG_URL set — POSTGRES-MIGRATION.md)
+                                    └──▶ backend/DB/*.json|jsonl (file-DB fallback, PG_URL unset)
+                   ├──▶ `claude` CLI (spawned)     (AI search / RFQ)
                    └──▶ Socket.IO (:4000)          (realtime chat)
 ```
 
 - **Single origin trick:** the browser only ever talks to `:3000`. Next rewrites `/api/*` to the backend server-side (`frontend/next.config.mjs`), so one tunnel/port serves UI + API and there are no CORS issues. `NEXT_PUBLIC_API_URL` is intentionally empty for this.
-- **Frontend:** Next.js 14 App Router, React 18, TypeScript, Tailwind + a custom CSS-variable design system in `frontend/app/globals.css`. `frontend/lib/api.ts` is the single typed API client.
-- **Backend:** Express (CommonJS), file-DB via `backend/lib/store.js`. Deps of note: `bcryptjs` (password hashing), `jsonwebtoken` (JWT auth), `proper-lockfile` (file-write locking), `minisearch` (search index), `zod` (validation), `socket.io`.
+- **Frontend:** Next.js 14 App Router, React 18, TypeScript, Tailwind + a custom CSS-variable design system in `frontend/app/globals.css`. `frontend/lib/api.ts` is the single typed API client with a built-in per-URL in-flight de-dup (see §6) and shared session-wide catalog data via `lib/catalog.tsx`.
+- **Backend:** Express (CommonJS), persistence via `backend/lib/store.js` (Postgres or file-DB — see §2). Deps of note: `bcryptjs` (password hashing), `jsonwebtoken` (JWT auth), `pg` (Postgres driver), `proper-lockfile` (file-write locking, file-DB mode), `minisearch` (search index), `zod` (validation), `socket.io`.
 - **Node:** developed on Node 24. No `engines` pin — use Node 18+.
 
 ---
@@ -94,10 +95,12 @@ lsof -tiTCP:4000 -sTCP:LISTEN | xargs kill ; (cd "…/backend" && nohup node ind
 
 ## 5. Backend conventions (`backend/`)
 
-- **The file-DB (`lib/store.js`) is the ONLY persistence layer.** Use its API — never `fs.readFile` a DB collection directly:
+- **`lib/store.js` is the ONLY persistence layer** (Postgres or file-DB — see §2). Use its API — never `fs.readFile`/query Postgres directly from a route:
   - `store.all(coll)`, `store.getById(coll,id)`, `store.findOne(coll,fn)`, `store.findMany(coll,fn)`
   - `store.insert(coll,doc,idPrefix)` (auto-IDs like `lst_…`, `usr_…` via `_counters.json`), `store.update(coll,id,patch)`, `store.remove(coll,id)`, `store.nextId(prefix)`
+  - `store.getVersion(coll)` — monotonic counter bumped on every write to that collection (file-DB mode; always returns a fresh value under Postgres, so it's a safe no-op there). Use it to **memoize an expensive derived computation** instead of recomputing it on every request — see the pattern in `routes/categories.js` / `routes/brands.js` / `routes/users.js` (`/sellers`, `/sellers/featured`).
   - append-only ledgers use `.jsonl` (e.g. `leads-ledger.jsonl`).
+  - **Postgres composite mappers must batch child-table reads, never loop per-row.** `lib/db/listings.js` and `lib/db/users.js`'s `all()` fetch every child table ONCE across all row ids (`WHERE id = ANY($1)`) and group in JS, instead of awaiting several queries per row — the per-row version was a genuine N+1 bug (~4-8 queries × every row) that made `/api/categories`/`/api/brands`/etc. take ~850ms; batching dropped that to ~30-90ms (see WORKFLOW.md, 2026-08-19 entry). `getById()`/other single-row paths are fine to hydrate per-row (N=1) — only `all()`-shaped bulk reads need batching. Follow this pattern for any new composite mapper.
 - **Route style:** one `express.Router()` per file in `routes/`, mounted in `index.js`. Every handler is `try/catch` → `next(err)` and returns the envelope `{ success: true, data }` (or `{ success:false, error }`). Mirror `routes/blogs.js` / `routes/inquiries.js`.
 - **Auth:** `middleware/authGuard.js` exports `authGuard` (401 if no valid JWT), `optionalAuth` (attaches `req.user` if present, else continues — used for guest-friendly endpoints like consultation booking), and role checks. `requireRole("admin")` guards admin ops.
 - **The nested-admin-route pattern (important gotcha):** the blanket `app.use("/api/admin", require("./routes/admin"))` in `index.js` guards everything under `/api/admin`. To expose an admin sub-API from a *different* router, mount it **before** that line and put the op under an inner `/admin/*` path. Examples already in `index.js`: `/api/admin/entitlements`, `/api/admin/categories`, `/api/admin/collections`, `/api/admin/boosts`, `/api/admin/moderation`. Follow this pattern for new admin sub-APIs.
@@ -109,7 +112,8 @@ lsof -tiTCP:4000 -sTCP:LISTEN | xargs kill ; (cd "…/backend" && nohup node ind
 ## 6. Frontend conventions (`frontend/`)
 
 - **App Router.** Pages in `app/<route>/page.tsx`. Client components need `"use client"`. Use `usePathname()` for context (e.g. `Navbar.tsx` hides Directory-only nav on suite/Consultations pages via `showDirectoryNav`).
-- **One API client:** `lib/api.ts`. It has `request<T>()` (returns `json.data`, injects the Bearer token, throws on `!success`), `toQuery()`, `getToken()`. Add new calls here; add types to `lib/types.ts`. Note: `request<T>` **drops any top-level `meta`** — if an endpoint returns `{data, meta}` (e.g. `getExperts`), write a raw `fetch` that keeps both.
+- **One API client:** `lib/api.ts`. It has `request<T>()` (returns `json.data`, injects the Bearer token, throws on `!success`), `toQuery()`, `getToken()`. Add new calls here; add types to `lib/types.ts`. Note: `request<T>` **drops any top-level `meta`** — if an endpoint returns `{data, meta}` (e.g. `getExperts`), write a raw `fetch` that keeps both. `request<T>` also **de-dupes concurrent identical GETs** (same URL, in-flight at once) into one network call — a safety net, not a cache; it doesn't touch non-GET requests.
+- **Shared session-wide data lives in a Context provider, not a per-component fetch.** Before adding a `useEffect` that calls `getCategories()`/`getBrands()`/`getFeaturedSellers()`, use `lib/catalog.tsx`'s `useCategories()` / `useCategoryTree()` / `useBrands()` / `useFeaturedSellers()` instead — they're fetched once per session by `CatalogProvider` (mounted in `app/layout.tsx`). Landing on `/directory` used to fire `getCategories()` 3x and `getBrands()`/`getFeaturedSellers()` 2x each simultaneously (every component that needed one independently re-fetched it) — 15-20+ redundant concurrent requests on a single page load, which was the real cause of a "first click after page load does nothing" bug (the browser's ~6-connections-per-origin cap queued the navigation request behind the burst). Follow the same provider pattern (`lib/config.tsx` is the template: fetch-once-on-mount, safe empty defaults, non-throwing hook) for any other data every page-load component might independently want. `app/layout.tsx` also mounts `components/RouteProgress.tsx` — a slim top-of-viewport progress bar (not a full-page loader) that gives instant click feedback during navigation; leave it alone unless the ask is specifically about navigation feedback.
 - **Design system (`app/globals.css`)** — use these tokens/classes, don't hardcode hex:
   - Colours: `--brand` #2563EB, `--action` #F97316, `--ink`, `--muted`, `--faint`, `--border`, `--bg-subtle`, `--brand-tint`, `--action-tint`, `--canvas`.
   - Classes: `.card` / `.card-flat`, `.btn` `.btn-primary` `.btn-secondary` `.btn-ghost` `.btn-sm` `.btn-lg` `.btn-block`, `.chip`, `.badge` (`.badge-new` etc.), `.container-bs`, `.eyebrow`, `.section-pad` / `.section-pad-sm`, `.line-clamp-1/2`, `.skeleton`, `.divider`.
@@ -121,7 +125,7 @@ lsof -tiTCP:4000 -sTCP:LISTEN | xargs kill ; (cd "…/backend" && nohup node ind
 
 ## 7. Data model quick reference (`backend/DB/`)
 
-Full detail in **DIRECTORY.md §Data model**. The essentials:
+Collection/field names below are the same whether the live backend is Postgres or the file-DB (`lib/store.js` normalizes the shape — see §2/§3); `backend/DB/*.json` is still the easiest way to eyeball the shape even when Postgres is what's actually serving requests. Full detail in **DIRECTORY.md §Data model**. The essentials:
 - `users.json` — one record per person. Buyers are plain; sellers have a `sellerProfile` (companyName, slug, location, isVerified, plan/lead-quota fields, rating…). A Consultations **expert** is a seller whose `sellerProfile.expert` block is set (profession, registration, specializations, languages, packages…).
 - `listings.json` — products AND services distinguished by `type: "product" | "service"`. Products carry a `product` block; services carry a `service` block (rateCard, timeline, deliverables). **Services belong to Consultations; products to the Directory.** Multi-vendor: the same product offered by many sellers is grouped by a `productKey`.
 - Leads: `inquiries.json` (buyer enquiries/RFQs) → fan-out writes rows to `leads-ledger.jsonl`; seller replies in `quotes.json`.
@@ -149,3 +153,5 @@ The Directory and Consultations are **feature-built as a POC** — the next job 
 - Services (`type:"service"`) must not leak into Directory product browse, and vice-versa.
 - Demo data lives in `backend/DB/` and is regenerated by the `scripts/seed-*.js` files (not a single command; see HANDOVER.md for order). Treat DB contents as **demo + PII** — see SECURITY.md before pushing anywhere.
 - The old `README`/`DESIGN.md` describe a previous dark/Three.js look — the app is now the light design system above. When in doubt, the running app + this file win.
+- **`next dev` compiles a route on first request after a (re)start** — a fresh page load or a route not yet visited this session can take several seconds with no visible feedback (no `loading.tsx` exists anywhere in the app; `RouteProgress`, §6, only signals that a click registered, it doesn't make the compile itself faster). `frontend/package.json`'s `dev` script runs `next dev --turbo` to shrink this. Don't mistake the delay for a broken click when testing manually — wait it out once per route per dev-server run.
+- **Before assuming a slow endpoint needs a cache, check whether it's actually an N+1 query problem first** (see §5's Postgres composite-mapper note) — caching a query pattern that re-runs thousands of round-trips per request just hides the real cost under a warm cache; the `/api/categories`/`/api/brands` fix (WORKFLOW.md, 2026-08-19) was batching the query shape, not caching, that mattered most.

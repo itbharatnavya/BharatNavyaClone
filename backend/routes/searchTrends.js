@@ -2,9 +2,17 @@
  * routes/searchTrends.js — "Trending searches near you" + "Popular searches"
  * (Directory homepage sections).
  *
- * Real data: every call to POST /api/ai/search appends an event to
- * search-events.jsonl (see routes/ai.js's logSearchEvent). This router only
- * reads/aggregates that ledger — no writes here.
+ * Real data comes from two writers into search-events.jsonl (lib/searchEvents.js):
+ *   - POST /api/ai/search (routes/ai.js) — every call, any confidence, used
+ *     by Consultations' AI concierge bar.
+ *   - POST /log below — Directory's own DirectorySearchBar, fired ONLY when
+ *     a suggestion (category or listing) is actually picked, never on a
+ *     plain free-text submit.
+ * aggregate() below only counts events with a resolved categorySlug — a
+ * half-typed or unresolved free-text query (e.g. "clot") never has one, so
+ * it's logged (for /ai/search's own analytics) but never surfaces here. This
+ * is the single choke point for that rule; both /trending and /popular go
+ * through it.
  *
  * NEVER-EMPTY guarantee (explicit product requirement): a brand-new install
  * has zero search events, so real aggregation alone would render an empty
@@ -18,6 +26,8 @@
 
 const express = require("express");
 const store = require("../lib/store");
+const { optionalAuth } = require("../middleware/authGuard");
+const { logSearchEvent } = require("../lib/searchEvents");
 
 const router = express.Router();
 
@@ -41,11 +51,16 @@ function normalize(q) {
   return String(q || "").trim().toLowerCase();
 }
 
-/** Group events by categorySlug (preferred) or normalized query text, count + most-recent. */
+/**
+ * Group events by categorySlug, count + most-recent. Only events with a
+ * resolved categorySlug count — a raw/unresolved free-text query (no
+ * confident match) is deliberately excluded so half-typed or junk searches
+ * never surface as "popular" (see file header).
+ */
 function aggregate(events) {
   const groups = new Map(); // key -> { query, categorySlug, count, lastAt }
   for (const e of events) {
-    const key = e.categorySlug || normalize(e.query);
+    const key = e.categorySlug;
     if (!key) continue;
     const existing = groups.get(key);
     if (existing) {
@@ -124,6 +139,33 @@ router.get("/popular", async (req, res, next) => {
     const padded = padWithFallback(real, limit);
     const data = await withCategoryNames(padded);
     res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/search/log { query, categorySlug, city? } — Directory's own
+// DirectorySearchBar calls this ONLY when a suggestion (category or listing)
+// is actually picked, never on a plain free-text submit (see file header).
+// categorySlug is required and validated against categories.json — an
+// invalid/missing one just no-ops rather than erroring, same fire-and-forget
+// spirit as the /ai/search logger this shares lib/searchEvents.js with.
+router.post("/log", optionalAuth, async (req, res, next) => {
+  try {
+    const query = req.body && typeof req.body.query === "string" ? req.body.query : "";
+    const categorySlug =
+      req.body && typeof req.body.categorySlug === "string" ? req.body.categorySlug : "";
+    const city = req.body && typeof req.body.city === "string" ? req.body.city : null;
+
+    if (categorySlug) {
+      const categories = await store.all("categories.json");
+      const valid = categories.some((c) => c.slug === categorySlug);
+      if (valid) {
+        logSearchEvent({ query, categorySlug, city, userId: req.user && req.user.id }); // fire-and-forget
+      }
+    }
+
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

@@ -1,20 +1,22 @@
 "use client";
 
 // The shared faceted-results engine used by the category, city, and search
-// pages: left Filters rail (a bottom-anchored drawer on mobile) · sort dropdown
-// (incl. "Nearest"/distance) · results grid of ListingCard · Map view toggle
-// (Leaflet/OSM, gated by caller) · pagination · results count + facets ·
-// graceful empty/loading/error states.
+// pages: top filter-pill bar (Type/Category/City/Price pills + Verified toggle
+// + a "More filters" drawer for Brand/Rating/Subcategories) · sort dropdown
+// (incl. "Nearest"/distance) · Grid/List/Map view toggle (List is the default —
+// one-by-one rows, closer to a familiar B2B marketplace listing page than a
+// product grid) · pagination · results count + facets · graceful
+// empty/loading/error states.
 //
 // It also *seeds + displays* filters handed in from the AI hero search:
 //   - `initialFilters` / `query` seed the removable filter state on mount
-//   - the Filters rail renders those as active (Type chip, City control, price tier)
+//   - the pill bar + drawer render those as active (Type pill, City pill, price tier)
 //   - a row of removable "active filter" pills is shown above the results
 //   - when `syncUrl` is set, filter changes are reflected back into the URL
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as api from "@/lib/api";
 import type { ListingQuery } from "@/lib/api";
 import type { Listing, ListingsResponse, ListingType } from "@/lib/types";
@@ -39,6 +41,8 @@ export type SortValue =
   | "price_desc"
   | "rating"
   | "distance";
+
+type ViewValue = "list" | "grid" | "map";
 
 // Extended query shape: the backend (per FRONTEND-PAGES-SPEC) also accepts
 // near/radiusKm/condition and sort=distance, which the base ListingQuery type
@@ -71,9 +75,9 @@ export interface DiscoveryResultsProps {
   syncUrl?: boolean;
   /** Reference city for the "Nearest" sort when no city filter is chosen. */
   near?: string;
-  /** Show the category facet in the left rail (search page). */
+  /** Show the category facet in the top filter bar (search page). */
   enableCategoryFilter?: boolean;
-  /** Child categories to show as a drill-down section in the rail. */
+  /** Child categories to show as a drill-down section in the "More filters" drawer. */
   subcategories?: SubcategoryItem[];
   /** Render the Map view toggle (caller gates on featureFlags.mapView). */
   showMapToggle?: boolean;
@@ -93,7 +97,7 @@ const SORT_OPTIONS: { value: SortValue; labelKey: string; label: string }[] = [
   { value: "distance", labelKey: "sort.distance", label: "Nearest" },
 ];
 
-// Human labels for the price-tier ceilings used by the Filters rail.
+// Human labels for the price-tier ceilings used by the filter pill + rail.
 const PRICE_TIER_DISPLAY: Record<number, string> = {
   500: "₹500",
   1000: "₹1k",
@@ -135,6 +139,38 @@ function FilterIcon() {
     </svg>
   );
 }
+function VerifiedIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+}
+function ListIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </svg>
+  );
+}
+function GridIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="8" height="8" rx="1.5" />
+      <rect x="13" y="3" width="8" height="8" rx="1.5" />
+      <rect x="3" y="13" width="8" height="8" rx="1.5" />
+      <rect x="13" y="13" width="8" height="8" rx="1.5" />
+    </svg>
+  );
+}
+function MapIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 20l-6-3V4l6 3 6-3 6 3v13l-6-3-6 3z" />
+      <path d="M9 4v13M15 7v13" />
+    </svg>
+  );
+}
 
 export default function DiscoveryResults({
   baseQuery,
@@ -153,12 +189,20 @@ export default function DiscoveryResults({
   const t = useTr();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [filters, setFilters] = useState<ListingFilterState>(initialFilters || {});
   const [q, setQ] = useState<string>(query || "");
+  // `query` only seeds `q` on first mount by default — but a new search bar
+  // submission now does an in-place `router.push` to this same route with a
+  // different `?q=`, which Next doesn't remount for. Re-sync whenever the
+  // prop actually changes so "search again from this page" refetches.
+  useEffect(() => {
+    setQ(query || "");
+  }, [query]);
   const [sort, setSort] = useState<SortValue>(defaultSort);
   const [page, setPage] = useState(1);
-  const [view, setView] = useState<"list" | "map">("list");
+  const [view, setView] = useState<ViewValue>("list");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [data, setData] = useState<ListingsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -223,7 +267,12 @@ export default function DiscoveryResults({
       didMount.current = true;
       return;
     }
-    const usp = new URLSearchParams();
+    // Start from whatever's already in the URL (e.g. /search page's own
+    // ?scope=/?page=, unrelated to this component) so this only ever
+    // overwrites the keys it actually manages, rather than wiping every
+    // other param the caller (or this same page) put there.
+    const usp = new URLSearchParams(searchParams.toString());
+    ["q", "type", "city", "maxPrice", "verified", "category", "sort"].forEach((k) => usp.delete(k));
     if (q) usp.set("q", q);
     if (filters.type) usp.set("type", filters.type);
     if (filters.city) usp.set("city", filters.city);
@@ -236,7 +285,7 @@ export default function DiscoveryResults({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, serverFiltersKey, sort]);
 
-  // ---- lock body scroll while the mobile filter drawer is open ----
+  // ---- lock body scroll while the filter drawer is open ----
   useEffect(() => {
     if (typeof document === "undefined") return;
     if (!drawerOpen) return;
@@ -400,7 +449,7 @@ export default function DiscoveryResults({
     enableCategoryFilter ? filters.category : undefined,
   ].filter(Boolean).length + selectedBrands.length;
 
-  const railFilters = (
+  const drawerFilters = (
     <Filters
       value={filters}
       onChange={onFiltersChange}
@@ -408,131 +457,224 @@ export default function DiscoveryResults({
       cities={cityOptions}
       brands={brandOptions}
       subcategories={subcategories}
+      hideType
+      hideCategory
+      hideCity
+      hidePrice
+      hideVerified
     />
   );
 
+  // Grid / List always available; Map only when the caller enables it.
+  const viewOptions: { value: ViewValue; label: string; icon: React.ReactNode }[] = [
+    { value: "list", label: t("view.list", "List"), icon: <ListIcon /> },
+    { value: "grid", label: t("view.grid", "Grid"), icon: <GridIcon /> },
+    ...(showMapToggle ? [{ value: "map" as ViewValue, label: t("view.map", "Map"), icon: <MapIcon /> }] : []),
+  ];
+  const activeViewIndex = Math.max(0, viewOptions.findIndex((o) => o.value === view));
+
   return (
     <>
-      <div className="dr-layout">
-        {/* Left rail (desktop) */}
-        <aside className="dr-rail">
-          <div className="dr-rail-inner">
-            <div className="card card-flat card-pad">{railFilters}</div>
-          </div>
-        </aside>
+      {/* Top filter bar — pill selects for the common facets + a "More filters"
+          drawer trigger for everything else (Brand/Rating/Subcategories). */}
+      <div className="dr-pillbar">
+        <div className="dr-pillbar-scroll no-scrollbar">
+          <select
+            className={filters.type ? "select dr-pill-select dr-pill-active" : "select dr-pill-select"}
+            value={filters.type || ""}
+            onChange={(e) => onFiltersChange({ ...filters, type: e.target.value as ListingType | "" })}
+            aria-label={t("filters.type", "Type")}
+          >
+            <option value="">{t("filters.allTypes", "All types")}</option>
+            <option value="product">{t("common.products", "Products")}</option>
+            <option value="service">{t("common.services", "Services")}</option>
+          </select>
 
-        {/* Results column */}
-        <div style={{ minWidth: 0 }}>
-          {/* Toolbar */}
-          <div className="dr-toolbar">
-            <div style={{ fontSize: 14, color: "var(--muted)" }}>
-              {loading ? (
-                <span className="skeleton" style={{ display: "inline-block", width: 90, height: 14 }} />
-              ) : (
-                <>
-                  <strong style={{ color: "var(--ink)", fontWeight: 700 }}>{shownTotal}</strong>{" "}
-                  {shownTotal === 1 ? t("results.one", "result") : t("results.many", "results")}
-                </>
-              )}
-            </div>
-
-            <div className="dr-controls">
-              {/* Mobile: open filters drawer */}
-              <button
-                type="button"
-                className="chip dr-filter-btn"
-                onClick={() => setDrawerOpen(true)}
-                aria-haspopup="dialog"
-              >
-                <FilterIcon />
-                {t("filters.title", "Filters")}
-                {filterCount > 0 ? ` (${filterCount})` : ""}
-              </button>
-
-              {showMapToggle && (
-                <div style={{ display: "inline-flex", gap: 6 }}>
-                  <button
-                    type="button"
-                    className={view === "list" ? "chip chip-active" : "chip"}
-                    onClick={() => setView("list")}
-                    aria-pressed={view === "list"}
-                  >
-                    {t("view.list", "List")}
-                  </button>
-                  <button
-                    type="button"
-                    className={view === "map" ? "chip chip-active" : "chip"}
-                    onClick={() => setView("map")}
-                    aria-pressed={view === "map"}
-                  >
-                    {t("view.map", "Map")}
-                  </button>
-                </div>
-              )}
-
-              <label className="dr-sort">
-                <span style={{ fontSize: 13, color: "var(--faint)" }}>{t("sort.label", "Sort")}</span>
-                <select
-                  className="select"
-                  value={sort}
-                  onChange={(e) => onSortChange(e.target.value as SortValue)}
-                >
-                  {SORT_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {t(o.labelKey, o.label)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </div>
-
-          {/* "Showing results for …" */}
-          {q && (
-            <div style={{ fontSize: 14, color: "var(--muted)", marginBottom: 12 }}>
-              {t("results.showingFor", "Showing results for")}{" "}
-              <strong style={{ color: "var(--ink)", fontWeight: 700 }}>“{q}”</strong>
-            </div>
-          )}
-
-          {/* Active-filter pills */}
-          {pills.length > 0 && (
-            <div className="dr-pills">
-              {pills.map((p) => (
-                <span key={p.key} className="dr-pill">
-                  {p.node ?? p.label}
-                  <button
-                    type="button"
-                    className="dr-pill-x"
-                    onClick={p.onRemove}
-                    aria-label={`${t("filters.remove", "Remove")} ${p.label}`}
-                  >
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <path d="M6 6l12 12M18 6L6 18" />
-                    </svg>
-                  </button>
-                </span>
+          {enableCategoryFilter && categoryOptions.length > 0 && (
+            <select
+              className={filters.category ? "select dr-pill-select dr-pill-active" : "select dr-pill-select"}
+              value={filters.category || ""}
+              onChange={(e) => onFiltersChange({ ...filters, category: e.target.value || undefined })}
+              aria-label={t("filters.category", "Category")}
+            >
+              <option value="">{t("filters.allCategories", "All categories")}</option>
+              {categoryOptions.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                  {typeof c.count === "number" ? ` (${c.count})` : ""}
+                </option>
               ))}
-              <button type="button" className="dr-pill-clear" onClick={clearAll}>
-                {t("filters.clearAll", "Clear all")}
-              </button>
-            </div>
+            </select>
           )}
 
-          {/* Body */}
-          {error ? (
-            <EmptyState title={t("results.errorTitle", "Something went wrong")} message={error} />
-          ) : loading ? (
+          {cityOptions.length > 0 && (
+            <select
+              className={filters.city ? "select dr-pill-select dr-pill-active" : "select dr-pill-select"}
+              value={filters.city || ""}
+              onChange={(e) => onFiltersChange({ ...filters, city: e.target.value || undefined })}
+              aria-label={t("filters.city", "City")}
+            >
+              <option value="">{t("filters.allCities", "All cities")}</option>
+              {cityOptions.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                  {typeof c.count === "number" ? ` (${c.count})` : ""}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <select
+            className={filters.priceMax ? "select dr-pill-select dr-pill-active" : "select dr-pill-select"}
+            value={filters.priceMax ? String(filters.priceMax) : ""}
+            onChange={(e) =>
+              onFiltersChange({ ...filters, priceMax: e.target.value ? Number(e.target.value) : undefined })
+            }
+            aria-label={t("filters.price", "Price")}
+          >
+            <option value="">{t("filters.anyPrice", "Any price")}</option>
+            {Object.entries(PRICE_TIER_DISPLAY).map(([v, label]) => (
+              <option key={v} value={v}>
+                {t("filters.under", "Under")} {label}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            className={filters.verified ? "chip chip-active dr-pill-chip" : "chip dr-pill-chip"}
+            aria-pressed={!!filters.verified}
+            onClick={() => onFiltersChange({ ...filters, verified: filters.verified ? undefined : true })}
+          >
+            <VerifiedIcon />
+            {t("filters.verifiedOnly", "Verified sellers only")}
+          </button>
+
+          <button
+            type="button"
+            className="chip dr-pill-chip"
+            onClick={() => setDrawerOpen(true)}
+            aria-haspopup="dialog"
+          >
+            <FilterIcon />
+            {t("filters.more", "More filters")}
+            {filterCount > 0 ? ` (${filterCount})` : ""}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        {/* Toolbar */}
+        <div className="dr-toolbar">
+          <div style={{ fontSize: 14, color: "var(--muted)" }}>
+            {loading ? (
+              <span className="skeleton" style={{ display: "inline-block", width: 90, height: 14 }} />
+            ) : (
+              <>
+                <strong style={{ color: "var(--brand)", fontWeight: 800 }}>{shownTotal}</strong>{" "}
+                {shownTotal === 1 ? t("results.one", "result") : t("results.many", "results")}
+              </>
+            )}
+          </div>
+
+          <div className="dr-controls">
+            <div className="dr-view-toggle" style={{ ["--seg-count" as string]: viewOptions.length } as React.CSSProperties}>
+              <span
+                className="dr-view-indicator"
+                style={{ transform: `translateX(${activeViewIndex * 100}%)` }}
+                aria-hidden
+              />
+              {viewOptions.map((o) => (
+                <button
+                  key={o.value}
+                  type="button"
+                  className={view === o.value ? "dr-view-btn active" : "dr-view-btn"}
+                  onClick={() => setView(o.value)}
+                  aria-pressed={view === o.value}
+                >
+                  {o.icon}
+                  <span className="dr-view-label">{o.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="dr-sort">
+              <span style={{ fontSize: 13, color: "var(--faint)" }}>{t("sort.label", "Sort")}</span>
+              <select
+                className="select"
+                value={sort}
+                onChange={(e) => onSortChange(e.target.value as SortValue)}
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {t(o.labelKey, o.label)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
+
+        {/* "Showing results for …" */}
+        {q && (
+          <div style={{ fontSize: 14, color: "var(--muted)", marginBottom: 12 }}>
+            {t("results.showingFor", "Showing results for")}{" "}
+            <strong style={{ color: "var(--ink)", fontWeight: 700 }}>“{q}”</strong>
+          </div>
+        )}
+
+        {/* Active-filter pills */}
+        {pills.length > 0 && (
+          <div className="dr-pills">
+            {pills.map((p) => (
+              <span key={p.key} className="dr-pill">
+                {p.node ?? p.label}
+                <button
+                  type="button"
+                  className="dr-pill-x"
+                  onClick={p.onRemove}
+                  aria-label={`${t("filters.remove", "Remove")} ${p.label}`}
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </span>
+            ))}
+            <button type="button" className="dr-pill-clear" onClick={clearAll}>
+              {t("filters.clearAll", "Clear all")}
+            </button>
+          </div>
+        )}
+
+        {/* Body */}
+        {error ? (
+          <EmptyState title={t("results.errorTitle", "Something went wrong")} message={error} />
+        ) : loading ? (
+          view === "list" ? (
+            <div className="dr-list">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="card" style={{ display: "flex", gap: 16, padding: 16 }}>
+                  <div className="skeleton" style={{ width: 148, height: 148, borderRadius: 10, flexShrink: 0 }} />
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
+                    <span className="skeleton" style={{ height: 16, width: "70%" }} />
+                    <span className="skeleton" style={{ height: 13, width: "45%" }} />
+                    <span className="skeleton" style={{ height: 13, width: "90%" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
             <div className="dr-grid">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="card card-flat" style={{ overflow: "hidden" }}>
@@ -545,50 +687,67 @@ export default function DiscoveryResults({
                 </div>
               ))}
             </div>
-          ) : displayListings.length === 0 ? (
-            <EmptyState
-              title={emptyTitle || t("results.emptyTitle", "No results found")}
-              message={
-                emptyMessage ||
-                t(
-                  "results.emptyMessage",
-                  "Try removing a filter or broadening your search. New sellers join every day."
-                )
-              }
-              actionLabel={t("results.emptyAction", "Post a requirement (RFQ)")}
-              actionHref="/rfq"
-            />
-          ) : view === "map" && showMapToggle ? (
-            <MapView listings={displayListings} />
-          ) : (
-            <>
-              <div className="dr-grid">
-                {displayListings.map((l) => (
-                  <div
-                    key={l.id}
-                    style={
-                      l.type === "service"
-                        ? { gridColumn: "1 / -1", minWidth: 0 }
-                        : { minWidth: 0 }
-                    }
-                  >
-                    <ListingCard listing={l} />
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination is server-side; hide it while brand/rating narrow the page client-side. */}
-              {!clientFiltered && data && data.totalPages > 1 && (
-                <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
-                  <Pagination page={data.page} totalPages={data.totalPages} onChange={onPageChange} />
+          )
+        ) : displayListings.length === 0 ? (
+          <EmptyState
+            title={emptyTitle || t("results.emptyTitle", "No results found")}
+            message={
+              emptyMessage ||
+              t(
+                "results.emptyMessage",
+                "Try removing a filter or broadening your search. New sellers join every day."
+              )
+            }
+            actionLabel={t("results.emptyAction", "Post a requirement (RFQ)")}
+            actionHref={`/rfq${q ? `?need=${encodeURIComponent(q)}` : ""}`}
+          />
+        ) : view === "map" && showMapToggle ? (
+          <MapView listings={displayListings} />
+        ) : view === "list" ? (
+          <>
+            <div className="dr-list">
+              {displayListings.map((l, i) => (
+                <div key={l.id} className="dr-enter" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                  <ListingCard listing={l} layout="row" />
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              ))}
+            </div>
+            {!clientFiltered && data && data.totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
+                <Pagination page={data.page} totalPages={data.totalPages} onChange={onPageChange} />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="dr-grid">
+              {displayListings.map((l, i) => (
+                <div
+                  key={l.id}
+                  className="dr-enter"
+                  style={{
+                    animationDelay: `${Math.min(i, 8) * 40}ms`,
+                    ...(l.type === "service" ? { gridColumn: "1 / -1", minWidth: 0 } : { minWidth: 0 }),
+                  }}
+                >
+                  <ListingCard listing={l} />
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination is server-side; hide it while brand/rating narrow the page client-side. */}
+            {!clientFiltered && data && data.totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
+                <Pagination page={data.page} totalPages={data.totalPages} onChange={onPageChange} />
+              </div>
+            )}
+          </>
+        )}
       </div>
 
-      {/* Mobile filter drawer */}
+      {/* "More filters" drawer — bottom sheet on phones, right-side slide-in panel
+          from tablet width up. Holds Brand / Rating / Subcategories (everything
+          not already surfaced as a top pill). */}
       <div
         className={`dr-overlay${drawerOpen ? " open" : ""}`}
         onClick={() => setDrawerOpen(false)}
@@ -625,7 +784,7 @@ export default function DiscoveryResults({
             </svg>
           </button>
         </div>
-        <div className="dr-drawer-body">{railFilters}</div>
+        <div className="dr-drawer-body">{drawerFilters}</div>
         <div className="dr-drawer-foot">
           <button type="button" className="btn btn-primary btn-block" onClick={() => setDrawerOpen(false)}>
             {t("results.showResults", "Show results")}
@@ -635,16 +794,46 @@ export default function DiscoveryResults({
       </div>
 
       <style jsx>{`
-        .dr-layout {
-          display: grid;
-          grid-template-columns: 248px 1fr;
-          gap: 32px;
-          align-items: start;
+        /* Top filter-pill bar: a soft blue/orange gradient "shelf" (echoing the
+           homepage's restrained dual-tone wash) rather than a flat white strip —
+           the pills themselves pop blue when active, so the bar visually answers
+           "more than just white and orange." */
+        .dr-pillbar {
+          position: relative;
+          border-radius: 14px;
+          border: 1px solid var(--border);
+          background: radial-gradient(120% 180% at 0% 0%, rgba(26, 79, 174, 0.07), transparent 55%),
+            radial-gradient(120% 180% at 100% 100%, rgba(245, 130, 31, 0.08), transparent 55%),
+            var(--canvas);
+          padding: 12px 14px;
+          margin-bottom: 16px;
         }
-        .dr-rail-inner {
-          position: sticky;
-          top: 88px;
+        .dr-pillbar-scroll {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          overflow-x: auto;
+          padding-bottom: 2px;
         }
+        .dr-pillbar-scroll :global(.dr-pill-select) {
+          width: auto;
+          min-width: 124px;
+          flex-shrink: 0;
+          border-radius: 999px;
+          padding: 8px 34px 8px 14px;
+          font-size: 13px;
+          font-weight: 500;
+        }
+        .dr-pillbar-scroll :global(.dr-pill-active) {
+          background-color: var(--brand-tint);
+          border-color: var(--brand);
+          color: var(--brand-hover);
+          font-weight: 600;
+        }
+        .dr-pillbar-scroll :global(.dr-pill-chip) {
+          flex-shrink: 0;
+        }
+
         .dr-toolbar {
           display: flex;
           align-items: center;
@@ -656,7 +845,7 @@ export default function DiscoveryResults({
         .dr-controls {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           flex-wrap: wrap;
         }
         .dr-sort {
@@ -668,15 +857,83 @@ export default function DiscoveryResults({
           width: auto;
           min-width: 176px;
         }
-        .dr-filter-btn {
-          display: none;
+
+        /* Segmented Grid/List/Map toggle — a sliding brand-blue indicator behind
+           the active label, the one deliberately "alive" control on the toolbar. */
+        .dr-view-toggle {
+          position: relative;
+          display: inline-flex;
+          background: var(--bg-subtle);
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          padding: 3px;
         }
+        .dr-view-indicator {
+          position: absolute;
+          top: 3px;
+          bottom: 3px;
+          left: 3px;
+          width: calc(100% / var(--seg-count, 2) - 3px);
+          border-radius: 999px;
+          background: var(--brand);
+          box-shadow: 0 1px 4px rgba(26, 79, 174, 0.35);
+          transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dr-view-btn {
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border: none;
+          background: none;
+          cursor: pointer;
+          padding: 7px 14px;
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--muted);
+          border-radius: 999px;
+          transition: color 200ms ease;
+          white-space: nowrap;
+          font-family: inherit;
+        }
+        .dr-view-btn.active {
+          color: #ffffff;
+        }
+
         /* Product grid: 3–4 cols desktop · 2 tablet · 1 phone.
            minmax(0,1fr) keeps every card ≤ its column so nothing overflows. */
         .dr-grid {
           display: grid;
           gap: 20px;
           grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        }
+        /* One-by-one list view — the default. */
+        .dr-list {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        /* Result entrance — mount-triggered (not scroll-gated like Reveal, which
+           would leave below-the-fold rows invisible until scrolled to on a dense
+           results list). Fires once per render, small capped stagger. */
+        .dr-enter {
+          animation: drEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes drEnter {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .dr-enter {
+            animation: none;
+          }
         }
         .dr-pills {
           display: flex;
@@ -728,12 +985,14 @@ export default function DiscoveryResults({
           color: var(--ink);
         }
 
-        /* Drawer + overlay (hidden on desktop) */
+        /* Drawer + overlay — above FloatingRfqButton/ChatAssistant (z-119/120):
+           an open filter drawer is a modal and should sit on top of both
+           floating widgets, not be covered by them. */
         .dr-overlay {
           position: fixed;
           inset: 0;
           background: rgba(15, 23, 42, 0.45);
-          z-index: 60;
+          z-index: 130;
           opacity: 0;
           pointer-events: none;
           transition: opacity 0.2s ease;
@@ -742,7 +1001,7 @@ export default function DiscoveryResults({
           opacity: 1;
           pointer-events: auto;
         }
-        /* Bottom-sheet drawer (mobile filters) */
+        /* Bottom-sheet drawer on phones */
         .dr-drawer {
           position: fixed;
           left: 0;
@@ -752,7 +1011,7 @@ export default function DiscoveryResults({
           max-width: 100%;
           max-height: 85vh;
           background: var(--canvas);
-          z-index: 61;
+          z-index: 131;
           border-radius: 18px 18px 0 0;
           transform: translateY(100%);
           transition: transform 0.28s ease;
@@ -781,38 +1040,43 @@ export default function DiscoveryResults({
           border-top: 1px solid var(--border);
           flex-shrink: 0;
         }
-
-        @media (max-width: 1024px) {
-          .dr-layout {
-            grid-template-columns: 1fr;
-            gap: 0;
+        /* Right-side slide-in panel from tablet width up. */
+        @media (min-width: 640px) {
+          .dr-drawer {
+            left: auto;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 400px;
+            max-width: 400px;
+            max-height: 100vh;
+            border-radius: 0;
+            transform: translateX(100%);
+            transition: transform 0.28s ease;
           }
-          .dr-rail {
-            display: none;
-          }
-          .dr-filter-btn {
-            display: inline-flex;
-          }
-          .dr-controls {
-            width: 100%;
-          }
-          .dr-sort {
-            flex: 1;
-            justify-content: flex-end;
-          }
-          .dr-sort :global(.select) {
-            min-width: 0;
+          .dr-drawer.open {
+            transform: translateX(0);
           }
         }
+
         @media (max-width: 760px) {
           .dr-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
           }
+          .dr-view-label {
+            display: none;
+          }
         }
         @media (max-width: 480px) {
           .dr-grid {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .dr-view-indicator {
+            transition: none;
           }
         }
       `}</style>

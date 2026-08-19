@@ -5,33 +5,20 @@
 // brand landing (/brand/<slug>). Renders the entire section (heading + strip)
 // only when brands exist, so it never leaves an empty heading behind.
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { getBrands } from "@/lib/api";
-import type { Brand } from "@/lib/api";
 import { Monogram } from "@/components/brand/BrandCard";
 import SectionHeading from "@/components/home/SectionHeading";
+import { useBrands } from "@/lib/catalog";
 
 export interface TopBrandsProps {
   max?: number;
 }
 
 export default function TopBrands({ max = 12 }: TopBrandsProps) {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [ready, setReady] = useState(false);
+  const { brands, loading } = useBrands();
 
-  useEffect(() => {
-    let alive = true;
-    getBrands()
-      .then((rows) => alive && setBrands(Array.isArray(rows) ? rows : []))
-      .catch(() => alive && setBrands([]))
-      .finally(() => alive && setReady(true));
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  if (!ready || brands.length === 0) return null;
+  if (loading || brands.length === 0) return null;
 
   return (
     <section className="container-bs section-pad-sm">

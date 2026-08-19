@@ -46,6 +46,27 @@ function computeListingCounts(categories, listings) {
   return counts;
 }
 
+// Memoized on store.js's per-collection version counters (bumped on every
+// write) — recomputes only when categories.json or listings.json actually
+// changed since the last call, so a burst of concurrent requests (e.g.
+// several page components fetching categories at once) shares one scan
+// instead of redoing it per request.
+let _countsCache = null; // { catVersion, listVersion, counts }
+function getListingCounts(categories, listings) {
+  const catVersion = store.getVersion("categories.json");
+  const listVersion = store.getVersion("listings.json");
+  if (
+    _countsCache &&
+    _countsCache.catVersion === catVersion &&
+    _countsCache.listVersion === listVersion
+  ) {
+    return _countsCache.counts;
+  }
+  const counts = computeListingCounts(categories, listings);
+  _countsCache = { catVersion, listVersion, counts };
+  return counts;
+}
+
 // GET / — full taxonomy as a flat array (frontend nests via parentId).
 router.get("/", async (req, res, next) => {
   try {
@@ -53,7 +74,7 @@ router.get("/", async (req, res, next) => {
       store.all("categories.json"),
       store.all("listings.json"),
     ]);
-    const counts = computeListingCounts(categories, listings);
+    const counts = getListingCounts(categories, listings);
     const data = categories.map((c) => ({
       ...c,
       listingCount: counts.get(c.id) || 0,
@@ -78,7 +99,7 @@ router.get("/:slug", async (req, res, next) => {
     }
 
     // Live counts stamped onto the returned node + its children.
-    const counts = computeListingCounts(categories, listings);
+    const counts = getListingCounts(categories, listings);
     const withCount = (c) => ({ ...c, listingCount: counts.get(c.id) || 0 });
 
     const category = withCount(found);

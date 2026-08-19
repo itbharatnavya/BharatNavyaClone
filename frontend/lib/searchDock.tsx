@@ -13,9 +13,26 @@
 // props — without this, each AISearchBar instance keeps its own local
 // state, so text typed in the hero box would vanish once the docked copy
 // (a completely separate component instance) takes over on scroll.
+//
+// `query`/`selectedCategory` must only ever survive onto a page that's the
+// direct result of an actual search action — never just because the visitor
+// browsed somewhere via a plain link/tile/mega-menu/back-button. `markSearchNav()`
+// is how DirectorySearchBar (the only writer of a *committed* search) tells this
+// provider "the navigation I'm about to trigger is expected, don't wipe what I
+// just set." Any OTHER pathname change (not preceded by a mark) clears both —
+// see the effect below. Deliberately keyed on `pathname` alone, not the full
+// URL/search-params: a filter-pill `router.replace` that only changes query
+// params (e.g. DiscoveryResults' `syncUrl`) must never trip this, or every
+// filter click on /search would wipe the docked query/chip.
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { PAN_INDIA_LABEL } from "./indiaGeo";
+
+export interface SelectedCategory {
+  slug: string;
+  name: string;
+}
 
 interface SearchDockValue {
   // 0 = hero search fully in view, 1 = fully docked in the navbar.
@@ -25,9 +42,17 @@ interface SearchDockValue {
   chips: string[];
   query: string;
   city: string;
+  // The category picked from a suggestion dropdown (or the category page
+  // currently being browsed) — shown as a removable chip in the compact
+  // Directory search bars, alongside (not instead of) the free-text query.
+  selectedCategory: SelectedCategory | null;
   setProgress: (progress: number, chips?: string[]) => void;
   setQuery: (query: string) => void;
   setCity: (city: string) => void;
+  setSelectedCategory: (category: SelectedCategory | null) => void;
+  // Call immediately before a `router.push` that a real search action (submit,
+  // or picking a category/listing suggestion) triggers — see file header.
+  markSearchNav: () => void;
 }
 
 const SearchDockContext = createContext<SearchDockValue>({
@@ -36,9 +61,12 @@ const SearchDockContext = createContext<SearchDockValue>({
   chips: [],
   query: "",
   city: PAN_INDIA_LABEL,
+  selectedCategory: null,
   setProgress: () => {},
   setQuery: () => {},
   setCity: () => {},
+  setSelectedCategory: () => {},
+  markSearchNav: () => {},
 });
 
 export function SearchDockProvider({ children }: { children: React.ReactNode }) {
@@ -46,6 +74,26 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
   const [chips, setChips] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [city, setCity] = useState(PAN_INDIA_LABEL);
+  const [selectedCategory, setSelectedCategory] = useState<SelectedCategory | null>(null);
+
+  const pathname = usePathname();
+  const pendingSearchNavRef = useRef(false);
+  const prevPathnameRef = useRef(pathname);
+  useEffect(() => {
+    if (pathname === prevPathnameRef.current) return; // no real route change (covers first render)
+    prevPathnameRef.current = pathname;
+    if (pendingSearchNavRef.current) {
+      pendingSearchNavRef.current = false; // expected — a real search action drove this navigation
+      return;
+    }
+    // Some other navigation (plain link/tile/mega-menu/back-button) — the
+    // previous page's search state must not leak onto a page nobody searched for.
+    setQuery("");
+    setSelectedCategory(null);
+  }, [pathname]);
+  const markSearchNav = useCallback(() => {
+    pendingSearchNavRef.current = true;
+  }, []);
 
   const value = useMemo<SearchDockValue>(
     () => ({
@@ -54,14 +102,17 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
       chips,
       query,
       city,
+      selectedCategory,
       setProgress: (p, c) => {
         setProgressState(p);
         if (c) setChips(c);
       },
       setQuery,
       setCity,
+      setSelectedCategory,
+      markSearchNav,
     }),
-    [progress, chips, query, city]
+    [progress, chips, query, city, selectedCategory, markSearchNav]
   );
 
   return <SearchDockContext.Provider value={value}>{children}</SearchDockContext.Provider>;

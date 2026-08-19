@@ -148,6 +148,16 @@ async function writeJsonl(name, items) {
   throw new Error(`writeJsonl: no relational mapping for log ${name}`);
 }
 
+// store.js's file-backed branch tracks a per-collection version counter for
+// route-level memoization (see routes/categories.js, brands.js, users.js).
+// Postgres has no equivalent in-process cache to invalidate, so this always
+// returns a changing value — any caller keying a memo on it just recomputes
+// every time, which is safe (never stale), it simply doesn't benefit from
+// the memoization under this backend.
+function getVersion() {
+  return Date.now();
+}
+
 module.exports = {
   withLock,
   readJson,
@@ -164,4 +174,5 @@ module.exports = {
   insert,
   update,
   remove,
+  getVersion,
 };

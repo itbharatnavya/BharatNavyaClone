@@ -68,17 +68,47 @@ if (usePostgres) {
   }
 
   /* --------------------------------------------------------- JSON documents -- */
+  // In-memory read cache, keyed by collection filename. readJson() parses a
+  // file from disk at most once; every call after that returns a shallow
+  // clone of the cached value (cheap — copies references, not a deep clone —
+  // and means callers that mutate their own returned array/object, e.g.
+  // insert()'s rows.push(), can never corrupt what's cached). writeJson()
+  // is the only way the cache changes: it writes to disk exactly as before,
+  // then replaces the cache entry with the data it just wrote, so the cache
+  // is always exactly what's on disk — no TTL, no staleness window. This
+  // also means a burst of concurrent requests for the same collection (e.g.
+  // several components fetching categories the instant a page mounts) only
+  // ever pays for one disk read + JSON.parse instead of N.
+  const _cache = new Map();
+  const _versions = new Map();
+
+  function shallowClone(data) {
+    if (Array.isArray(data)) return data.slice();
+    if (data && typeof data === "object") return { ...data };
+    return data;
+  }
+
+  /** Monotonic counter bumped on every writeJson(name, ...) — lets a route
+   *  cheaply check "has this collection changed since I last computed
+   *  something from it" without re-reading anything. */
+  function getVersion(name) {
+    return _versions.get(name) || 0;
+  }
 
   /** Read a JSON collection file; returns `fallback` (default []) if it doesn't exist. */
   async function readJson(name, fallback = []) {
+    if (_cache.has(name)) return shallowClone(_cache.get(name));
     const file = dbPath(name);
+    let data;
     try {
       const raw = await fsp.readFile(file, "utf-8");
-      return raw.trim() === "" ? fallback : JSON.parse(raw);
+      data = raw.trim() === "" ? fallback : JSON.parse(raw);
     } catch (err) {
-      if (err.code === "ENOENT") return fallback;
-      throw err;
+      if (err.code === "ENOENT") data = fallback;
+      else throw err;
     }
+    _cache.set(name, data);
+    return shallowClone(data);
   }
 
   /** Atomically write a JSON collection file (temp file + rename). */
@@ -88,6 +118,8 @@ if (usePostgres) {
     const tmp = `${file}.tmp.${process.pid}.${_tmpCounter++}`;
     await fsp.writeFile(tmp, JSON.stringify(data, null, 2), "utf-8");
     await fsp.rename(tmp, file); // atomic on POSIX
+    _cache.set(name, data);
+    _versions.set(name, (_versions.get(name) || 0) + 1);
   }
   let _tmpCounter = 0;
 
@@ -224,5 +256,6 @@ if (usePostgres) {
     insert,
     update,
     remove,
+    getVersion,
   };
 }

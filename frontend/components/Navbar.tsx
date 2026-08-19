@@ -7,9 +7,10 @@ import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useT } from "@/lib/i18n";
 import { useSearchDock } from "@/lib/searchDock";
+import { isDirectoryPage } from "@/lib/directoryPaths";
 import Avatar from "./Avatar";
 import NotificationBell from "./NotificationBell";
-import AISearchBar from "./AISearchBar";
+import DirectorySearchBar from "./DirectorySearchBar";
 import { MobileCategoryAccordion } from "./CategoryMegaMenu";
 import CategoryStrip from "./directory/CategoryStrip";
 import SuiteProductsMenu, { MobileSuiteProductsList } from "./suite/SuiteNavMenu";
@@ -62,7 +63,15 @@ export default function Navbar() {
   const { user, loading, logout } = useAuth();
   const { branding, featureFlags } = useConfig();
   const { t } = useT();
-  const { progress: searchDockProgress, chips, query: dockedQuery, setQuery: setDockedQuery, city: dockedCity, setCity: setDockedCity } = useSearchDock();
+  const {
+    progress: searchDockProgress,
+    query: dockedQuery,
+    setQuery: setDockedQuery,
+    city: dockedCity,
+    setCity: setDockedCity,
+    selectedCategory: dockedCategory,
+    setSelectedCategory: setDockedCategory,
+  } = useSearchDock();
   const [userOpen, setUserOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const userRef = useRef<HTMLDivElement | null>(null);
@@ -88,31 +97,17 @@ export default function Navbar() {
   // (lib/searchDock.tsx) and selling is reached through the listing flow, not
   // a persistent nav button.
   const p = pathname || "/";
-  // Directory's own pages are a dynamic catch-all (app/[category]/page.tsx, ~250
-  // category-slug URLs), so this has to stay a denylist of non-Directory paths —
-  // an allowlist of Directory paths would break every category page. `/dashboard`
-  // and `/admin` are here too: neither is a Directory page, and the dashboard's
-  // own tab nav (or, for a non-seller, its single Profile view) makes the
-  // Directory category strip/mega-menu/Advertise button redundant there.
-  const NON_DIRECTORY_PATHS = [
-    "/",
-    "/credit-card",
-    "/mutual",
-    "/recruitment",
-    "/about",
-    "/pricing",
-    "/features",
-    "/offer",
-    "/register",
-    "/login",
-    "/dashboard",
-    "/admin",
-  ];
-  const showDirectoryNav = !(
-    NON_DIRECTORY_PATHS.includes(p) ||
-    p.startsWith("/consultations") ||
-    p.startsWith("/blog")
-  );
+  // `/dashboard` and `/admin` are non-Directory pages too: neither needs the
+  // Directory category strip/mega-menu/Advertise button — the dashboard has
+  // its own tab nav (or, for a non-seller, its single Profile view).
+  const showDirectoryNav = isDirectoryPage(p);
+  // The Directory homepage is the only page with a hero search bar to dock
+  // FROM, so it's the only one that animates the navbar copy in on scroll
+  // (searchDockProgress, published by HomeHero's IntersectionObserver). Every
+  // other Directory page (category, search, listing, seller/brand) has no
+  // hero — the navbar copy just shows there unconditionally instead.
+  const isDirectoryHome = p === "/directory";
+  const showNavSearch = showDirectoryNav && (isDirectoryHome ? searchDockProgress > 0 : true);
   // For the profile-icon dropdown only: `/dashboard` counts as "Directory
   // context" even though it's excluded from showDirectoryNav above (its own
   // tab nav makes the category strip/mega-menu redundant there) — it's still
@@ -153,6 +148,19 @@ export default function Navbar() {
 
   const navLink = "text-sm text-muted hover:text-ink transition-colors";
 
+  // Plain in-place clear, no navigation — stays on whatever Directory page
+  // the visitor is already on (category page, listing page, /search,
+  // /directory…), same as removing any other filter. Category pages no
+  // longer self-pin the chip on load (see CategoryLanding.tsx), so there's
+  // nothing to silently undo this clear. Also drops the leftover query
+  // text — leaving it behind reopens the box pre-filled with whatever was
+  // typed for the *removed* category, which reads as a bug (stale search
+  // text the visitor never asked to search).
+  function handleClearCategory() {
+    setDockedCategory(null);
+    setDockedQuery("");
+  }
+
   // Logged out → log in first; logged in → straight to the dashboard's
   // Advertise tab (components/dashboard/AdvertiseTab.tsx), where ad-slot
   // booking already lives.
@@ -183,30 +191,43 @@ export default function Navbar() {
               <Link href="/about" className={navLink}>{t("nav.about")}</Link>
             </>
           )}
-          {showDirectoryNav && searchDockProgress > 0 && (
+          {showNavSearch && (
             <div
               className="w-full max-w-xl"
-              style={{
-                opacity: searchDockProgress,
-                // Slides UP into its resting spot (matches the mobile docked
-                // row + HomeHero's own bar, which also moves upward as it
-                // exits) so the handoff reads as one continuous motion
-                // instead of two independently-animated elements.
-                transform: `translateY(${(1 - searchDockProgress) * 10}px) scale(${0.97 + searchDockProgress * 0.03})`,
-                transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
-                pointerEvents: searchDockProgress > 0.5 ? "auto" : "none",
-              }}
+              // Only pointer-events gating lives here now — opacity/transform
+              // moved onto DirectorySearchBar's `dockStyle` (applied to its
+              // <form> only) so the suggestions dropdown, a sibling of that
+              // <form> inside the same component, never inherits a
+              // scroll-linked partial opacity. See DirectorySearchBar's
+              // `dockStyle` doc comment for why that used to ghost the
+              // dropdown mid-transition.
+              style={
+                isDirectoryHome
+                  ? { pointerEvents: searchDockProgress > 0.5 ? "auto" : "none" }
+                  : undefined
+              }
             >
-              <AISearchBar
-                size="compact"
-                examples={chips}
+              <DirectorySearchBar
                 showCity
-                showExamples={false}
                 query={dockedQuery}
                 onQueryChange={setDockedQuery}
                 city={dockedCity}
                 onCityChange={setDockedCity}
-                aiEnabled={false}
+                selectedCategory={dockedCategory}
+                onClearCategory={handleClearCategory}
+                dockStyle={
+                  isDirectoryHome
+                    ? {
+                        opacity: searchDockProgress,
+                        // Slides UP into its resting spot (matches the mobile docked
+                        // row + HomeHero's own bar, which also moves upward as it
+                        // exits) so the handoff reads as one continuous motion
+                        // instead of two independently-animated elements.
+                        transform: `translateY(${(1 - searchDockProgress) * 10}px) scale(${0.97 + searchDockProgress * 0.03})`,
+                        transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                      }
+                    : undefined
+                }
               />
             </div>
           )}
@@ -389,34 +410,52 @@ export default function Navbar() {
           UP into its resting spot (not down) so it reads as a continuation of
           HomeHero's own bar sliding away upward, not an unrelated element
           popping in from the opposite direction. */}
-      {showDirectoryNav && searchDockProgress > 0 && (
+      {showNavSearch && (
         <div
           className="container-bs pb-3 nav:hidden"
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            background: "var(--canvas)",
-            borderBottom: "1px solid var(--border)",
-            boxShadow: "0 8px 16px -8px rgba(16,24,40,0.12)",
-            paddingTop: 10,
-            opacity: searchDockProgress,
-            transform: `translateY(${(1 - searchDockProgress) * 14}px)`,
-            transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
-            pointerEvents: searchDockProgress > 0.5 ? "auto" : "none",
-          }}
+          // opacity/transform moved onto DirectorySearchBar's `dockStyle`
+          // (applied to its <form> only) — see the desktop copy above for
+          // why: this div also parents the suggestions dropdown, and CSS
+          // opacity cascades to every descendant, so it used to render the
+          // dropdown itself part-transparent (page content ghosting through)
+          // any time it was opened before searchDockProgress reached 1.
+          style={
+            isDirectoryHome
+              ? {
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  background: "var(--canvas)",
+                  borderBottom: "1px solid var(--border)",
+                  boxShadow: "0 8px 16px -8px rgba(16,24,40,0.12)",
+                  paddingTop: 10,
+                  pointerEvents: searchDockProgress > 0.5 ? "auto" : "none",
+                }
+              : // No hero to dock from on these pages — just a permanent row in
+                // normal flow under the h-16 header row (unlike the /directory
+                // case, this never grows/shrinks, so there's no IntersectionObserver
+                // to desync).
+                { paddingTop: 10, borderTop: "1px solid var(--border)" }
+          }
         >
-          <AISearchBar
-            size="compact"
-            examples={chips}
+          <DirectorySearchBar
             showCity
-            showExamples={false}
             query={dockedQuery}
             onQueryChange={setDockedQuery}
             city={dockedCity}
             onCityChange={setDockedCity}
-            aiEnabled={false}
+            selectedCategory={dockedCategory}
+            onClearCategory={handleClearCategory}
+            dockStyle={
+              isDirectoryHome
+                ? {
+                    opacity: searchDockProgress,
+                    transform: `translateY(${(1 - searchDockProgress) * 14}px)`,
+                    transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                  }
+                : undefined
+            }
           />
         </div>
       )}

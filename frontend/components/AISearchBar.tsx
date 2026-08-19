@@ -8,6 +8,7 @@ import type { AiSearchResult, Category, Listing } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { useToast } from "./Toast";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
+import { useCategories, flattenCategories } from "@/lib/catalog";
 
 export interface AISearchBarProps {
   // If provided, "list" results are handed back instead of routing to /search.
@@ -99,18 +100,6 @@ function SpinnerIcon({ size = 18 }: { size?: number }) {
 
 function formatINR(value: number): string {
   return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
-}
-
-function flattenCats(cats: Category[]): Category[] {
-  const out: Category[] = [];
-  const walk = (list: Category[]) => {
-    for (const c of list) {
-      out.push(c);
-      if (c.children && c.children.length) walk(c.children);
-    }
-  };
-  walk(cats || []);
-  return out;
 }
 
 function listingSellerName(l: Listing): string {
@@ -208,19 +197,13 @@ export default function AISearchBar({
   const term = query.trim();
   const showDropdown = open && term.length >= 2;
 
-  // Load the category catalog once for instant client-side filtering.
+  // Category catalog for instant client-side filtering — shared session-wide
+  // via CatalogProvider (lib/catalog.tsx) instead of this bar fetching its
+  // own copy.
+  const { categories: catalogCategories } = useCategories();
   useEffect(() => {
-    let alive = true;
-    api
-      .getCategories()
-      .then((c) => {
-        if (alive) allCatsRef.current = flattenCats(c);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
+    allCatsRef.current = flattenCategories(catalogCategories);
+  }, [catalogCategories]);
 
   // Debounced suggestion fetch (categories filtered instantly, listings fetched).
   useEffect(() => {
@@ -344,10 +327,15 @@ export default function AISearchBar({
     if (item.kind === "category") {
       setOpen(false);
       setActive(-1);
+      // Clear rather than leave the partial word behind — this query is
+      // shared (lib/searchDock.tsx) with the navbar's search bar, which
+      // stays visible after this navigation and would otherwise show it.
+      setQuery("");
       router.push(`/${item.cat.slug}`);
     } else if (item.kind === "listing") {
       setOpen(false);
       setActive(-1);
+      setQuery("");
       router.push(`/listing/${item.listing.id}`);
     } else {
       void runAi(query);

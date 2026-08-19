@@ -20,10 +20,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getCategories } from "@/lib/api";
+import { useCategoryTree as useCatalogCategoryTree } from "@/lib/catalog";
 import { useT } from "@/lib/i18n";
-import type { Category } from "@/lib/types";
-import { buildTree, type CategoryTreeNode } from "@/lib/categoryTree";
+import type { CategoryTreeNode } from "@/lib/categoryTree";
 
 // ------------------------------------------------------------------
 // Icons — data ships icon:null and the brand uses NO emoji. We render a
@@ -107,31 +106,12 @@ const CATEGORY_GLYPHS: Record<string, GlyphName> = {
 // Tree — CategoryTreeNode/buildTree live in @/lib/categoryTree (shared).
 // ------------------------------------------------------------------
 
-/** Fetch categories once and expose the top-level tree + a loaded flag. */
+/** Top-level category tree + a loaded flag, from the shared CatalogProvider
+ *  (lib/catalog.tsx) — categories are fetched once per session there, not
+ *  re-fetched by every consumer of this hook. */
 export function useCategoryTree(): { tops: CategoryTreeNode[]; loaded: boolean } {
-  const [flat, setFlat] = useState<Category[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    getCategories()
-      .then((all) => {
-        if (!alive) return;
-        setFlat(all);
-        setLoaded(true);
-      })
-      .catch(() => {
-        if (!alive) return;
-        setFlat([]);
-        setLoaded(true);
-      });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  const tops = useMemo(() => buildTree(flat), [flat]);
-  return { tops, loaded };
+  const { tree, loading } = useCatalogCategoryTree();
+  return { tops: tree, loaded: !loading };
 }
 
 /** Small translation helper with an English fallback (dictionary may lack keys). */

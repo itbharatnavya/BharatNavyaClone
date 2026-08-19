@@ -92,10 +92,377 @@ duplicate it, only tracks deltas against it.
 - **Dev-mode first-hit latency.** `next dev` compiles a route on first request; a fresh page
   load can take several seconds before client fetches resolve. Don't mistake this for a bug
   when testing manually (see the headless-Chrome verification in §3, entry for advertising).
+  `frontend/package.json`'s `dev` script now runs `next dev --turbo` (2026-08-19) to shrink
+  this, and `components/RouteProgress.tsx` gives a visible top-bar signal that a click
+  registered even while a route is still compiling — but the underlying one-time-per-route
+  compile delay is inherent to `next dev` and hasn't been eliminated, just made visible/faster.
+- **Before caching a slow endpoint, check whether it's actually an N+1 query problem.**
+  `lib/db/listings.js`/`lib/db/users.js`'s composite mappers ran several queries **per row**
+  in a loop (2026-08-19 fix, see §3) — caching that pattern would have hidden a ~1000x-worse
+  query count behind a warm cache instead of fixing it. Any new Postgres composite mapper's
+  `all()` must batch every child-table read once across all row ids
+  (`WHERE id = ANY($1)`), never loop per-row.
+- **Shared/session-wide frontend data goes through a Context provider, not a per-component
+  fetch.** `lib/catalog.tsx` (`useCategories`/`useCategoryTree`/`useBrands`/`useFeaturedSellers`)
+  fetches once per session — check there before adding a new `useEffect` that calls
+  `getCategories()`/`getBrands()`/`getFeaturedSellers()` directly; several independent
+  per-component fetches of the same data was the direct cause of the "first click does
+  nothing" bug fixed 2026-08-19 (see §3).
 
 ---
 
 ## 3. Change log (newest first)
+
+### 2026-08-19 (2) — Fixed app-wide "first click after page load does nothing" bug: batched a severe Postgres N+1 query pattern, deduped redundant frontend fetches, added click-feedback UI
+
+**Why:** reported as "on load of the app, clicking any link does nothing the first time, works after a few seconds" — worst on `/directory`, but also present on the plain suite homepage's footer links. Investigation found **two independent, stacking mechanisms**, not one bug:
+1. **Universal (every route, even fetch-free ones):** `next dev` compiles each route on demand after a (re)start, with zero visual feedback (no `loading.tsx` anywhere in the app) — a click during that compile looks identical to a broken click.
+2. **Compounding on data-heavy pages:** `frontend/lib/api.ts` had no caching/de-dup (`cache: "no-store"` on every call), so independently-mounted components each re-fetched the same data — `/directory` fired `getCategories()` 3x, `getBrands()`/`getFeaturedSellers()` 2x each, ~15-20 concurrent requests on mount, saturating the browser's ~6-connections-per-origin cap and queuing the click's own navigation request behind the burst.
+
+Backend investigation (see WORKFLOW.md §2 gotcha "Postgres is live here") then found the *real* root cause underneath #2: this environment runs Postgres (`PG_URL` set), and the original plan's file-DB caching layer (`backend/lib/store.js`) is a dead code path here. The actual bottleneck was **a severe N+1 query pattern** in the Postgres composite mappers: `lib/db/listings.js`/`lib/db/users.js`'s `all()` ran up to 4-8 sequential queries *per row* (media, product, specs, price tiers, variants, service, rate card, portfolio / seller profile, locations, expert profile, case studies, legacy) to reassemble each document. For ~700 listings that's 3,000-4,000 round-trips for one `store.all("listings.json")` call — raw Postgres itself answers a `SELECT * FROM listings` in ~18ms; the mapper layer was the cost.
+
+**Backend changes:**
+- `backend/lib/db/listings.js`, `backend/lib/db/users.js` — rewrote `all()` to batch every child-table read ONCE across all row ids (`WHERE id = ANY($1)`, grouped by id in JS) instead of looping per-row. `getById()`/single-row paths untouched (correct as-is, N=1). New `hydrateFromMaps()` in each file builds a doc synchronously from the pre-fetched maps; verified **byte-identical** output against the original per-row `hydrate()` path (product/service/media/location/expert/locations/legacy all diffed equal).
+- `backend/lib/store.js` — added an in-memory read cache (`readJson`/`writeJson` keep a `Map<name, parsed>`, shallow-cloned on read so callers can't corrupt the cache by mutating their own copy) + `getVersion(name)` (monotonic counter bumped on every write). Lives in the file-DB branch only — **currently dormant in this environment** since Postgres is active, but correct and ready for local dev/CI without `PG_URL`.
+- `backend/lib/pg-store.js` — added a `getVersion()` stub (`Date.now()`) so routes calling it don't crash under Postgres; effectively disables the Layer-2 memoization below when Postgres is active (every check reads as "changed"), which is fine — the batching fix above is what actually mattered on this backend.
+- `backend/routes/categories.js`, `backend/routes/brands.js`, `backend/routes/users.js` (`/sellers`, `/sellers/featured`) — added `store.getVersion()`-keyed memoization of the expensive derived computations (`computeListingCounts`, brand aggregation, seller `activeCounts` scan) so a burst of concurrent identical requests shares one computation. Real effect only in file-DB mode (see above), but harmless and correct under Postgres too.
+
+**Frontend changes:**
+- New `frontend/lib/catalog.tsx` — `CatalogProvider` (mirrors `lib/config.tsx`'s house pattern: fetch-once-on-mount, safe empty defaults, non-throwing hooks), exposing `useCategories()` / `useCategoryTree()` / `useBrands()` / `useFeaturedSellers()`. Mounted in `app/layout.tsx` right after `ConfigProvider`.
+- Migrated the call sites causing the duplicate-request burst to the new hooks: `CategoryMegaMenu.tsx` (`useCategoryTree` now a thin re-export — its 4 existing callers needed zero changes), `DirectorySearchBar.tsx` (mounted 2x in Navbar), `AISearchBar.tsx`, `TrustBar.tsx` (4 calls → 1, just its own `getListings`), `TopBrands.tsx`, `FeaturedSellers.tsx`, `FloatingRfqButton.tsx`, `app/directory/page.tsx`, `app/search/page.tsx`.
+- **Deliberately left `components/discovery/BrandRail.tsx` untouched** — its `slug` prop can be any category depth (root or sub-category; `/[category]` is a single dynamic segment matching either), but the brand aggregation's `categorySlugs` field only stores each brand's *root-level* category slugs. A client-side `categorySlugs.includes(slug)` filter would silently break the brand rail on sub-category pages. It already benefits from the backend batching fix indirectly since it's not part of the duplicate-request problem.
+- `frontend/lib/api.ts` — `request<T>()` now de-dupes concurrent identical **GET** requests (same URL, in-flight at once) into one shared promise. Not a cache — cleared the instant the request settles. Covers cases outside the catalog data too, e.g. `/compare`'s page and the globally-mounted `CompareBar` both independently calling `getListing(id)` for the same ids.
+- New `frontend/components/RouteProgress.tsx` — a slim top-of-viewport progress bar (2-3px, brand gradient), **not a full-page loader** per explicit direction. Starts on any internal `<a href>` click (document-level listener, skips external/mailto/tel/new-tab/modifier-clicks), completes when `usePathname()` changes, with an 8s safety auto-hide. Deliberately uses `usePathname()` only (not `useSearchParams()`, which would force a Suspense-boundary requirement onto the whole app from the root layout) — a query-only navigation (same path) just rides out the safety timeout instead of snapping to 100% instantly.
+- `frontend/package.json` — `dev` script now `next dev --turbo`, cutting on-demand route-compile latency in local dev (mechanism #1 above). No effect on production builds. Confirmed `three` isn't actually imported anywhere despite being a dependency, so Turbopack has nothing unusual to transpile.
+
+**Verified:**
+- Backend: `/api/categories`/`/api/brands` direct timing ~850-900ms → ~30-90ms; a burst of 6 concurrent `/api/categories` requests (mimicking a real page-load fetch storm) dropped from serializing to ~5s down to 291ms total. Correctness: batched-hydration output diffed byte-identical against the unchanged single-row path for both listings (`product`/`service`/`media`/`location`) and users (`expert`/`locations`/`legacy`).
+- Frontend: `npx tsc --noEmit` clean throughout.
+- **Real headless-browser verification** (Playwright, installed temporarily via `npm install --no-save playwright` at repo root — gitignored, no `package.json`/lockfile changes, safe to remove or leave): on `/directory`, `getCategories`/`getBrands`/`getFeaturedSellers` each fired **exactly once** (previously 2-3x). A single click (no retry) on a cold `/directory` page navigated to `/consultations` in 243ms. Home page (`/`) footer link: single click navigated immediately. `RouteProgress` bar visibly rendered on click (confirmed via screenshot — gradient bar across the top edge). Zero console errors on either page load or navigation.
+- **A real bug caught by this verification pass**: the first test run mistakenly checked `/api/users/sellers/featured` (404 — the actual mount is `app.use("/api", require("./routes/users"))`, so the real path is `/api/sellers/featured`), which meant an earlier isolated HTTP-timing check of that endpoint had been silently measuring a 404 handler's speed, not the real route. Caught and corrected before relying on it; the store-layer correctness check (bypassing HTTP, calling `store.all("users.json")` directly) was unaffected and had already confirmed the fix was correct.
+
+**Also updated:** CLAUDE.md §2 (storage is now documented as Postgres-live, not file-DB-only), §3 (architecture diagram), §5 (store.js/N+1-batching conventions for future composite mappers), §6 (CatalogProvider/dedup conventions — check before adding a new per-component fetch), §7, §9 (dev-compile-latency and N+1-before-cache gotchas) — all per explicit request to keep the docs current.
+
+**Open / follow-up (deliberately deferred, not forgotten):**
+- `backend/routes/listings.js` `GET /` (search/rank/facets — the single most expensive endpoint, 3+ chained O(n) passes) wasn't touched. It isn't part of the *duplicate-request* bug this round targeted, and already has a different partial cache (`lib/search.js`'s MiniSearch index, TTL+count based). Worth a dedicated pass if `/search`/browse latency itself becomes the next target.
+- Admin-panel call sites (`CategoriesTab`, `AdsTab`, `CollectionsTab`, `ListingVerificationTab`), and a handful of single-mount low-traffic pages (`app/sell`, `app/rfq`, `app/profile`, `app/categories`, `dashboard/AdvertiseTab`, `BulkUploadTab`) still call `getCategories()` independently instead of using `lib/catalog.tsx`. Not part of the reported bug (they don't co-mount with duplicates), pure consistency cleanup if ever touched.
+- `frontend/components/suite/SuiteStats.tsx` appears to be **dead code** — it duplicates `TrustBar.tsx`'s exact fetch pattern but isn't imported/rendered anywhere found during this session's audit. Worth confirming and deleting in a future pass rather than leaving it as a trap for someone to "fix" later.
+- A combined "directory bootstrap" endpoint (one round-trip for categories+brands+featured-sellers+trending, replacing several separate calls) was considered and explicitly not built — the frontend `CatalogProvider` fix already removes the duplication that motivated it.
+- Playwright (installed for this session's browser verification) is sitting in the repo-root `node_modules/` (gitignored, `--no-save`) — harmless to leave for future verification passes, or delete if disk space matters.
+
+### 2026-08-19 — Fixed the Navbar's docked search suggestions dropdown rendering part-transparent (page content ghosting through) on `/directory`
+
+**Why:** reported as an intermittent visual bug — the suggestions dropdown "sometimes" looked fine,
+other times showed the page's own cards ghosted through it. Root cause, found by tracing the DOM
+tree rather than guessing at a rendering/GPU glitch: on `/directory` only, Navbar's docked copy of
+`DirectorySearchBar` sits inside a wrapper `<div>` whose `style` carries
+`opacity: searchDockProgress` — a 0→1 value driven by scroll position (HomeHero's hero search
+docking into the navbar as it scrolls out of view; see `lib/searchDock.tsx`). `searchDockProgress`
+allows pointer interaction once it passes 0.5 (`pointerEvents: "auto"`) but is only fully opaque at
+1. CSS `opacity` on an ancestor cascades to **every** descendant uniformly — including the
+suggestions dropdown, which is a child of `DirectorySearchBar`'s own root and therefore a
+descendant of that wrapper too, even though it's positioned outside the wrapper's visual box via
+`position: absolute`. So any time a user focused/typed while still mid-scroll-transition (fully
+possible: interactive from 0.5, opaque only at 1), the whole dropdown — not just the bar — rendered
+at that same partial opacity, letting the page section behind it show through. Confirmed present in
+both the desktop (`nav:flex` row) and mobile (docked row below the `h-16` header) copies — same
+wrapper pattern in both.
+
+**Fix:**
+- `frontend/components/DirectorySearchBar.tsx`: added an optional `dockStyle?: React.CSSProperties`
+  prop, applied only to the `<form>` element (the bar's own visible chrome) — never to the
+  component's root `<div>`, which also parents the suggestions dropdown (a sibling of `<form>`).
+- `frontend/components/Navbar.tsx`: both docked-search blocks (desktop + mobile) no longer put
+  `opacity`/`transform` on the wrapper `<div>` that parents `<DirectorySearchBar>` — that wrapper
+  now carries only `pointerEvents` gating (a boolean, not a partial value, so it doesn't cause
+  visual bleed-through). The scroll-linked `opacity`/`transform`/`transition` moved into the new
+  `dockStyle` prop, landing on `<form>` only. The dropdown, a sibling of `<form>` inside
+  `DirectorySearchBar`, is now never affected by `searchDockProgress` and always renders fully
+  opaque once open, regardless of scroll position.
+
+**Verified:** `cd frontend && npx tsc --noEmit` clean. Not yet re-checked visually against a live
+scroll-and-focus repro (dev server not running this session) — next session/human should scroll
+`/directory` to roughly the 0.5–0.9 dock-progress zone, focus the navbar search box, type 2+
+characters, and confirm the dropdown is fully opaque immediately (desktop and mobile widths both).
+
+### 2026-08-18 — Home hero moved off `AISearchBar` onto the same plain `DirectorySearchBar` as the rest of Directory; category chip now replaces the text box instead of sitting beside it; unsubmitted typed text no longer leaks across navigation; RFQ reachable (and pre-filled) directly from search; `/search`'s last duplicate search bar removed
+
+**Why:** five follow-on problems from the last round, all confirmed by re-reading the code before
+changing anything:
+1. `HomeHero.tsx` was still the one remaining Directory instance of `AISearchBar` (suggestion
+   dropdown, AI wording) while every other Directory page already used the plain bar built last
+   round — asked to make the home page match, **without deleting `AISearchBar.tsx`** (it stays
+   live for Consultations, its only other caller — "hide it, don't remove it from code").
+2. The category chip rendered *before* the city selector, with the text input still visible next
+   to it, so a pinned category and unrelated leftover typed text could show at once.
+3. `searchDock`'s `query` was written on every keystroke with nothing distinguishing "typed" from
+   "searched" and nothing clearing it on navigation — so typing text, then clicking an unrelated
+   category/product card elsewhere, left that never-submitted text showing on the destination
+   page's search box.
+4. No direct, always-available way to jump from a search into "post a requirement" — only a
+   zero-results empty-state link, and `/rfq` couldn't be pre-filled with what was typed.
+5. `/search` rendered **two** search bars at once: the Navbar's persistent copy (Navbar's
+   `NON_DIRECTORY_PATHS` exclusion list never excluded `/search`) *and* the page's own embedded
+   copy, both bound to the same `searchDock` state.
+
+**Changes:**
+- `frontend/components/DirectorySearchBar.tsx`: added an optional `size?: "hero"|"compact"`
+  prop (default `"compact"`, so the two Navbar usages are unaffected) for the bigger touch
+  target/type needed on the home hero. Reworked state to **commit-on-submit**: a local `draft`
+  holds what's being typed; `onQueryChange` (→ `searchDock.setQuery`) is only called from
+  `submit()`, never from the input's `onChange`. A `usePathname()`-keyed effect snaps `draft`
+  back to the last committed `query` on every route change, so anything typed but never
+  submitted is discarded the moment you navigate away by any means other than actually
+  searching. When `selectedCategory` is set, its pill now renders **in the input's own flex
+  slot** (input isn't rendered at all) instead of to the left of the city selector — "a selected
+  category" and "free-typed text" are mutually exclusive by construction, not by
+  reconciliation. `submit()` gained a category-only path: pressing search with no typed text but
+  a category pinned navigates straight to that category's page.
+- `frontend/components/home/HomeHero.tsx`: swapped `AISearchBar` → `DirectorySearchBar
+  size="hero"`. `AISearchBar.tsx` itself untouched — still fully live, still the only bar on
+  `app/consultations/page.tsx`.
+- `frontend/app/rfq/page.tsx`: reads `?need=` via `useSearchParams()` and pre-fills the
+  free-text "what do you need" box with it on mount (only if still empty). Wrapped the page in
+  `Suspense` (`RfqInner` + a `null`-fallback default export), matching the pattern
+  `useSearchParams()` requires elsewhere in this codebase (`app/search/page.tsx`).
+- `frontend/app/search/page.tsx`: removed the page's own embedded `DirectorySearchBar` entirely
+  — `/search` now relies solely on the Navbar's copy, same as every other Directory page
+  (category, listing, seller). Added a small effect resolving the `?category=` URL param's
+  display name from the already-fetched category list and syncing it into `searchDock` (without
+  clobbering a chip DirectorySearchBar's own submit already committed a moment earlier) so the
+  Navbar's bar still reflects the current search with no embedded copy driving it. Added a
+  persistent "Didn't find what you need? Post a requirement →" link (shown whenever there's a
+  query) next to the results heading, and updated the existing zero-result `EmptyState` CTAs
+  (both in this file and in `DiscoveryResults.tsx`) to link to `/rfq?need=<query>` instead of a
+  bare `/rfq`.
+- `frontend/app/globals.css`: fixed a stale comment above `.search-city-select` that only
+  credited `AISearchBar.tsx` — that CSS is consumed by `DirectorySearchBar.tsx` too.
+
+**Verified:** `npx tsc --noEmit` clean. Live smoke tests against the running dev servers:
+`/directory`, `/search`, `/search?q=steel`, `/rfq`, `/rfq?need=steel` all 200. `/search?q=steel`
+now has the same `role="search"` count (2 — Navbar's desktop + mobile instances) as a category
+page like `/abrasives`, confirming the third, embedded bar is gone. `/directory`'s SSR HTML has
+no `role="combobox"` (the AI suggestion dropdown's marker) and does show the plain bar's
+`aria-label="Search products, sellers and categories"`. `/rfq?need=steel` renders the textarea
+pre-filled with "steel".
+
+**Open:** the category-selected-state pill and the commit/discard-on-navigate behavior are both
+client-side (`useEffect`) so they don't show up in curl'd SSR HTML — traced through the code but
+not click-tested in an actual browser (none available in this environment), same caveat as every
+prior round. Hero-size visual weight and chip layout at 390px are unverified for the same reason.
+
+---
+
+### 2026-08-17 (6) — Directory search bar rebuilt as a plain (no AI, no suggestion dropdown) box; `/search` rebuilt as a grouped Companies/Products/Categories overview
+
+**Why:** the last round's fix ("submit navigates instead of an inline panel") wasn't the actual
+ask — the product owner wanted the AI framing and as-you-type suggestion dropdown gone from the
+Directory search bar entirely, replaced by: submit → loading → a results **overview** grouped
+into three buckets (companies/sellers, products, categories matching the text), each with a few
+previews and a "View all" to drill in. Research found products and categories buckets were
+buildable from existing endpoints/data, but there was no way to search sellers by company name
+anywhere in the backend — that needed a new endpoint. Routing approach (confirmed): one
+`/search` page with a `scope` URL param switching between the overview and each bucket's full
+view, rather than separate pages per bucket.
+
+**Changes:**
+- `backend/routes/users.js` — new `GET /sellers?q=&limit=&page=`, filtering approved sellers'
+  `sellerProfile.companyName` (case-insensitive substring), returning `{sellers, total}` in the
+  same per-seller shape as the neighboring `/sellers/featured` (field-compatible with
+  `FeaturedSellers.tsx`'s `mapSeller()`). `frontend/lib/api.ts` gained a matching
+  `searchSellers({q, limit, page})`.
+- New `frontend/components/DirectorySearchBar.tsx` — a deliberately plain search box (text +
+  optional city select + optional category chip display/clear) with **no dropdown, no
+  suggestions, no AI wording**. Submit is a synchronous `router.push('/search?q=...')` — no API
+  call before navigating, so no spinner on the bar itself. Replaces `AISearchBar` in
+  `Navbar.tsx` (both compact instances) and `/search`'s own embedded bar.
+- `frontend/components/AISearchBar.tsx` — reverted the `selectedCategory`/`onSelectCategory`/
+  `onClearCategory`/`goToSearch`/`submitSearch` additions from the last two rounds (cleanup;
+  its only remaining callers, `HomeHero` and Consultations, never used them). Its dropdown/
+  clarify/inline-list AI-concierge behavior for those two is fully unchanged — this round didn't
+  touch the `/directory` hero or Consultations at all.
+- `frontend/app/search/page.tsx` — rebuilt around a `scope` param
+  (`overview | products | companies | categories`, default `overview` whenever `q` is set; no
+  `q` still falls back to the plain "browse everything" grid, unchanged from before). Overview
+  fetches all three buckets independently (each with its own loading skeleton, reusing
+  `FeaturedSellers.tsx`'s card-skeleton shape for companies, the existing grid skeleton for
+  products, a small new tile skeleton for categories); a bucket with zero matches hides itself,
+  and an all-empty query falls back to the existing `EmptyState`. Categories are matched
+  client-side against the already-fetched ~280-row `getCategories()` list (fetched once, shared
+  between the overview and the full categories view) — no backend change needed there. Products'
+  full view reuses `DiscoveryResults` exactly as before; companies' full view is a new paginated
+  `SellerCard` grid (`Pagination`'s `hrefBuilder`, same component `DiscoveryResults` already
+  uses). Every "View all" / "Back to all results" is a real `<Link>` — no client routing state,
+  normal back-button behavior.
+- `frontend/components/discovery/DiscoveryResults.tsx` — found while wiring the products full
+  view through `scope=products`: its `syncUrl` write-back rebuilt the URL from scratch,
+  dropping any param it doesn't itself manage — so changing so much as the sort dropdown while
+  on `scope=products` would have silently dropped back to the overview (`scope` erased). Fixed
+  by seeding that rebuild from the current URL's params and only overwriting the keys this
+  component actually owns.
+
+**Verified:** `npx tsc --noEmit` clean; backend route `node -c` clean, restarted, live-tested —
+`GET /api/sellers?q=a&limit=3` returns real sellers + `total`, `page=1` vs `page=2` return
+different sellers (pagination confirmed working). For `q=steel`: products bucket 25 total,
+sellers bucket 2 total, categories bucket 4 matches (all non-empty, confirms the overview would
+render all three sections for a realistic query). All affected pages
+(`/`, `/directory`, `/profile`, `/dashboard`, `/search`, `/search?q=steel`,
+`/search?q=steel&scope=companies`, `/search?q=steel&scope=categories`, a listing page, a
+category page, a seller page) return 200 with no runtime-error markers. Confirmed via SSR HTML:
+`/directory`'s hero still has the suggestion `combobox` (unchanged), while `/abrasives` and
+`/search` have none (dropdown fully gone from Directory bars).
+
+**Open:** manual/visual confirmation of the overview's three-section layout, loading skeletons,
+and both "View all" / pagination flows once a browser is available — same caveat as every prior
+round of this feature.
+
+### 2026-08-17 (5) — Removed the navbar "AI search" glitch (text search now navigates to `/search`); dropped the duplicate category-page search bar
+
+**Why:** none of the Directory-context `AISearchBar` instances (`aiEnabled={false}`) passed an
+`onResults` handler, so a normal keyword search (e.g. "steel sheets") never navigated anywhere
+— `runAi()`'s `mode === "list"` branch fell through to an inline floating results panel (cards,
+sparkle icon, "Found N vendors") popping out from under whichever compact bar it was submitted
+from. Reported as a navbar UI glitch; the same thing would have happened on `/search`'s own
+embedded bar too, stacking a redundant results UI on top of that page's own results grid.
+Separately, category pages had two visible search bars (navbar + an embedded one added two
+entries ago) — confirmed to drop the embedded one and keep search navbar-only everywhere,
+matching listing/seller pages.
+
+**Changes:**
+- `frontend/components/AISearchBar.tsx` — added `goToSearch(text)` (builds
+  `/search?q=...&city=...&category=...` from the bar's own controlled state and navigates) and
+  `submitSearch(text)` (`aiEnabled ? runAi(text) : goToSearch(text)`); swapped all four
+  submit-triggering call sites (form submit, Enter key, the pinned dropdown row, an example
+  chip) from `runAi` to `submitSearch`. `runAi` itself, and everything for `aiEnabled=true`
+  callers (`HomeHero`, Consultations), is unchanged. Removed the now-dead category-name
+  text-folding block inside `runAi` from two entries ago — unreachable now that deterministic
+  bars never call `runAi` for submit; the chip's job is supplying `goToSearch`'s real
+  `&category=` param instead, a strictly more precise mechanism than folding into free text.
+- `frontend/components/discovery/DiscoveryResults.tsx` — added
+  `useEffect(() => setQ(query || ""), [query])`. Found while tracing the fix through: its
+  internal `q` only seeded once from the `query` prop on mount and never re-read it — since
+  Next doesn't remount `/search` for an in-place `?q=` change, a second search from the same
+  page wouldn't have actually updated the results grid without this.
+- `frontend/components/discovery/CategoryLanding.tsx` — removed the embedded `AISearchBar` block
+  (and its now-unused import) added two entries ago. Kept the effect that self-pins the shared
+  `selectedCategory` chip to the page's own loaded category — it now drives the navbar's chip
+  instead of a page-local one.
+- `frontend/components/Navbar.tsx` — the chip's × (`onClearCategory`) is now a shared
+  `handleClearCategory()`: while standing on that category's own page (its URL matches the
+  chip's slug), clicking × navigates to `/directory` instead of just clearing state — a plain
+  clear there would have been immediately undone by `CategoryLanding`'s own pinning effect on
+  the next render (the exact bug reported for the now-removed embedded bar's missing ×, just
+  one level up). Everywhere else, × still just clears the chip, unchanged.
+
+**Verified:** `npx tsc --noEmit` clean. Live smoke test — all affected pages return 200 with no
+runtime-error markers; `/abrasives`'s search-bar count dropped to 2 (navbar desktop+mobile
+only, embedded one gone) while `/search?q=steel` still shows 3 (navbar ×2 + its own embedded
+bar, unchanged). The actual submit-navigates-to-`/search` behavior, the results-grid refetch on
+a same-page re-search, and the ×'s leave-category navigation are all client-side interactions
+not verifiable via `curl` — no browser automation available in this environment, same caveat as
+the rest of this feature.
+
+**Open:** manual/visual confirmation of all three interaction fixes above once a browser is
+available.
+
+### 2026-08-17 (4) — Picking a category suggestion now shows a removable chip instead of leftover typed text
+
+**Why:** the previous entry made every Directory search bar share one `query` via
+`searchDock`, which surfaced a bug: picking a **category** from `AISearchBar`'s suggestion
+dropdown only navigated (`router.push`) — it never touched `query`, so every visible search
+bar on the destination page kept showing whatever partial word was typed *before* the
+suggestion was picked, not the category actually selected. Product-owner confirmed the fix
+should split "a structured suggestion I picked" from "free text I'm still typing" as two
+independent things in the same bar, not one field trying to be both.
+
+**Changes:**
+- `frontend/lib/searchDock.tsx` — added `selectedCategory: {slug,name} | null` +
+  `setSelectedCategory` alongside the existing shared `query`/`city`.
+- `frontend/components/AISearchBar.tsx` — new optional controlled props
+  (`selectedCategory`/`onSelectCategory`/`onClearCategory`), all omitted by `HomeHero` and
+  Consultations' own bar so neither ever shows a chip. Renders a small removable pill
+  ("Category: Abrasives ×") to the left of the input when set. `selectItem()`'s category
+  branch now sets the chip + clears `query` before navigating (was: navigate only); its
+  listing branch clears `query` too (a picked listing goes straight to a single-item page —
+  no results list left to refine, so no chip, just no stale text either). `runAi()` folds an
+  active chip's category name into the text sent to `api.aiSearch` on submit, the same way
+  the city selector already is — the endpoint has no separate category-scope parameter.
+- `frontend/components/Navbar.tsx`, `frontend/app/search/page.tsx` — wired the new props from
+  `useSearchDock()`, `onClearCategory` included (clearing there is meaningful — reverts to a
+  plain global search, nothing else on the page is pinned to that category).
+- `frontend/components/discovery/CategoryLanding.tsx` — same wiring, plus a new effect that
+  self-sets the chip from the page's own loaded category whenever it doesn't already match —
+  so the chip is correct however the page was reached (search suggestion, a category tile,
+  the mega-menu, a direct link), not just the one reported path. Deliberately does **not**
+  pass `onClearCategory`: caught during implementation that passing it would show a
+  ×-button that immediately undid itself, because that same self-correcting effect would
+  re-set the chip right back the instant it was cleared (the URL still pins you to that
+  category) — omitting the prop hides the (non-functional) × there instead of shipping a
+  button that visibly does nothing.
+
+**Verified:** `npx tsc --noEmit` clean. Live smoke test — all affected pages (`/`, `/directory`,
+`/profile`, `/dashboard`, `/search`, `/search?q=`, a listing page, a category page, a seller
+page) return 200 with no runtime-error markers in the response body. The chip itself is
+client-side interactive state (only appears after a suggestion pick or, on a category page,
+after that page's own category fetch resolves), so its actual on-screen appearance and the
+click-through behaviors described above are **not** verifiable via `curl` — no browser
+automation available in this environment. Flagged as open, same as the rest of this feature's
+visual checks.
+
+**Open:** manual/visual confirmation of the chip (desktop + mobile, no overflow at 390px),
+and a walk-through of the two `selectItem()` paths (category → chip, listing → just cleared),
+once a browser is available.
+
+### 2026-08-17 (3) — Directory search bar made persistent across the whole Directory product (navbar everywhere, embedded on listing pages), sharing one query/city via `searchDock`
+
+**Why:** search only ever appeared in two places — the `/directory` hero, and a compact
+navbar copy that docked in only once you scrolled that same hero out of view. Every other
+Directory page (category, `/search`, a single listing, a seller/brand page) had no search bar
+at all, even though the navbar's `showDirectoryNav` chrome flag (which also gates
+`CategoryStrip`) was already true on all of them. `/search`'s own bar was hidden unless the
+query "looked natural," and — even when shown — never reflected the URL's own `?q=`. Also
+found while researching: `/profile` (the standalone main-user page from the previous entry)
+was missing from `Navbar.tsx`'s `NON_DIRECTORY_PATHS` denylist, so Directory chrome incorrectly
+leaked onto it.
+
+**Changes:**
+- `frontend/components/Navbar.tsx` — added `/profile` to `NON_DIRECTORY_PATHS` (bug fix).
+  Added `isDirectoryHome`/`showNavSearch`: the scroll-fade dock animation (driven by
+  `searchDockProgress`, published only by `HomeHero`'s `IntersectionObserver`) stays exactly
+  as-is on `/directory`; on every other `showDirectoryNav` page the same compact `AISearchBar`
+  now renders unconditionally at full opacity — desktop reuses the existing (previously empty)
+  nav-row slot, mobile switches from the scroll-only absolute overlay to a normal-flow row
+  (no hero to animate from off the home page, so no `IntersectionObserver`-desync risk).
+- `frontend/components/discovery/CategoryLanding.tsx` — new embedded `AISearchBar` row
+  directly below the category header band, controlled by the same `useSearchDock()` query/city
+  as the navbar copy (not a separate local state), hydrated from the URL's seeded
+  `query`/`initialFilters.city` on first mount for direct links/refreshes.
+- `frontend/app/search/page.tsx` — replaced the conditional (`looksNatural`), uncontrolled bar
+  with one that's always shown and controlled via `useSearchDock()`, same URL-hydration-on-mount
+  approach — this also fixes the pre-existing gap where the visible input never reflected the
+  URL's `?q=`.
+- No changes to `listing/[id]`, `seller/[slug]`, `brand/[slug]` — they already fall under
+  `showDirectoryNav`, so the navbar fix alone surfaces the persistent bar there; per spec, no
+  embedded copy on these single-item pages.
+- Because `SearchDockProvider` (`frontend/lib/searchDock.tsx`) is mounted once in the root
+  layout and never unmounts during client-side navigation, and every Directory search bar now
+  shares its one `query`/`city`, whatever the user last typed stays visible on the next page —
+  including a listing/seller page where only the navbar copy renders. No new storage mechanism
+  needed for that.
+
+**Verified:** `npx tsc --noEmit` clean. Live smoke test via `curl` against the running dev
+servers — SSR HTML instance counts of `aria-label="Vendor search"` matched expectations:
+`/profile` and `/dashboard` and `/` → 0; `/directory` pre-scroll → 1 (hero only); a
+listing/seller page → 2 (desktop + mobile navbar copies, no embedded one); `/search?q=steel` →
+3 (2 navbar + 1 embedded). A category page (`/abrasives`) showed only the 2 navbar copies in
+curl's SSR snapshot because — same as its breadcrumbs/heading/results grid — `CategoryLanding`
+fetches the category client-side and renders a loading skeleton until that resolves; the
+embedded bar is there in the loaded-state JSX, just not visible to a pre-hydration curl. No
+browser automation available in this environment to confirm the post-hydration visual/no-overflow
+result by hand — flagged as open.
+
+**Open:** manual/visual confirmation (both counts and no horizontal overflow at 390px) of the
+category-page embedded bar and the mobile always-on navbar row, once a browser is available.
 
 ### 2026-08-17 (2) — New standalone `/profile` page for the main user; "Become a seller" now lives only inside the Directory dashboard; register redirects home; interests picker cut from 280 chips to 24
 
@@ -518,3 +885,13 @@ broken fetch when testing manually.
   ad-slot ids.
 - Port the full-catalog seed + demo-ad data into `backend/DB/*.json` if file-mode parity
   becomes a requirement (e.g. for a clone that doesn't set `PG_URL`).
+- Optimize `backend/routes/listings.js` `GET /` (search/rank/facets) — the most expensive
+  endpoint left untouched by the 2026-08-19 N+1 fix; see that entry's Open section.
+- Migrate the remaining `getCategories()` call sites (admin tabs, `/sell`, `/rfq`, `/profile`,
+  `/categories`, `dashboard/AdvertiseTab`, `BulkUploadTab`) to `lib/catalog.tsx` for
+  consistency — not urgent, they aren't part of any duplicate-request bug.
+- Confirm `frontend/components/suite/SuiteStats.tsx` is genuinely dead code (not rendered
+  anywhere) and delete it, or wire it in if it was actually meant to be used somewhere.
+- Update HANDOVER.md / SECURITY.md for the Postgres migration (POSTGRES-MIGRATION.md itself
+  flags this as required "before this goes anywhere near main or production" — CLAUDE.md was
+  updated 2026-08-19, the other two companion docs weren't in scope this round).

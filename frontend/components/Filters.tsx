@@ -39,6 +39,13 @@ export interface FiltersProps {
   /** Child categories to drill into (links). */
   subcategories?: SubcategoryItem[];
   className?: string;
+  /** Hide sections already surfaced as inline pills above the results (DiscoveryResults'
+   * top filter bar) so the drawer doesn't repeat the same control twice. */
+  hideType?: boolean;
+  hideCategory?: boolean;
+  hideCity?: boolean;
+  hidePrice?: boolean;
+  hideVerified?: boolean;
 }
 
 const PRICE_TIERS: { display: string; value: number }[] = [
@@ -240,6 +247,11 @@ export default function Filters({
   brands = [],
   subcategories = [],
   className = "",
+  hideType = false,
+  hideCategory = false,
+  hideCity = false,
+  hidePrice = false,
+  hideVerified = false,
 }: FiltersProps) {
   const { t: rawT, lang } = useT();
   const tr = (key: string, fallback: string) => {
@@ -370,6 +382,7 @@ export default function Filters({
       )}
 
       {/* Type */}
+      {!hideType && (
       <Accordion title={tr("filters.type", "Type")} count={value.type ? 1 : 0} open={openIds.type} onToggle={() => toggle("type")}>
         {(
           [
@@ -391,6 +404,7 @@ export default function Filters({
           );
         })}
       </Accordion>
+      )}
 
       {/* Brand — searchable checkbox facet */}
       {brands.length > 0 && (
@@ -414,6 +428,7 @@ export default function Filters({
       )}
 
       {/* Price tiers */}
+      {!hidePrice && (
       <Accordion title={tr("filters.price", "Price")} count={value.priceMax ? 1 : 0} open={openIds.price} onToggle={() => toggle("price")}>
         <CheckRow
           radio
@@ -433,6 +448,7 @@ export default function Filters({
           />
         ))}
       </Accordion>
+      )}
 
       {/* Rating */}
       <Accordion title={tr("filters.rating", "Rating")} count={value.minRating ? 1 : 0} open={openIds.rating} onToggle={() => toggle("rating")}>
@@ -474,7 +490,7 @@ export default function Filters({
       </Accordion>
 
       {/* Category (search-page facet — single select) */}
-      {categories.length > 0 && (
+      {!hideCategory && categories.length > 0 && (
         <Accordion title={tr("filters.category", "Category")} count={value.category ? 1 : 0} open={openIds.category} onToggle={() => toggle("category")}>
           <div style={{ display: "flex", flexDirection: "column", maxHeight: 260, overflowY: "auto" }} className="no-scrollbar">
             {categories.map((c) => (
@@ -493,7 +509,7 @@ export default function Filters({
       )}
 
       {/* City */}
-      {cities.length > 0 && (
+      {!hideCity && cities.length > 0 && (
         <Accordion title={tr("filters.city", "City")} count={value.city ? 1 : 0} open={openIds.city} onToggle={() => toggle("city")}>
           <select
             className="select"
@@ -512,13 +528,15 @@ export default function Filters({
       )}
 
       {/* Verified (always visible) */}
-      <div style={{ paddingTop: 10 }}>
-        <CheckRow
-          label={tr("filters.verifiedOnly", "Verified sellers only")}
-          checked={!!value.verified}
-          onChange={() => set({ verified: value.verified ? undefined : true })}
-        />
-      </div>
+      {!hideVerified && (
+        <div style={{ paddingTop: 10 }}>
+          <CheckRow
+            label={tr("filters.verifiedOnly", "Verified sellers only")}
+            checked={!!value.verified}
+            onChange={() => set({ verified: value.verified ? undefined : true })}
+          />
+        </div>
+      )}
     </aside>
   );
 }
