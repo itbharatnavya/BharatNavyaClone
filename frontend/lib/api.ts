@@ -653,6 +653,12 @@ export function viewStory(id: string): Promise<{ views: number }> {
   });
 }
 
+export function deleteStory(id: string): Promise<{ deleted: boolean }> {
+  return request<{ deleted: boolean }>(`/api/stories/${id}`, {
+    method: "DELETE",
+  });
+}
+
 // ============================================================
 // Admin
 // ============================================================
@@ -993,11 +999,17 @@ export function redeemReferral(code: string): Promise<RedeemResult> {
 // ============================================================
 // Stories — highlights  — /api/stories
 // ============================================================
-export function highlightStory(id: string): Promise<Story> {
-  return request<Story>(`/api/stories/${id}/highlight`, { method: "PUT" });
+export function highlightStory(id: string, isHighlight = true): Promise<Story> {
+  return request<Story>(`/api/stories/${id}/highlight`, {
+    method: "PUT",
+    body: JSON.stringify({ isHighlight }),
+  });
 }
 export function getHighlights(sellerId: string): Promise<Story[]> {
   return request<Story[]>(`/api/stories/highlights${toQuery({ sellerId })}`);
+}
+export function getActiveStories(sellerId: string): Promise<Story[]> {
+  return request<Story[]>(`/api/stories/active${toQuery({ sellerId })}`);
 }
 
 // ============================================================

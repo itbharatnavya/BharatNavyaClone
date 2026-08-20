@@ -5,15 +5,21 @@
  *         expiresAt(24h), views, isHighlight }
  *
  * Expired stories are SWEPT ON READ: GET / prunes anything past its expiresAt from
- * the store before returning the survivors grouped by seller — EXCEPT highlights.
- * A highlighted story is PINNED: it survives the 24h expiry sweep and keeps showing
- * on the seller's profile via GET /highlights.
+ * the store (unless highlighted — see below) and its response only ever includes
+ * stories still inside their 24h window. A highlighted story is PINNED in STORAGE
+ * indefinitely so it can keep showing on the seller's public profile via
+ * GET /highlights, even long after it has expired out of GET / and GET /active.
  *
- *   GET  /api/stories             → active (+ pinned) stories grouped by seller
- *   GET  /api/stories/highlights  → ?sellerId= a seller's highlighted stories
- *   POST /api/stories             → create (authGuard; 24h expiry)
- *   PUT  /api/stories/:id/highlight → pin a story (authGuard; owner-only)
- *   POST /api/stories/:id/view    → increment view counter
+ *   GET    /api/stories             → currently-active (+ still-active highlighted)
+ *                                      stories, grouped by seller (public feed)
+ *   GET    /api/stories/highlights  → ?sellerId= ALL of a seller's highlighted
+ *                                      stories, expired or not (public profile)
+ *   GET    /api/stories/active      → ?sellerId= a seller's currently-active stories,
+ *                                      highlighted or not (public profile)
+ *   POST   /api/stories             → create (authGuard; 24h expiry)
+ *   PUT    /api/stories/:id/highlight → pin/unpin a story (authGuard; owner-only)
+ *   POST   /api/stories/:id/view    → increment view counter
+ *   DELETE /api/stories/:id         → delete a story (authGuard; owner or admin)
  */
 
 const express = require("express");
@@ -24,13 +30,23 @@ const { authGuard } = require("../middleware/authGuard");
 const COLLECTION = "stories.json";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-// GET / — sweep expired (keeping pinned highlights), then group by seller.
+function isAdmin(user) {
+  return !!user && (user.roles || []).includes("admin");
+}
+
+// GET / — the public/dashboard feed: only stories still inside their 24h window.
+// Sweeps expired non-highlights out of storage, but keeps expired highlights in
+// storage (not in this response) so GET /highlights can keep serving them to the
+// seller's profile — see that route below.
 router.get("/", async (req, res, next) => {
   try {
     const now = Date.now();
     const all = await store.all(COLLECTION);
-    // Keep a story if it's still active OR it's a pinned highlight. Highlights
-    // never get pruned even once their 24h expiresAt has passed.
+    // Highlights are pinned in STORAGE indefinitely (a seller can unpin/delete an
+    // old one from their dashboard at any time), but only a non-expired story —
+    // highlighted or not — belongs in this feed. An expired highlight is
+    // profile-only from here on; it does not linger in the public directory feed
+    // or the dashboard's own list once its original 24h window has passed.
     const kept = all.filter(
       (s) => s.isHighlight === true || new Date(s.expiresAt).getTime() > now
     );
@@ -42,8 +58,12 @@ router.get("/", async (req, res, next) => {
       await store.writeJson(COLLECTION, kept);
     }
 
-    // Hidden stories survive in the store but never render on the public site.
-    const visible = kept.filter((s) => s.status !== "hidden");
+    // Hidden stories survive in the store but never render here. Expired highlights
+    // also survive in the store (see `kept` above) but are excluded from this feed —
+    // GET /highlights is the only place they still show.
+    const visible = kept.filter(
+      (s) => s.status !== "hidden" && new Date(s.expiresAt).getTime() > now
+    );
 
     // Resolve seller info once.
     const users = await store.all("users.json");
@@ -57,13 +77,18 @@ router.get("/", async (req, res, next) => {
     for (const story of ordered) {
       if (!groups.has(story.sellerId)) {
         const u = userById.get(story.sellerId);
+        // Flat fields matching the frontend's StoryGroup type (lib/types.ts) — this is
+        // the shape every consumer (StoriesTab, StoryRail) is written against. Previously
+        // this only carried a nested `seller` object, which silently broke any consumer
+        // that read `g.sellerId` directly (StoriesTab.tsx always found zero of the
+        // seller's own stories as a result — StoryRail.tsx happened to survive only
+        // because it separately normalises both shapes).
         groups.set(story.sellerId, {
-          seller: {
-            id: story.sellerId,
-            name: u ? u.name : "Unknown Seller",
-            avatarUrl: u ? u.avatarUrl || null : null,
-            slug: u && u.sellerProfile ? u.sellerProfile.slug : null,
-          },
+          sellerId: story.sellerId,
+          sellerName: u ? u.name : "Unknown Seller",
+          sellerSlug: u && u.sellerProfile ? u.sellerProfile.slug : null,
+          avatarUrl: u ? u.avatarUrl || null : null,
+          isVerified: !!(u && u.sellerProfile && u.sellerProfile.isVerified),
           stories: [],
         });
       }
@@ -109,6 +134,35 @@ router.get("/highlights", async (req, res, next) => {
   }
 });
 
+// GET /active?sellerId= — a seller's currently-active (non-expired) stories, whether
+// highlighted or not. Powers the public profile's "Active" tab — a scoped version of
+// what GET / already filters to, without fetching/grouping every seller's stories.
+router.get("/active", async (req, res, next) => {
+  try {
+    const sellerId = req.query.sellerId;
+    if (!sellerId) {
+      return res
+        .status(400)
+        .json({ success: false, error: "sellerId query param is required" });
+    }
+    const now = Date.now();
+    const all = await store.all(COLLECTION);
+    const active = all
+      .filter(
+        (s) =>
+          s.sellerId === sellerId &&
+          s.status !== "hidden" &&
+          new Date(s.expiresAt).getTime() > now
+      )
+      .sort((a, b) =>
+        String(a.createdAt || "").localeCompare(String(b.createdAt || ""))
+      );
+    return res.json({ success: true, data: active });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST / — create a story that auto-expires 24h from now.
 router.post("/", authGuard, async (req, res, next) => {
   try {
@@ -136,8 +190,11 @@ router.post("/", authGuard, async (req, res, next) => {
   }
 });
 
-// PUT /:id/highlight — pin a story as a highlight (owner-only). A highlight is
-// excluded from the 24h expiry sweep, so it persists on the seller's profile.
+// PUT /:id/highlight — pin/unpin a story as a highlight (owner-only). Body
+// { isHighlight?: boolean } — defaults to true so existing "pin" callers are
+// unaffected; pass false to unpin. A highlight is excluded from the 24h expiry
+// sweep, so pinning persists the story on the seller's profile until unpinned
+// (unpinning an already-expired story returns it to the normal sweep).
 router.put("/:id/highlight", authGuard, async (req, res, next) => {
   try {
     const story = await store.getById(COLLECTION, req.params.id);
@@ -149,8 +206,9 @@ router.put("/:id/highlight", authGuard, async (req, res, next) => {
         .status(403)
         .json({ success: false, error: "You can only highlight your own stories" });
     }
+    const isHighlight = req.body?.isHighlight !== undefined ? !!req.body.isHighlight : true;
     const updated = await store.update(COLLECTION, story.id, {
-      isHighlight: true,
+      isHighlight,
     });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -169,6 +227,23 @@ router.post("/:id/view", async (req, res, next) => {
       views: (story.views || 0) + 1,
     });
     return res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /:id — remove a story outright (owner or admin).
+router.delete("/:id", authGuard, async (req, res, next) => {
+  try {
+    const story = await store.getById(COLLECTION, req.params.id);
+    if (!story) {
+      return res.status(404).json({ success: false, error: "Story not found" });
+    }
+    if (story.sellerId !== req.user.id && !isAdmin(req.user)) {
+      return res.status(403).json({ success: false, error: "You can only delete your own stories" });
+    }
+    await store.remove(COLLECTION, story.id);
+    return res.json({ success: true, data: { id: story.id, deleted: true } });
   } catch (err) {
     next(err);
   }

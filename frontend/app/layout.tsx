@@ -25,7 +25,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "BharatSource — Source anything across India",
   description:
-    "A horizontal Indian marketplace: source products, hire services, and connect with verified sellers across every industry. Products and services, one catalog.",
+    "BharatSource is India's business suite, one account for sourcing verified suppliers on Directory and hiring vetted candidates on Recruitment.",
 };
 
 export default function RootLayout({

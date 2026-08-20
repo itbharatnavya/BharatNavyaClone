@@ -12,7 +12,7 @@
   "sponsoredRowEnabled": true,
   "branding": {
     "siteName": "BharatSource",
-    "tagline": "India's marketplace for everything — products, services & trusted vendors.",
+    "tagline": "India's business suite — source smart, hire right.",
     "logoText": "BharatSource",
     "accentBlue": "#2563EB",
     "accentOrange": "#F97316"
@@ -66,6 +66,6 @@
     "address": "India"
   },
   "footer": {
-    "about": "BharatSource connects buyers, sellers and service providers across India. A mediator platform — we do not process payments or hold inventory."
+    "about": "One account for sourcing and hiring: verified suppliers on Directory, vetted candidates on Recruitment. A mediator platform, we never process payments or hold inventory."
   }
 }

@@ -208,6 +208,13 @@ p {
   background: linear-gradient(90deg, var(--navy) 0%, var(--action) 50%, var(--tricolor-green) 100%);
 }
 
+/* Footer (components/Footer.tsx) — the same tricolor thread as .nav-header::after,
+   echoed as a top border so the page frame is bookended top and bottom. */
+.footer-tricolor {
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--navy) 0%, var(--action) 50%, var(--tricolor-green) 100%) 1;
+}
+
 /* ============================================================
    Directory — CategoryStrip (components/directory/CategoryStrip.tsx): the
    second nav row, directly under the header, Directory
@@ -540,6 +547,17 @@ p {
 }
 .card-pad {
   padding: 20px;
+}
+
+/* Story rail cards — rectangular thumbnail previews (see StoryRail.tsx).
+   Lift + soften on hover; respects reduced-motion via the global media query below. */
+.story-card {
+  display: block;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.story-card:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* ============================================================

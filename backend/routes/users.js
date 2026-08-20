@@ -337,7 +337,15 @@ router.get("/sellers/:slug", async (req, res, next) => {
 
     return res.json({
       success: true,
-      data: { seller, listings },
+      data: {
+        id: user.id,
+        name: user.name,
+        avatarUrl: user.avatarUrl || null,
+        city: user.city,
+        state: user.state,
+        seller,
+        listings,
+      },
     });
   } catch (err) {
     next(err);

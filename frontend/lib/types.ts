@@ -512,6 +512,7 @@ export interface Story {
   createdAt: string;
   expiresAt: string; // 24h
   views: number;
+  isHighlight?: boolean;
 }
 
 // GET /stories returns active stories grouped by seller.

@@ -14,7 +14,7 @@
 // on the suite homepage (app/page.tsx). No emojis anywhere — inline SVG
 // icons only.
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import type { Category } from "@/lib/types";
 import { useCategories, useCategoryTree } from "@/lib/catalog";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -27,11 +27,8 @@ import CategoryIconGrid from "@/components/home/CategoryIconGrid";
 import CategoryGroupGrid from "@/components/home/CategoryGroupGrid";
 import TrustBar from "@/components/home/TrustBar";
 import ValueProps from "@/components/home/ValueProps";
-import TrendingRail from "@/components/home/TrendingRail";
 import TrendingSearches from "@/components/home/TrendingSearches";
 import PopularSearches from "@/components/home/PopularSearches";
-import RecentActivity from "@/components/home/RecentActivity";
-import FeaturedSellers from "@/components/home/FeaturedSellers";
 import TopBrands from "@/components/home/TopBrands";
 import HowItWorks from "@/components/home/HowItWorks";
 import FinalCta from "@/components/home/FinalCta";
@@ -58,7 +55,6 @@ export default function DirectoryPage() {
 
   const { categories: allCategories } = useCategories();
   const { tree: categoryTree } = useCategoryTree();
-  const [sellersEmpty, setSellersEmpty] = useState(false);
 
   // Curated, featured categories only — never the full directory. Prefer the
   // admin-configured slugs; otherwise the top-level industry roots by order.
@@ -98,6 +94,22 @@ export default function DirectoryPage() {
         title={heroTitle}
         examples={homepage.heroExamples || []}
       />
+
+      {/* ---------------- 1.5 · STORIES (flag-gated) — right after the hero,
+          same spot Instagram/WhatsApp give status updates: highest-visibility
+          real estate, before any other content competes for attention. ---------------- */}
+      {storiesOn && shown(homepage.showStories) && (
+        <section className="container-bs" style={{ paddingTop: 28 }}>
+          <Reveal>
+            <SectionHeading
+              eyebrow={t("home.stories.eyebrow", "Updates")}
+              title={t("home.stories.title", "Fresh from sellers")}
+              subtitle={t("home.stories.subtitle", "New stock and offers — updates disappear after 24 hours.")}
+            />
+            <StoryRail />
+          </Reveal>
+        </section>
+      )}
 
       {/* ---------------- 2 · TRUST BAR (live stats) ---------------- */}
       <section className="container-bs" style={{ paddingTop: 22 }}>
@@ -147,15 +159,6 @@ export default function DirectoryPage() {
         </section>
       )}
 
-      {/* ---------------- STORIES (flag-gated) ---------------- */}
-      {storiesOn && shown(homepage.showStories) && (
-        <section className="container-bs" style={{ paddingTop: 36 }}>
-          <Reveal>
-            <StoryRail />
-          </Reveal>
-        </section>
-      )}
-
       {/* ---------------- 6 · HOW IT WORKS — remove friction before proof (tinted band) ---------------- */}
       {shown(homepage.showHowItWorks) && (
         <section style={{ background: "var(--bg-subtle)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
@@ -172,62 +175,8 @@ export default function DirectoryPage() {
         </section>
       )}
 
-      {/* ---------------- 7 · SOCIAL PROOF: FEATURED SELLERS — desire ---------------- */}
-      {shown(homepage.showFeaturedSellers) && !sellersEmpty && (
-        <section className="container-bs section-pad-sm">
-          <Reveal>
-            <SectionHeading
-              eyebrow={t("home.sellers.eyebrow", "Trusted")}
-              title={t("home.sellers.title", "Featured verified sellers")}
-              subtitle={t("home.sellers.subtitle", "Established businesses with strong ratings and fast response times.")}
-            />
-          </Reveal>
-          <FeaturedSellers limit={4} onEmpty={() => setSellersEmpty(true)} />
-        </section>
-      )}
-
-      {/* ---------------- 8 · RECENT ACTIVITY — real reviews, right next to the sellers they're about ---------------- */}
-      {shown(homepage.showRecentActivity) && (
-        <section
-          style={{
-            position: "relative",
-            background:
-              "radial-gradient(48% 60% at 100% 0%, rgba(30,158,82,0.06) 0%, rgba(30,158,82,0) 70%)," +
-              "radial-gradient(40% 50% at 0% 100%, rgba(26,79,174,0.05) 0%, rgba(26,79,174,0) 70%)," +
-              "var(--canvas)",
-          }}
-        >
-          <div className="container-bs section-pad-sm">
-            <Reveal>
-              <SectionHeading
-                eyebrow={t("home.activity.eyebrow", "Live")}
-                title={t("home.activity.title", "Recent activity")}
-                subtitle={t("home.activity.subtitle", "Real reviews from buyers across the marketplace.")}
-              />
-            </Reveal>
-            <RecentActivity limit={6} />
-          </div>
-        </section>
-      )}
-
       {/* ---------------- 9 · TOP BRANDS (self-hiding) ---------------- */}
       <TopBrands />
-
-      {/* ---------------- 10 · TRENDING NOW — freshness signal ---------------- */}
-      {shown(homepage.showTrending) && (
-        <section className="container-bs section-pad-sm">
-          <Reveal>
-            <SectionHeading
-              eyebrow={t("home.trending.eyebrow", "Fresh")}
-              title={t("home.trending.title", "Trending now")}
-              subtitle={t("home.trending.subtitle", "The newest listings from sellers across India.")}
-              actionLabel={t("home.trending.action", "View all")}
-              actionHref="/search"
-            />
-          </Reveal>
-          <TrendingRail city={homepage.trendingCity} limit={8} />
-        </section>
-      )}
 
       {/* ---------------- 11 · VALUE PROPS — persuasive recap, right before the ask (tinted band) ---------------- */}
       <section style={{ background: "var(--bg-subtle)", borderTop: "1px solid var(--border)" }}>

@@ -9,6 +9,10 @@ import Avatar from "./Avatar";
 export interface StoryViewerProps {
   groups: StoryGroup[];
   startIndex?: number;
+  // Which story within that starting group to open on — e.g. SellerStoriesSection
+  // opens a single group holding one seller's rail, so the clicked card needs to
+  // land on its own story, not always the group's first one.
+  startStoryIndex?: number;
   onClose: () => void;
 }
 
@@ -17,10 +21,11 @@ const STORY_MS = 5000;
 export default function StoryViewer({
   groups,
   startIndex = 0,
+  startStoryIndex = 0,
   onClose,
 }: StoryViewerProps) {
   const [groupIdx, setGroupIdx] = useState(startIndex);
-  const [storyIdx, setStoryIdx] = useState(0);
+  const [storyIdx, setStoryIdx] = useState(startStoryIndex);
   const [progress, setProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const viewed = useRef<Set<string>>(new Set());
@@ -61,8 +66,10 @@ export default function StoryViewer({
       const prev = groups[groupIdx - 1];
       setGroupIdx((g) => g - 1);
       setStoryIdx(Math.max(0, (prev?.stories.length || 1) - 1));
+    } else {
+      onClose();
     }
-  }, [storyIdx, groupIdx, groups]);
+  }, [storyIdx, groupIdx, groups, onClose]);
 
   // register a view once per story
   useEffect(() => {

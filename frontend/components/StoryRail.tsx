@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { StoryGroup } from "@/lib/types";
 import { getStories } from "@/lib/api";
 import StoryViewer from "./StoryViewer";
@@ -56,7 +56,7 @@ function initials(name?: string | null): string {
   return parts || (name || "?").trim().charAt(0).toUpperCase() || "?";
 }
 
-// Deterministic soft gradient per seller so empty avatars still look intentional.
+// Deterministic soft gradient per seller so cards with no media still look intentional.
 const GRADIENTS = [
   "linear-gradient(135deg,#DBEAFE,#FFE9D5)",
   "linear-gradient(135deg,#E9D5FF,#DBEAFE)",
@@ -71,12 +71,17 @@ function gradientFor(key: string): string {
   return GRADIENTS[h % GRADIENTS.length];
 }
 
+const CARD_W = 108;
+const CARD_RADIUS = 16;
+
 export default function StoryRail({ groups: provided, className = "" }: StoryRailProps) {
   const [groups, setGroups] = useState<StoryGroup[]>(
     provided ? normalizeGroups(provided) : []
   );
   const [loading, setLoading] = useState(!provided);
   const [openAt, setOpenAt] = useState<number | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [centered, setCentered] = useState(false);
 
   useEffect(() => {
     if (provided) {
@@ -93,84 +98,162 @@ export default function StoryRail({ groups: provided, className = "" }: StoryRai
     };
   }, [provided]);
 
+  // Center the row when every card fits without scrolling; once it overflows,
+  // fall back to left-aligned so the native horizontal scroll feels normal.
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    const check = () => setCentered(el.scrollWidth <= el.clientWidth + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    window.addEventListener("resize", check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", check);
+    };
+  }, [groups]);
+
   if (!loading && groups.length === 0) return null;
 
   return (
     <div className={className}>
       <div
+        ref={railRef}
         className="no-scrollbar"
-        style={{ display: "flex", gap: 18, overflowX: "auto", paddingBottom: 4 }}
+        style={{
+          display: "flex",
+          gap: 14,
+          overflowX: "auto",
+          // overflowX:auto implicitly clips the Y axis too, and the hover
+          // lift (translateY + scale in .story-card) pushes cards a few px
+          // past their box — extra top/bottom padding keeps that lift from
+          // getting clipped instead of chasing it by shrinking the animation.
+          padding: "10px 2px 8px",
+          justifyContent: centered ? "center" : "flex-start",
+        }}
       >
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                <span className="skeleton" style={{ width: 66, height: 66, borderRadius: "999px" }} />
-                <span className="skeleton" style={{ width: 48, height: 10 }} />
-              </div>
+              <span
+                key={i}
+                className="skeleton"
+                style={{ width: CARD_W, aspectRatio: "2 / 3", borderRadius: CARD_RADIUS, flexShrink: 0 }}
+              />
             ))
-          : groups.map((g, i) => (
-              <button
-                key={g.sellerId || i}
-                type="button"
-                onClick={() => setOpenAt(i)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 8,
-                  width: 74,
-                  flexShrink: 0,
-                }}
-              >
-                <span
+          : groups.map((g, i) => {
+              // Most recent story in the group stands in as the card's thumbnail.
+              const preview = g.stories[g.stories.length - 1];
+              const previewUrl = preview?.media?.type === "image" ? preview.media.url : undefined;
+              const unseen = g.hasUnseen !== false;
+
+              return (
+                <button
+                  key={g.sellerId || i}
+                  type="button"
+                  onClick={() => setOpenAt(i)}
+                  className="story-card"
                   style={{
-                    width: 66,
-                    height: 66,
-                    borderRadius: "999px",
-                    padding: 2.5,
-                    background: g.hasUnseen === false
-                      ? "var(--border-strong)"
-                      : "linear-gradient(135deg, #F97316, #2563EB)",
-                    display: "inline-flex",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 3,
+                    borderRadius: CARD_RADIUS + 3,
+                    width: CARD_W + 6,
                     flexShrink: 0,
+                    backgroundImage: unseen
+                      ? "linear-gradient(135deg, #F97316, #2563EB)"
+                      : "none",
+                    backgroundColor: unseen ? undefined : "var(--border-strong)",
                   }}
                 >
                   <span
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: "999px",
-                      border: "2px solid #fff",
-                      background: g.avatarUrl
-                        ? `#f1f5f9 url(${g.avatarUrl}) center/cover`
-                        : gradientFor(g.sellerId || g.sellerName || ""),
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#1D4ED8",
-                      fontWeight: 800,
-                      fontSize: 20,
+                      position: "relative",
+                      display: "block",
+                      width: CARD_W,
+                      aspectRatio: "2 / 3",
+                      borderRadius: CARD_RADIUS,
                       overflow: "hidden",
+                      border: "2.5px solid #fff",
+                      background: previewUrl
+                        ? `#f1f5f9 url(${previewUrl}) center/cover`
+                        : gradientFor(g.sellerId || g.sellerName || ""),
                     }}
                   >
-                    {!g.avatarUrl && initials(g.sellerName)}
+                    {!previewUrl && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#1D4ED8",
+                          fontWeight: 800,
+                          fontSize: 22,
+                        }}
+                      >
+                        {initials(g.sellerName)}
+                      </span>
+                    )}
+
+                    {g.isVerified && (
+                      <span
+                        aria-label="Verified seller"
+                        style={{
+                          position: "absolute",
+                          top: 6,
+                          right: 6,
+                          width: 18,
+                          height: 18,
+                          borderRadius: "999px",
+                          background: "var(--brand)",
+                          border: "1.5px solid #fff",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                          <path d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                    )}
+
+                    {/* bottom scrim + seller name — the WhatsApp/Reels-shelf preview
+                        this replaces used the seller's name as a caption under a round
+                        avatar; here the story's own image carries that weight instead. */}
+                    <span
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        padding: "16px 8px 8px",
+                        background: "linear-gradient(transparent, rgba(15,23,42,.82))",
+                      }}
+                    >
+                      <span
+                        className="line-clamp-1"
+                        style={{ display: "block", fontSize: 11.5, fontWeight: 700, color: "#fff", textAlign: "left" }}
+                      >
+                        {g.sellerName}
+                      </span>
+                    </span>
                   </span>
-                </span>
-                <span
-                  className="line-clamp-1"
-                  style={{ fontSize: 12, color: "var(--muted)", maxWidth: 72, textAlign: "center" }}
-                >
-                  {g.sellerName}
-                </span>
-              </button>
-            ))}
+                </button>
+              );
+            })}
       </div>
 
       {openAt !== null && (
-        <StoryViewer groups={groups} startIndex={openAt} onClose={() => setOpenAt(null)} />
+        <StoryViewer
+          groups={groups}
+          startIndex={openAt}
+          startStoryIndex={Math.max(0, (groups[openAt]?.stories.length || 1) - 1)}
+          onClose={() => setOpenAt(null)}
+        />
       )}
     </div>
   );

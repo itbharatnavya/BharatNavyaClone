@@ -56,7 +56,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
 
 const DEFAULT_BRANDING: Branding = {
   siteName: "BharatSource",
-  tagline: "Source anything across India.",
+  tagline: "India's business suite — source smart, hire right.",
   logoText: "BharatSource",
 };
 
@@ -75,7 +75,7 @@ const DEFAULT_HOMEPAGE: HomepageConfig = {
 const DEFAULT_CONTACT: ContactConfig = {};
 const DEFAULT_FOOTER: FooterConfig = {
   about:
-    "BharatSource connects buyers, sellers and service providers across India.",
+    "One account for sourcing and hiring: verified suppliers on Directory, vetted candidates on Recruitment. A mediator platform, we never process payments or hold inventory.",
 };
 
 const ConfigContext = createContext<ConfigContextValue | null>(null);

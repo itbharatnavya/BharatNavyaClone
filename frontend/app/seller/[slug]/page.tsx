@@ -12,7 +12,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
 import SellerHeader from "@/components/seller/SellerHeader";
 import ReviewsPanel from "@/components/seller/ReviewsPanel";
-import HighlightsRow from "@/components/seller/HighlightsRow";
+import SellerStoriesSection from "@/components/seller/SellerStoriesSection";
 
 // Tolerant i18n wrapper — see listing page for rationale.
 function useTr() {
@@ -164,7 +164,7 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-type TabKey = "listings" | "reviews" | "blogs" | "highlights";
+type TabKey = "listings" | "reviews" | "blogs" | "stories";
 
 export default function SellerProfilePage() {
   const params = useParams();
@@ -174,6 +174,7 @@ export default function SellerProfilePage() {
   const flags: Record<string, boolean> = (cfg?.featureFlags as Record<string, boolean>) || {};
   const showHighlights =
     typeof flags.storyHighlights === "boolean" ? flags.storyHighlights : false;
+  const showActiveStories = typeof flags.stories === "boolean" ? flags.stories : false;
   const t = useTr();
 
   const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
@@ -269,7 +270,7 @@ export default function SellerProfilePage() {
     { key: "listings", label: t("seller.listings", "Listings"), count: listings.length },
     { key: "reviews", label: t("seller.reviews", "Reviews"), count: seller.reviewCount || undefined },
     { key: "blogs", label: t("seller.blogs", "Blogs"), count: blogs.length || undefined },
-    ...(showHighlights ? [{ key: "highlights" as TabKey, label: t("seller.highlights", "Highlights") }] : []),
+    ...(showActiveStories || showHighlights ? [{ key: "stories" as TabKey, label: t("seller.stories", "Stories") }] : []),
   ];
 
   return (
@@ -439,14 +440,19 @@ export default function SellerProfilePage() {
                 </div>
               ))}
 
-            {/* HIGHLIGHTS */}
-            {tab === "highlights" && showHighlights && (
-              <HighlightsRow
+            {/* STORIES — a "New"/"Highlights" toggle over a horizontally-scrolling
+                rail (matches the homepage StoryRail pattern), so any number of
+                stories or highlights stays a single swipeable row instead of a
+                growing grid. */}
+            {tab === "stories" && (showActiveStories || showHighlights) && (
+              <SellerStoriesSection
                 sellerId={profile.id}
                 sellerName={seller.companyName}
                 sellerSlug={seller.slug}
                 avatarUrl={seller.logo || profile.avatarUrl}
                 isVerified={seller.isVerified}
+                showNew={showActiveStories}
+                showHighlights={showHighlights}
               />
             )}
           </div>
