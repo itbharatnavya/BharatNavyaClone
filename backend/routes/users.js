@@ -10,7 +10,7 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
-const { authGuard } = require("../middleware/authGuard");
+const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { coordsForCity } = require("../lib/geo");
 const { deriveBadges } = require("../lib/badges");
 const { trustScore } = require("../lib/trustScore");
@@ -115,8 +115,15 @@ function normalizeServiceAreas(input) {
   return out;
 }
 
-/** Public subset of a seller: their profile plus non-sensitive user fields. */
-function publicSeller(user) {
+/**
+ * Public subset of a seller: their profile plus non-sensitive user fields.
+ * `contactMobile`/`contactEmail` (the direct Call/WhatsApp channel) are only
+ * included when `includeContact` is true — callers pass this based on
+ * whether the request is authenticated, so anonymous visitors never receive
+ * a seller's number in the response (not just hidden in the UI).
+ */
+function publicSeller(user, includeContact) {
+  const { contactMobile, contactEmail, ...sellerProfile } = user.sellerProfile || {};
   return {
     id: user.id,
     name: user.name,
@@ -124,7 +131,8 @@ function publicSeller(user) {
     state: user.state,
     avatarUrl: user.avatarUrl || null,
     createdAt: user.createdAt,
-    ...user.sellerProfile,
+    ...sellerProfile,
+    ...(includeContact ? { contactMobile, contactEmail } : {}),
   };
 }
 
@@ -306,7 +314,10 @@ router.get("/sellers/featured", async (req, res, next) => {
 });
 
 // GET /api/users/sellers/:slug — public seller profile + their active listings.
-router.get("/sellers/:slug", async (req, res, next) => {
+// optionalAuth: contactMobile/contactEmail are only attached below when the
+// request carries a valid session — logged-out visitors get everything else
+// (ratings, badges, listings, etc.) but never the seller's direct number.
+router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
   try {
     const { slug } = req.params;
     const user = await store.findOne(
@@ -323,7 +334,7 @@ router.get("/sellers/:slug", async (req, res, next) => {
     );
 
     // Gamified trust badges (derived on read) + geo coords stamped from the city.
-    const seller = publicSeller(user);
+    const seller = publicSeller(user, !!req.user);
     seller.badges = deriveBadges(user.sellerProfile);
     // Computed 0–100 trust score (verification + rating + reviews + response + years).
     const ts = trustScore(user.sellerProfile);
