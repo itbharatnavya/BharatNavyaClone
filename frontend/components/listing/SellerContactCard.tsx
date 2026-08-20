@@ -2,20 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { Listing } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useTr } from "@/components/discovery/hooks";
 import { useToast } from "@/components/Toast";
-import { createConversation, reportListing } from "@/lib/api";
+import { reportListing } from "@/lib/api";
 import { waLink, enquiryText } from "@/lib/whatsapp";
 import Avatar from "@/components/Avatar";
 import Rating from "@/components/Rating";
 import TrustBadges from "@/components/TrustBadges";
-import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import Textarea from "@/components/Textarea";
+import ContactAuthModal from "@/components/auth/ContactAuthModal";
 
 export interface ContactSeller {
   userId: string; // seller's user id (used to open a conversation / follow)
@@ -37,6 +36,10 @@ export interface ContactSeller {
 export interface SellerContactCardProps {
   listing: Listing;
   seller: ContactSeller;
+  /** Called after a logged-out visitor completes login/register in the
+   * contact gate, so the parent can refetch the seller profile (which now
+   * includes contactMobile) and pass the real number back down. */
+  onContactUnlocked?: () => void;
 }
 
 function waNumber(raw?: string | null): string | null {
@@ -72,8 +75,7 @@ const REPORT_REASONS = [
   "Other",
 ];
 
-export default function SellerContactCard({ listing, seller }: SellerContactCardProps) {
-  const router = useRouter();
+export default function SellerContactCard({ listing, seller, onContactUnlocked }: SellerContactCardProps) {
   const t = useTr();
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -84,19 +86,26 @@ export default function SellerContactCard({ listing, seller }: SellerContactCard
 
   const [reportOpen, setReportOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [reason, setReason] = useState(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [chatting, setChatting] = useState(false);
 
   const years = seller.yearEstablished
     ? new Date().getFullYear() - seller.yearEstablished
     : null;
   const wa = waNumber(seller.contactMobile);
   const profileHref = seller.slug ? `/seller/${seller.slug}` : undefined;
+  const isOwnListing = !!user && user.id === seller.userId;
 
-  const showWhatsApp = flagOn("whatsapp", true) && !!wa;
-  const showCall = flagOn("call", true) && !!seller.contactMobile;
+  // Call/WhatsApp are admin-flag gated as before; once flag-enabled, a
+  // logged-out visitor still sees the buttons (so the option is discoverable)
+  // but clicking opens the login/register gate instead of a tel:/wa.me link —
+  // the backend never sends contactMobile to an unauthenticated request, so
+  // there's nothing to link to here yet anyway. A seller viewing their own
+  // listing never sees these — calling/WhatsApp-ing yourself makes no sense.
+  const showWhatsApp = !isOwnListing && flagOn("whatsapp", true) && (user ? !!wa : true);
+  const showCall = !isOwnListing && flagOn("call", true) && (user ? !!seller.contactMobile : true);
   const showShare = flagOn("share", true);
 
   const shareText = `Check out "${listing.title}" on BharatSource`;
@@ -124,21 +133,11 @@ export default function SellerContactCard({ listing, seller }: SellerContactCard
     }),
   });
 
-  async function handleChat() {
+  function handleContactClick() {
     if (!user) {
-      addToast("Please log in to chat with the seller", "info");
-      router.push(`/login?next=/listing/${listing.id}`);
-      return;
+      setAuthOpen(true);
     }
-    setChatting(true);
-    try {
-      const conv = await createConversation(listing.id, seller.userId);
-      router.push(`/dashboard?tab=inbox&c=${conv.id}`);
-    } catch (e) {
-      addToast(e instanceof Error ? e.message : "Could not start chat", "error");
-    } finally {
-      setChatting(false);
-    }
+    // When logged in, the tel:/wa.me <a> below handles the click directly.
   }
 
   async function submitReport() {
@@ -208,35 +207,53 @@ export default function SellerContactCard({ listing, seller }: SellerContactCard
 
       <hr className="divider" style={{ margin: "16px 0" }} />
 
-      {/* Primary action */}
-      <Button variant="brand" block onClick={handleChat} disabled={chatting}>
-        {chatting ? t("contact.chatting", "Starting chat…") : t("contact.chat", "Chat with seller")}
-      </Button>
-
-      {/* Call / WhatsApp */}
+      {/* Call / WhatsApp — the primary way to reach a seller (no in-app chat).
+          Logged out: buttons open the login/register gate. Logged in: real
+          tel:/wa.me links with a pre-filled enquiry. */}
       {(showCall || showWhatsApp) && (
-        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-          {showCall && (
-            <a
-              href={`tel:${(seller.contactMobile || "").replace(/\s/g, "")}`}
-              className="btn btn-secondary btn-block"
-              style={{ flex: 1 }}
-            >
-              {t("common.call", "Call")}
-            </a>
-          )}
-          {showWhatsApp && waHref && (
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary btn-block"
-              style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-            >
-              <WhatsAppIcon />
-              {t("common.whatsapp", "WhatsApp")}
-            </a>
-          )}
+        <div style={{ display: "flex", gap: 8 }}>
+          {showCall &&
+            (user ? (
+              <a
+                href={`tel:${(seller.contactMobile || "").replace(/\s/g, "")}`}
+                className="btn btn-brand btn-block"
+                style={{ flex: 1 }}
+              >
+                {t("common.call", "Call")}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={handleContactClick}
+                className="btn btn-brand btn-block"
+                style={{ flex: 1 }}
+              >
+                {t("common.call", "Call")}
+              </button>
+            ))}
+          {showWhatsApp &&
+            (user && waHref ? (
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary btn-block"
+                style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              >
+                <WhatsAppIcon />
+                {t("common.whatsapp", "WhatsApp")}
+              </a>
+            ) : !user ? (
+              <button
+                type="button"
+                onClick={handleContactClick}
+                className="btn btn-secondary btn-block"
+                style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              >
+                <WhatsAppIcon />
+                {t("common.whatsapp", "WhatsApp")}
+              </button>
+            ) : null)}
         </div>
       )}
 
@@ -318,6 +335,13 @@ export default function SellerContactCard({ listing, seller }: SellerContactCard
           </button>
         </div>
       </Modal>
+
+      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp */}
+      <ContactAuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={onContactUnlocked}
+      />
     </div>
   );
 }

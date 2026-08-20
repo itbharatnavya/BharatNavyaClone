@@ -113,6 +113,121 @@ duplicate it, only tracks deltas against it.
 
 ## 3. Change log (newest first)
 
+### 2026-08-20 (2) — Seller contact (Call/WhatsApp) now requires login; "Chat with seller" removed from the listing and seller-profile pages; sellers no longer see contact buttons on their own listing/profile
+
+**Why:** `GET /api/sellers/:slug` returned a seller's `contactMobile`/`contactEmail` to **any**
+unauthenticated request — anyone could pull a phone number straight off a public listing or
+seller page without an account. Product-owner direction, IndiaMart-style: browsing, the
+company profile, ratings, and listings all stay fully public; only the direct Call/WhatsApp
+channel requires login. "Chat with seller" was removed from these two pages at the same
+time — there's no in-app chat feature actually being finished/hardened (DIRECTORY.md already
+flags realtime chat as partial/unverified), and the button was a dead end into it. Separately
+requested as a follow-up: a seller viewing their own listing/profile shouldn't see Call/
+WhatsApp buttons at all.
+
+**Backend:**
+- `backend/routes/users.js` — `GET /sellers/:slug` now runs through `optionalAuth` (was fully
+  public, no middleware). `publicSeller(user, includeContact)` strips `contactMobile`/
+  `contactEmail` from the response unless `includeContact` (`= !!req.user`) is true; every
+  other field (ratings, badges, location, listings) is unchanged for logged-in and logged-out
+  callers alike.
+
+**Frontend:**
+- New `frontend/components/auth/ContactAuthModal.tsx` — inline modal (mobile-OTP login,
+  email/password login, register), reusing the exact same flows/validation as
+  `app/login/page.tsx`/`app/register/page.tsx` rather than inventing new auth logic. Fires
+  `onSuccess()` and closes on a successful login/register.
+- `frontend/components/listing/SellerContactCard.tsx`, `frontend/components/seller/SellerHeader.tsx`
+  — removed "Chat with seller"/`handleChat`/`createConversation`. Call/WhatsApp: logged in →
+  unchanged real `tel:`/`wa.me` links (pre-filled enquiry via `lib/whatsapp.ts`, unchanged);
+  logged out → the same buttons open `ContactAuthModal` instead of a dead link (the backend
+  already omits the number, so there's nothing to link to yet regardless). Both also now hide
+  Call/WhatsApp entirely when the logged-in viewer **is** that listing/profile's own seller
+  (`user.id === seller.userId` / `=== userId`).
+- `frontend/app/listing/[id]/page.tsx`, `frontend/app/seller/[slug]/page.tsx` — added a
+  `refreshContact` callback (re-calls `getSeller(slug)`) passed down as `onContactUnlocked`,
+  because logging in doesn't retroactively add the now-authorized field to state that was
+  already fetched while logged out — see the gotcha added to CLAUDE.md §9 this round.
+
+**Verified:**
+- `cd frontend && npx tsc --noEmit` clean throughout.
+- Backend restarted; `curl /api/sellers/<slug>` with no `Authorization` header →
+  `contactMobile`/`contactEmail` both `undefined`, all other fields (companyName, rating,
+  badges) present and unchanged. Same call with a valid Bearer token (demo login
+  `rohan.mehta@example.com` / `demo123`) → real `contactMobile`/`contactEmail` returned.
+- Reproduced `lib/whatsapp.ts`'s `waLink()` output for the fetched seller's real number
+  (`9898989807`) — confirms the `wa.me` link targets that seller's **own** number (not a
+  shared/generic one) with a message naming the seller and "BharatSource".
+- **Not** click-tested in an actual browser this session (no browser automation available) —
+  the modal's open/close, in-modal login/register, and post-login button-unlock are traced
+  through the code and reuse API/auth calls the full `/login`/`/register` pages already prove
+  out, but the modal UI itself and the own-listing hide-button behavior are visually
+  unverified.
+
+**Files touched:** `backend/routes/users.js`, `frontend/components/auth/ContactAuthModal.tsx`
+(new), `frontend/components/listing/SellerContactCard.tsx`,
+`frontend/components/seller/SellerHeader.tsx`, `frontend/app/listing/[id]/page.tsx`,
+`frontend/app/seller/[slug]/page.tsx`, `CLAUDE.md`, `DIRECTORY.md`, `WORKFLOW.md`
+
+**Open / follow-up:**
+- Visual/click confirmation of the modal (both login tabs, register, own-listing hide-button
+  case, mobile width) once a browser is available.
+- `backend/routes/reviews.js`'s `GET /recent` also returns an unauthenticated `whatsappNumber`
+  (same class of leak) — not gated this round since its only frontend consumer,
+  `components/home/RecentActivity.tsx`, isn't mounted on any page today. Worth the same
+  `optionalAuth` treatment if that component ever gets wired up.
+- `publicSeller()` still spreads the rest of `sellerProfile` wholesale (plan/quota/boost/
+  admin-notes fields) regardless of auth — a pre-existing over-exposure, unrelated to this
+  round's fix, flagged but not addressed.
+- Explicitly out of scope, per product-owner decision: the dashboard Inbox tab, Socket.IO,
+  `/api/chat`, and the `conversations`/`messages` collections are untouched — only the two
+  *entry points* into chat from buyer-facing Directory pages were removed.
+
+### 2026-08-20 (1) — Seller Stories/Highlights reworked: new `SellerStoriesSection` (New/Highlights toggle) replaces `HighlightsRow` on the seller profile; StoryRail and the dashboard Stories tab overhauled; demo seed scripts added
+
+**Why:** committed as a checkpoint of in-progress Stories-feature work already in the working
+tree at the start of this session (product-owner request: commit it separately before starting
+unrelated work, so it shows as its own diff). Commit `d34e7bb`.
+
+**Changes (from the diff, `19 files changed, 1410 insertions(+), 440 deletions(-)`):**
+- `backend/routes/stories.js` — gained `GET /active` (a seller's currently-live, not-yet-expired
+  24h stories) and `DELETE /:id` (`authGuard` — a seller removing their own story), alongside
+  the pre-existing `GET /`, `GET /highlights`, `POST /`, `PUT /:id/highlight`, `POST /:id/view`.
+- `backend/routes/users.js` — `GET /sellers/:slug` response gained top-level `id`/`name`/
+  `avatarUrl`/`city`/`state` fields (alongside the existing nested `seller` object) — the
+  seller page's Stories tab needs the seller's own user id/avatar independent of the
+  `sellerProfile` blob.
+- `frontend/components/seller/SellerStoriesSection.tsx` (new, replaces the deleted
+  `HighlightsRow.tsx`) — renders on the seller profile's "Stories" tab
+  (`app/seller/[slug]/page.tsx`) with a New/Highlights toggle over a horizontally-scrolling
+  rail, shown when either the `stories` or `storyHighlights` feature flag is on.
+- `frontend/components/StoryRail.tsx`, `frontend/components/dashboard/StoriesTab.tsx` —
+  substantially reworked (197 and 429 changed lines respectively); dashboard-side story
+  creation/management and the homepage/directory rail both touched. Internals not re-derived
+  line-by-line for this log entry — read the files directly for current behavior.
+- `frontend/app/directory/page.tsx` — Stories section repositioned/simplified (net -85 lines
+  in a page that's otherwise just section composition).
+- New backend seed scripts: `scripts/seed-demo-stories.js`, `scripts/seed-steel-demo-stories.js`,
+  `scripts/seed-steel-active-highlight-demo.js` — demo data generators for the reworked
+  feature, following the existing `scripts/seed-*.js` convention (HANDOVER.md).
+- Minor touches: `frontend/components/Footer.tsx` (204 changed lines — unrelated footer
+  rework bundled into the same commit), `frontend/app/globals.css`, `frontend/app/layout.tsx`,
+  `frontend/lib/api.ts`, `frontend/lib/config.tsx`, `frontend/lib/types.ts`,
+  `backend/DB/settings.json` (feature-flag defaults).
+
+**Verified:** `npx tsc --noEmit` clean (checked as part of the broader session's verification
+loop; not re-run in isolation against just this commit).
+
+**Open / follow-up:**
+- This entry documents a commit made from pre-existing working-tree changes, not code written
+  in this session — treat the "Changes" list above as a diff summary, not a design rationale.
+  If the Stories feature needs deeper documentation (data model, flag semantics, highlight
+  lifecycle), read `backend/routes/stories.js` and `StoriesTab.tsx` directly and add it here
+  next time they're touched.
+- Not visually verified (no browser automation available this session).
+
+---
+
 ### 2026-08-19 (2) — Fixed app-wide "first click after page load does nothing" bug: batched a severe Postgres N+1 query pattern, deduped redundant frontend fetches, added click-feedback UI
 
 **Why:** reported as "on load of the app, clicking any link does nothing the first time, works after a few seconds" — worst on `/directory`, but also present on the plain suite homepage's footer links. Investigation found **two independent, stacking mechanisms**, not one bug:

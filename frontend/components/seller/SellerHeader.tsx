@@ -7,21 +7,16 @@ import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useTr } from "@/components/discovery/hooks";
 import { useToast } from "@/components/Toast";
-import {
-  followUser,
-  unfollowUser,
-  getFollowStatus,
-  createConversation,
-} from "@/lib/api";
+import { followUser, unfollowUser, getFollowStatus } from "@/lib/api";
 import { waLink } from "@/lib/whatsapp";
 import Avatar from "@/components/Avatar";
 import Rating from "@/components/Rating";
 import TrustBadges from "@/components/TrustBadges";
 import Badge from "@/components/Badge";
-import Button from "@/components/Button";
+import ContactAuthModal from "@/components/auth/ContactAuthModal";
 
 export interface SellerHeaderProps {
-  userId: string; // seller's user id (follow / chat target)
+  userId: string; // seller's user id (follow target)
   companyName: string;
   city?: string;
   state?: string;
@@ -36,7 +31,10 @@ export interface SellerHeaderProps {
   reviewCount?: number;
   responseRate?: number;
   contactMobile?: string | null;
-  firstListingId?: string | null; // enables Chat (createConversation needs a listing)
+  /** Called after a logged-out visitor completes login/register in the
+   * contact gate, so the parent can refetch the seller profile (which now
+   * includes contactMobile) and pass the real number back down. */
+  onContactUnlocked?: () => void;
 }
 
 const BADGE_VARIANTS: Record<string, BadgeVariant> = {
@@ -91,7 +89,7 @@ export default function SellerHeader(props: SellerHeaderProps) {
     reviewCount,
     responseRate,
     contactMobile,
-    firstListingId,
+    onContactUnlocked,
   } = props;
 
   const router = useRouter();
@@ -115,12 +113,18 @@ export default function SellerHeader(props: SellerHeaderProps) {
 
   const [following, setFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
-  const [chatBusy, setChatBusy] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
 
   const followEnabled = flagOn("follow", false);
   const wa = waNumber(contactMobile);
-  const showWhatsApp = flagOn("whatsapp", true) && !!wa;
-  const showCall = flagOn("call", true) && !!contactMobile;
+  const isOwnProfile = !!user && user.id === userId;
+  // Buttons stay visible (flag-gated) for logged-out visitors too — the
+  // backend omits contactMobile until authenticated, so there's no number to
+  // link to yet; the click opens the login/register gate instead. A seller
+  // viewing their own profile never sees these — calling/WhatsApp-ing
+  // yourself makes no sense.
+  const showWhatsApp = !isOwnProfile && flagOn("whatsapp", true) && (user ? !!wa : true);
+  const showCall = !isOwnProfile && flagOn("call", true) && (user ? !!contactMobile : true);
 
   const years = yearEstablished ? new Date().getFullYear() - yearEstablished : null;
 
@@ -162,25 +166,11 @@ export default function SellerHeader(props: SellerHeaderProps) {
     }
   }
 
-  async function handleChat() {
+  function handleContactClick() {
     if (!user) {
-      addToast("Please log in to chat", "info");
-      router.push("/login");
-      return;
+      setAuthOpen(true);
     }
-    if (!firstListingId) {
-      addToast("This seller has no listings to chat about yet", "info");
-      return;
-    }
-    setChatBusy(true);
-    try {
-      const conv = await createConversation(firstListingId, userId);
-      router.push(`/dashboard?tab=inbox&c=${conv.id}`);
-    } catch (e) {
-      addToast(e instanceof Error ? e.message : "Could not start chat", "error");
-    } finally {
-      setChatBusy(false);
-    }
+    // When logged in, the tel:/wa.me <a> below handles the click directly.
   }
 
   return (
@@ -224,28 +214,43 @@ export default function SellerHeader(props: SellerHeaderProps) {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* Actions — Call/WhatsApp are the only contact channels (no in-app
+              chat); logged out, they open the login/register gate instead of
+              a real tel:/wa.me link. */}
           <div className="sh-actions">
-            <Button variant="brand" onClick={handleChat} disabled={chatBusy}>
-              {chatBusy ? t("contact.chatting", "Starting…") : t("common.chat", "Chat")}
-            </Button>
-            {showCall && (
-              <a href={`tel:${(contactMobile || "").replace(/\s/g, "")}`} className="btn btn-secondary">
-                {t("common.call", "Call")}
-              </a>
-            )}
-            {showWhatsApp && waHref && (
-              <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-              >
-                <WhatsAppIcon />
-                {t("common.whatsapp", "WhatsApp")}
-              </a>
-            )}
+            {showCall &&
+              (user ? (
+                <a href={`tel:${(contactMobile || "").replace(/\s/g, "")}`} className="btn btn-brand">
+                  {t("common.call", "Call")}
+                </a>
+              ) : (
+                <button type="button" onClick={handleContactClick} className="btn btn-brand">
+                  {t("common.call", "Call")}
+                </button>
+              ))}
+            {showWhatsApp &&
+              (user && waHref ? (
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                >
+                  <WhatsAppIcon />
+                  {t("common.whatsapp", "WhatsApp")}
+                </a>
+              ) : !user ? (
+                <button
+                  type="button"
+                  onClick={handleContactClick}
+                  className="btn btn-secondary"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                >
+                  <WhatsAppIcon />
+                  {t("common.whatsapp", "WhatsApp")}
+                </button>
+              ) : null)}
             {followEnabled && (
               <button
                 type="button"
@@ -312,6 +317,13 @@ export default function SellerHeader(props: SellerHeaderProps) {
           }
         }
       `}</style>
+
+      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp */}
+      <ContactAuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={onContactUnlocked}
+      />
     </div>
   );
 }

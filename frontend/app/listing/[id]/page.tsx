@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { Listing, SellerPublicProfile } from "@/lib/types";
@@ -148,6 +148,21 @@ export default function ListingDetailPage() {
     document.title = listing
       ? `${listing.title} | BharatSource`
       : "Listing | BharatSource";
+  }, [listing]);
+
+  // Re-fetch the seller profile after a logged-out visitor completes the
+  // contact-gate login/register — the backend only includes contactMobile
+  // for authenticated requests, so the first fetch (done while logged out)
+  // never had it.
+  const refreshContact = useCallback(async () => {
+    const slug = listing?.seller?.slug;
+    if (!slug) return;
+    try {
+      const p = await getSeller(slug);
+      setProfile(p);
+    } catch {
+      /* non-fatal */
+    }
   }, [listing]);
 
   const contact: ContactSeller | null = useMemo(() => {
@@ -460,7 +475,7 @@ export default function ListingDetailPage() {
 
           {/* STICKY SELLER CARD */}
           <aside className="ld-aside">
-            <SellerContactCard listing={listing} seller={contact} />
+            <SellerContactCard listing={listing} seller={contact} onContactUnlocked={refreshContact} />
           </aside>
         </div>
 

@@ -31,7 +31,6 @@ import TrendingSearches from "@/components/home/TrendingSearches";
 import PopularSearches from "@/components/home/PopularSearches";
 import TopBrands from "@/components/home/TopBrands";
 import HowItWorks from "@/components/home/HowItWorks";
-import FinalCta from "@/components/home/FinalCta";
 import { useAppConfig, useTr, useFlag, shown } from "@/components/discovery/hooks";
 
 function flatten(cats: Category[]): Category[] {
@@ -101,12 +100,15 @@ export default function DirectoryPage() {
       {storiesOn && shown(homepage.showStories) && (
         <section className="container-bs" style={{ paddingTop: 28 }}>
           <Reveal>
-            <SectionHeading
-              eyebrow={t("home.stories.eyebrow", "Updates")}
-              title={t("home.stories.title", "Fresh from sellers")}
-              subtitle={t("home.stories.subtitle", "New stock and offers — updates disappear after 24 hours.")}
+            <StoryRail
+              heading={
+                <SectionHeading
+                  eyebrow={t("home.stories.eyebrow", "Updates")}
+                  title={t("home.stories.title", "Fresh from sellers")}
+                  subtitle={t("home.stories.subtitle", "New stock and offers — updates disappear after 24 hours.")}
+                />
+              }
             />
-            <StoryRail />
           </Reveal>
         </section>
       )}
@@ -191,15 +193,6 @@ export default function DirectoryPage() {
           <ValueProps />
         </div>
       </section>
-
-      {/* ---------------- 12 · FINAL CTA BAND — action ---------------- */}
-      {shown(homepage.showSellCta) && (
-        <section className="container-bs section-pad">
-          <Reveal>
-            <FinalCta />
-          </Reveal>
-        </section>
-      )}
     </div>
   );
 }

@@ -61,23 +61,49 @@ export function ShortlistProvider({ children }: { children: React.ReactNode }) {
 
   // Load the shortlist once auth has resolved: from the server for a logged-in
   // user, from localStorage for a guest. Re-runs on login / logout.
+  //
+  // On the login transition specifically, any items saved while a guest
+  // (localStorage) are merged into the account: pushed to the server (a
+  // since-removed listing 404s — non-fatal, just skipped) and unioned with
+  // whatever the account already had, then localStorage is cleared so the
+  // merge doesn't repeat. Effect deps are only [user, authLoading], so this
+  // runs exactly once per login, not on every render.
   useEffect(() => {
     if (authLoading) return;
     let alive = true;
 
     if (user) {
       setLoading(true);
-      api
-        .getShortlist()
-        .then((res) => {
-          if (alive) setIds(Array.isArray(res.ids) ? res.ids : []);
-        })
-        .catch(() => {
-          if (alive) setIds([]);
-        })
-        .finally(() => {
-          if (alive) setLoading(false);
-        });
+      const guestIds = readStored();
+      (async () => {
+        let serverIds: string[] = [];
+        try {
+          const res = await api.getShortlist();
+          serverIds = Array.isArray(res.ids) ? res.ids : [];
+        } catch {
+          serverIds = [];
+        }
+
+        if (guestIds.length > 0) {
+          const toMerge = guestIds.filter((id) => !serverIds.includes(id));
+          if (toMerge.length > 0) {
+            const settled = await Promise.allSettled(
+              toMerge.map((id) => api.addToShortlist(id))
+            );
+            const merged = new Set(serverIds);
+            settled.forEach((r, i) => {
+              if (r.status === "fulfilled") merged.add(toMerge[i]);
+            });
+            serverIds = Array.from(merged);
+          }
+          writeStored([]);
+        }
+
+        if (alive) {
+          setIds(serverIds);
+          setLoading(false);
+        }
+      })();
     } else {
       setIds(readStored());
       setLoading(false);

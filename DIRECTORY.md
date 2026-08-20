@@ -67,6 +67,7 @@ not building from scratch. Read **CLAUDE.md** first (architecture + rules) and *
 | Send enquiry | listing / `/offer` | `POST /api/inquiries` (single-seller) |
 | Broad RFQ (fan-out → leads) | `/rfq` | `POST /api/ai/rfq` then `POST /api/inquiries` (fans out ≤6, writes `leads-ledger.jsonl`) |
 | See quotes | `/dashboard` (My RFQs) | `GET /api/inquiries/:id/quotes` |
+| Contact seller (Call/WhatsApp) | listing / seller page | `GET /api/sellers/:slug` (`optionalAuth`) — `contactMobile`/`contactEmail` only included when logged in; logged-out click opens an inline login/register modal instead of a `tel:`/`wa.me` link. No chat entry point on these pages. |
 | Review a seller | seller page | `POST /api/reviews` |
 
 ### Seller
@@ -102,6 +103,7 @@ guard — see §6.
 - Listing detail with **view tracking**; **multi-vendor** offers (same product, many sellers).
 - Brands directory; Collections/Concepts; Compare; Shortlist; Follow.
 - Enquiry + **broad RFQ fan-out → leads ledger**; seller **multi-quote**; reviews.
+- **Login-gated seller contact**: Call/WhatsApp on listing + seller-profile pages require an account (`optionalAuth`-gated `contactMobile`/`contactEmail`, inline login/register modal on click); a seller viewing their own listing/profile never sees these buttons.
 - Seller onboarding, listing CRUD, **bulk upload**, multi-location/PAN-India.
 - Tabbed **seller dashboard** (overview/analytics/listings/leads & RFQs/promote/advertise/subscription/referral/reviews/blogs/stories/profile).
 - **Admin panel** (all of §3 admin).
@@ -114,7 +116,7 @@ guard — see §6.
 ### 🟡 Partial (exists but POC-grade — finish before/soon after go-live)
 - **Notification delivery.** `lib/notify.js` only writes in-app rows (the bell). **No email / SMS / WhatsApp is actually sent** — a seller isn't told about a lead unless they open the site. High-impact gap for a leads business.
 - **Uploads coupling.** Uploads write into `frontend/public/uploads/` from the backend — fine on one box, but a **split-host deploy needs shared storage** (or move to object storage / a served static dir owned by the API).
-- **Realtime chat** (Socket.IO, `routes/chat.js` + `conversations/`,`messages/`) — wired, but verify reconnection, auth on the socket, and delivery/read-state at scale.
+- **Realtime chat** (Socket.IO, `routes/chat.js` + `conversations/`,`messages/`) — wired, but **not surfaced from the listing or seller-profile pages** (deliberately removed in favor of login-gated Call/WhatsApp only, see §3's "Contact seller" row); still reachable via the dashboard Inbox tab for existing conversations. Verify reconnection, auth on the socket, and delivery/read-state at scale if it's kept.
 - **Validation coverage** — present via zod on many routes; **audit that every write route validates** (don't assume 100%).
 - **Search at scale** — `minisearch` rebuilds/reads from the JSON file; fine for POC volume, needs an index strategy + pagination review as listings grow.
 - **Lead billing accuracy** — `leads-ledger.jsonl` records deliveries and quotas exist; reconcile per-lead pricing/quota decrement end-to-end before charging anyone.
@@ -141,7 +143,7 @@ guard — see §6.
 5. **Validation + rate-limit audit** — every write route validated; throttle auth/write. *(`routes/*`, `lib/validate.js`)*
 
 ### P1 — finish partial flows
-6. Realtime chat hardening (socket auth, reconnection, read-state).
+6. Realtime chat hardening (socket auth, reconnection, read-state) — lower priority now that Call/WhatsApp (login-gated) is the primary buyer→seller contact path; decide whether to keep, finish, or retire dashboard chat.
 7. Lead-billing/quota reconciliation end-to-end.
 8. Search/pagination performance as listing volume grows.
 9. Real analytics from tracked events.

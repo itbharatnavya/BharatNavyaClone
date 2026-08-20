@@ -16,6 +16,8 @@ import BulkUploadTab from "./BulkUploadTab";
 import InboxTab from "./InboxTab";
 import LeadsTab from "./LeadsTab";
 import MyRfqsTab from "./MyRfqsTab";
+import SavedTab from "./SavedTab";
+import FollowingTab from "./FollowingTab";
 import ReviewsTab from "./ReviewsTab";
 import BlogsTab from "./BlogsTab";
 import StoriesTab from "./StoriesTab";
@@ -28,7 +30,16 @@ import ConsultationsTab from "./ConsultationsTab";
 // Local widening of the shared TabId with this dashboard's own tabs ("advertise",
 // buyer "myrfqs", "bulk", "analytics", "promote", expert "consultations").
 // (shared.tsx's TabId union is a shared contract we don't edit here.)
-type DashTabId = TabId | "advertise" | "myrfqs" | "bulk" | "analytics" | "promote" | "consultations";
+type DashTabId =
+  | TabId
+  | "advertise"
+  | "myrfqs"
+  | "bulk"
+  | "analytics"
+  | "promote"
+  | "consultations"
+  | "saved"
+  | "following";
 
 interface TabMeta {
   id: DashTabId;
@@ -49,6 +60,8 @@ const ALL_TABS: TabMeta[] = [
   { id: "leads", label: "Leads & RFQs", icon: "leads", sellerOnly: true },
   { id: "consultations", label: "Consultation requests", icon: "consultations", expertOnly: true },
   { id: "myrfqs", label: "My RFQs", icon: "myrfqs" },
+  { id: "saved", label: "Saved", icon: "saved" },
+  { id: "following", label: "Following", icon: "following", flag: "follow" },
   { id: "reviews", label: "Reviews", icon: "reviews", sellerOnly: true },
   { id: "blogs", label: "Blogs", icon: "blogs", sellerOnly: true },
   { id: "stories", label: "Stories", icon: "stories", flag: "stories", sellerOnly: true },
@@ -193,6 +206,51 @@ function ConsultIcon({ size = 18, style }: { size?: number; style?: React.CSSPro
       <rect x="3" y="4.5" width="18" height="16" rx="2" />
       <path d="M3 9h18M8 3v3M16 3v3" />
       <path d="M8.5 13.5h3M8.5 16.5h6" />
+    </svg>
+  );
+}
+
+// Heart icon for the buyer "Saved" (shortlist) tab. Kept local because
+// shared.tsx's icon set is a shared contract; matches Icon's render conventions.
+function SavedIcon({ size = 18, style }: { size?: number; style?: React.CSSProperties }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={style}
+      aria-hidden
+    >
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+    </svg>
+  );
+}
+
+// People icon for the buyer "Following" (followed sellers) tab. Kept local
+// because shared.tsx's icon set is a shared contract; matches Icon's render conventions.
+function FollowingIcon({ size = 18, style }: { size?: number; style?: React.CSSProperties }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={style}
+      aria-hidden
+    >
+      <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+      <circle cx="10" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   );
 }
@@ -363,6 +421,10 @@ export default function DashboardShell() {
               <AnalyticsIcon size={18} style={{ flexShrink: 0 }} />
             ) : t.icon === "promote" ? (
               <PromoteIcon size={18} style={{ flexShrink: 0 }} />
+            ) : t.icon === "saved" ? (
+              <SavedIcon size={18} style={{ flexShrink: 0 }} />
+            ) : t.icon === "following" ? (
+              <FollowingIcon size={18} style={{ flexShrink: 0 }} />
             ) : (
               <Icon name={t.icon} size={18} style={{ flexShrink: 0 }} />
             )}
@@ -394,6 +456,10 @@ export default function DashboardShell() {
         return <ConsultationsTab user={user} />;
       case "myrfqs":
         return <MyRfqsTab user={user} />;
+      case "saved":
+        return <SavedTab user={user} />;
+      case "following":
+        return <FollowingTab user={user} />;
       case "reviews":
         return <ReviewsTab user={user} />;
       case "blogs":

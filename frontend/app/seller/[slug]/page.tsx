@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { SellerProfile, SellerPublicProfile, Blog } from "@/lib/types";
@@ -220,6 +220,20 @@ export default function SellerProfilePage() {
     };
   }, [slug, addToast]);
 
+  // Re-fetch after a logged-out visitor completes the contact-gate
+  // login/register — the backend only includes contactMobile for
+  // authenticated requests, so the first fetch (done while logged out)
+  // never had it.
+  const refreshContact = useCallback(async () => {
+    if (!slug) return;
+    try {
+      const p = await getSeller(slug);
+      setProfile(p);
+    } catch {
+      /* non-fatal */
+    }
+  }, [slug]);
+
   useEffect(() => {
     document.title = profile
       ? `${profile.seller.companyName} | BharatSource`
@@ -301,7 +315,7 @@ export default function SellerProfilePage() {
             reviewCount={seller.reviewCount}
             responseRate={seller.responseRate}
             contactMobile={seller.contactMobile}
-            firstListingId={listings[0]?.id || null}
+            onContactUnlocked={refreshContact}
           />
         </div>
 

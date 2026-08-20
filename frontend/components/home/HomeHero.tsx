@@ -1,13 +1,12 @@
 "use client";
 
-// HomeHero — a compact utility bar rather than a tall centered marketing
-// hero: a short, left-aligned, single-line headline sits directly above a
-// left-aligned AI search bar, with minimal vertical padding. The search bar
-// is the destination here, not a headline anyone lingers on. A short
-// brand-coloured flag mark to the left of the heading (echoing the
-// wordmark's ink/accent split in Navbar.tsx's Logo) is the one bit of
-// visual identity — everything else stays quiet. Light theme only, no
-// emojis — inline SVG icons.
+// HomeHero — thin wrapper that owns the search box's scroll-docking state
+// (useSearchDock + the IntersectionObserver below) and hands the actual
+// search bar down as `searchSlot` into HeroBrandCard, which renders the
+// whole visible hero: headline, search, trust stats, and auth-aware CTAs,
+// all inside one navy card. Keeping the docking plumbing here (rather than
+// inside the card) means HeroBrandCard doesn't need to know anything about
+// scroll position — it just renders whatever node it's given.
 //
 // Scroll docking: once the hero search scrolls out of view, a compact copy
 // of it docks inside the sticky main navbar itself (see lib/searchDock.tsx +
@@ -16,6 +15,7 @@
 
 import React, { useEffect, useRef } from "react";
 import DirectorySearchBar from "@/components/DirectorySearchBar";
+import HeroBrandCard from "@/components/home/HeroBrandCard";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL, detectNearestCity } from "@/lib/indiaGeo";
 
@@ -116,53 +116,40 @@ export default function HomeHero({ title, examples }: HomeHeroProps) {
           paddingBottom: "clamp(16px, 2.6vw, 26px)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-          <span aria-hidden style={{ width: 5, height: 20, borderRadius: 3, background: "var(--action)", flexShrink: 0 }} />
-          <h1
-            className="line-clamp-1"
-            style={{
-              fontSize: "clamp(18px, 2.4vw, 24px)",
-              fontWeight: 800,
-              letterSpacing: "-0.02em",
-              lineHeight: 1.25,
-              color: "var(--ink)",
-            }}
-          >
-            {title}
-          </h1>
-        </div>
-
-        {/* Search — the centrepiece, left-aligned rather than centered. As it
-            nears the sticky header it fully fades and lifts away (not just
-            to half-opacity in place), in sync with the docked copy sliding
-            UP into the navbar from just below its resting spot (see
-            Navbar.tsx) — both moving the same direction at the same
-            progress value, so it reads as one bar physically travelling from
-            here to there rather than one element fading out while an
-            unrelated one fades in. */}
-        <div
-          ref={searchRef}
-          style={{
-            maxWidth: 640,
-            scrollMarginTop: 96,
-            opacity: 1 - progress,
-            transform: `translateY(${progress * -26}px) scale(${1 - progress * 0.04})`,
-            transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
-            // Once mostly faded, hand off interaction to the docked copy —
-            // otherwise this box would sit invisibly behind the sticky
-            // header, still clickable/tabbable.
-            pointerEvents: progress > 0.5 ? "none" : "auto",
-          }}
-        >
-          <DirectorySearchBar
-            size="hero"
-            showCity
-            query={query}
-            onQueryChange={setQuery}
-            city={city}
-            onCityChange={setCity}
-          />
-        </div>
+        <HeroBrandCard
+          guestTitle={title}
+          searchSlot={
+            // Search — as it nears the sticky header it fully fades and lifts
+            // away (not just to half-opacity in place), in sync with the
+            // docked copy sliding UP into the navbar from just below its
+            // resting spot (see Navbar.tsx) — both moving the same direction
+            // at the same progress value, so it reads as one bar physically
+            // travelling from here to there rather than one element fading
+            // out while an unrelated one fades in.
+            <div
+              ref={searchRef}
+              style={{
+                scrollMarginTop: 96,
+                opacity: 1 - progress,
+                transform: `translateY(${progress * -26}px) scale(${1 - progress * 0.04})`,
+                transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                // Once mostly faded, hand off interaction to the docked copy —
+                // otherwise this box would sit invisibly behind the sticky
+                // header, still clickable/tabbable.
+                pointerEvents: progress > 0.5 ? "none" : "auto",
+              }}
+            >
+              <DirectorySearchBar
+                size="hero"
+                showCity
+                query={query}
+                onQueryChange={setQuery}
+                city={city}
+                onCityChange={setCity}
+              />
+            </div>
+          }
+        />
       </div>
     </section>
   );

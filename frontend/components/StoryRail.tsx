@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { StoryGroup } from "@/lib/types";
 import { getStories } from "@/lib/api";
 import StoryViewer from "./StoryViewer";
@@ -8,6 +8,11 @@ import StoryViewer from "./StoryViewer";
 export interface StoryRailProps {
   groups?: StoryGroup[]; // if omitted, fetched from getStories()
   className?: string;
+  // Rendered above the rail, but only once we know there's at least one
+  // story to show — so a heading like "Fresh from sellers" never sits over
+  // an empty/hidden rail. While still loading, both render together (we
+  // don't yet know the outcome); once resolved to zero groups, both hide.
+  heading?: React.ReactNode;
 }
 
 // The backend groups stories under a nested `seller` object
@@ -74,14 +79,12 @@ function gradientFor(key: string): string {
 const CARD_W = 108;
 const CARD_RADIUS = 16;
 
-export default function StoryRail({ groups: provided, className = "" }: StoryRailProps) {
+export default function StoryRail({ groups: provided, className = "", heading }: StoryRailProps) {
   const [groups, setGroups] = useState<StoryGroup[]>(
     provided ? normalizeGroups(provided) : []
   );
   const [loading, setLoading] = useState(!provided);
   const [openAt, setOpenAt] = useState<number | null>(null);
-  const railRef = useRef<HTMLDivElement | null>(null);
-  const [centered, setCentered] = useState(false);
 
   useEffect(() => {
     if (provided) {
@@ -98,28 +101,12 @@ export default function StoryRail({ groups: provided, className = "" }: StoryRai
     };
   }, [provided]);
 
-  // Center the row when every card fits without scrolling; once it overflows,
-  // fall back to left-aligned so the native horizontal scroll feels normal.
-  useEffect(() => {
-    const el = railRef.current;
-    if (!el) return;
-    const check = () => setCentered(el.scrollWidth <= el.clientWidth + 1);
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    window.addEventListener("resize", check);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", check);
-    };
-  }, [groups]);
-
   if (!loading && groups.length === 0) return null;
 
   return (
     <div className={className}>
+      {heading}
       <div
-        ref={railRef}
         className="no-scrollbar"
         style={{
           display: "flex",
@@ -130,7 +117,10 @@ export default function StoryRail({ groups: provided, className = "" }: StoryRai
           // past their box — extra top/bottom padding keeps that lift from
           // getting clipped instead of chasing it by shrinking the animation.
           padding: "10px 2px 8px",
-          justifyContent: centered ? "center" : "flex-start",
+          // Always left-aligned — a single story (or a short row on a wide
+          // screen) should still start at the left edge like a normal list,
+          // not center itself in the middle of the row.
+          justifyContent: "flex-start",
         }}
       >
         {loading
@@ -195,29 +185,6 @@ export default function StoryRail({ groups: provided, className = "" }: StoryRai
                         }}
                       >
                         {initials(g.sellerName)}
-                      </span>
-                    )}
-
-                    {g.isVerified && (
-                      <span
-                        aria-label="Verified seller"
-                        style={{
-                          position: "absolute",
-                          top: 6,
-                          right: 6,
-                          width: 18,
-                          height: 18,
-                          borderRadius: "999px",
-                          background: "var(--brand)",
-                          border: "1.5px solid #fff",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
                       </span>
                     )}
 
