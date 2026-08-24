@@ -5,19 +5,12 @@ import type { User, Review } from "@/lib/types";
 import { getReviews } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import Rating from "@/components/Rating";
-import Badge from "@/components/Badge";
 import Avatar from "@/components/Avatar";
 import { PanelHeader, EmptyState, Loading, StatCard, Icon, formatDate, useTr } from "./shared";
 
 interface Props {
   user: User;
 }
-
-const STATUS_VARIANT: Record<string, "new" | "neutral" | "sponsored"> = {
-  approved: "new",
-  pending: "sponsored",
-  rejected: "neutral",
-};
 
 export default function ReviewsTab({ user }: Props) {
   const tr = useTr();
@@ -99,14 +92,8 @@ export default function ReviewsTab({ user }: Props) {
                       <Rating value={r.rating} size={13} showValue={false} />
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <Badge variant={STATUS_VARIANT[r.status] || "neutral"}>{r.status}</Badge>
-                    <span style={{ fontSize: 12, color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
-                  </div>
+                  <span style={{ fontSize: 12, color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
                 </div>
-                {r.title && (
-                  <div style={{ fontWeight: 600, color: "var(--ink)", marginTop: 10 }}>{r.title}</div>
-                )}
                 {r.reviewText && (
                   <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>{r.reviewText}</p>
                 )}

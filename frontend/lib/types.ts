@@ -442,7 +442,6 @@ export interface Review {
   buyerId?: string | null;
   buyerName: string;
   rating: number;
-  title?: string;
   reviewText: string;
   status: ReviewStatus;
   createdAt: string;

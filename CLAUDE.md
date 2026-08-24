@@ -13,11 +13,13 @@ You are picking up **BharatSource**, a production-bound web app, with no prior c
 | Product | Route | Status | What it is |
 |---|---|---|---|
 | **Directory** | `/directory` | ✅ Live | B2B/B2C marketplace: buyers discover products & suppliers, send enquiries/RFQs. **Lead model — no payments, no cart, no checkout.** |
-| **Consultations** | `/consultations` | ✅ Live | Hire experts (CAs, lawyers, consultants…): expert profiles, fixed-price service **packages**, **book a consultation** (also lead-only). |
+| **Recruitment** | `/recruitment` | 🔜 Coming soon | Post roles, connect with vetted candidates. Placeholder page (`components/suite/ComingSoon.tsx`). |
 | **Credit Card** | `/credit-card` | 🔜 Coming soon | Placeholder page. |
 | **Mutual** | `/mutual` | 🔜 Coming soon | Placeholder page. |
 
 The suite homepage (`/`) is an umbrella landing with an AI concierge search. One account works across all products.
+
+**Consultations is no longer a promoted suite product** — Recruitment replaced it in the primary nav (`components/suite/SuiteNavMenu.tsx`), the Footer's product list, and the homepage hero. Its routes (`/consultations`, `/consultations/[slug]`), the seller dashboard's "Consultation requests" tab, and the backend consultation-bookings feature still exist in the codebase and weren't removed — they're just no longer linked from primary navigation. Don't add new Consultations entry points; any UI that references it (e.g. a listing/seller page breadcrumb) should point at Directory instead. `components/suite/products.tsx`'s `PRODUCTS` array and `components/suite/ProductsMenu.tsx` are unused legacy code from before this change (zero importers) — don't build on them.
 
 **Business model:** the platform is a **mediator** — it never processes payments or holds inventory. Revenue levers (subscription plans, per-lead pricing, boosts, ads, verification) are all **admin-controlled** via `/admin`.
 

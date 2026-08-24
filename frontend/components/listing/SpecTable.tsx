@@ -8,7 +8,21 @@ export interface SpecTableProps {
   title?: string;
 }
 
-/** Clean two-column key-specs table for a product listing. */
+function SpecsIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="5" y="4" width="14" height="17" rx="2" />
+      <path d="M9 3.2h6a.8.8 0 01.8.8v1H8.2V4a.8.8 0 01.8-.8z" />
+      <path d="M8 11.5h8M8 15.5h8" />
+    </svg>
+  );
+}
+
+/** Clean two-column key-specs table for a product listing, in the same
+ * icon-chip-labeled card panel as the rest of the listing detail page
+ * (app/listing/[id]/page.tsx's SectionLabel — Specifications is this
+ * component's only caller, so it owns the card/label directly rather than
+ * making the page coordinate an empty-state wrapper around it). */
 export default function SpecTable({ specs, title = "Specifications" }: SpecTableProps) {
   const entries = Object.entries(specs || {}).filter(
     ([k, v]) => k && v !== undefined && v !== null && `${v}`.trim() !== ""
@@ -16,10 +30,28 @@ export default function SpecTable({ specs, title = "Specifications" }: SpecTable
   if (entries.length === 0) return null;
 
   return (
-    <section>
-      <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
-        {title}
-      </h2>
+    <section className="card card-flat card-pad">
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <span
+          aria-hidden
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: "var(--brand-tint)",
+            color: "var(--brand-hover)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <SpecsIcon />
+        </span>
+        <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+          {title}
+        </h2>
+      </div>
       <div style={{ border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
         {entries.map(([key, value], i) => (
           <div

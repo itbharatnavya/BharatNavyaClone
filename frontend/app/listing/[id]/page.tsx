@@ -6,7 +6,6 @@ import Link from "next/link";
 import type { Listing, SellerPublicProfile } from "@/lib/types";
 import { getListing, getSeller, getListings, getListingOffers, type Offer } from "@/lib/api";
 import { formatLocation } from "@/lib/indiaGeo";
-import { useCompare } from "@/lib/compare";
 import { useShortlist } from "@/lib/shortlist";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/Toast";
@@ -35,12 +34,83 @@ function prettifySlug(slug: string): string {
   return slug.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Icon-chip section label — same visual language as the category page's
+// "Shop by category" / "Top brands" (SubcategoryTiles.tsx / BrandRail.tsx):
+// a tinted icon chip + bold heading, alternating blue/green down the page so
+// each section reads as distinct instead of bare headings on white.
+function SectionLabel({
+  icon,
+  tone = "blue",
+  style,
+  children,
+}: {
+  icon: React.ReactNode;
+  tone?: "blue" | "green";
+  style?: React.CSSProperties;
+  children: React.ReactNode;
+}) {
+  const palette =
+    tone === "green"
+      ? { bg: "var(--tricolor-green-tint)", fg: "var(--tricolor-green-hover)" }
+      : { bg: "var(--brand-tint)", fg: "var(--brand-hover)" };
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, ...style }}>
+      <span
+        aria-hidden
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: 8,
+          background: palette.bg,
+          color: palette.fg,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
+      <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+        {children}
+      </h2>
+    </div>
+  );
+}
+
+function DescriptionIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M4 6h16M4 12h16M4 18h10" />
+    </svg>
+  );
+}
+function StorefrontIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M3 9l1.3-5h15.4L21 9" />
+      <path d="M3 9a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0" />
+      <path d="M5 9v10h14V9" />
+      <path d="M9.5 19v-5.5h5V19" />
+    </svg>
+  );
+}
+function GridGlyphIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  );
+}
+
 export default function ListingDetailPage() {
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
   const { addToast } = useToast();
   const t = useTr();
-  const compare = useCompare();
   const shortlist = useShortlist();
 
   const [listing, setListing] = useState<Listing | null>(null);
@@ -207,7 +277,7 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ paddingTop: 64 }}>
+      <div>
         <div className="container-bs" style={{ paddingTop: 32, paddingBottom: 80 }}>
           <div className="ld-skel">
             <div style={{ minWidth: 0 }}>
@@ -236,7 +306,7 @@ export default function ListingDetailPage() {
 
   if (notFound || !listing || !contact) {
     return (
-      <div style={{ paddingTop: 64 }}>
+      <div>
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
           <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
@@ -253,13 +323,10 @@ export default function ListingDetailPage() {
     );
   }
 
-  // Services belong to Consultations, products to the Directory (CLAUDE.md) —
-  // this view is shared by both, so the root crumb reflects whichever
-  // product this listing actually belongs to, not a generic suite "Home".
+  // Root crumb always points at the Directory — Consultations isn't live
+  // right now, so a service listing shouldn't send buyers to a dead product.
   const crumbs = [
-    listing.type === "service"
-      ? { label: t("nav.consultationsCrumb", "Consultations"), href: "/consultations" }
-      : { label: t("nav.directoryCrumb", "Directory"), href: "/directory" },
+    { label: t("nav.directoryCrumb", "Directory"), href: "/directory" },
     ...(listing.categoryPath || []).map((slug) => ({
       label: prettifySlug(slug),
       href: `/${slug}`,
@@ -279,7 +346,7 @@ export default function ListingDetailPage() {
   });
 
   return (
-    <div style={{ paddingTop: 64 }}>
+    <div>
       <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>
         {(listing.status === "pending" || listing.status === "rejected") && (
           <div
@@ -307,6 +374,7 @@ export default function ListingDetailPage() {
             )}
           </div>
         )}
+        <Breadcrumbs items={crumbs} className="ld-crumbs" />
         <div className="ld-layout">
           {/* MAIN */}
           <div style={{ minWidth: 0 }}>
@@ -314,9 +382,7 @@ export default function ListingDetailPage() {
               <Gallery media={listing.media} title={listing.title} />
 
               <div style={{ minWidth: 0 }}>
-                <Breadcrumbs items={crumbs} />
-
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
                   {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
                   {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
@@ -329,7 +395,7 @@ export default function ListingDetailPage() {
 
                 <PriceBlock listing={listing} />
 
-                {/* Save (shortlist) + Compare toggles */}
+                {/* Save (shortlist) toggle */}
                 <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <button
                     type="button"
@@ -358,35 +424,6 @@ export default function ListingDetailPage() {
                     {shortlist.has(listing.id)
                       ? t("listing.saved", "Saved")
                       : t("listing.save", "Save")}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    aria-pressed={compare.has(listing.id)}
-                    onClick={() => compare.toggle(listing.id)}
-                    style={
-                      compare.has(listing.id)
-                        ? { color: "var(--brand)", borderColor: "var(--brand)", background: "var(--brand-tint)" }
-                        : undefined
-                    }
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <rect x="3" y="4" width="7" height="16" rx="1.4" />
-                      <rect x="14" y="4" width="7" height="16" rx="1.4" />
-                    </svg>
-                    {compare.has(listing.id)
-                      ? t("listing.inCompare", "Added to compare")
-                      : t("listing.compare", "Compare")}
                   </button>
                 </div>
 
@@ -427,10 +464,10 @@ export default function ListingDetailPage() {
               )}
 
               {listing.description && (
-                <section>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
+                <section className="card card-flat card-pad">
+                  <SectionLabel icon={<DescriptionIcon />} tone="green">
                     {t("listing.description", "Description")}
-                  </h2>
+                  </SectionLabel>
                   <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
                     {listing.description}
                   </p>
@@ -484,11 +521,11 @@ export default function ListingDetailPage() {
 
         {/* MORE FROM THIS SELLER */}
         {sellerListings.length > 0 && (
-          <section style={{ marginTop: 64 }}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--ink)" }}>
+          <section style={{ marginTop: 48 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+              <SectionLabel icon={<StorefrontIcon />} tone="blue" style={{ marginBottom: 0 }}>
                 {t("listing.moreFromSeller", "More from this seller")}
-              </h2>
+              </SectionLabel>
               {contact.slug && (
                 <Link
                   href={`/seller/${contact.slug}`}
@@ -508,10 +545,10 @@ export default function ListingDetailPage() {
 
         {/* SIMILAR PRODUCTS */}
         {similar.length > 0 && (
-          <section style={{ marginTop: 64 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--ink)", marginBottom: 18 }}>
+          <section style={{ marginTop: 48 }}>
+            <SectionLabel icon={<GridGlyphIcon />} tone="green">
               {t("listing.similar", "Similar products")}
-            </h2>
+            </SectionLabel>
             <div className="ld-grid">
               {similar.map((l) => (
                 <ListingCard key={l.id} listing={l} />
@@ -522,6 +559,12 @@ export default function ListingDetailPage() {
       </div>
 
       <style jsx>{`
+        /* :global — Breadcrumbs renders its own <nav>, so the scope class
+           styled-jsx would otherwise auto-inject never reaches it (same
+           Link/child-component scoping gap noted elsewhere this session). */
+        :global(.ld-crumbs) {
+          margin-bottom: 16px;
+        }
         .ld-layout {
           display: grid;
           grid-template-columns: minmax(0, 1fr) 340px;
@@ -536,17 +579,16 @@ export default function ListingDetailPage() {
         }
         .ld-aside {
           position: sticky;
-          top: 80px;
+          top: 124px;
         }
+        /* Same auto-fill/230px card-size pattern as the search/category/brand
+           grids (DiscoveryResults.tsx's .dr-grid) — a fixed repeat(4, 1fr) here
+           stretched cards noticeably bigger than everywhere else on this
+           full-width (no aside-rail) layout. */
         .ld-grid {
           display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
           gap: 20px;
-        }
-        @media (max-width: 1024px) {
-          .ld-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
         }
         @media (max-width: 980px) {
           .ld-layout {
@@ -558,11 +600,6 @@ export default function ListingDetailPage() {
         }
         @media (max-width: 720px) {
           .ld-top {
-            grid-template-columns: minmax(0, 1fr);
-          }
-        }
-        @media (max-width: 560px) {
-          .ld-grid {
             grid-template-columns: minmax(0, 1fr);
           }
         }

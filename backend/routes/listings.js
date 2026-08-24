@@ -313,6 +313,7 @@ router.get("/", async (req, res, next) => {
       city: req.query.city ? String(req.query.city) : undefined,
       state: req.query.state ? String(req.query.state) : undefined,
       verified: req.query.verified === "true" || req.query.verified === true,
+      featured: req.query.featured === "true" || req.query.featured === true,
       minPrice: req.query.minPrice,
       maxPrice: req.query.maxPrice,
       condition: req.query.condition ? String(req.query.condition) : undefined,

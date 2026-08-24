@@ -54,6 +54,14 @@ function CheckIcon() {
   );
 }
 
+function ShieldIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" />
+    </svg>
+  );
+}
+
 export default function TrustBadges({
   verified,
   trustSeal,
@@ -64,10 +72,20 @@ export default function TrustBadges({
   className = "",
 }: TrustBadgesProps) {
   const items: React.ReactNode[] = [];
-  if (verified || trustSeal) {
+  // Two distinct signals, two distinct pills — "verified" (admin-approved
+  // business) and "trust seal" (admin-granted seal) are different facts and
+  // shouldn't collapse into one badge that always just says "Verified".
+  if (verified) {
     items.push(
       <Pill key="verified" tone="brand" size={size}>
         <CheckIcon /> Verified
+      </Pill>
+    );
+  }
+  if (trustSeal) {
+    items.push(
+      <Pill key="trustSeal" tone="success" size={size}>
+        <ShieldIcon /> Trust Seal
       </Pill>
     );
   }

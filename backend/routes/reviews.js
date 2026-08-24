@@ -6,8 +6,9 @@
  * is the user being reviewed. `sellerId` is kept as a back-compat alias (= targetUserId
  * when the target is a seller) so existing seller-page callers keep working.
  *
- * Reviews are moderated: created as "pending", only "approved" ones are public.
- * The author (buyerId/buyerName) comes from the JWT, never the client body.
+ * Reviews publish immediately (no admin approval step) — `status` stays on every
+ * row only as a back-compat field (always "approved"). The author (buyerId/
+ * buyerName) comes from the JWT, never the client body.
  */
 
 const express = require("express");
@@ -15,6 +16,7 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
+const { recomputeSellerRating } = require("../lib/sellerRating");
 
 // Recognized review directions; anything else defaults to buyer_to_seller.
 const REVIEW_DIRECTIONS = new Set([
@@ -85,24 +87,35 @@ router.get("/recent", async (req, res, next) => {
   }
 });
 
-// GET /api/reviews?targetUserId= (or ?sellerId= alias) — approved reviews for a user.
+// GET /api/reviews?targetUserId= (or ?sellerId= alias) — every review for a user,
+// newest first. Reviews are live the moment they're submitted (no moderation
+// gate), so this is a plain public read.
+//
+// Returns EVERY review (message or star-only) — callers decide their own
+// presentation rules: the public ReviewsPanel (seller profile) only lists messaged
+// ones, while the seller's own dashboard ReviewsTab shows everything they've been
+// rated, since that's their private "what did buyers actually say" view.
 router.get("/", async (req, res, next) => {
   try {
     // targetUserId is canonical; sellerId is accepted as a back-compat alias.
     const target = req.query.targetUserId || req.query.sellerId;
-    const reviews = await store.findMany(
-      "reviews.json",
-      (r) =>
-        r.status === "approved" &&
-        (!target || r.targetUserId === target || r.sellerId === target)
-    );
-    return res.json({ success: true, data: { reviews } });
+    const matchesTarget = (r) =>
+      !target || r.targetUserId === target || r.sellerId === target;
+
+    const all = await store.all("reviews.json");
+    const reviews = all.filter(matchesTarget);
+    reviews.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+    return res.json({ success: true, data: reviews });
   } catch (err) {
     next(err);
   }
 });
 
-// POST /api/reviews — review another user (moderated: starts as "pending").
+// POST /api/reviews — review another user. Publishes immediately, no
+// moderation step. One review per (buyer, target): resubmitting the same
+// pair EDITS the existing row in place rather than creating a second one —
+// a buyer can't stack multiple reviews for the same seller, only update
+// their one review.
 router.post("/", authGuard, async (req, res, next) => {
   try {
     const b = req.body || {};
@@ -120,28 +133,51 @@ router.post("/", authGuard, async (req, res, next) => {
         .json({ success: false, error: "rating must be a number 1-5" });
     }
 
-    const direction = REVIEW_DIRECTIONS.has(b.direction)
-      ? b.direction
-      : "buyer_to_seller";
-    // sellerId alias is only meaningful when the target is a seller.
-    const targetIsSeller =
-      direction === "buyer_to_seller" || direction === "seller_to_seller";
+    const existing = await store.findOne(
+      "reviews.json",
+      (r) =>
+        r.buyerId === req.user.id &&
+        (r.targetUserId === targetUserId || r.sellerId === targetUserId)
+    );
 
-    const review = {
-      id: await store.nextId("rev"),
-      targetUserId,
-      sellerId: targetIsSeller ? targetUserId : null,
-      direction,
-      buyerId: req.user.id,
-      buyerName: req.user.name,
-      rating,
-      reviewText: b.reviewText || "",
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    await store.insert("reviews.json", review);
+    let review;
+    if (existing) {
+      review = await store.update("reviews.json", existing.id, {
+        rating,
+        reviewText: b.reviewText || "",
+        status: "approved",
+        createdAt: new Date().toISOString(),
+      });
+    } else {
+      const direction = REVIEW_DIRECTIONS.has(b.direction)
+        ? b.direction
+        : "buyer_to_seller";
+      // sellerId alias is only meaningful when the target is a seller.
+      const targetIsSeller =
+        direction === "buyer_to_seller" || direction === "seller_to_seller";
 
-    return res.json({ success: true, data: { review } });
+      review = {
+        id: await store.nextId("rev"),
+        targetUserId,
+        sellerId: targetIsSeller ? targetUserId : null,
+        direction,
+        buyerId: req.user.id,
+        buyerName: req.user.name,
+        rating,
+        reviewText: b.reviewText || "",
+        status: "approved",
+        createdAt: new Date().toISOString(),
+      };
+      await store.insert("reviews.json", review);
+    }
+    await recomputeSellerRating(review.targetUserId || review.sellerId);
+
+    // Flat, matching every other POST in this codebase (blogs.js, etc.) — a
+    // previous `data: { review }` nesting here meant postReview() on the
+    // frontend, typed to read the review straight off `data`, actually got
+    // `{ review }` and rendered undefined createdAt/reviewText ("Invalid
+    // Date", blank comment) for the review it had just optimistically shown.
+    return res.json({ success: true, data: review });
   } catch (err) {
     next(err);
   }

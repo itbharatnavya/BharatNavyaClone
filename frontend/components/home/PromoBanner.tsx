@@ -2,7 +2,11 @@
 
 // PromoBanner — the promo row shown right under the hero search: a big
 // slot on the left + four smaller tinted promo cards (each linking to a
-// real, already-working Directory route) on the right.
+// real, already-working Directory route) on the right. This banner is
+// Directory-scoped (it only renders on app/directory/page.tsx) — Recruitment
+// is a co-equal suite product, not a Directory feature, so it doesn't belong
+// here even "Soon"-badged; it gets its own promotion at the suite level
+// (SuiteNavMenu.tsx, Footer.tsx, the homepage hero) instead. See CLAUDE.md.
 //
 // The big slot is real seller advertising (ad-bookings, placement
 // "home_hero" — the same self-serve campaigns sellers create from
@@ -47,10 +51,10 @@ const CARDS: PromoCard[] = [
     dot: "#16305c",
   },
   {
-    title: "Hire Experts",
-    subtitle: "CAs, lawyers & consultants",
-    href: "/consultations",
-    image: "business-2",
+    title: "Shop by Brand",
+    subtitle: "Browse trusted, well-known brands",
+    href: "/brands",
+    image: "retail-2",
     overlay: "linear-gradient(160deg, rgba(245,130,31,0.88) 0%, rgba(196,94,10,0.95) 100%)",
     dot: "#f5821f",
   },

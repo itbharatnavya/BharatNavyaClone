@@ -6,14 +6,12 @@ import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";
 import { CatalogProvider } from "@/lib/catalog";
 import { LanguageProvider } from "@/lib/i18n";
-import { CompareProvider } from "@/lib/compare";
 import { ShortlistProvider } from "@/lib/shortlist";
 import { SearchDockProvider } from "@/lib/searchDock";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
 import FloatingRfqButton from "@/components/rfq/FloatingRfqButton";
-import CompareBar from "@/components/compare/CompareBar";
 import RouteProgress from "@/components/RouteProgress";
 
 const inter = Inter({
@@ -42,20 +40,17 @@ export default function RootLayout({
             <LanguageProvider>
               <ToastProvider>
                 <AuthProvider>
-                  <CompareProvider>
-                    <ShortlistProvider>
-                      <SearchDockProvider>
-                        <div className="flex min-h-screen flex-col">
-                          <Navbar />
-                          <main className="flex-1">{children}</main>
-                          <Footer />
-                        </div>
-                        <ChatAssistant />
-                        <FloatingRfqButton />
-                        <CompareBar />
-                      </SearchDockProvider>
-                    </ShortlistProvider>
-                  </CompareProvider>
+                  <ShortlistProvider>
+                    <SearchDockProvider>
+                      <div className="flex min-h-screen flex-col">
+                        <Navbar />
+                        <main className="flex-1">{children}</main>
+                        <Footer />
+                      </div>
+                      <ChatAssistant />
+                      <FloatingRfqButton />
+                    </SearchDockProvider>
+                  </ShortlistProvider>
                 </AuthProvider>
               </ToastProvider>
             </LanguageProvider>

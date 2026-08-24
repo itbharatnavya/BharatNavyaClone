@@ -38,16 +38,25 @@ const LISTING_LIMIT = 8;
 
 function TagIcon() {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.6 13.4L13.4 20.6a2 2 0 01-2.8 0l-7.2-7.2A2 2 0 012.8 12V4h8a2 2 0 011.4.6l8.4 8.4a2 2 0 010 2.8z" />
       <circle cx="7" cy="8" r="1.4" />
     </svg>
   );
 }
-function ChevronRightIcon() {
+function BuildingIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9 6l6 6-6 6" />
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="3" width="16" height="18" rx="1.5" />
+      <path d="M9 21v-4h6v4M8.5 7.5h.01M8.5 11h.01M8.5 14.5h.01M15.5 7.5h.01M15.5 11h.01" />
+    </svg>
+  );
+}
+function BoxIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 7.5L12 3 3 7.5l9 4.5 9-4.5z" />
+      <path d="M3 7.5v9l9 4.5 9-4.5v-9M12 12v9" />
     </svg>
   );
 }
@@ -57,69 +66,102 @@ function ChevronRightIcon() {
 // elements literally written inside the component function that renders the
 // `<style jsx>` tag, not elements rendered by a child component defined
 // alongside it in the same file. A className here would silently no-op.
-function CategoryRow({ slug, name, icon, description, listingCount }: {
+//
+// Compact grid tile (not a full-width row) — with the 5-item CATEGORY_LIMIT
+// this fits in one or two rows instead of stacking 5 full-width bars down
+// the page, which is what made the section feel like it "took the whole
+// screen." No description here — a quick-scan tile doesn't need it.
+function CategoryTile({ slug, name, icon, listingCount }: {
   slug: string;
   name: string;
   icon?: string;
-  description?: string;
   listingCount?: number;
 }) {
   return (
     <Link
       href={`/${slug}`}
       className="card"
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", textDecoration: "none" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 8,
+        padding: "12px 14px",
+        textDecoration: "none",
+      }}
     >
       <span
         aria-hidden
         style={{
-          width: 38,
-          height: 38,
-          borderRadius: 10,
+          width: 32,
+          height: 32,
+          borderRadius: 9,
+          background: "var(--brand-tint)",
+          color: "var(--brand-hover)",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 15,
+        }}
+      >
+        {icon ? <span>{icon}</span> : <TagIcon />}
+      </span>
+      <span className="line-clamp-1" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--ink)" }}>
+        {name}
+      </span>
+      {typeof listingCount === "number" && listingCount > 0 && (
+        <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{listingCount} listings</span>
+      )}
+    </Link>
+  );
+}
+
+// A highlighted section header — icon chip + bold label + result count,
+// separated by a rule — instead of a small faint uppercase caption, so the
+// three groups (Categories / Companies / Products & services) actually read
+// as distinct sections while scanning the page.
+function SectionLabel({
+  icon,
+  count,
+  children,
+}: {
+  icon: React.ReactNode;
+  count?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 14,
+        paddingBottom: 10,
+        borderBottom: "1px solid var(--border)",
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          width: 26,
+          height: 26,
+          borderRadius: 7,
           background: "var(--brand-tint)",
           color: "var(--brand-hover)",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
-          fontSize: 17,
         }}
       >
-        {icon ? <span>{icon}</span> : <TagIcon />}
+        {icon}
       </span>
-      <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }}>{name}</span>
-        {description && (
-          <span className="line-clamp-1" style={{ fontSize: 12.5, color: "var(--muted)" }}>
-            {description}
-          </span>
-        )}
+      <span style={{ fontSize: 15.5, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+        {children}
       </span>
-      {typeof listingCount === "number" && listingCount > 0 && (
-        <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0, whiteSpace: "nowrap" }}>
-          {listingCount} listings
-        </span>
+      {typeof count === "number" && (
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--faint)" }}>{count}</span>
       )}
-      <span style={{ color: "var(--faint)", display: "inline-flex", flexShrink: 0 }} aria-hidden>
-        <ChevronRightIcon />
-      </span>
-    </Link>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: "0.06em",
-        textTransform: "uppercase",
-        color: "var(--faint)",
-        marginBottom: 12,
-      }}
-    >
-      {children}
     </div>
   );
 }
@@ -206,31 +248,26 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
     <div className="gsr-sections">
       {showCategories && (
         <section>
-          <SectionLabel>{t("search.categories", "Categories")}</SectionLabel>
+          <SectionLabel icon={<TagIcon />} count={catLoading ? undefined : matchedCategories.length}>
+            {t("search.categories", "Categories")}
+          </SectionLabel>
           {catLoading ? (
-            <div className="gsr-cat-list">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="card"
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}
-                >
-                  <span className="skeleton" style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0 }} />
-                  <span style={{ flex: 1 }}>
-                    <span className="skeleton" style={{ display: "block", height: 13, width: "40%" }} />
-                  </span>
+            <div className="gsr-cat-grid">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="card" style={{ padding: "12px 14px" }}>
+                  <span className="skeleton" style={{ display: "block", width: 32, height: 32, borderRadius: 9 }} />
+                  <span className="skeleton" style={{ display: "block", height: 12, width: "70%", marginTop: 10 }} />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="gsr-cat-list">
+            <div className="gsr-cat-grid">
               {matchedCategories.map((c) => (
-                <CategoryRow
+                <CategoryTile
                   key={c.id}
                   slug={c.slug}
                   name={c.name}
                   icon={c.icon}
-                  description={c.description}
                   listingCount={c.listingCount}
                 />
               ))}
@@ -241,13 +278,15 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
 
       {showCompanies && (
         <section>
-          <SectionLabel>{t("search.companies", "Companies")}</SectionLabel>
+          <SectionLabel icon={<BuildingIcon />} count={sellersLoading ? undefined : sellers.length}>
+            {t("search.companies", "Companies")}
+          </SectionLabel>
           {sellersLoading ? (
             <div className="gsr-company-grid">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="card card-flat card-pad">
-                  <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                    <span className="skeleton" style={{ width: 52, height: 52, borderRadius: "50%" }} />
+                <div key={i} className="card card-flat" style={{ padding: 14 }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <span className="skeleton" style={{ width: 44, height: 44, borderRadius: "50%" }} />
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
                       <span className="skeleton" style={{ height: 14, width: "70%" }} />
                       <span className="skeleton" style={{ height: 12, width: "45%" }} />
@@ -268,7 +307,9 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
 
       {showListings && (
         <section>
-          <SectionLabel>{t("search.productsServices", "Products & services")}</SectionLabel>
+          <SectionLabel icon={<BoxIcon />} count={listingsLoading ? undefined : listingsTotal}>
+            {t("search.productsServices", "Products & services")}
+          </SectionLabel>
           {listingsLoading ? (
             <div className="gsr-list">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -310,10 +351,20 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
           flex-direction: column;
           gap: 32px;
         }
-        .gsr-cat-list {
-          display: flex;
-          flex-direction: column;
+        .gsr-cat-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 10px;
+        }
+        @media (min-width: 480px) {
+          .gsr-cat-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        @media (min-width: 900px) {
+          .gsr-cat-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+          }
         }
         .gsr-company-grid {
           display: grid;

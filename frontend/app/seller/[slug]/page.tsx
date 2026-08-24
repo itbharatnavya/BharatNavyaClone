@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { SellerProfile, SellerPublicProfile, Blog } from "@/lib/types";
@@ -10,6 +10,7 @@ import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/Toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
+import Modal from "@/components/Modal";
 import SellerHeader from "@/components/seller/SellerHeader";
 import ReviewsPanel from "@/components/seller/ReviewsPanel";
 import SellerStoriesSection from "@/components/seller/SellerStoriesSection";
@@ -44,122 +45,314 @@ function formatDate(iso?: string | null): string {
   }
 }
 
-interface TrustFactor {
-  key: string;
-  label: string;
-  points: number;
-  max: number;
+// ---- Icons (inline SVG line-glyphs only — no emoji) ------------------------
+function ContactHeaderIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8z" />
+    </svg>
+  );
+}
+function LocationPinIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s7-6.7 7-11.5A7 7 0 0 0 5 9.5C5 14.3 12 21 12 21z" />
+      <circle cx="12" cy="9.5" r="2.3" />
+    </svg>
+  );
+}
+function DirectionsIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 11L20 3l-8 17-2.5-6.5L3 11z" />
+    </svg>
+  );
+}
+function ShareTileIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="5" r="2.6" />
+      <circle cx="6" cy="12" r="2.6" />
+      <circle cx="18" cy="19" r="2.6" />
+      <path d="M8.3 10.7l7.4-4.2M8.3 13.3l7.4 4.2" />
+    </svg>
+  );
+}
+function StarOutlineIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3.5l2.6 5.4 5.9.7-4.3 4.1 1 5.9L12 16.8l-5.2 2.8 1-5.9-4.3-4.1 5.9-.7L12 3.5z" />
+    </svg>
+  );
+}
+function BuildingIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="3" width="10" height="18" rx="1" />
+      <rect x="14" y="9" width="6" height="12" rx="1" />
+      <path d="M7 7h1M7 11h1M7 15h1M10.5 7h1M10.5 11h1M10.5 15h1M16.5 12.5h1M16.5 16h1" />
+    </svg>
+  );
+}
+function GstIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 3h8l4 4v14H7z" />
+      <path d="M15 3v4h4" />
+      <path d="M9.3 12h5.4M9.3 15.5h5.4" />
+    </svg>
+  );
+}
+function CalendarIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4.5" width="18" height="16" rx="2" />
+      <path d="M16 2.5v4M8 2.5v4M3 9.5h18" />
+    </svg>
+  );
+}
+function EmployeesIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6" />
+      <circle cx="17.5" cy="9" r="2.3" />
+      <path d="M15.8 13.6c2.2.5 3.9 2.4 3.9 6.4" />
+    </svg>
+  );
+}
+function GlobeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.4 2.5 3.7 5.7 3.7 9s-1.3 6.5-3.7 9c-2.4-2.5-3.7-5.7-3.7-9S9.6 5.5 12 3z" />
+    </svg>
+  );
+}
+function CertificateIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="9" r="5.5" />
+      <path d="M9 13.7L7 21l5-2.5L17 21l-2-7.3" />
+    </svg>
+  );
 }
 
-// Trust score card — computed 0–100 score shown on the public profile. Reads the
-// backend-computed fields (trustScore / trustBand / trustFactors) which the seller
-// endpoint attaches on read.
-function TrustScoreCard({
-  score,
-  band,
-  factors,
+// One tinted, tappable action tile (Directions / Share / Rate) — real
+// actions only, no decorative buttons.
+function ActionTile({
+  icon,
+  label,
+  href,
+  onClick,
+  tone = "brand",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+  tone?: "brand" | "action" | "success";
+}) {
+  const tones: Record<string, { bg: string; fg: string }> = {
+    brand: { bg: "var(--brand-tint)", fg: "var(--brand)" },
+    action: { bg: "var(--action-tint)", fg: "var(--action)" },
+    success: { bg: "#ecfdf5", fg: "var(--success)" },
+  };
+  const tn = tones[tone];
+  const inner = (
+    <>
+      <span
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: 9,
+          background: tn.bg,
+          color: tn.fg,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 11.5, fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>{label}</span>
+    </>
+  );
+  const style: React.CSSProperties = {
+    flex: "1 1 0",
+    minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 6,
+    padding: "12px 4px",
+    borderRadius: 10,
+    border: "1px solid var(--border)",
+    background: "#fff",
+    textDecoration: "none",
+    cursor: "pointer",
+  };
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" style={style}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} style={style}>
+      {inner}
+    </button>
+  );
+}
+
+// Contact card — location, directions, share and a rate shortcut. Every
+// action here is real and already wired elsewhere in the app (Google Maps
+// search, the seller-share link, the Reviews tab's own review form) — no
+// invented features like "suggest hours" or "send enquiry by email" that
+// this codebase doesn't actually support.
+function ContactCard({
+  companyName,
+  city,
+  state,
+  onRate,
   t,
 }: {
-  score: number;
-  band: string;
-  factors: TrustFactor[];
+  companyName: string;
+  city?: string;
+  state?: string;
+  onRate: () => void;
   t: (key: string, fallback: string) => string;
 }) {
-  const bandColor =
-    band === "Excellent"
-      ? "var(--success)"
-      : band === "Good"
-      ? "var(--brand)"
-      : "var(--warn)";
-  const pct = Math.max(0, Math.min(100, score));
+  const { addToast } = useToast();
+  const [shareOpen, setShareOpen] = useState(false);
+  const locationText = [city, state].filter(Boolean).join(", ");
+  const mapsHref =
+    city || state
+      ? `https://www.google.com/maps/search/${encodeURIComponent(
+          [companyName, city, state].filter(Boolean).join(", ")
+        )}`
+      : undefined;
+  const shareUrl = () => (typeof window !== "undefined" ? window.location.href : "");
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl());
+      addToast(t("contact.linkCopied", "Link copied to clipboard"), "success");
+      setShareOpen(false);
+    } catch {
+      addToast(t("contact.copyFailed", "Could not copy link"), "error");
+    }
+  }
 
   return (
-    <div className="card card-flat card-pad" style={{ marginBottom: 16 }}>
-      <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
-        {t("seller.trustScore", "Trust score")}
-      </h2>
-
-      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-        <span style={{ fontSize: 34, fontWeight: 800, color: "var(--ink)", lineHeight: 1 }}>
-          {score}
-        </span>
-        <span style={{ fontSize: 14, color: "var(--faint)", fontWeight: 600 }}>/ 100</span>
+    <div className="card card-flat" style={{ overflow: "hidden", marginBottom: 16 }}>
+      <div
+        style={{
+          padding: "13px 20px",
+          background: "linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%)",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
         <span
-          className="badge"
           style={{
-            marginLeft: "auto",
-            color: bandColor,
-            background: "var(--bg-subtle)",
-            border: `1px solid var(--border)`,
-            fontWeight: 700,
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: "rgba(255,255,255,0.18)",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
           }}
         >
-          {band}
+          <ContactHeaderIcon />
         </span>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: 0 }}>
+          {t("seller.contact", "Contact")}
+        </h2>
       </div>
 
-      {/* Thin SVG progress bar */}
-      <svg
-        width="100%"
-        height="8"
-        viewBox="0 0 100 8"
-        preserveAspectRatio="none"
-        style={{ display: "block", marginBottom: 14 }}
-        aria-hidden
-      >
-        <rect x="0" y="1" width="100" height="6" rx="3" fill="var(--border)" />
-        <rect x="0" y="1" width={pct} height="6" rx="3" fill={bandColor} />
-      </svg>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {factors.map((f) => {
-          const fpct = f.max > 0 ? Math.max(0, Math.min(100, (f.points / f.max) * 100)) : 0;
-          return (
-            <div key={f.key}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  gap: 8,
-                  marginBottom: 4,
-                }}
-              >
-                <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{f.label}</span>
-                <span style={{ fontSize: 12.5, color: "var(--faint)", fontWeight: 600 }}>
-                  {f.points}/{f.max}
-                </span>
+      <div style={{ padding: "18px 20px 20px" }}>
+        {locationText && (
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            <span
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9,
+                background: "var(--action-tint)",
+                color: "var(--action)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <LocationPinIcon />
+            </span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--faint)", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                {t("seller.location", "Location")}
               </div>
-              <div
-                style={{
-                  height: 5,
-                  borderRadius: 3,
-                  background: "var(--border)",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${fpct}%`,
-                    height: "100%",
-                    borderRadius: 3,
-                    background: "var(--brand)",
-                  }}
-                />
-              </div>
+              <div style={{ fontSize: 13.5, color: "var(--ink)", marginTop: 2 }}>{locationText}</div>
             </div>
-          );
-        })}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 6 }}>
+          {mapsHref && (
+            <ActionTile icon={<DirectionsIcon />} label={t("seller.directions", "Directions")} href={mapsHref} tone="action" />
+          )}
+          <ActionTile icon={<ShareTileIcon />} label={t("common.share", "Share")} onClick={() => setShareOpen(true)} tone="brand" />
+          <ActionTile icon={<StarOutlineIcon />} label={t("seller.rate", "Rate")} onClick={onRate} tone="success" />
+        </div>
       </div>
+
+      <Modal open={shareOpen} onClose={() => setShareOpen(false)} title={t("contact.shareTitle", "Share this seller")} size="sm">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(`Check out ${companyName} on BharatSource — ${shareUrl()}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary btn-block"
+            onClick={() => setShareOpen(false)}
+          >
+            {t("contact.shareWhatsApp", "Share on WhatsApp")}
+          </a>
+          <button type="button" className="btn btn-secondary btn-block" onClick={copyLink}>
+            {t("contact.copyLink", "Copy link")}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+function IconDetailRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
   if (value === undefined || value === null || value === "") return null;
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "8px 0", borderBottom: "1px solid var(--border)" }}>
-      <span style={{ fontSize: 13, color: "var(--muted)" }}>{label}</span>
-      <span style={{ fontSize: 13, color: "var(--ink)", fontWeight: 500, textAlign: "right" }}>{value}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
+      <span
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 7,
+          background: "var(--bg-subtle)",
+          color: "var(--muted)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 12.5, color: "var(--muted)", flex: 1 }}>{label}</span>
+      <span style={{ fontSize: 13, color: "var(--ink)", fontWeight: 600, textAlign: "right" }}>{value}</span>
     </div>
   );
 }
@@ -246,9 +439,17 @@ export default function SellerProfilePage() {
     return apiBadges && apiBadges.length ? apiBadges : deriveBadges(profile.seller);
   }, [profile]);
 
+  // "Rate" (Contact card) jumps to the real Reviews tab/form instead of
+  // faking an inline rating control.
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const goToReviews = useCallback(() => {
+    setTab("reviews");
+    tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   if (loading) {
     return (
-      <div style={{ paddingTop: 64 }}>
+      <div>
         <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 80 }}>
           <div className="skeleton" style={{ height: 240, width: "100%", marginBottom: 24 }} />
           <div className="skeleton" style={{ height: 260, width: "100%" }} />
@@ -259,7 +460,7 @@ export default function SellerProfilePage() {
 
   if (notFound || !profile) {
     return (
-      <div style={{ paddingTop: 64 }}>
+      <div>
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("seller.notFound.eyebrow", "Seller not found")}</span>
           <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
@@ -278,7 +479,6 @@ export default function SellerProfilePage() {
 
   const seller = profile.seller;
   const listings = profile.listings || [];
-  const businessHours = (seller as unknown as { businessHours?: string }).businessHours;
 
   const tabs: { key: TabKey; label: string; count?: number }[] = [
     { key: "listings", label: t("seller.listings", "Listings"), count: listings.length },
@@ -288,7 +488,7 @@ export default function SellerProfilePage() {
   ];
 
   return (
-    <div style={{ paddingTop: 64 }}>
+    <div>
       <div className="container-bs" style={{ paddingTop: 20, paddingBottom: 96 }}>
         <Breadcrumbs
           items={[
@@ -313,16 +513,18 @@ export default function SellerProfilePage() {
             yearEstablished={seller.yearEstablished}
             rating={seller.rating}
             reviewCount={seller.reviewCount}
-            responseRate={seller.responseRate}
             contactMobile={seller.contactMobile}
             onContactUnlocked={refreshContact}
           />
         </div>
 
         <div className="sp-layout">
-          {/* MAIN — tabs */}
-          <div style={{ minWidth: 0 }}>
+          {/* MAIN — tabs (order:2 on mobile, see .sp-layout media query — the
+              About/company-details aside moves ABOVE this so a mobile visitor
+              doesn't have to scroll past every listing to reach it). */}
+          <div className="sp-main" style={{ minWidth: 0 }}>
             <div
+              ref={tabsRef}
               className="no-scrollbar"
               style={{
                 display: "flex",
@@ -471,24 +673,15 @@ export default function SellerProfilePage() {
             )}
           </div>
 
-          {/* ASIDE — about + company details */}
+          {/* ASIDE — contact + about + company details */}
           <aside className="sp-aside">
-            {(() => {
-              const trust = seller as unknown as {
-                trustScore?: number;
-                trustBand?: string;
-                trustFactors?: TrustFactor[];
-              };
-              if (typeof trust.trustScore !== "number") return null;
-              return (
-                <TrustScoreCard
-                  score={trust.trustScore}
-                  band={trust.trustBand || "Fair"}
-                  factors={trust.trustFactors || []}
-                  t={t}
-                />
-              );
-            })()}
+            <ContactCard
+              companyName={seller.companyName}
+              city={seller.location?.city}
+              state={seller.location?.state}
+              onRate={goToReviews}
+              t={t}
+            />
 
             {seller.about && (
               <div className="card card-flat card-pad" style={{ marginBottom: 16 }}>
@@ -500,19 +693,40 @@ export default function SellerProfilePage() {
             )}
 
             <div className="card card-flat card-pad">
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>
-                {t("seller.details", "Company details")}
-              </h2>
-              <DetailRow label={t("seller.detail.gst", "GST")} value={seller.gstNumber || undefined} />
-              <DetailRow label={t("seller.detail.established", "Established")} value={seller.yearEstablished || undefined} />
-              <DetailRow label={t("seller.detail.employees", "Employees")} value={seller.employeeCount || undefined} />
-              <DetailRow
-                label={t("seller.detail.location", "Location")}
-                value={[seller.location?.city, seller.location?.state].filter(Boolean).join(", ") || undefined}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <span
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    background: "var(--brand-tint)",
+                    color: "var(--brand)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <BuildingIcon />
+                </span>
+                <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
+                  {t("seller.details", "Company details")}
+                </h2>
+              </div>
+              <IconDetailRow icon={<GstIcon />} label={t("seller.detail.gst", "GST")} value={seller.gstNumber || undefined} />
+              <IconDetailRow
+                icon={<CalendarIcon />}
+                label={t("seller.detail.established", "Established")}
+                value={
+                  seller.yearEstablished
+                    ? `${seller.yearEstablished} · ${new Date().getFullYear() - seller.yearEstablished} yrs`
+                    : undefined
+                }
               />
-              <DetailRow label={t("seller.detail.hours", "Business hours")} value={businessHours || undefined} />
+              <IconDetailRow icon={<EmployeesIcon />} label={t("seller.detail.employees", "Employees")} value={seller.employeeCount || undefined} />
               {seller.website && (
-                <DetailRow
+                <IconDetailRow
+                  icon={<GlobeIcon />}
                   label={t("seller.detail.website", "Website")}
                   value={
                     <a href={seller.website} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}>
@@ -521,36 +735,27 @@ export default function SellerProfilePage() {
                   }
                 />
               )}
-              {(seller.location?.city || seller.location?.state) && (
-                <div style={{ marginTop: 12 }}>
-                  <a
-                    href={`https://www.google.com/maps/search/${encodeURIComponent(
-                      [seller.companyName, seller.location?.city, seller.location?.state].filter(Boolean).join(", ")
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary btn-sm btn-block"
-                  >
-                    {t("seller.viewOnMap", "View on map")}
-                  </a>
+
+              {seller.certifications && seller.certifications.length > 0 && (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                    <span style={{ color: "var(--faint)", display: "flex" }}>
+                      <CertificateIcon />
+                    </span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--muted)" }}>
+                      {t("seller.certifications", "Certifications")}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {seller.certifications.map((c) => (
+                      <span key={c} className="badge badge-neutral">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-
-            {seller.certifications && seller.certifications.length > 0 && (
-              <div className="card card-flat card-pad" style={{ marginTop: 16 }}>
-                <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", marginBottom: 10 }}>
-                  {t("seller.certifications", "Certifications")}
-                </h2>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {seller.certifications.map((c) => (
-                    <span key={c} className="badge badge-neutral">
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </aside>
         </div>
       </div>
@@ -565,11 +770,15 @@ export default function SellerProfilePage() {
         }
         .sp-aside {
           position: sticky;
-          top: 80px;
+          top: 124px;
         }
+        /* Same auto-fill/230px card-size pattern as every other listing grid
+           in the app (DiscoveryResults.tsx's .dr-grid, listing/[id]'s
+           .ld-grid) — a fixed 2-column grid here stretched cards far bigger
+           than everywhere else on this wide (no-rail-competing) tab body. */
         .sp-grid {
           display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
           gap: 20px;
         }
         @media (max-width: 900px) {
@@ -578,11 +787,14 @@ export default function SellerProfilePage() {
           }
           .sp-aside {
             position: static;
+            /* About/company details/trust score ahead of the tab body on
+               mobile, so they're visible without scrolling past every
+               listing — the sidebar only exists as a desktop-width column. */
+            order: 1;
+            margin-bottom: 24px;
           }
-        }
-        @media (max-width: 560px) {
-          .sp-grid {
-            grid-template-columns: minmax(0, 1fr);
+          .sp-main {
+            order: 2;
           }
         }
       `}</style>

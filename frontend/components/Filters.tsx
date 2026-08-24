@@ -9,6 +9,7 @@ export interface ListingFilterState {
   category?: string; // slug (search page category facet)
   city?: string;
   verified?: boolean;
+  featured?: boolean;
   priceMax?: number; // price-tier ceiling
   type?: ListingType | "";
   brands?: string[]; // selected brand names (facet from result set)
@@ -46,6 +47,7 @@ export interface FiltersProps {
   hideCity?: boolean;
   hidePrice?: boolean;
   hideVerified?: boolean;
+  hideFeatured?: boolean;
 }
 
 const PRICE_TIERS: { display: string; value: number }[] = [
@@ -252,6 +254,7 @@ export default function Filters({
   hideCity = false,
   hidePrice = false,
   hideVerified = false,
+  hideFeatured = false,
 }: FiltersProps) {
   const { t: rawT, lang } = useT();
   const tr = (key: string, fallback: string) => {
@@ -301,6 +304,7 @@ export default function Filters({
     value.category ||
     value.city ||
     value.verified ||
+    value.featured ||
     value.priceMax ||
     value.type ||
     (value.brands && value.brands.length > 0) ||
@@ -527,14 +531,23 @@ export default function Filters({
         </Accordion>
       )}
 
-      {/* Verified (always visible) */}
-      {!hideVerified && (
+      {/* Verified / Featured (always visible) */}
+      {(!hideVerified || !hideFeatured) && (
         <div style={{ paddingTop: 10 }}>
-          <CheckRow
-            label={tr("filters.verifiedOnly", "Verified sellers only")}
-            checked={!!value.verified}
-            onChange={() => set({ verified: value.verified ? undefined : true })}
-          />
+          {!hideVerified && (
+            <CheckRow
+              label={tr("filters.verifiedOnly", "Verified sellers only")}
+              checked={!!value.verified}
+              onChange={() => set({ verified: value.verified ? undefined : true })}
+            />
+          )}
+          {!hideFeatured && (
+            <CheckRow
+              label={tr("filters.featuredOnly", "Featured listings only")}
+              checked={!!value.featured}
+              onChange={() => set({ featured: value.featured ? undefined : true })}
+            />
+          )}
         </div>
       )}
     </aside>

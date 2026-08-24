@@ -41,7 +41,6 @@ const FLAG_LABEL: Record<string, string> = {
   reviews: "Ratings & Reviews",
   reports: "Report Listing",
   nearMe: "Near-Me / Distance",
-  mapView: "Map View",
   multiLanguage: "Multi-Language",
   ads: "In-App Ads",
   featuredListings: "Featured Listings",

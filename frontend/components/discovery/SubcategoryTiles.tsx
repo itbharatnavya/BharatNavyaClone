@@ -53,14 +53,43 @@ function themeImage(cat: Category): string | null {
   return null;
 }
 
+function GridGlyphIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  );
+}
+
 export default function SubcategoryTiles({ items }: { items: Category[] }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <section style={{ marginBottom: 32 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)", marginBottom: 14 }}>
-        Shop by category
-      </h2>
+    <section className="card card-flat card-pad" style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <span
+          aria-hidden
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: "var(--brand-tint)",
+            color: "var(--brand-hover)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <GridGlyphIcon />
+        </span>
+        <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+          Shop by category
+        </h2>
+      </div>
       <div
         style={{
           display: "grid",
@@ -79,6 +108,7 @@ export default function SubcategoryTiles({ items }: { items: Category[] }) {
             >
               <div
                 style={{
+                  position: "relative",
                   aspectRatio: "4 / 3",
                   background: img ? undefined : "var(--brand-tint)",
                   backgroundImage: img ? `url(${img})` : undefined,
@@ -91,6 +121,21 @@ export default function SubcategoryTiles({ items }: { items: Category[] }) {
                 }}
               >
                 {!img && <CategoryIcon slug={c.slug} name={c.name} size={40} />}
+                {typeof c.listingCount === "number" && c.listingCount > 0 && (
+                  <span
+                    className="badge"
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      left: 8,
+                      background: "rgba(15,23,42,0.65)",
+                      color: "#fff",
+                      border: "none",
+                    }}
+                  >
+                    {c.listingCount}
+                  </span>
+                )}
               </div>
               <div style={{ padding: "10px 12px", minWidth: 0 }}>
                 <span

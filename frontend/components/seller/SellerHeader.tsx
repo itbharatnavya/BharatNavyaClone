@@ -29,7 +29,6 @@ export interface SellerHeaderProps {
   yearEstablished?: number | null;
   rating?: number;
   reviewCount?: number;
-  responseRate?: number;
   contactMobile?: string | null;
   /** Called after a logged-out visitor completes login/register in the
    * contact gate, so the parent can refetch the seller profile (which now
@@ -87,7 +86,6 @@ export default function SellerHeader(props: SellerHeaderProps) {
     yearEstablished,
     rating,
     reviewCount,
-    responseRate,
     contactMobile,
     onContactUnlocked,
   } = props;
@@ -205,11 +203,6 @@ export default function SellerHeader(props: SellerHeaderProps) {
                 {typeof rating === "number" && rating > 0 && (
                   <Rating value={rating} count={reviewCount} size={15} />
                 )}
-                {typeof responseRate === "number" && responseRate > 0 && (
-                  <span style={{ fontSize: 13, color: "var(--success)", fontWeight: 600 }}>
-                    {Math.round(responseRate)}% {t("seller.responseRate", "response rate")}
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -267,11 +260,16 @@ export default function SellerHeader(props: SellerHeaderProps) {
         {/* Badges + trust */}
         {(badges.length > 0 || isVerified || trustSealVerified || gstNumber || years) && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 16 }}>
-            {badges.map((key) => (
-              <Badge key={key} variant={BADGE_VARIANTS[key] || "neutral"}>
-                {badgeLabel(key)}
-              </Badge>
-            ))}
+            {/* "verified" is excluded here — TrustBadges below already shows
+                a distinct Verified pill, so this only carries badges TrustBadges
+                doesn't cover (top rated, fast responder, 25+ reviews "trusted"). */}
+            {badges
+              .filter((key) => key !== "verified")
+              .map((key) => (
+                <Badge key={key} variant={BADGE_VARIANTS[key] || "neutral"}>
+                  {badgeLabel(key)}
+                </Badge>
+              ))}
             <TrustBadges
               verified={isVerified}
               trustSeal={trustSealVerified}

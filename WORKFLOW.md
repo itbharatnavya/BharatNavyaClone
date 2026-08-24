@@ -113,6 +113,143 @@ duplicate it, only tracks deltas against it.
 
 ## 3. Change log (newest first)
 
+### 2026-08-21 — Reviews publish live (no moderation), sponsored/featured ad rail on search & brand pages, ListingCard redesign, Map View removed, Compare removed
+
+**Why:** Several independent cleanups landed together this round: reviews were sitting behind
+an admin-approval gate that nothing in the product actually asked for (product owner wants
+star ratings live immediately, like the rest of the lead-gen flow); the trust score's
+"response rate" factor was discovered to be fabricated seed data with no real tracking behind
+it; Search/Brand pages needed the same sponsored-ad monetization surface Category pages
+already had; and Map View and Compare were both product-owner calls to drop — Map View had a
+`leaflet` dependency and no real usage, Compare (client-side compare tray) was decided to be
+unneeded scope for the Directory's lead-gen model.
+
+**Reviews now publish immediately:**
+- `backend/routes/reviews.js` — `POST /api/reviews` no longer creates rows as `"pending"`;
+  every review is `"approved"` on write. One review per `(buyerId, targetUserId)` pair: a
+  repeat submission now **edits the existing row** in place instead of stacking a second one.
+  Response envelope flattened from `{ data: { review } }` to `{ data: review }` — the old
+  nested shape meant the frontend's optimistic update rendered `undefined` for
+  `createdAt`/`reviewText`.
+- New `backend/lib/sellerRating.js` (`recomputeSellerRating(targetUserId)`) — recomputes and
+  persists `sellerProfile.rating`/`reviewCount` from every currently-approved review for that
+  seller. Called after every review write. `sellerProfile.rating`/`reviewCount` are static
+  persisted fields (not computed on read, unlike `trustScore.js`), so anything that changes
+  which reviews count toward a seller (future moderation, a buyer editing their review) must
+  call this too.
+- `backend/routes/moderation.js`, `frontend/components/admin/adminApi.ts`,
+  `frontend/components/admin/ModerationTab.tsx` — `"review"` dropped as a moderation content
+  type everywhere (route, `ModerationType`, the tab's type selector); blogs/stories are
+  unaffected and still moderated as before.
+- `frontend/lib/types.ts`, `frontend/lib/api.ts`, `frontend/components/dashboard/ReviewsTab.tsx`
+  — the `title` field dropped from the `Review` model (never used); the dashboard's Reviews tab
+  no longer shows a status badge (there's no more `pending`/`rejected` state to show).
+- Demo data: `backend/DB/listings.json`'s per-listing seeded `rating`/`reviewCount` values
+  (fake, e.g. `4.5` / `23`) zeroed out — real ratings now come from `sellerRating.js` off
+  actual reviews, not seed decoration. `backend/DB/reviews.json`'s one seed review flipped
+  `pending` → `approved`.
+
+**Trust score reweighted** (`backend/lib/trustScore.js`): the `responseRate` factor (+15 pts)
+is removed — nothing in the codebase measures a seller's actual reply latency (no chat/quote-
+timing tracking exists), so it was always a fabricated number, never a real signal. Its weight
+was redistributed to the factors that ARE backed by real data: rating 25→30, reviews 15→20,
+years-established 5→10 (now capped at 10 years instead of 5). `frontend/components/TrustBadges.tsx`
+also now renders **Verified** and **Trust Seal** as two distinct pills instead of collapsing
+both into one "Verified" badge — they're different admin-granted facts.
+
+**Sponsored/Featured ad rail on Search & Brand pages:**
+- New `frontend/components/AdRail.tsx` — `useAds(placement)` (fetches active ad bookings,
+  weighted-shuffles by `priority` so the same top-3 sponsors don't lock into every visitor's
+  sidebar forever), `AdCard` (desktop sidebar, stacked, cap 3), `InFeedAd` (mobile/tablet
+  native row spliced into the list/grid via `interleaveAds()`). Same data source as the
+  existing `AdSlider.tsx` (`GET /api/ads`), just rendered as distinct cards instead of one
+  rotating slot.
+- `backend/scripts/seed-demo-ads.js` — 6 new `search_top` demo ad bookings (idempotent re-run:
+  catches Postgres' unique-id `23505` conflict and skips already-seeded rows instead of
+  crashing, since `store.insert` upserts on the file-DB but Postgres doesn't).
+- `backend/lib/search.js`, `backend/routes/listings.js`, `frontend/lib/api.ts`,
+  `frontend/components/Filters.tsx` — new `featured` filter (query param, facet, "Featured
+  listings only" checkbox) alongside the existing `verified` one.
+- `frontend/app/search/page.tsx` — `showMapToggle={mapView}` replaced with `adRail` (Map View
+  is gone, see below); `frontend/app/brand/[slug]/page.tsx`,
+  `frontend/components/discovery/DiscoveryResults.tsx`,
+  `frontend/components/discovery/GlobalSearchResults.tsx` wire the sidebar rail + in-feed ads
+  into their result grids.
+
+**ListingCard redesign** (`frontend/components/ListingCard.tsx`, both `row` and `grid`
+layouts): new `AccentBar` (colored edge — orange "Sponsored" / blue "Featured" — driven by
+`listing.isSponsored`/`isFeatured`), `buildSpecs()` (MOQ + up to 2 specs for products,
+experience + service area for services) rendered as spec chips, and a shared `RatingPill`
+(solid star-rating pill) exported and reused by `frontend/components/SellerCard.tsx` so
+listing cards and seller cards show ratings identically.
+
+**Map View removed:** `frontend/components/discovery/MapView.tsx` and `cityCoords.ts`
+deleted, `leaflet`/`@types/leaflet` dropped from `frontend/package.json`, the `mapView`
+feature flag removed from `frontend/lib/config.tsx`'s defaults and
+`frontend/components/admin/SiteConfigTab.tsx`'s flag list. It had no real usage and pulled in
+a mapping dependency for a toggle nobody used.
+
+**Compare removed entirely** (product-owner decision — not needed for the lead-gen model):
+deleted `frontend/lib/compare.tsx` (the `CompareProvider`/`useCompare` localStorage store),
+`frontend/app/compare/page.tsx` (the `/compare` page), `frontend/components/compare/CompareBar.tsx`
+(floating tray). Un-wired from `frontend/app/layout.tsx` (provider + tray), the compare toggle
+button removed from `ListingCard.tsx`'s card actions and `app/listing/[id]/page.tsx`'s Save/
+Compare row. No backend routes existed for it (was purely client-side), and nothing else in
+the app referenced it — confirmed via a full-repo grep for `useCompare`/`CompareBar`/
+`CompareProvider`/`bs_compare` before removing.
+
+**Also this round:** `frontend/components/suite/ProductsMenu.tsx` deleted (already-documented
+zero-importer legacy code, see CLAUDE.md's Consultations→Recruitment nav note);
+`frontend/components/discovery/CategoryLanding.tsx`/`BrandRail.tsx` got a visual polish pass
+(category icon + gradient header band, brand-rail card treatment) unrelated to the above but
+bundled in the same working session.
+
+**Verified:**
+- `cd frontend && npx tsc --noEmit` clean.
+- Backend started fresh (`node index.js`); `GET /api/categories`, `/api/listings/:id`,
+  `/api/sellers/:slug`, `/api/brands` all return `200` with `success:true`.
+- Frontend dev server started fresh (`next dev --turbo`); `/`, `/directory`, `/listing/:id`,
+  `/seller/:slug`, `/search`, `/brand/:slug` all compiled and returned `200` with no server-
+  side error output and no `Application error`/runtime-error text in the rendered HTML.
+- Grepped the full repo for dangling references to every deleted file (`MapView`,
+  `cityCoords`, `ProductsMenu`, `useCompare`, `CompareBar`, `CompareProvider`, `bs_compare`,
+  `lib/compare`) — none found outside the deleted files themselves.
+- **Not** click-tested in an actual browser this session (no browser automation available) —
+  verification above is type-check + HTTP-level (endpoints respond, pages compile and render
+  without error markers), not a manual UI walkthrough of the new ad rail, spec chips, or
+  featured filter.
+
+**Files touched:** `backend/lib/search.js`, `backend/lib/trustScore.js`,
+`backend/lib/sellerRating.js` (new), `backend/routes/listings.js`, `backend/routes/moderation.js`,
+`backend/routes/reviews.js`, `backend/scripts/seed-demo-ads.js`, `backend/DB/listings.json`,
+`backend/DB/reviews.json`, `frontend/app/layout.tsx`, `frontend/app/compare/page.tsx` (deleted),
+`frontend/components/compare/CompareBar.tsx` (deleted), `frontend/lib/compare.tsx` (deleted),
+`frontend/components/ListingCard.tsx`, `frontend/app/listing/[id]/page.tsx`,
+`frontend/app/brand/[slug]/page.tsx`, `frontend/app/seller/[slug]/page.tsx`,
+`frontend/app/search/page.tsx`, `frontend/components/Filters.tsx`,
+`frontend/components/SellerCard.tsx`, `frontend/components/TrustBadges.tsx`,
+`frontend/components/admin/ModerationTab.tsx`, `frontend/components/admin/SiteConfigTab.tsx`,
+`frontend/components/admin/adminApi.ts`, `frontend/components/dashboard/ReviewsTab.tsx`,
+`frontend/components/discovery/BrandRail.tsx`, `frontend/components/discovery/CategoryLanding.tsx`,
+`frontend/components/discovery/DiscoveryResults.tsx`,
+`frontend/components/discovery/GlobalSearchResults.tsx`,
+`frontend/components/discovery/MapView.tsx` (deleted), `frontend/components/discovery/SubcategoryTiles.tsx`,
+`frontend/components/discovery/cityCoords.ts` (deleted), `frontend/components/discovery/hooks.ts`,
+`frontend/components/home/PromoBanner.tsx`, `frontend/components/listing/SellerContactCard.tsx`,
+`frontend/components/listing/SpecTable.tsx`, `frontend/components/seller/ReviewsPanel.tsx`,
+`frontend/components/seller/SellerHeader.tsx`, `frontend/components/suite/ProductsMenu.tsx`
+(deleted), `frontend/components/suite/SuiteNavMenu.tsx`, `frontend/components/suite/products.tsx`,
+`frontend/components/AdRail.tsx` (new), `frontend/lib/api.ts`, `frontend/lib/config.tsx`,
+`frontend/lib/types.ts`, `frontend/package.json`, `frontend/package-lock.json`, `CLAUDE.md`
+
+**Open / follow-up:**
+- Manual browser walkthrough of the ad rail (desktop sidebar cap-3 + mobile in-feed rotation),
+  the featured filter checkbox, and the new ListingCard spec chips/accent bar — not done this
+  session.
+- `sellerRating.js`'s recompute is only wired into the review-submission path; if moderation
+  or review-editing ever needs to change which reviews count for a seller, that path needs the
+  same call.
+
 ### 2026-08-20 (2) — Seller contact (Call/WhatsApp) now requires login; "Chat with seller" removed from the listing and seller-profile pages; sellers no longer see contact buttons on their own listing/profile
 
 **Why:** `GET /api/sellers/:slug` returned a seller's `contactMobile`/`contactEmail` to **any**

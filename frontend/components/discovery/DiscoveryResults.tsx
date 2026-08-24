@@ -3,7 +3,7 @@
 // The shared faceted-results engine used by the category, city, and search
 // pages: top filter-pill bar (Type/Category/City/Price pills + Verified toggle
 // + a "More filters" drawer for Brand/Rating/Subcategories) · sort dropdown
-// (incl. "Nearest"/distance) · Grid/List/Map view toggle (List is the default —
+// (incl. "Nearest"/distance) · Grid/List view toggle (List is the default —
 // one-by-one rows, closer to a familiar B2B marketplace listing page than a
 // product grid) · pagination · results count + facets · graceful
 // empty/loading/error states.
@@ -15,7 +15,7 @@
 //   - when `syncUrl` is set, filter changes are reflected back into the URL
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as api from "@/lib/api";
 import type { ListingQuery } from "@/lib/api";
@@ -23,16 +23,9 @@ import type { Listing, ListingsResponse, ListingType } from "@/lib/types";
 import Filters, { ListingFilterState, FilterOption, SubcategoryItem } from "@/components/Filters";
 import ListingCard from "@/components/ListingCard";
 import Pagination from "@/components/Pagination";
+import { useAds, AdCard, InFeedAd, interleaveAds, isAdSlot } from "@/components/AdRail";
 import EmptyState from "./EmptyState";
 import { useTr } from "./hooks";
-
-// Map only renders in the browser (Leaflet references window on load).
-const MapView = dynamic(() => import("./MapView"), {
-  ssr: false,
-  loading: () => (
-    <div className="skeleton" style={{ height: 480, width: "100%", borderRadius: 12 }} />
-  ),
-});
 
 export type SortValue =
   | "relevance"
@@ -42,7 +35,7 @@ export type SortValue =
   | "rating"
   | "distance";
 
-type ViewValue = "list" | "grid" | "map";
+type ViewValue = "list" | "grid";
 
 // Extended query shape: the backend (per FRONTEND-PAGES-SPEC) also accepts
 // near/radiusKm/condition and sort=distance, which the base ListingQuery type
@@ -54,6 +47,7 @@ interface ExtQuery {
   city?: string;
   state?: string;
   verified?: boolean;
+  featured?: boolean;
   minPrice?: number;
   maxPrice?: number;
   sort?: SortValue;
@@ -79,8 +73,11 @@ export interface DiscoveryResultsProps {
   enableCategoryFilter?: boolean;
   /** Child categories to show as a drill-down section in the "More filters" drawer. */
   subcategories?: SubcategoryItem[];
-  /** Render the Map view toggle (caller gates on featureFlags.mapView). */
-  showMapToggle?: boolean;
+  /** Show a sticky right-hand rail (sponsored ad slot + a "post a requirement"
+   *  card) alongside the results, desktop-only. Off by default — opt in per
+   *  page (currently just /search) rather than changing every DiscoveryResults
+   *  consumer at once. */
+  adRail?: boolean;
   defaultSort?: SortValue;
   limit?: number;
   /** Copy for the no-results state. */
@@ -146,6 +143,13 @@ function VerifiedIcon() {
     </svg>
   );
 }
+function FeaturedIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 17.3 5.8 20.9l1.6-6.8L2.2 8.9l6.9-.6z" />
+    </svg>
+  );
+}
 function ListIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -163,12 +167,30 @@ function GridIcon() {
     </svg>
   );
 }
-function MapIcon() {
+// Right-hand rail card shown alongside results (adRail=true, desktop only).
+// Evergreen — doesn't depend on any sponsored ad existing — so the rail is
+// never an empty box while ad inventory is still being sold.
+function AsideRfqCard({ t }: { t: (key: string, fallback: string) => string }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 20l-6-3V4l6 3 6-3 6 3v13l-6-3-6 3z" />
-      <path d="M9 4v13M15 7v13" />
-    </svg>
+    <Link href="/rfq" className="card card-pad" style={{ display: "block", textDecoration: "none" }}>
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+          color: "var(--brand)",
+        }}
+      >
+        {t("results.asideEyebrow", "Can't find it?")}
+      </div>
+      <p style={{ margin: "6px 0 14px", fontSize: 14.5, fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>
+        {t("results.asideTitle", "Post a requirement and let sellers quote you")}
+      </p>
+      <span className="btn btn-primary btn-sm btn-block" style={{ pointerEvents: "none" }}>
+        {t("results.emptyAction", "Post a requirement (RFQ)")}
+      </span>
+    </Link>
   );
 }
 
@@ -180,7 +202,7 @@ export default function DiscoveryResults({
   near,
   enableCategoryFilter = false,
   subcategories = [],
-  showMapToggle = false,
+  adRail = false,
   defaultSort = "relevance",
   limit = 12,
   emptyTitle,
@@ -215,6 +237,7 @@ export default function DiscoveryResults({
     type: filters.type,
     city: filters.city,
     verified: filters.verified,
+    featured: filters.featured,
     priceMax: filters.priceMax,
     category: filters.category,
   });
@@ -231,6 +254,7 @@ export default function DiscoveryResults({
       type: (filters.type || baseQuery.type || undefined) as ListingType | undefined,
       city: filters.city ?? baseQuery.city,
       verified: filters.verified || baseQuery.verified || undefined,
+      featured: filters.featured || baseQuery.featured || undefined,
       maxPrice: filters.priceMax ?? baseQuery.maxPrice,
       category: enableCategoryFilter
         ? filters.category ?? baseQuery.category
@@ -272,12 +296,13 @@ export default function DiscoveryResults({
     // overwrites the keys it actually manages, rather than wiping every
     // other param the caller (or this same page) put there.
     const usp = new URLSearchParams(searchParams.toString());
-    ["q", "type", "city", "maxPrice", "verified", "category", "sort"].forEach((k) => usp.delete(k));
+    ["q", "type", "city", "maxPrice", "verified", "featured", "category", "sort"].forEach((k) => usp.delete(k));
     if (q) usp.set("q", q);
     if (filters.type) usp.set("type", filters.type);
     if (filters.city) usp.set("city", filters.city);
     if (filters.priceMax) usp.set("maxPrice", String(filters.priceMax));
     if (filters.verified) usp.set("verified", "true");
+    if (filters.featured) usp.set("featured", "true");
     if (enableCategoryFilter && filters.category) usp.set("category", filters.category);
     if (sort && sort !== defaultSort) usp.set("sort", sort);
     const qs = usp.toString();
@@ -333,11 +358,19 @@ export default function DiscoveryResults({
       });
     }
     if (filters.minRating) {
-      out = out.filter((l) => (l.rating || 0) >= (filters.minRating as number));
+      // Rating is the seller's real aggregate, not a per-listing number.
+      out = out.filter((l) => (l.seller?.rating || 0) >= (filters.minRating as number));
     }
     return out;
   }, [listings, selectedBrands, filters.minRating]);
   const shownTotal = clientFiltered ? displayListings.length : total;
+
+  // Sponsored content for the rail (adRail=true only). Same fetched list
+  // feeds both the desktop sidebar (top 3, stacked) and the mobile/tablet
+  // in-feed slots (cycled) — the two never show at once, split by CSS
+  // breakpoint, so one fetch covers both.
+  const ads = useAds(adRail ? "search_top" : null);
+  const listItemsWithAds = useMemo(() => interleaveAds(displayListings, ads), [displayListings, ads]);
 
   const onFiltersChange = (next: ListingFilterState) => {
     setFilters(next);
@@ -398,6 +431,12 @@ export default function DiscoveryResults({
       label: t("filters.verifiedOnly", "Verified sellers only"),
       onRemove: () => onFiltersChange({ ...filters, verified: undefined }),
     });
+  if (filters.featured)
+    pills.push({
+      key: "featured",
+      label: t("filters.featuredOnly", "Featured listings only"),
+      onRemove: () => onFiltersChange({ ...filters, featured: undefined }),
+    });
   selectedBrands.forEach((b) =>
     pills.push({
       key: `brand-${b}`,
@@ -445,6 +484,7 @@ export default function DiscoveryResults({
     filters.city,
     filters.priceMax,
     filters.verified,
+    filters.featured,
     filters.minRating,
     enableCategoryFilter ? filters.category : undefined,
   ].filter(Boolean).length + selectedBrands.length;
@@ -462,14 +502,13 @@ export default function DiscoveryResults({
       hideCity
       hidePrice
       hideVerified
+      hideFeatured
     />
   );
 
-  // Grid / List always available; Map only when the caller enables it.
   const viewOptions: { value: ViewValue; label: string; icon: React.ReactNode }[] = [
     { value: "list", label: t("view.list", "List"), icon: <ListIcon /> },
     { value: "grid", label: t("view.grid", "Grid"), icon: <GridIcon /> },
-    ...(showMapToggle ? [{ value: "map" as ViewValue, label: t("view.map", "Map"), icon: <MapIcon /> }] : []),
   ];
   const activeViewIndex = Math.max(0, viewOptions.findIndex((o) => o.value === view));
 
@@ -552,6 +591,16 @@ export default function DiscoveryResults({
 
           <button
             type="button"
+            className={filters.featured ? "chip chip-active dr-pill-chip" : "chip dr-pill-chip"}
+            aria-pressed={!!filters.featured}
+            onClick={() => onFiltersChange({ ...filters, featured: filters.featured ? undefined : true })}
+          >
+            <FeaturedIcon />
+            {t("filters.featuredOnly", "Featured listings only")}
+          </button>
+
+          <button
+            type="button"
             className="chip dr-pill-chip"
             onClick={() => setDrawerOpen(true)}
             aria-haspopup="dialog"
@@ -563,7 +612,8 @@ export default function DiscoveryResults({
         </div>
       </div>
 
-      <div>
+      <div className={adRail ? "dr-layout" : undefined}>
+      <div className={adRail ? "dr-main" : undefined}>
         {/* Toolbar */}
         <div className="dr-toolbar">
           <div style={{ fontSize: 14, color: "var(--muted)" }}>
@@ -657,6 +707,20 @@ export default function DiscoveryResults({
           </div>
         )}
 
+        {/* Narrow-screen counterpart to the .dr-aside RFQ card, which hides
+            below 1024px — keeps a "post a requirement" option available in
+            both List and Grid on every screen size, not just desktop. */}
+        {adRail && (
+          <Link href="/rfq" className="dr-rfq-inline">
+            <strong className="dr-rfq-inline-text">
+              {t("results.asideTitle", "Post a requirement and let sellers quote you")}
+            </strong>
+            <span className="btn btn-primary btn-sm" style={{ pointerEvents: "none", flexShrink: 0 }}>
+              {t("results.emptyAction", "Post a requirement (RFQ)")}
+            </span>
+          </Link>
+        )}
+
         {/* Body */}
         {error ? (
           <EmptyState title={t("results.errorTitle", "Something went wrong")} message={error} />
@@ -701,16 +765,20 @@ export default function DiscoveryResults({
             actionLabel={t("results.emptyAction", "Post a requirement (RFQ)")}
             actionHref={`/rfq${q ? `?need=${encodeURIComponent(q)}` : ""}`}
           />
-        ) : view === "map" && showMapToggle ? (
-          <MapView listings={displayListings} />
         ) : view === "list" ? (
           <>
             <div className="dr-list">
-              {displayListings.map((l, i) => (
-                <div key={l.id} className="dr-enter" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
-                  <ListingCard listing={l} layout="row" />
-                </div>
-              ))}
+              {listItemsWithAds.map((entry, i) =>
+                isAdSlot(entry) ? (
+                  <div key={`ad-${i}`} className="dr-infeed-ad">
+                    <InFeedAd ad={entry.adSlot} />
+                  </div>
+                ) : (
+                  <div key={entry.id} className="dr-enter" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                    <ListingCard listing={entry} layout="row" />
+                  </div>
+                )
+              )}
             </div>
             {!clientFiltered && data && data.totalPages > 1 && (
               <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
@@ -721,18 +789,21 @@ export default function DiscoveryResults({
         ) : (
           <>
             <div className="dr-grid">
-              {displayListings.map((l, i) => (
-                <div
-                  key={l.id}
-                  className="dr-enter"
-                  style={{
-                    animationDelay: `${Math.min(i, 8) * 40}ms`,
-                    ...(l.type === "service" ? { gridColumn: "1 / -1", minWidth: 0 } : { minWidth: 0 }),
-                  }}
-                >
-                  <ListingCard listing={l} />
-                </div>
-              ))}
+              {listItemsWithAds.map((entry, i) =>
+                isAdSlot(entry) ? (
+                  <div key={`ad-${i}`} className="dr-infeed-ad" style={{ gridColumn: "1 / -1" }}>
+                    <InFeedAd ad={entry.adSlot} />
+                  </div>
+                ) : (
+                  <div
+                    key={entry.id}
+                    className="dr-enter"
+                    style={{ animationDelay: `${Math.min(i, 8) * 40}ms`, minWidth: 0 }}
+                  >
+                    <ListingCard listing={entry} />
+                  </div>
+                )
+              )}
             </div>
 
             {/* Pagination is server-side; hide it while brand/rating narrow the page client-side. */}
@@ -743,6 +814,20 @@ export default function DiscoveryResults({
             )}
           </>
         )}
+      </div>
+
+      {adRail && (
+        <aside className="dr-aside">
+          <AsideRfqCard t={t} />
+          {ads.length > 0 && (
+            <div className="dr-ad-stack">
+              {ads.slice(0, 3).map((ad, i) => (
+                <AdCard key={ad.id || i} ad={ad} />
+              ))}
+            </div>
+          )}
+        </aside>
+      )}
       </div>
 
       {/* "More filters" drawer — bottom sheet on phones, right-side slide-in panel
@@ -858,7 +943,7 @@ export default function DiscoveryResults({
           min-width: 176px;
         }
 
-        /* Segmented Grid/List/Map toggle — a sliding brand-blue indicator behind
+        /* Segmented Grid/List toggle — a sliding brand-blue indicator behind
            the active label, the one deliberately "alive" control on the toolbar. */
         .dr-view-toggle {
           position: relative;
@@ -899,6 +984,79 @@ export default function DiscoveryResults({
         }
         .dr-view-btn.active {
           color: #ffffff;
+        }
+
+        /* adRail layout: results column + a sticky sponsored/RFQ rail — desktop
+           only, the rail hides below 1024px rather than pushing below the list
+           (it's supplementary, never blocks the results). */
+        .dr-layout {
+          display: flex;
+          align-items: flex-start;
+          gap: 24px;
+        }
+        .dr-main {
+          flex: 1;
+          min-width: 0;
+        }
+        .dr-aside {
+          width: 280px;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          position: sticky;
+          /* Navbar (0-64) + the sticky category strip below it (64-108) —
+             108px plus a visible 16px gap, so the card doesn't tuck up flush
+             against the nav strip when scrolled. */
+          top: 124px;
+        }
+        @media (max-width: 1023px) {
+          .dr-aside {
+            display: none;
+          }
+        }
+        .dr-ad-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        /* In-feed ads are the mobile/tablet counterpart to the sidebar's ad
+           stack, which hides below 1024px — never both at once. */
+        .dr-infeed-ad {
+          display: none;
+        }
+        @media (max-width: 1023px) {
+          .dr-infeed-ad {
+            display: block;
+          }
+        }
+        /* :global() — the Link this targets never receives styled-jsx's
+           auto-injected scope class (styled-jsx only scopes intrinsic/lowercase
+           JSX elements, not custom components like next/link's Link), so a
+           scoped selector here would silently never match. */
+        :global(.dr-rfq-inline) {
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          flex-wrap: wrap;
+          padding: 14px 16px;
+          margin-bottom: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          background: var(--brand-tint);
+          text-decoration: none;
+        }
+        :global(.dr-rfq-inline-text) {
+          font-size: 14px;
+          color: var(--ink);
+          flex: 1;
+          min-width: 200px;
+        }
+        @media (max-width: 1023px) {
+          :global(.dr-rfq-inline) {
+            display: flex;
+          }
         }
 
         /* Product grid: 3–4 cols desktop · 2 tablet · 1 phone.

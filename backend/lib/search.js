@@ -62,8 +62,9 @@ function priceOf(listing) {
  * BEFORE any relevance scoring.
  *
  * Supported filter keys: type, categoryId, category(slug), city, state, verified,
- * minPrice, maxPrice, status (exact listing status, e.g. public browse passes "active"),
- * condition (product.condition), and sellerIds (allow-list of seller ids — used by the
+ * featured (admin-approved boost, listing.isFeatured), minPrice, maxPrice, status
+ * (exact listing status, e.g. public browse passes "active"), condition
+ * (product.condition), and sellerIds (allow-list of seller ids — used by the
  * public browse route to restrict to approved sellers).
  */
 function applyFilters(listings, filters = {}) {
@@ -89,6 +90,7 @@ function applyFilters(listings, filters = {}) {
       if (f.state && !ci(l.location && l.location.state, f.state)) return false;
     }
     if (f.verified === true && !l.isVerifiedSeller) return false;
+    if (f.featured === true && !l.isFeatured) return false;
     if (f.condition && !(l.product && l.product.condition === f.condition)) return false;
     if (allowSellers && !allowSellers.has(l.sellerId)) return false;
 
@@ -225,8 +227,9 @@ async function computeFacets(listings = []) {
   }));
 
   const verified = listings.filter((l) => l.isVerifiedSeller).length;
+  const featured = listings.filter((l) => l.isFeatured).length;
 
-  return { categories, cities, states, types, priceBuckets, verified, total: listings.length };
+  return { categories, cities, states, types, priceBuckets, verified, featured, total: listings.length };
 }
 
 module.exports = { searchListings, computeFacets, applyFilters, slugify };

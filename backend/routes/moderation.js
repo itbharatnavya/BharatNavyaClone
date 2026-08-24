@@ -1,28 +1,28 @@
 /**
  * moderation.js — admin content moderation + seller-verification review queue.
  *
- * Closes the moderation gap: only listings were flag-moderated before. This surface
- * lets an admin approve / hide / delete vendor BLOGS, STORIES and REVIEWS, and review
- * seller GST/PAN VERIFICATION requests.
+ * This surface lets an admin approve / hide / delete vendor BLOGS and STORIES,
+ * and review seller GST/PAN VERIFICATION requests. Reviews are NOT moderated —
+ * they publish immediately on submission (see routes/reviews.js) — so "review"
+ * is not a valid /content type here.
  *
  * EVERY route is admin-only. The guard is applied inside the router (router.use) so
  * index.js mounts it plainly BEFORE the blanket /api/admin router:
  *   app.use("/api/admin/moderation", require("./routes/moderation"))
  *
- *   GET  /content?type=blog|story|review        → all rows (incl. hidden/pending),
- *                                                  enriched with author + title/snippet
- *   POST /:type/:id/hide                         → status "hidden"      (off the site)
- *   POST /:type/:id/approve                      → back to published / approved
- *   POST /:type/:id/delete                       → remove the row
+ *   GET  /content?type=blog|story                → all rows (incl. hidden/draft),
+ *                                                    enriched with author + title/snippet
+ *   POST /:type/:id/hide                          → status "hidden"      (off the site)
+ *   POST /:type/:id/approve                       → back to published
+ *   POST /:type/:id/delete                        → remove the row
  *
- *   GET  /verifications                          → seller verification requests
- *   POST /verifications/:id/approve             → grant verified badge + trust seal
- *   POST /verifications/:id/reject              → mark request rejected
+ *   GET  /verifications                           → seller verification requests
+ *   POST /verifications/:id/approve               → grant verified badge + trust seal
+ *   POST /verifications/:id/reject                → mark request rejected
  *
  * Hiding works because the PUBLIC reads already exclude "hidden":
  *   - blogs.js  list read keeps only status "published"; the single-slug read 404s "hidden"
  *   - stories.js reads filter out status "hidden"
- *   - reviews.js reads keep only status "approved"
  */
 
 const express = require("express");
@@ -37,7 +37,6 @@ router.use(authGuard, requireRole("admin"));
 const TYPE_META = {
   blog: { file: "blogs.json", published: "published" },
   story: { file: "stories.json", published: "published" },
-  review: { file: "reviews.json", published: "approved" },
 };
 
 const VERIFICATIONS = "verification-requests.json";
@@ -82,30 +81,16 @@ function toItem(type, row, byId) {
       href: row.slug ? `/blog/${row.slug}` : null,
     };
   }
-  if (type === "story") {
-    const who = byId.get(row.sellerId);
-    return {
-      id: row.id,
-      type,
-      title: row.caption ? snippet(row.caption, 60) : "Story",
-      snippet: row.media ? `${row.media.type || "media"} · ${row.media.url || ""}` : "",
-      author: (who && who.company) || "Unknown",
-      target: null,
-      status: row.status || "published",
-      date: row.createdAt || null,
-      href: null,
-    };
-  }
-  // review
-  const target = byId.get(row.targetUserId || row.sellerId);
+  // story
+  const who = byId.get(row.sellerId);
   return {
     id: row.id,
     type,
-    title: `Rated ${row.rating}/5`,
-    snippet: snippet(row.reviewText),
-    author: row.buyerName || "Anonymous",
-    target: (target && target.company) || null,
-    status: row.status || "pending",
+    title: row.caption ? snippet(row.caption, 60) : "Story",
+    snippet: row.media ? `${row.media.type || "media"} · ${row.media.url || ""}` : "",
+    author: (who && who.company) || "Unknown",
+    target: null,
+    status: row.status || "published",
     date: row.createdAt || null,
     href: null,
   };
@@ -120,7 +105,7 @@ router.get("/content", async (req, res, next) => {
     if (!meta) {
       return res
         .status(400)
-        .json({ success: false, error: "type must be blog | story | review" });
+        .json({ success: false, error: "type must be blog | story" });
     }
     const [rows, byId] = await Promise.all([store.all(meta.file), sellerLookup()]);
     const items = rows
@@ -213,7 +198,7 @@ router.post("/:type/:id/:action", async (req, res, next) => {
     if (!meta) {
       return res
         .status(400)
-        .json({ success: false, error: "type must be blog | story | review" });
+        .json({ success: false, error: "type must be blog | story" });
     }
     const action = req.params.action;
     if (action === "delete") {

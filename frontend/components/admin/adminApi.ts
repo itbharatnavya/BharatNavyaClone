@@ -578,7 +578,7 @@ export function adminRejectBoost(id: string): Promise<BoostRequestRow> {
 // Mounted at /api/admin/moderation (self-guarded). Hiding sets status "hidden",
 // which the public reads already exclude; approve restores published/approved.
 // ============================================================
-export type ModerationType = "blog" | "story" | "review";
+export type ModerationType = "blog" | "story";
 export type ModerationAction = "approve" | "hide" | "delete";
 
 export interface ModerationItem {

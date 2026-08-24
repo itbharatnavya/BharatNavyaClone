@@ -1,12 +1,13 @@
 "use client";
 
 // The suite-nav "Products" switcher for non-Directory pages (home, /recruitment,
-// /about…) — deliberately separate from components/suite/ProductsMenu.tsx (which
-// lists all four suite products and also drives the Footer). This one lists only
-// the two modules with a real destination page today: Directory and Recruitment.
-// Bharat Agent isn't included — it has no route yet (see BharatAgentPanel.tsx).
-// Same interaction model as ProductsMenu: hover/click to open, outside-click +
-// Escape + route-change to close.
+// /about…) — the only "Products" dropdown in the app now (an older version
+// that listed all four original suite products, incl. Consultations, was
+// removed once Recruitment replaced Consultations — see CLAUDE.md). This one
+// lists only the two modules with a real destination page today: Directory
+// and Recruitment. Bharat Agent isn't included — it has no route yet (see
+// BharatAgentPanel.tsx). Hover/click to open, outside-click + Escape +
+// route-change to close.
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";

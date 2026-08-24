@@ -50,6 +50,32 @@ function waNumber(raw?: string | null): string | null {
   return digits;
 }
 
+function ShareIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <circle cx="18" cy="5" r="2.6" />
+      <circle cx="6" cy="12" r="2.6" />
+      <circle cx="18" cy="19" r="2.6" />
+      <path d="M8.3 10.7l7.4-4.2M8.3 13.3l7.4 4.2" />
+    </svg>
+  );
+}
+function FlagIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M5 3v18" />
+      <path d="M5 4h13l-2.5 4L18 12H5" />
+    </svg>
+  );
+}
+function ArrowIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 // Inline WhatsApp glyph (speech-bubble + handset). SVG only — never the emoji.
 function WhatsAppIcon() {
   return (
@@ -166,35 +192,43 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
   }
 
   return (
-    <div className="card card-flat card-pad">
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-        <Avatar src={seller.logo} name={seller.name} size={48} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {profileHref ? (
-            <Link href={profileHref} style={{ textDecoration: "none" }} title={t("contact.viewProfile", "View seller profile")}>
-              <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--brand)", cursor: "pointer" }}>
+    <div className="card card-flat" style={{ padding: 0, overflow: "hidden" }}>
+      {/* Top accent — reads as a distinct "profile" surface rather than a
+          plain content block dropped into the sidebar. */}
+      <div style={{ height: 4, background: "linear-gradient(90deg, var(--brand) 0%, var(--brand-hover) 100%)" }} />
+
+      <div style={{ padding: "18px 20px 0" }}>
+        <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <Avatar src={seller.logo} name={seller.name} size={48} ring />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {profileHref ? (
+              <Link href={profileHref} style={{ textDecoration: "none" }} title={t("contact.viewProfile", "View seller profile")}>
+                <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--brand)", cursor: "pointer" }}>
+                  {seller.name}
+                </h3>
+              </Link>
+            ) : (
+              <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
                 {seller.name}
               </h3>
-            </Link>
-          ) : (
-            <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
-              {seller.name}
-            </h3>
-          )}
-          {(seller.city || seller.state) && (
-            <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
-              {[seller.city, seller.state].filter(Boolean).join(", ")}
-            </div>
-          )}
-          {typeof seller.rating === "number" && seller.rating > 0 && (
-            <div style={{ marginTop: 6 }}>
-              <Rating value={seller.rating} count={seller.reviewCount} size={14} />
-            </div>
-          )}
+            )}
+            {(seller.city || seller.state) && (
+              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
+                {[seller.city, seller.state].filter(Boolean).join(", ")}
+              </div>
+            )}
+            {typeof seller.rating === "number" && seller.rating > 0 && (
+              <div style={{ marginTop: 6 }}>
+                <Rating value={seller.rating} count={seller.reviewCount} size={14} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div style={{ marginTop: 12 }}>
+      {/* Trust strip — a tinted band so verification signals read as their
+          own "credentials" zone instead of blending into the plain card. */}
+      <div style={{ margin: "16px 0 0", padding: "10px 20px", background: "var(--bg-subtle)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <TrustBadges
           verified={seller.isVerified}
           trustSeal={seller.trustSealVerified}
@@ -205,8 +239,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
         />
       </div>
 
-      <hr className="divider" style={{ margin: "16px 0" }} />
-
+      <div style={{ padding: "16px 20px 20px" }}>
       {/* Call / WhatsApp — the primary way to reach a seller (no in-app chat).
           Logged out: buttons open the login/register gate. Logged in: real
           tel:/wa.me links with a pre-filled enquiry. */}
@@ -257,21 +290,85 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
         </div>
       )}
 
-      {/* Secondary actions */}
-      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-        {showShare && (
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShareOpen(true)} style={{ flex: 1 }}>
-            {t("common.share", "Share")}
+      {/* Secondary actions — bordered as one unit with a divider between,
+          instead of two loose ghost buttons floating in whitespace. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "stretch",
+          marginTop: 12,
+          border: "1px solid var(--border)",
+          borderRadius: 10,
+          overflow: "hidden",
+        }}
+      >
+          {showShare && (
+            <button
+              type="button"
+              onClick={() => setShareOpen(true)}
+              style={{
+                flex: 1,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                padding: "9px 10px",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "var(--muted)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <ShareIcon />
+              {t("common.share", "Share")}
+            </button>
+          )}
+          {showShare && <span aria-hidden style={{ width: 1, background: "var(--border)" }} />}
+          <button
+            type="button"
+            onClick={() => setReportOpen(true)}
+            style={{
+              flex: 1,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              padding: "9px 10px",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "var(--muted)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <FlagIcon />
+            {t("common.report", "Report")}
           </button>
-        )}
-        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setReportOpen(true)} style={{ flex: 1 }}>
-          {t("common.report", "Report")}
-        </button>
+        </div>
       </div>
 
       {profileHref && (
-        <Link href={profileHref} className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 8 }}>
-          {t("contact.viewProfile", "View seller profile")} →
+        <Link
+          href={profileHref}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            padding: "13px 20px",
+            background: "var(--brand-tint)",
+            color: "var(--brand-hover)",
+            fontWeight: 700,
+            fontSize: 13.5,
+            borderTop: "1px solid var(--border)",
+            textDecoration: "none",
+          }}
+        >
+          {t("contact.viewProfile", "View seller profile")}
+          <ArrowIcon />
         </Link>
       )}
 

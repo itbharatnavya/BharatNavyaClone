@@ -48,7 +48,6 @@ const DEFAULT_FLAGS: FeatureFlags = {
   reviews: true,
   reports: true,
   nearMe: true,
-  mapView: true,
   multiLanguage: true,
   ads: true,
   featuredListings: true,

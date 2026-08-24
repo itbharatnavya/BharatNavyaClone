@@ -8,6 +8,7 @@ import { getCategory } from "@/lib/api";
 import type { CategoryNode } from "@/lib/types";
 import type { ListingFilterState } from "@/components/Filters";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
+import { CategoryIcon } from "@/components/CategoryMegaMenu";
 import AdSlider from "@/components/AdSlider";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
@@ -16,7 +17,7 @@ import SubcategoryChips from "./SubcategoryChips";
 import SubcategoryTiles from "./SubcategoryTiles";
 import BrandRail from "./BrandRail";
 import EmptyState from "./EmptyState";
-import { useTr, useFlag } from "./hooks";
+import { useTr } from "./hooks";
 
 export interface CategoryLandingProps {
   slug: string;
@@ -26,9 +27,17 @@ export interface CategoryLandingProps {
   query?: string;
 }
 
+// Soft brand-tint wash fading into the plain canvas — gives the store header
+// a distinct "front of shop" identity instead of the flat grey band it used
+// to be, without introducing a new hue (still just --brand-tint → --canvas).
 function HeaderBand({ children }: { children: React.ReactNode }) {
   return (
-    <section style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
+    <section
+      style={{
+        background: "linear-gradient(180deg, var(--brand-tint) 0%, var(--bg-subtle) 60%, var(--canvas) 100%)",
+        borderBottom: "1px solid var(--border)",
+      }}
+    >
       <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
         {children}
       </div>
@@ -38,7 +47,6 @@ function HeaderBand({ children }: { children: React.ReactNode }) {
 
 export default function CategoryLanding({ slug, city, initialFilters, query }: CategoryLandingProps) {
   const t = useTr();
-  const mapView = useFlag("mapView");
   const {
     query: dockedQuery,
     setQuery: setDockedQuery,
@@ -141,19 +149,45 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
     <div>
       <HeaderBand>
         <Breadcrumbs items={crumbs} />
-        <h1
-          style={{
-            fontSize: 30,
-            fontWeight: 800,
-            letterSpacing: "-0.02em",
-            color: "var(--ink)",
-            marginTop: 14,
-          }}
-        >
-          {heading}
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
+          <CategoryIcon slug={category.slug} name={category.name} size={52} />
+          <div style={{ minWidth: 0 }}>
+            <h1
+              style={{
+                fontSize: 30,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                color: "var(--ink)",
+              }}
+            >
+              {heading}
+            </h1>
+            {/* Category-wide count (not city-scoped) — only shown when the heading
+                itself isn't already narrowed to a city, so the number never implies
+                more precision than it has. */}
+            {!city && typeof category.listingCount === "number" && category.listingCount > 0 && (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: 8,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  color: "var(--brand-hover)",
+                  background: "#ffffff",
+                  border: "1px solid var(--brand-tint)",
+                  borderRadius: 999,
+                  padding: "3px 11px",
+                }}
+              >
+                {category.listingCount.toLocaleString("en-IN")} listings
+              </span>
+            )}
+          </div>
+        </div>
         {category.description && (
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
+          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 12, maxWidth: 720 }}>
             {category.description}
           </p>
         )}
@@ -188,12 +222,12 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
           query={query}
           syncUrl
           near={city}
+          adRail
           subcategories={(children || []).map((c) => ({
             slug: c.slug,
             name: c.name,
             count: c.listingCount,
           }))}
-          showMapToggle={mapView}
           defaultSort="newest"
           emptyTitle={t("category.empty.title", "No listings here yet")}
           emptyMessage={t(

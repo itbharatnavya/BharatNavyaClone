@@ -17,7 +17,7 @@ import React, { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import DiscoveryResults from "@/components/discovery/DiscoveryResults";
 import GlobalSearchResults from "@/components/discovery/GlobalSearchResults";
-import { useTr, useFlag, parseDiscoverySeed } from "@/components/discovery/hooks";
+import { useTr, parseDiscoverySeed } from "@/components/discovery/hooks";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useCategories, flattenCategories } from "@/lib/catalog";
@@ -31,7 +31,6 @@ function num(v: string | null): number | undefined {
 function SearchInner() {
   const params = useSearchParams();
   const t = useTr();
-  const mapView = useFlag("mapView");
   const {
     query: dockedQuery,
     setQuery: setDockedQuery,
@@ -108,7 +107,7 @@ function SearchInner() {
           query={q}
           syncUrl
           enableCategoryFilter
-          showMapToggle={mapView}
+          adRail
           defaultSort="relevance"
           emptyTitle={t("search.empty.title", "No matches found")}
           emptyMessage={t(

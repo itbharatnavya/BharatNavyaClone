@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Avatar from "./Avatar";
-import Rating from "./Rating";
+import { RatingPill } from "./ListingCard";
 import TrustBadges from "./TrustBadges";
 import Button from "./Button";
 
@@ -39,48 +39,50 @@ export default function SellerCard({ seller, href, className = "" }: SellerCardP
     : null;
 
   return (
-    <article className={["card card-pad", className].filter(Boolean).join(" ")}>
-      <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-        <Avatar src={seller.logo} name={seller.name} size={52} />
+    <article className={["card card-flat", className].filter(Boolean).join(" ")} style={{ padding: 14 }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <Avatar src={seller.logo} name={seller.name} size={44} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <Link href={profileHref}>
-            <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+            <h3 className="line-clamp-1" style={{ fontSize: 14.5, fontWeight: 700, color: "var(--ink)" }}>
               {seller.name}
             </h3>
           </Link>
-          <div style={{ marginTop: 3, fontSize: 13, color: "var(--muted)" }}>
+          <div className="line-clamp-1" style={{ marginTop: 2, fontSize: 12.5, color: "var(--muted)" }}>
             {[seller.category, seller.city].filter(Boolean).join(" · ")}
           </div>
           {typeof seller.rating === "number" && seller.rating > 0 && (
             <div style={{ marginTop: 6 }}>
-              <Rating value={seller.rating} count={seller.reviewCount} size={14} />
+              <RatingPill value={seller.rating} count={seller.reviewCount} />
             </div>
           )}
         </div>
       </div>
 
-      <div style={{ marginTop: 12 }}>
-        <TrustBadges
-          verified={seller.isVerified}
-          trustSeal={seller.trustSealVerified}
-          gst={!!seller.gstNumber}
-          years={years}
-          responseRate={seller.responseRate}
-          size="sm"
-        />
-      </div>
+      {(seller.isVerified || seller.trustSealVerified || seller.gstNumber || years || seller.responseRate) && (
+        <div style={{ marginTop: 10 }}>
+          <TrustBadges
+            verified={seller.isVerified}
+            trustSeal={seller.trustSealVerified}
+            gst={!!seller.gstNumber}
+            years={years}
+            responseRate={seller.responseRate}
+            size="sm"
+          />
+        </div>
+      )}
 
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 12,
-          marginTop: 16,
+          gap: 10,
+          marginTop: 12,
         }}
       >
         {typeof seller.listingCount === "number" && (
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+          <span style={{ fontSize: 12.5, color: "var(--muted)" }}>
             {seller.listingCount} {seller.listingCount === 1 ? "listing" : "listings"}
           </span>
         )}

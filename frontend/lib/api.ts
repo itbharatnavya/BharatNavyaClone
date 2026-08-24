@@ -333,6 +333,7 @@ export interface ListingQuery {
   city?: string;
   state?: string;
   verified?: boolean;
+  featured?: boolean;
   minPrice?: number;
   maxPrice?: number;
   condition?: string; // e.g. "new" | "used" | "refurbished"
@@ -528,8 +529,7 @@ export function postReview(body: {
   sellerId: string;
   listingId?: string;
   rating: number;
-  reviewText: string;
-  title?: string;
+  reviewText?: string;
 }): Promise<Review> {
   return request<Review>(`/api/reviews`, {
     method: "POST",

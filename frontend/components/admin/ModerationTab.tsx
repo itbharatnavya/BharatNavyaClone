@@ -1,8 +1,9 @@
 "use client";
 
-// components/admin/ModerationTab.tsx — content moderation for vendor blogs, stories
-// and reviews. Approve / Hide / Delete. Hiding sets status "hidden", which the public
+// components/admin/ModerationTab.tsx — content moderation for vendor blogs and
+// stories. Approve / Hide / Delete. Hiding sets status "hidden", which the public
 // site reads already exclude, so the content disappears from the site immediately.
+// Reviews are NOT moderated — they publish immediately (see routes/reviews.js).
 
 import React, { useEffect, useState } from "react";
 import {
@@ -30,7 +31,6 @@ import { useToast } from "@/components/Toast";
 const TYPE_OPTIONS: { value: ModerationType; label: string }[] = [
   { value: "blog", label: "Blogs" },
   { value: "story", label: "Stories" },
-  { value: "review", label: "Reviews" },
 ];
 
 // Public (live) statuses per type — everything else is off the site.
@@ -93,7 +93,7 @@ export default function ModerationTab() {
     <div>
       <SectionHeader
         title="Moderation"
-        subtitle="Approve, hide or remove vendor blogs, stories and reviews. Hidden content is removed from the public site immediately."
+        subtitle="Approve, hide or remove vendor blogs and stories. Hidden content is removed from the public site immediately."
         actions={<span className="text-sm text-muted">{items.length} item(s)</span>}
       />
 

@@ -110,6 +110,7 @@ export function parseDiscoverySeed(sp: ParamBag): DiscoverySeed {
     type,
     priceMax: budget,
     verified: sp.get("verified") === "true" || undefined,
+    featured: sp.get("featured") === "true" || undefined,
     category: sp.get("category") || undefined,
   };
 
