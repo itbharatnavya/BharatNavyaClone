@@ -117,6 +117,12 @@ export interface User {
   state?: string;
   roles: Role[];
   sellerProfile?: SellerProfile | null;
+  employerProfile?: EmployerProfile | null;
+  candidateProfile?: CandidateProfile | null;
+  // Recruitment role lock — once set, recruitmentRoleLockedAt is non-null and the
+  // opposite profile-mutating endpoint (become-employer / PUT me/candidate) 403s.
+  recruitmentRole?: "candidate" | "recruiter" | null;
+  recruitmentRoleLockedAt?: string | null;
   legacy?: boolean;
   createdAt: string;
 }
@@ -827,4 +833,199 @@ export interface ConsultationBooking {
   status: string; // "new" | ...
   userId: string | null;
   createdAt: string;
+}
+
+// ============================================================
+// Recruitment (RECRUITMENT.md) — separate from Directory's Listing/Seller
+// types on purpose; see RECRUITMENT.md §1's "separate collections" decision.
+// ============================================================
+export type EmployerStatus = "pending" | "approved" | "suspended";
+
+export interface EmployerLocation {
+  city?: string;
+  state?: string;
+}
+
+export interface EmployerProfile {
+  companyName: string;
+  slug: string;
+  about?: string;
+  logo?: string | null;
+  coverImage?: string | null;
+  industry?: string | null;
+  companySize?: string | null;
+  website?: string | null;
+  contactMobile?: string;
+  contactEmail?: string | null;
+  location?: EmployerLocation;
+  status: EmployerStatus;
+  isVerified: boolean;
+  planTier?: string | null;
+  jobPostLimit?: number | null;
+  applicationQuota?: number | null;
+}
+
+export interface CandidateEducation {
+  degree?: string;
+  institution?: string;
+  year?: number;
+}
+
+export interface CandidateWorkHistory {
+  company?: string;
+  role?: string;
+  duration?: string;
+  description?: string;
+}
+
+export interface CandidateProfile {
+  headline?: string;
+  summary?: string;
+  resumeUrl?: string | null;
+  skills: string[];
+  experienceYears?: number | null;
+  currentRole?: string | null;
+  currentCompany?: string | null;
+  expectedSalary?: number | null;
+  preferredLocations: string[];
+  preferredJobTypes: string[];
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  isOpenToWork: boolean;
+  education: CandidateEducation[];
+  workHistory: CandidateWorkHistory[];
+}
+
+export type EmploymentType = "full-time" | "part-time" | "contract" | "internship" | "freelance";
+export type ExperienceLevel = "entry" | "mid" | "senior" | "lead" | "executive";
+export type JobStatus = "active" | "paused" | "closed" | "pending";
+
+export interface JobLocation {
+  city?: string;
+  state?: string;
+  remote?: boolean;
+}
+
+export interface SalaryRange {
+  min?: number | null;
+  max?: number | null;
+  currency?: string;
+  isDisclosed?: boolean;
+}
+
+// Public employer mini-object denormalized onto a job by the backend — never carries
+// contact fields (those are only ever served by GET /api/employers/:slug, auth-gated).
+export interface JobEmployerMini {
+  id: string;
+  companyName: string | null;
+  slug: string | null;
+  logo: string | null;
+  city: string | null;
+  state: string | null;
+  isVerified: boolean;
+}
+
+// Recruiter-defined screening question, answered by the candidate at apply time.
+export interface JobQuestion {
+  id: string;
+  text: string;
+  required: boolean;
+}
+
+export interface Job {
+  id: string;
+  employerId: string;
+  title: string;
+  description: string;
+  jobFunction: string | null;
+  employmentType: EmploymentType | null;
+  experienceLevel: ExperienceLevel | null;
+  location: JobLocation;
+  salaryRange: SalaryRange;
+  skills: string[];
+  responsibilities: string[];
+  requirements: string[];
+  benefits: string[];
+  openings: number;
+  status: JobStatus;
+  viewCount: number;
+  applicationCount: number;
+  questions?: JobQuestion[];
+  postedAt: string;
+  expiresAt?: string | null;
+  employer?: JobEmployerMini | null;
+}
+
+export interface JobsResponse {
+  jobs: Job[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface JobFunction {
+  id: string;
+  name: string;
+  slug: string;
+  order: number;
+  isActive: boolean;
+}
+
+export type ApplicationStatus = "applied" | "viewed" | "shortlisted" | "interview" | "rejected" | "hired";
+
+export interface ApplicationStatusEvent {
+  status: ApplicationStatus;
+  note: string | null;
+  changedAt: string;
+}
+
+// Job mini-object denormalized onto an application.
+export interface ApplicationJobMini {
+  id: string;
+  title: string;
+  jobFunction: string | null;
+  status: JobStatus;
+}
+
+// Candidate mini-object denormalized onto an application for the employer's review —
+// includes contact fields unconditionally (the candidate initiated contact by
+// applying); see RECRUITMENT.md §3.
+export interface ApplicationCandidateMini {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  headline: string | null;
+  experienceYears: number | null;
+  currentRole: string | null;
+  currentCompany: string | null;
+  skills: string[];
+  resumeUrl: string | null;
+  contactPhone: string | null;
+  contactEmail: string | null;
+}
+
+// Candidate's answer to one of the job's screening questions.
+export interface JobAnswer {
+  questionId: string;
+  text: string;
+}
+
+export interface Application {
+  id: string;
+  jobId: string;
+  employerId: string;
+  candidateId: string;
+  resumeUrl?: string | null;
+  coverNote?: string;
+  status: ApplicationStatus;
+  statusHistory: ApplicationStatusEvent[];
+  answers?: JobAnswer[];
+  appliedAt: string;
+  updatedAt: string;
+  job?: ApplicationJobMini | null;
+  candidate?: ApplicationCandidateMini | null;
+}
+
+export interface ApplicationsResponse {
+  applications: Application[];
 }

@@ -11,6 +11,7 @@ import { isDirectoryPage } from "@/lib/directoryPaths";
 import Avatar from "./Avatar";
 import NotificationBell from "./NotificationBell";
 import DirectorySearchBar from "./DirectorySearchBar";
+import RoleSearchBar from "./recruitment/RoleSearchBar";
 import { MobileCategoryAccordion } from "./CategoryMegaMenu";
 import CategoryStrip from "./directory/CategoryStrip";
 import SuiteProductsMenu, { MobileSuiteProductsList } from "./suite/SuiteNavMenu";
@@ -71,6 +72,10 @@ export default function Navbar() {
     setCity: setDockedCity,
     selectedCategory: dockedCategory,
     setSelectedCategory: setDockedCategory,
+    roleQuery: dockedRoleQuery,
+    setRoleQuery: setDockedRoleQuery,
+    roleCity: dockedRoleCity,
+    setRoleCity: setDockedRoleCity,
   } = useSearchDock();
   const [userOpen, setUserOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -107,13 +112,35 @@ export default function Navbar() {
   // other Directory page (category, search, listing, seller/brand) has no
   // hero — the navbar copy just shows there unconditionally instead.
   const isDirectoryHome = p === "/directory";
-  const showNavSearch = showDirectoryNav && (isDirectoryHome ? searchDockProgress > 0 : true);
+  // Recruitment mirrors the same rule, one level up: only /recruitment itself has a
+  // hero to dock FROM (its RoleSearchBar publishes searchDockProgress the same way
+  // Directory's HomeHero does — see app/recruitment/page.tsx); every other Recruitment
+  // page shows the compact bar unconditionally, same as Directory's non-home pages.
+  const isRecruitmentHome = p === "/recruitment";
   // For the profile-icon dropdown only: `/dashboard` counts as "Directory
   // context" even though it's excluded from showDirectoryNav above (its own
   // tab nav makes the category strip/mega-menu redundant there) — it's still
   // Directory's own dashboard, so the dropdown should offer Dashboard/Profile,
   // not the main-user "Profile" link.
   const inDirectoryContext = showDirectoryNav || p === "/dashboard";
+  // Same idea, scoped to Recruitment (RECRUITMENT.md) now that it has its own
+  // dashboard (/recruitment/dashboard) — extends the gate per
+  // frontend-design-guide.md's forward-looking note rather than re-enabling
+  // Directory's dashboard links on Recruitment pages. Recruitment's pages are
+  // exactly the ones lib/directoryPaths.ts excludes from showDirectoryNav via
+  // startsWith("/recruitment")/"/job/"/"/employer/", so mirror that same set here.
+  // Declared before showNavSearch (below) since that computation now branches on it.
+  const inRecruitmentContext =
+    p.startsWith("/recruitment") || p.startsWith("/job/") || p.startsWith("/employer/") || p === "/post-job";
+  const showNavSearch = showDirectoryNav
+    ? isDirectoryHome
+      ? searchDockProgress > 0
+      : true
+    : inRecruitmentContext
+      ? isRecruitmentHome
+        ? searchDockProgress > 0
+        : true
+      : false;
 
   useEffect(() => {
     setMobileOpen(false);
@@ -180,9 +207,11 @@ export default function Navbar() {
             search docks in here so it stays reachable while
             the header + CategoryStrip both stay pinned. */}
         <nav className="hidden nav:flex items-center gap-5 flex-1 min-w-0">
-          {!showDirectoryNav && (
-            /* Suite / non-Directory pages: Products (Directory + Recruitment only,
-               Bharat Agent has no route yet) + Blog + About us. */
+          {!showDirectoryNav && !inRecruitmentContext && (
+            /* Suite / non-Directory, non-Recruitment pages: Products (Directory +
+               Recruitment only, Bharat Agent has no route yet) + Blog + About us.
+               Recruitment pages get the same treatment as Directory's own row-1 —
+               this row is dropped entirely in favor of the docked search below. */
             <>
               <SuiteProductsMenu />
               {featureFlags.blogs && (
@@ -202,33 +231,52 @@ export default function Navbar() {
               // `dockStyle` doc comment for why that used to ghost the
               // dropdown mid-transition.
               style={
-                isDirectoryHome
+                isDirectoryHome || isRecruitmentHome
                   ? { pointerEvents: searchDockProgress > 0.5 ? "auto" : "none" }
                   : undefined
               }
             >
-              <DirectorySearchBar
-                showCity
-                query={dockedQuery}
-                onQueryChange={setDockedQuery}
-                city={dockedCity}
-                onCityChange={setDockedCity}
-                selectedCategory={dockedCategory}
-                onClearCategory={handleClearCategory}
-                dockStyle={
-                  isDirectoryHome
-                    ? {
-                        opacity: searchDockProgress,
-                        // Slides UP into its resting spot (matches the mobile docked
-                        // row + HomeHero's own bar, which also moves upward as it
-                        // exits) so the handoff reads as one continuous motion
-                        // instead of two independently-animated elements.
-                        transform: `translateY(${(1 - searchDockProgress) * 10}px) scale(${0.97 + searchDockProgress * 0.03})`,
-                        transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
-                      }
-                    : undefined
-                }
-              />
+              {showDirectoryNav ? (
+                <DirectorySearchBar
+                  showCity
+                  query={dockedQuery}
+                  onQueryChange={setDockedQuery}
+                  city={dockedCity}
+                  onCityChange={setDockedCity}
+                  selectedCategory={dockedCategory}
+                  onClearCategory={handleClearCategory}
+                  dockStyle={
+                    isDirectoryHome
+                      ? {
+                          opacity: searchDockProgress,
+                          // Slides UP into its resting spot (matches the mobile docked
+                          // row + HomeHero's own bar, which also moves upward as it
+                          // exits) so the handoff reads as one continuous motion
+                          // instead of two independently-animated elements.
+                          transform: `translateY(${(1 - searchDockProgress) * 10}px) scale(${0.97 + searchDockProgress * 0.03})`,
+                          transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                        }
+                      : undefined
+                  }
+                />
+              ) : (
+                <RoleSearchBar
+                  size="compact"
+                  query={dockedRoleQuery}
+                  onQueryChange={setDockedRoleQuery}
+                  city={dockedRoleCity}
+                  onCityChange={setDockedRoleCity}
+                  dockStyle={
+                    isRecruitmentHome
+                      ? {
+                          opacity: searchDockProgress,
+                          transform: `translateY(${(1 - searchDockProgress) * 10}px) scale(${0.97 + searchDockProgress * 0.03})`,
+                          transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                        }
+                      : undefined
+                  }
+                />
+              )}
             </div>
           )}
         </nav>
@@ -281,6 +329,8 @@ export default function Navbar() {
                         <MenuLink href="/dashboard" label={t("nav.dashboard")} />
                         <MenuLink href="/dashboard?tab=profile" label={t("nav.dashboardProfile")} />
                       </>
+                    ) : inRecruitmentContext ? (
+                      <MenuLink href="/recruitment/dashboard" label={t("nav.recruitmentDashboard")} />
                     ) : (
                       <MenuLink href="/profile" label={t("nav.myProfile")} />
                     )}
@@ -346,13 +396,15 @@ export default function Navbar() {
                     <div className="text-sm font-semibold text-ink line-clamp-1">{user.name}</div>
                     <div className="text-xs text-faint line-clamp-1">{user.email || user.mobile}</div>
                   </div>
-                  {/* Same directory-context split as the desktop dropdown above. */}
+                  {/* Same directory/recruitment-context split as the desktop dropdown above. */}
                   <div className="divider my-1" />
                   {inDirectoryContext ? (
                     <>
                       <MenuLink href="/dashboard" label={t("nav.dashboard")} />
                       <MenuLink href="/dashboard?tab=profile" label={t("nav.dashboardProfile")} />
                     </>
+                  ) : inRecruitmentContext ? (
+                    <MenuLink href="/recruitment/dashboard" label={t("nav.recruitmentDashboard")} />
                   ) : (
                     <MenuLink href="/profile" label={t("nav.myProfile")} />
                   )}
@@ -420,7 +472,7 @@ export default function Navbar() {
           // dropdown itself part-transparent (page content ghosting through)
           // any time it was opened before searchDockProgress reached 1.
           style={
-            isDirectoryHome
+            isDirectoryHome || isRecruitmentHome
               ? {
                   position: "absolute",
                   top: "100%",
@@ -439,24 +491,43 @@ export default function Navbar() {
                 { paddingTop: 10, borderTop: "1px solid var(--border)" }
           }
         >
-          <DirectorySearchBar
-            showCity
-            query={dockedQuery}
-            onQueryChange={setDockedQuery}
-            city={dockedCity}
-            onCityChange={setDockedCity}
-            selectedCategory={dockedCategory}
-            onClearCategory={handleClearCategory}
-            dockStyle={
-              isDirectoryHome
-                ? {
-                    opacity: searchDockProgress,
-                    transform: `translateY(${(1 - searchDockProgress) * 14}px)`,
-                    transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
-                  }
-                : undefined
-            }
-          />
+          {showDirectoryNav ? (
+            <DirectorySearchBar
+              showCity
+              query={dockedQuery}
+              onQueryChange={setDockedQuery}
+              city={dockedCity}
+              onCityChange={setDockedCity}
+              selectedCategory={dockedCategory}
+              onClearCategory={handleClearCategory}
+              dockStyle={
+                isDirectoryHome
+                  ? {
+                      opacity: searchDockProgress,
+                      transform: `translateY(${(1 - searchDockProgress) * 14}px)`,
+                      transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                    }
+                  : undefined
+              }
+            />
+          ) : (
+            <RoleSearchBar
+              size="compact"
+              query={dockedRoleQuery}
+              onQueryChange={setDockedRoleQuery}
+              city={dockedRoleCity}
+              onCityChange={setDockedRoleCity}
+              dockStyle={
+                isRecruitmentHome
+                  ? {
+                      opacity: searchDockProgress,
+                      transform: `translateY(${(1 - searchDockProgress) * 14}px)`,
+                      transition: "opacity 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1)",
+                    }
+                  : undefined
+              }
+            />
+          )}
         </div>
       )}
 

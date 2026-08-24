@@ -17,6 +17,15 @@ function toParam(value, type) {
     // Accept either an ISO string (as stored in the JSON docs) or a Date.
     return value instanceof Date ? value : new Date(value);
   }
+  // jsonb: node-postgres's default param serialization turns a bare JS array into a
+  // Postgres ARRAY literal ("{...}"), not a JSON array — wrong for a jsonb column, and
+  // silently so (Postgres would try to parse it as JSON text and fail, or mangle it).
+  // Must be JSON.stringify'd explicitly on the way in; reads come back already-parsed
+  // (node-postgres parses jsonb columns automatically), so fromColumn needs no symmetric case.
+  if (type === "jsonb") {
+    if (value === null) return null;
+    return JSON.stringify(value === undefined ? null : value);
+  }
   return value;
 }
 

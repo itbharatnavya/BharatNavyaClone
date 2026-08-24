@@ -14,7 +14,27 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 
-const PLACEMENTS = ["category_top", "search_top", "home_hero"];
+const PLACEMENTS = [
+  "category_top",
+  "search_top",
+  "home_hero",
+  // Recruitment (RECRUITMENT.md) — same booking pipeline (pending → admin
+  // review → served by routes/ads.js), just its own placement slots so a
+  // Directory campaign never mixes into a Recruitment page or vice versa.
+  "recruitment_home",
+  "recruitment_search_top",
+];
+
+function isAdmin(user) {
+  return !!user && (user.roles || []).includes("admin");
+}
+
+// Advertisement visibility is public (routes/ads.js has no auth at all); management is
+// role-gated. Directory placements keep today's any-authenticated-user behavior — this
+// guard only applies to Recruitment placements (enhancement doc §15-19).
+function isRecruitmentPlacement(placementType) {
+  return typeof placementType === "string" && placementType.startsWith("recruitment_");
+}
 
 // POST /api/my-ads — submit a campaign for admin review.
 router.post("/", authGuard, async (req, res, next) => {
@@ -33,6 +53,9 @@ router.post("/", authGuard, async (req, res, next) => {
     }
     if (!PLACEMENTS.includes(placementType)) {
       return res.status(400).json({ success: false, error: "Choose a valid placement" });
+    }
+    if (isRecruitmentPlacement(placementType) && req.user.recruitmentRole !== "recruiter") {
+      return res.status(403).json({ success: false, error: "Only recruiters can create Recruitment advertisements." });
     }
 
     const categoryIds = Array.isArray(body.categoryIds)
@@ -77,6 +100,60 @@ router.get("/", authGuard, async (req, res, next) => {
       String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
     );
     return res.json({ success: true, data: rows });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/my-ads/:id — owner (or admin) edits their own campaign. Status may only be
+// toggled between active/paused here — pending/booked stay admin-controlled (mirrors
+// how planTier/status fields are excluded from PUT /me/employer's whitelist).
+router.put("/:id", authGuard, async (req, res, next) => {
+  try {
+    const ad = await store.getById("ad-bookings.json", req.params.id);
+    if (!ad) {
+      return res.status(404).json({ success: false, error: "Ad not found" });
+    }
+    if (ad.sellerId !== req.user.id && !isAdmin(req.user)) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
+    if (isRecruitmentPlacement(ad.placementType) && req.user.recruitmentRole !== "recruiter" && !isAdmin(req.user)) {
+      return res.status(403).json({ success: false, error: "Only recruiters can manage Recruitment advertisements." });
+    }
+
+    const body = req.body || {};
+    const patch = {};
+    if (body.headline !== undefined) patch.headline = String(body.headline).trim();
+    if (body.creativeImageUrl !== undefined) patch.creativeImageUrl = String(body.creativeImageUrl).trim();
+    if (body.targetUrl !== undefined) patch.targetUrl = (typeof body.targetUrl === "string" && body.targetUrl.trim()) || null;
+    if (body.startDate !== undefined) patch.startDate = body.startDate || null;
+    if (body.endDate !== undefined) patch.endDate = body.endDate || null;
+    if (body.status !== undefined) {
+      if (!["active", "paused"].includes(body.status) || !["active", "paused"].includes(ad.status)) {
+        return res.status(400).json({ success: false, error: "Only an active or paused campaign can be toggled here" });
+      }
+      patch.status = body.status;
+    }
+
+    const updated = await store.update("ad-bookings.json", ad.id, patch);
+    return res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/my-ads/:id — owner (or admin) deletes their own campaign.
+router.delete("/:id", authGuard, async (req, res, next) => {
+  try {
+    const ad = await store.getById("ad-bookings.json", req.params.id);
+    if (!ad) {
+      return res.status(404).json({ success: false, error: "Ad not found" });
+    }
+    if (ad.sellerId !== req.user.id && !isAdmin(req.user)) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
+    await store.remove("ad-bookings.json", ad.id);
+    return res.json({ success: true, data: { id: ad.id, deleted: true } });
   } catch (err) {
     next(err);
   }

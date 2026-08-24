@@ -51,6 +51,12 @@ const DEFAULT_FLAGS: FeatureFlags = {
   multiLanguage: true,
   ads: true,
   featuredListings: true,
+  // Inverted on purpose (every other flag above defaults ON): Recruitment is still
+  // being finished, so an unfinished product must never accidentally go live just
+  // because a config fetch failed. Flip via the admin panel (Site Config), or force it
+  // from the environment with backend/.env's RECRUITMENT_LIVE (env wins over admin —
+  // see backend/routes/config.js) — RECRUITMENT.md §5.
+  recruitmentLive: false,
 };
 
 const DEFAULT_BRANDING: Branding = {

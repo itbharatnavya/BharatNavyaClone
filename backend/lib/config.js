@@ -57,4 +57,38 @@ module.exports = {
   // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
   AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
   PG_URL: process.env.PG_URL || process.env.DATABASE_URL || null,
+
+  // --- File uploads (backend/lib/uploadStorage.js) ---
+  // "local" (default, dev) writes into frontend/public/uploads/, served as a static
+  // asset. "s3" uploads to an S3 bucket instead — flip this one var on a production
+  // deploy, no code change. See HANDOVER.md "File storage" for the full switch-over
+  // checklist.
+  UPLOAD_STORAGE: (process.env.UPLOAD_STORAGE || "local").toLowerCase(),
+  AWS_REGION: process.env.AWS_REGION || null,
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || null,
+  // Optional — omit to use the AWS SDK's default credential chain (IAM role, shared
+  // config file, etc.), which is the recommended approach in production. Only set
+  // these for local testing against a real bucket.
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || null,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || null,
+  // Optional custom domain in front of the bucket (e.g. a CloudFront distribution) —
+  // when set, uploaded-file URLs use this instead of the raw *.s3.amazonaws.com host.
+  S3_PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || null,
+
+  // --- Recruitment go-live gate (RECRUITMENT.md §5) ---
+  // Unset (default) defers to the admin-editable featureFlags.recruitmentLive in
+  // settings.json (GET /api/config, edited via /admin). Set to "true"/"false" to force
+  // the value from the environment instead — the simplest production switch (flip the
+  // env var, restart, no admin-panel step, no redeploy). Env wins over the DB value
+  // whenever it's explicitly set; see routes/config.js.
+  RECRUITMENT_LIVE:
+    process.env.RECRUITMENT_LIVE === "true"
+      ? true
+      : process.env.RECRUITMENT_LIVE === "false"
+        ? false
+        : null,
 };
+
+if (module.exports.UPLOAD_STORAGE === "s3" && !isDev && !module.exports.AWS_S3_BUCKET) {
+  throw new Error("AWS_S3_BUCKET must be set when UPLOAD_STORAGE=s3 in production (see backend/.env)");
+}

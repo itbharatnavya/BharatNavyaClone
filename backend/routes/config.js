@@ -8,17 +8,25 @@
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
+const config = require("../lib/config");
 
 router.get("/", async (req, res, next) => {
   try {
     const s = await store.readJson("settings.json", {});
+    const featureFlags = { ...(s.featureFlags || {}) };
+    // RECRUITMENT_LIVE env var, when explicitly set, overrides whatever's stored in
+    // settings.json — the production go-live switch (flip the env var + restart, no
+    // admin-panel step). Unset (null) defers to the DB-stored admin flag as usual.
+    if (config.RECRUITMENT_LIVE !== null) {
+      featureFlags.recruitmentLive = config.RECRUITMENT_LIVE;
+    }
     // Public-safe subset (everything in settings.json is non-sensitive, but we shape it explicitly).
     res.json({
       success: true,
       data: {
         branding: s.branding || {},
         homepage: s.homepage || {},
-        featureFlags: s.featureFlags || {},
+        featureFlags,
         contact: s.contact || {},
         footer: s.footer || {},
       },

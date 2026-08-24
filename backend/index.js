@@ -40,6 +40,10 @@ app.use("/api/collections", require("./routes/collections")); // PUBLIC curated 
 app.use("/api/listings", require("./routes/listings"));
 app.use("/api/reviews", require("./routes/reviews"));
 app.use("/api/inquiries", require("./routes/inquiries"));
+app.use("/api/job-functions", require("./routes/jobFunctions")); // Recruitment: flat job taxonomy (public read)
+app.use("/api/jobs", require("./routes/jobs")); // Recruitment: job postings (RECRUITMENT.md)
+app.use("/api/applications", require("./routes/applications")); // Recruitment: candidate applications
+app.use("/api/admin/employers", require("./routes/adminEmployers")); // Recruitment: employer approval (guarded inside; before /api/admin)
 app.use("/api/admin/boosts", require("./routes/boosts")); // self-serve boosts admin (guarded inside; before /api/admin)
 app.use("/api/boosts", require("./routes/boosts")); // seller self-serve boost requests
 app.use("/api/admin/moderation", require("./routes/moderation")); // content moderation + verification queue (guarded inside; before /api/admin)
@@ -61,7 +65,7 @@ app.use("/api/my-ads", require("./routes/myAds")); // seller self-serve ad campa
 app.use("/api/shortlist", require("./routes/shortlist")); // buyer's saved-products shortlist (server-persisted)
 app.use("/api/experts", require("./routes/experts")); // Consultations: public directory of experts (service sellers)
 app.use("/api/consultations", require("./routes/consultations")); // Consultations: booking flow (guest-friendly)
-app.use("/api", require("./routes/users")); // /api/sellers/:slug, /api/become-seller, /api/me/seller, /api/me/profile
+app.use("/api", require("./routes/users")); // /api/sellers/:slug, /api/become-seller, /api/me/seller, /api/me/profile, /api/employers/:slug, /api/candidates/:id, /api/become-employer, /api/me/employer, /api/me/candidate
 
 // 404 for unknown API routes
 app.use((req, res) => res.status(404).json({ success: false, error: "Endpoint not found" }));

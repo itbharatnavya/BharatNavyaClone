@@ -40,5 +40,19 @@
     "placementType": "banner",
     "defaultSize": "1200x150",
     "isActive": true
+  },
+  {
+    "id": "recruitment_home",
+    "name": "Recruitment Home Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x300",
+    "isActive": true
+  },
+  {
+    "id": "recruitment_search_top",
+    "name": "Recruitment Job Search Top Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x150",
+    "isActive": true
   }
 ]

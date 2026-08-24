@@ -227,9 +227,65 @@ function buildFlatConfigs(nextId) {
             inquiryId: col("data_inquiry_id", t), productName: col("data_product_name", t),
             message: col("data_message", t), link: col("data_link", t), bookingId: col("data_booking_id", t),
             packageTitle: col("data_package_title", t),
+            // Recruitment (RECRUITMENT.md): new_application / application_status notifications.
+            jobId: col("data_job_id", t), jobTitle: col("data_job_title", t),
+            applicationId: col("data_application_id", t), candidateName: col("data_candidate_name", t),
+            status: col("data_status", t),
           },
         },
       ],
+    },
+    {
+      // Recruitment (RECRUITMENT.md §2). Flat, admin-editable — deliberately not a
+      // nested tree like categories.json.
+      file: "job-functions.json",
+      table: "job_functions",
+      columns: {
+        id: col("id", t), name: col("name", t), slug: col("slug", t),
+        order: col("sort_order", i), isActive: col("is_active", b),
+      },
+    },
+    {
+      // Recruitment (RECRUITMENT.md §2). No child tables — skills/responsibilities/
+      // requirements/benefits are simple string lists (text[]), same convention as
+      // blogs.tags. See lib/db/schema-migrations/0002_add_recruitment_tables.sql for
+      // the indexes this table ships with.
+      file: "jobs.json",
+      table: "jobs",
+      columns: {
+        id: col("id", t), employerId: col("employer_id", t), title: col("title", t),
+        description: col("description", t), jobFunction: col("job_function", t),
+        employmentType: col("employment_type", t), experienceLevel: col("experience_level", t),
+        skills: col("skills", arr), responsibilities: col("responsibilities", arr),
+        requirements: col("requirements", arr), benefits: col("benefits", arr),
+        openings: col("openings", i), status: col("status", t), viewCount: col("view_count", i),
+        applicationCount: col("application_count", i), questions: col("questions", "jsonb"),
+        postedAt: col("posted_at", ts), expiresAt: col("expires_at", ts),
+      },
+      nested: [
+        { docKey: "location", fields: {
+          city: col("location_city", t), state: col("location_state", t), remote: col("location_remote", b),
+        } },
+        { docKey: "salaryRange", fields: {
+          min: col("salary_min", n), max: col("salary_max", n), currency: col("salary_currency", t),
+          isDisclosed: col("salary_is_disclosed", b),
+        } },
+      ],
+    },
+    {
+      // Recruitment (RECRUITMENT.md §2). statusHistory is a small append-only log kept
+      // as jsonb (see the schema migration file) rather than a child table — never
+      // filtered/queried on its own, so a child table would only cost an extra query
+      // per read for no benefit.
+      file: "applications.json",
+      table: "applications",
+      columns: {
+        id: col("id", t), jobId: col("job_id", t), employerId: col("employer_id", t),
+        candidateId: col("candidate_id", t), resumeUrl: col("resume_url", t), coverNote: col("cover_note", t),
+        status: col("status", t), statusHistory: col("status_history", "jsonb"),
+        answers: col("answers", "jsonb"),
+        appliedAt: col("applied_at", ts), updatedAt: col("updated_at", ts),
+      },
     },
     {
       file: "payment-records.json",

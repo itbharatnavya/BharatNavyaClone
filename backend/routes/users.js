@@ -702,6 +702,245 @@ router.get("/me/analytics", authGuard, async (req, res, next) => {
   }
 });
 
+/* ================================================================
+ * Recruitment (RECRUITMENT.md) — employerProfile / candidateProfile.
+ * Deliberately separate from the seller helpers above: own slug namespace, own
+ * status/approval flow — see RECRUITMENT.md §1's "separate collections" decision.
+ * ================================================================ */
+
+/** Ensure an employer slug is unique across all users — its own namespace from
+ *  seller slugs (different URL prefix, /employer/:slug vs /seller/:slug). */
+async function uniqueEmployerSlug(base) {
+  const users = await store.all("users.json");
+  const taken = new Set(
+    users.map((u) => u.employerProfile && u.employerProfile.slug).filter(Boolean)
+  );
+  let slug = base || "employer";
+  let n = 1;
+  while (taken.has(slug)) {
+    n += 1;
+    slug = `${base}-${n}`;
+  }
+  return slug;
+}
+
+/** Public subset of an employer profile — contactMobile/contactEmail only when
+ *  includeContact is true, same server-side gating shape as publicSeller() above. */
+function publicEmployer(user, includeContact) {
+  const { contactMobile, contactEmail, ...employerProfile } = user.employerProfile || {};
+  return {
+    id: user.id,
+    name: user.name,
+    avatarUrl: user.avatarUrl || null,
+    createdAt: user.createdAt,
+    ...employerProfile,
+    ...(includeContact ? { contactMobile, contactEmail } : {}),
+  };
+}
+
+/** Public subset of a candidate profile — contactPhone/contactEmail only when
+ *  includeContact is true. */
+function publicCandidate(user, includeContact) {
+  const { contactPhone, contactEmail, ...candidateProfile } = user.candidateProfile || {};
+  return {
+    id: user.id,
+    name: user.name,
+    avatarUrl: user.avatarUrl || null,
+    createdAt: user.createdAt,
+    ...candidateProfile,
+    ...(includeContact ? { contactPhone, contactEmail } : {}),
+  };
+}
+
+// POST /api/me/recruitment-role — select Candidate or Recruiter. Only settable while
+// unlocked (recruitmentRoleLockedAt is null); the lock itself is set the moment the
+// matching profile is first successfully created (become-employer / PUT me/candidate
+// below), not here — this endpoint just records intent so the dashboard can show the
+// right profile-setup flow before that first submit.
+router.post("/me/recruitment-role", authGuard, async (req, res, next) => {
+  try {
+    const role = req.body && req.body.role;
+    if (role !== "candidate" && role !== "recruiter") {
+      return res.status(400).json({ success: false, error: "role must be 'candidate' or 'recruiter'" });
+    }
+    if (req.user.recruitmentRoleLockedAt && req.user.recruitmentRole !== role) {
+      return res.status(409).json({
+        success: false,
+        error: `Your Recruitment role is locked to '${req.user.recruitmentRole}' and cannot be changed.`,
+      });
+    }
+    const updated = await store.update("users.json", req.user.id, { recruitmentRole: role });
+    return res.json({ success: true, data: { user: sanitizeUser(updated) } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/become-employer — lazily create the employer profile (mirrors become-seller).
+router.post("/become-employer", authGuard, async (req, res, next) => {
+  try {
+    if (req.user.employerProfile) {
+      return res.json({ success: true, data: { user: sanitizeUser(req.user) } });
+    }
+    if (req.user.recruitmentRoleLockedAt && req.user.recruitmentRole !== "recruiter") {
+      return res.status(403).json({
+        success: false,
+        error: "Your Recruitment role is locked to 'candidate' — recruiters and candidates are separate roles.",
+      });
+    }
+    const b = req.body || {};
+    if (!b.companyName || String(b.companyName).trim() === "") {
+      return res
+        .status(400)
+        .json({ success: false, error: "companyName is required" });
+    }
+    const slug = await uniqueEmployerSlug(slugify(b.companyName));
+    const employerProfile = {
+      companyName: String(b.companyName).trim(),
+      slug,
+      about: b.about || "",
+      logo: null,
+      coverImage: null,
+      industry: b.industry || null,
+      companySize: b.companySize || null,
+      website: b.website || null,
+      contactMobile: b.contactMobile || req.user.mobile || "",
+      contactEmail: b.contactEmail || req.user.email || null,
+      location: { city: b.city || req.user.city || "", state: b.state || req.user.state || "" },
+      // --- trust / verification + monetization (admin-owned) ---
+      status: "pending",
+      isVerified: false,
+      planTier: "free",
+      jobPostLimit: null,
+      applicationQuota: null,
+    };
+    // First-ever employer profile for this account locks the Recruitment role — see
+    // the migration/enhancement-doc comment above POST /me/recruitment-role.
+    const updated = await store.update("users.json", req.user.id, {
+      employerProfile,
+      recruitmentRole: "recruiter",
+      recruitmentRoleLockedAt: req.user.recruitmentRoleLockedAt || new Date().toISOString(),
+    });
+    return res.json({ success: true, data: { user: sanitizeUser(updated) } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/me/employer — update editable employer-profile fields only. status/
+// isVerified/planTier/jobPostLimit/applicationQuota stay admin-owned, same rule as
+// seller monetization fields on PUT /me/seller.
+router.put("/me/employer", authGuard, async (req, res, next) => {
+  try {
+    if (!req.user.employerProfile) {
+      return res
+        .status(400)
+        .json({ success: false, error: "No employer profile to update" });
+    }
+    const b = req.body || {};
+    const allowed = [
+      "about", "logo", "coverImage", "industry", "companySize", "website",
+      "contactMobile", "contactEmail", "location",
+    ];
+    const patch = {};
+    for (const key of allowed) {
+      if (b[key] !== undefined) patch[key] = b[key];
+    }
+    const employerProfile = { ...req.user.employerProfile, ...patch };
+    const updated = await store.update("users.json", req.user.id, { employerProfile });
+    return res.json({ success: true, data: { user: sanitizeUser(updated) } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/me/candidate — create-or-update the candidate profile. No approval gate
+// (RECRUITMENT.md §2) — unlike become-employer, this isn't admin-gated and can be
+// called repeatedly to build the profile up over time. It does still require a
+// non-empty `headline` (mirrors become-employer's `companyName` requirement) —
+// submitting a blank profile isn't a valid "create."
+router.put("/me/candidate", authGuard, async (req, res, next) => {
+  try {
+    if (req.user.recruitmentRoleLockedAt && req.user.recruitmentRole !== "candidate") {
+      return res.status(403).json({
+        success: false,
+        error: "Your Recruitment role is locked to 'recruiter' — recruiters and candidates are separate roles.",
+      });
+    }
+    const b = req.body || {};
+    const hadProfile = !!req.user.candidateProfile;
+    const existing = req.user.candidateProfile || {
+      headline: "", summary: "", resumeUrl: null, skills: [], experienceYears: null,
+      currentRole: null, currentCompany: null, expectedSalary: null, preferredLocations: [],
+      preferredJobTypes: [], contactPhone: req.user.mobile || null, contactEmail: req.user.email || null,
+      isOpenToWork: true, education: [], workHistory: [],
+    };
+    const allowed = [
+      "headline", "summary", "resumeUrl", "skills", "experienceYears", "currentRole",
+      "currentCompany", "expectedSalary", "preferredLocations", "preferredJobTypes",
+      "contactPhone", "contactEmail", "isOpenToWork", "education", "workHistory",
+    ];
+    const patch = {};
+    for (const key of allowed) {
+      if (b[key] !== undefined) patch[key] = b[key];
+    }
+    const candidateProfile = { ...existing, ...patch };
+    if (!candidateProfile.headline || !String(candidateProfile.headline).trim()) {
+      return res.status(400).json({ success: false, error: "headline is required" });
+    }
+    // First-ever candidate profile for this account locks the Recruitment role, same
+    // rule as become-employer above.
+    const roleUpdate = hadProfile
+      ? {}
+      : {
+          recruitmentRole: "candidate",
+          recruitmentRoleLockedAt: req.user.recruitmentRoleLockedAt || new Date().toISOString(),
+        };
+    const updated = await store.update("users.json", req.user.id, { candidateProfile, ...roleUpdate });
+    return res.json({ success: true, data: { user: sanitizeUser(updated) } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/employers/:slug — public employer profile + their active jobs. optionalAuth:
+// contactMobile/contactEmail only attached when the request is authenticated — same
+// server-side gating shape as GET /sellers/:slug (never client-side-only, CLAUDE.md §2).
+router.get("/employers/:slug", optionalAuth, async (req, res, next) => {
+  try {
+    const user = await store.findOne(
+      "users.json",
+      (u) => u.employerProfile && u.employerProfile.slug === req.params.slug
+    );
+    if (!user || !user.employerProfile) {
+      return res.status(404).json({ success: false, error: "Employer not found" });
+    }
+    const jobs = await store.findMany(
+      "jobs.json",
+      (j) => j.employerId === user.id && j.status === "active"
+    );
+    const employer = publicEmployer(user, !!req.user);
+    return res.json({ success: true, data: { employer, jobs } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/candidates/:id — public candidate profile. optionalAuth: contactPhone/
+// contactEmail only attached when authenticated, same gating shape as employers/sellers.
+router.get("/candidates/:id", optionalAuth, async (req, res, next) => {
+  try {
+    const user = await store.getById("users.json", req.params.id);
+    if (!user || !user.candidateProfile) {
+      return res.status(404).json({ success: false, error: "Candidate not found" });
+    }
+    const candidate = publicCandidate(user, !!req.user);
+    return res.json({ success: true, data: { candidate } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
 // Shared with routes/listings.js for denormalizing a chosen branch onto a listing.
 module.exports.resolveSellerLocations = resolveSellerLocations;

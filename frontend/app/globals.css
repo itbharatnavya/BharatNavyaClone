@@ -437,6 +437,21 @@ p {
   border-color: var(--brand-hover);
 }
 
+/* green = Recruitment's module color (frontend-design-guide.md's color-to-module
+   mapping) — first real button use of --tricolor-green now that Recruitment has live
+   pages; every value is the existing token, no new hue. Mirrors .btn-brand's structure
+   exactly so it's a first-class variant, not a one-off style. */
+.btn-green {
+  background: var(--tricolor-green);
+  color: #ffffff;
+  border-color: var(--tricolor-green);
+  box-shadow: 0 1px 2px rgba(30, 158, 82, 0.25);
+}
+.btn-green:hover:not(:disabled) {
+  background: var(--tricolor-green-hover);
+  border-color: var(--tricolor-green-hover);
+}
+
 /* secondary = white + border */
 .btn-secondary {
   background: #ffffff;

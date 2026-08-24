@@ -41,6 +41,17 @@ import type {
   ExpertsMeta,
   BookingBody,
   ConsultationBooking,
+  Job,
+  JobsResponse,
+  JobFunction,
+  EmployerProfile,
+  CandidateProfile,
+  Application,
+  ApplicationsResponse,
+  ApplicationStatus,
+  EmploymentType,
+  ExperienceLevel,
+  JobAnswer,
 } from "./types";
 
 // Extend the shared AiSearchResult with the optional NEVER-BLANK `message` the AI
@@ -1261,7 +1272,12 @@ export function uploadImage(dataUrl: string): Promise<{ url: string }> {
 // A seller submits a campaign; it is stored as "pending" and stays invisible on the
 // public ad slider until an admin activates it in the admin Ads tab.
 // ============================================================
-export type AdPlacementType = "category_top" | "search_top" | "home_hero";
+export type AdPlacementType =
+  | "category_top"
+  | "search_top"
+  | "home_hero"
+  | "recruitment_home"
+  | "recruitment_search_top";
 
 export interface MyAdInput {
   placementType: AdPlacementType;
@@ -1303,6 +1319,16 @@ export async function getMyAds(): Promise<MyAd[]> {
   // Backend returns a bare array; normalize defensively so consumers can .map safely.
   const res = await request<MyAd[] | { adBookings?: MyAd[] }>(`/api/my-ads`);
   return Array.isArray(res) ? res : res?.adBookings || [];
+}
+
+// Edit (headline/image/link/dates) or toggle active/paused on an active-or-paused
+// campaign only — pending/booked stay admin-owned.
+export function updateMyAd(id: string, patch: Partial<MyAdInput> & { status?: "active" | "paused" }): Promise<MyAd> {
+  return request<MyAd>(`/api/my-ads/${id}`, { method: "PUT", body: JSON.stringify(patch) });
+}
+
+export function deleteMyAd(id: string): Promise<{ id: string; deleted: boolean }> {
+  return request<{ id: string; deleted: boolean }>(`/api/my-ads/${id}`, { method: "DELETE" });
 }
 
 // ============================================================
@@ -1551,4 +1577,160 @@ export function bookConsultation(body: BookingBody): Promise<any> {
 // returns only bookings where expertId === the caller). Newest first.
 export function getMyConsultationBookings(): Promise<ConsultationBooking[]> {
   return request<ConsultationBooking[]>(`/api/consultations/bookings`);
+}
+
+// ============================================================
+// Recruitment (RECRUITMENT.md) — separate from the Directory calls above on
+// purpose; see RECRUITMENT.md §1's "separate collections" decision.
+// ============================================================
+
+// ---- job functions (flat taxonomy) ----
+export function getJobFunctions(): Promise<JobFunction[]> {
+  return request<JobFunction[]>(`/api/job-functions`);
+}
+
+// ---- jobs ----
+export interface JobQuery {
+  q?: string;
+  company?: string;
+  jobFunction?: string;
+  employmentType?: EmploymentType;
+  experienceLevel?: ExperienceLevel;
+  city?: string;
+  state?: string;
+  remote?: boolean;
+  minSalary?: number;
+  maxSalary?: number;
+  page?: number;
+  limit?: number;
+}
+
+export function getJobs(query: JobQuery = {}): Promise<JobsResponse> {
+  return request<JobsResponse>(`/api/jobs${toQuery(query as Record<string, unknown>)}`);
+}
+
+export function getJob(id: string): Promise<Job> {
+  return request<Job>(`/api/jobs/${id}`);
+}
+
+// The authenticated employer's OWN jobs (every status) — use for the dashboard instead
+// of the public browse, same "not the public browse" trap as getMyListings().
+export async function getMyJobs(): Promise<Job[]> {
+  const data = await request<{ jobs: Job[] }>(`/api/jobs/mine`);
+  return data.jobs;
+}
+
+export function createJob(body: Partial<Job>): Promise<Job> {
+  return request<Job>(`/api/jobs`, { method: "POST", body: JSON.stringify(body) });
+}
+
+export function updateJob(id: string, body: Partial<Job>): Promise<Job> {
+  return request<Job>(`/api/jobs/${id}`, { method: "PUT", body: JSON.stringify(body) });
+}
+
+export function deleteJob(id: string): Promise<{ id: string }> {
+  return request<{ id: string }>(`/api/jobs/${id}`, { method: "DELETE" });
+}
+
+// ---- recruitment role lock ----
+// Selects Candidate or Recruiter; only settable while unlocked (409 once
+// recruitmentRoleLockedAt is set to the opposite role) — see CLAUDE.md/RECRUITMENT.md
+// role-lock enhancement pass.
+export async function setRecruitmentRole(role: "candidate" | "recruiter"): Promise<User> {
+  const data = await request<{ user: User }>(`/api/me/recruitment-role`, {
+    method: "POST",
+    body: JSON.stringify({ role }),
+  });
+  return data.user;
+}
+
+// ---- applications ----
+export function applyToJob(body: {
+  jobId: string;
+  coverNote?: string;
+  resumeUrl?: string;
+  answers?: JobAnswer[];
+}): Promise<Application> {
+  return request<Application>(`/api/applications`, { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function getMyApplications(): Promise<Application[]> {
+  const data = await request<ApplicationsResponse>(`/api/applications/mine`);
+  return data.applications;
+}
+
+// The authenticated employer's received applications across their jobs. Optional
+// jobId/status filters, same shape as the backend's query params.
+export async function getJobApplications(filters: { jobId?: string; status?: ApplicationStatus } = {}): Promise<Application[]> {
+  const data = await request<ApplicationsResponse>(
+    `/api/applications${toQuery(filters as Record<string, unknown>)}`
+  );
+  return data.applications;
+}
+
+export function getApplication(id: string): Promise<Application> {
+  return request<Application>(`/api/applications/${id}`);
+}
+
+export function updateApplicationStatus(
+  id: string,
+  status: ApplicationStatus,
+  note?: string
+): Promise<Application> {
+  return request<Application>(`/api/applications/${id}/status`, {
+    method: "POST",
+    body: JSON.stringify({ status, note }),
+  });
+}
+
+// ---- employer profile ----
+export async function becomeEmployer(body: Partial<EmployerProfile> & { companyName: string }): Promise<User> {
+  const data = await request<{ user: User }>(`/api/become-employer`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  return data.user;
+}
+
+export async function updateEmployerProfile(body: Partial<EmployerProfile>): Promise<User> {
+  const data = await request<{ user: User }>(`/api/me/employer`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+  return data.user;
+}
+
+export interface PublicEmployer extends EmployerProfile {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  createdAt: string;
+}
+
+// Public employer profile + their active jobs. optionalAuth: contactMobile/
+// contactEmail only present when the caller is logged in (server-side gated).
+export function getEmployer(slug: string): Promise<{ employer: PublicEmployer; jobs: Job[] }> {
+  return request<{ employer: PublicEmployer; jobs: Job[] }>(`/api/employers/${slug}`);
+}
+
+// ---- candidate profile ----
+export async function updateCandidateProfile(body: Partial<CandidateProfile>): Promise<User> {
+  const data = await request<{ user: User }>(`/api/me/candidate`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+  return data.user;
+}
+
+export interface PublicCandidate extends CandidateProfile {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  createdAt: string;
+}
+
+// Public candidate profile. optionalAuth: contactPhone/contactEmail only present when
+// the caller is logged in (server-side gated) — see RECRUITMENT.md §2.
+export function getCandidate(id: string): Promise<{ candidate: PublicCandidate }> {
+  return request<{ candidate: PublicCandidate }>(`/api/candidates/${id}`);
 }

@@ -5,7 +5,7 @@
 // (.card / .input / .chip / .field-label). No external state libraries.
 
 import React, { useState } from "react";
-import type { PriceTier, RateCardItem } from "@/lib/types";
+import type { PriceTier, RateCardItem, JobQuestion } from "@/lib/types";
 
 // Small inline "remove/close" icon shared by the row editors below.
 function XIcon({ size = 14 }: { size?: number }) {
@@ -384,6 +384,52 @@ export function RateCardEditor({
       ))}
       <button type="button" className="btn btn-secondary btn-sm" onClick={addRow}>
         + Add rate-card item
+      </button>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// QuestionsEditor — recruiter-defined per-job screening questions (Recruitment
+// enhancement doc §7). A TagInput chip can't carry the "required" checkbox each
+// question needs, so this is its own small row editor, same shape as RateCardEditor.
+// ------------------------------------------------------------
+export function QuestionsEditor({
+  value,
+  onChange,
+}: {
+  value: JobQuestion[];
+  onChange: (next: JobQuestion[]) => void;
+}) {
+  const update = (i: number, patch: Partial<JobQuestion>) =>
+    onChange(value.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  const addRow = () =>
+    onChange([...value, { id: `new_${Date.now()}_${value.length}`, text: "", required: false }]);
+  const removeRow = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  return (
+    <div>
+      {value.map((row, i) => (
+        <div key={row.id} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
+          <input
+            className="input"
+            placeholder="e.g. Are you willing to relocate?"
+            value={row.text}
+            onChange={(e) => update(i, { text: e.target.value })}
+            maxLength={300}
+            style={{ flex: 1 }}
+          />
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--muted)", flexShrink: 0, whiteSpace: "nowrap" }}>
+            <input type="checkbox" checked={row.required} onChange={(e) => update(i, { required: e.target.checked })} />
+            Required
+          </label>
+          <button type="button" className="btn btn-ghost btn-sm" aria-label="Remove question" onClick={() => removeRow(i)}>
+            <XIcon />
+          </button>
+        </div>
+      ))}
+      <button type="button" className="btn btn-secondary btn-sm" onClick={addRow} disabled={value.length >= 20}>
+        + Add question
       </button>
     </div>
   );

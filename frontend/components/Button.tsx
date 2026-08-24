@@ -6,6 +6,7 @@ import Link from "next/link";
 export type ButtonVariant =
   | "primary" // action orange
   | "brand" // trust blue
+  | "green" // tricolor-green — Recruitment's module color
   | "secondary" // white + border
   | "ghost"
   | "danger";

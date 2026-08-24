@@ -20,6 +20,12 @@ const EARLY_ORDER = [
   "listings.json", // needs users, categories
   "inquiries.json", // needs users, categories, listings
   "conversations/index.json", // needs users, listings
+  "jobs.json", // needs users (employerId) — RECRUITMENT.md
+  // applications.json needs users AND jobs; "applications.json" sorts alphabetically
+  // BEFORE "jobs.json", so without this explicit ordering it would land in the
+  // unordered "rest" bucket and could migrate before jobs.json exists, failing on the
+  // job_id foreign key.
+  "applications.json", // needs users, jobs — RECRUITMENT.md
 ];
 
 const fs = require("fs/promises");

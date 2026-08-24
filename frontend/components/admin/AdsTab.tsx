@@ -51,6 +51,8 @@ const PLACEMENT_OPTIONS = [
   { value: "category_top", label: "Category top (category pages)" },
   { value: "search_top", label: "Search top (search results)" },
   { value: "home_hero", label: "Home hero (homepage)" },
+  { value: "recruitment_home", label: "Recruitment — home page" },
+  { value: "recruitment_search_top", label: "Recruitment — job search top" },
 ];
 
 // Serving statuses. Public /api/ads serves "active" + "scheduled" (within the

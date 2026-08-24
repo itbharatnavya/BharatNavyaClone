@@ -6,6 +6,10 @@
  *                 \--- expert_profiles (1:1, optional)
  *                         \--< expert_case_studies (array)
  * users (1) --- user_legacy (1:1, optional)
+ * users (1) --- employer_profiles (1:1, optional — Recruitment, RECRUITMENT.md)
+ * users (1) --< candidate_profiles (1:1, optional — Recruitment)
+ *                 |--< candidate_education (array)
+ *                 \--< candidate_work_history (array)
  *
  * Update semantics match the original file-store: a shallow merge of the patch into
  * the existing doc ({...existing, ...patch, id}) — so patching `sellerProfile` REPLACES
@@ -28,6 +32,7 @@ const USER_COLUMNS = {
   passwordHash: col("password_hash", t), avatarUrl: col("avatar_url", t), city: col("city", t),
   state: col("state", t), roles: col("roles", arr), interests: col("interests", arr),
   contactVisibility: col("contact_visibility", t), createdAt: col("created_at", ts),
+  recruitmentRole: col("recruitment_role", t), recruitmentRoleLockedAt: col("recruitment_role_locked_at", ts),
 };
 
 const SELLER_COLUMNS = {
@@ -81,6 +86,32 @@ const LEGACY_NESTED = [
   } },
 ];
 
+// ── Recruitment: employerProfile / candidateProfile (RECRUITMENT.md §2) ────────────
+// Same 1:1-optional-profile shape as sellerProfile/expertProfile above, mirrored
+// deliberately rather than reusing seller_profiles — see RECRUITMENT.md §1's
+// "separate collections" decision.
+
+const EMPLOYER_COLUMNS = {
+  companyName: col("company_name", t), slug: col("slug", t), about: col("about", t),
+  logo: col("logo", t), coverImage: col("cover_image", t), industry: col("industry", t),
+  companySize: col("company_size", t), website: col("website", t),
+  contactMobile: col("contact_mobile", t), contactEmail: col("contact_email", t),
+  status: col("status", t), isVerified: col("is_verified", b), planTier: col("plan_tier", t),
+  jobPostLimit: col("job_post_limit", i), applicationQuota: col("application_quota", i),
+};
+const EMPLOYER_NESTED = [
+  { docKey: "location", fields: { city: col("location_city", t), state: col("location_state", t) } },
+];
+
+const CANDIDATE_COLUMNS = {
+  headline: col("headline", t), summary: col("summary", t), resumeUrl: col("resume_url", t),
+  skills: col("skills", arr), experienceYears: col("experience_years", i),
+  currentRole: col("current_position", t), currentCompany: col("current_company", t),
+  expectedSalary: col("expected_salary", n), preferredLocations: col("preferred_locations", arr),
+  preferredJobTypes: col("preferred_job_types", arr), contactPhone: col("contact_phone", t),
+  contactEmail: col("contact_email", t), isOpenToWork: col("is_open_to_work", b),
+};
+
 function createUsersStore(pool, nextId) {
   async function hydrate(client, userRow) {
     const doc = rowToDoc(userRow, USER_COLUMNS);
@@ -126,6 +157,34 @@ function createUsersStore(pool, nextId) {
     } else {
       delete doc.legacy;
     }
+
+    doc.employerProfile = null;
+    const employerRes = await client.query(`SELECT * FROM employer_profiles WHERE user_id = $1`, [userRow.id]);
+    if (employerRes.rowCount) {
+      const employerRow = employerRes.rows[0];
+      const ep = rowToDoc(employerRow, EMPLOYER_COLUMNS);
+      nestedFromRow(employerRow, EMPLOYER_NESTED, ep);
+      doc.employerProfile = ep;
+    }
+
+    doc.candidateProfile = null;
+    const candidateRes = await client.query(`SELECT * FROM candidate_profiles WHERE user_id = $1`, [userRow.id]);
+    if (candidateRes.rowCount) {
+      const candidateRow = candidateRes.rows[0];
+      const cp = rowToDoc(candidateRow, CANDIDATE_COLUMNS);
+      const eduRes = await client.query(
+        `SELECT * FROM candidate_education WHERE candidate_id = $1 ORDER BY position ASC`, [userRow.id]
+      );
+      cp.education = eduRes.rows.map((r) => ({ degree: r.degree, institution: r.institution, year: r.year }));
+      const workRes = await client.query(
+        `SELECT * FROM candidate_work_history WHERE candidate_id = $1 ORDER BY position ASC`, [userRow.id]
+      );
+      cp.workHistory = workRes.rows.map((r) => ({
+        company: r.company, role: r.role, duration: r.duration, description: r.description,
+      }));
+      doc.candidateProfile = cp;
+    }
+
     return doc;
   }
 
@@ -167,6 +226,28 @@ function createUsersStore(pool, nextId) {
     } else {
       delete doc.legacy;
     }
+
+    doc.employerProfile = null;
+    const employerRow = maps.employerByUser.get(userRow.id);
+    if (employerRow) {
+      const ep = rowToDoc(employerRow, EMPLOYER_COLUMNS);
+      nestedFromRow(employerRow, EMPLOYER_NESTED, ep);
+      doc.employerProfile = ep;
+    }
+
+    doc.candidateProfile = null;
+    const candidateRow = maps.candidateByUser.get(userRow.id);
+    if (candidateRow) {
+      const cp = rowToDoc(candidateRow, CANDIDATE_COLUMNS);
+      const edu = maps.educationByCandidate.get(userRow.id) || [];
+      cp.education = edu.map((r) => ({ degree: r.degree, institution: r.institution, year: r.year }));
+      const work = maps.workHistoryByCandidate.get(userRow.id) || [];
+      cp.workHistory = work.map((r) => ({
+        company: r.company, role: r.role, duration: r.duration, description: r.description,
+      }));
+      doc.candidateProfile = cp;
+    }
+
     return doc;
   }
 
@@ -228,24 +309,60 @@ function createUsersStore(pool, nextId) {
     } else {
       await client.query(`DELETE FROM user_legacy WHERE user_id = $1`, [doc.id]);
     }
+
+    if (doc.employerProfile) {
+      const ep = doc.employerProfile;
+      const employerRow = docToRow(ep, EMPLOYER_COLUMNS);
+      employerRow.user_id = doc.id;
+      nestedToRow(ep, EMPLOYER_NESTED, employerRow);
+      await upsertRow(client, "employer_profiles", "user_id", employerRow);
+    } else {
+      await client.query(`DELETE FROM employer_profiles WHERE user_id = $1`, [doc.id]);
+    }
+
+    if (doc.candidateProfile) {
+      const cp = doc.candidateProfile;
+      const candidateRow = docToRow(cp, CANDIDATE_COLUMNS);
+      candidateRow.user_id = doc.id;
+      await upsertRow(client, "candidate_profiles", "user_id", candidateRow);
+
+      const education = (cp.education || []).map((e, idx) => ({
+        candidate_id: doc.id, degree: e.degree ?? null, institution: e.institution ?? null,
+        year: e.year ?? null, position: idx,
+      }));
+      await replaceChildRows(client, "candidate_education", "candidate_id", doc.id, education);
+
+      const workHistory = (cp.workHistory || []).map((w, idx) => ({
+        candidate_id: doc.id, company: w.company ?? null, role: w.role ?? null,
+        duration: w.duration ?? null, description: w.description ?? null, position: idx,
+      }));
+      await replaceChildRows(client, "candidate_work_history", "candidate_id", doc.id, workHistory);
+    } else {
+      // Cascades to candidate_education / candidate_work_history.
+      await client.query(`DELETE FROM candidate_profiles WHERE user_id = $1`, [doc.id]);
+    }
   }
 
   return {
-    // Batch-hydrates every user in 6 total queries (1 for users + 5 for every
+    // Batch-hydrates every user in 10 total queries (1 for users + 9 for every
     // child table, each fetched once across all ids with = ANY($1)) instead
-    // of the previous 1 + up to 5-per-row.
+    // of looping a query per row.
     async all() {
       const res = await pool.query(`SELECT * FROM users ORDER BY id ASC`);
       const rows = res.rows;
       if (rows.length === 0) return [];
       const ids = rows.map((r) => r.id);
 
-      const [sellerRes, locRes, expertRes, csRes, legacyRes] = await Promise.all([
+      const [sellerRes, locRes, expertRes, csRes, legacyRes, employerRes, candidateRes, eduRes, workRes] = await Promise.all([
         pool.query(`SELECT * FROM seller_profiles WHERE user_id = ANY($1)`, [ids]),
         pool.query(`SELECT * FROM seller_locations WHERE seller_id = ANY($1) ORDER BY seller_id, position ASC`, [ids]),
         pool.query(`SELECT * FROM expert_profiles WHERE user_id = ANY($1)`, [ids]),
         pool.query(`SELECT * FROM expert_case_studies WHERE expert_id = ANY($1) ORDER BY expert_id, position ASC`, [ids]),
         pool.query(`SELECT * FROM user_legacy WHERE user_id = ANY($1)`, [ids]),
+        pool.query(`SELECT * FROM employer_profiles WHERE user_id = ANY($1)`, [ids]),
+        pool.query(`SELECT * FROM candidate_profiles WHERE user_id = ANY($1)`, [ids]),
+        pool.query(`SELECT * FROM candidate_education WHERE candidate_id = ANY($1) ORDER BY candidate_id, position ASC`, [ids]),
+        pool.query(`SELECT * FROM candidate_work_history WHERE candidate_id = ANY($1) ORDER BY candidate_id, position ASC`, [ids]),
       ]);
 
       const maps = {
@@ -254,6 +371,10 @@ function createUsersStore(pool, nextId) {
         expertByUser: new Map(expertRes.rows.map((r) => [r.user_id, r])),
         caseStudiesByExpert: groupBy(csRes.rows, "expert_id"),
         legacyByUser: new Map(legacyRes.rows.map((r) => [r.user_id, r])),
+        employerByUser: new Map(employerRes.rows.map((r) => [r.user_id, r])),
+        candidateByUser: new Map(candidateRes.rows.map((r) => [r.user_id, r])),
+        educationByCandidate: groupBy(eduRes.rows, "candidate_id"),
+        workHistoryByCandidate: groupBy(workRes.rows, "candidate_id"),
       };
 
       return rows.map((row) => hydrateFromMaps(row, maps));

@@ -9,11 +9,12 @@
 // BharatAgentPanel.tsx). Hover/click to open, outside-click + Escape +
 // route-change to close.
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DirectoryIcon } from "./products";
 import { RecruitmentIcon } from "@/components/home/icons";
+import { useConfig } from "@/lib/config";
 
 interface NavModule {
   key: string;
@@ -24,24 +25,32 @@ interface NavModule {
   Icon: React.FC<{ size?: number }>;
 }
 
-const MODULES: NavModule[] = [
-  {
-    key: "directory",
-    name: "Directory",
-    href: "/directory",
-    tagline: "Source verified products & suppliers across India.",
-    status: "live",
-    Icon: DirectoryIcon,
-  },
-  {
-    key: "recruitment",
-    name: "Recruitment",
-    href: "/recruitment",
-    tagline: "Post roles and connect with vetted candidates.",
-    status: "soon",
-    Icon: RecruitmentIcon,
-  },
-];
+// Recruitment's status now tracks featureFlags.recruitmentLive (RECRUITMENT.md §5)
+// instead of being hardcoded — see useModules() below.
+function useModules(): NavModule[] {
+  const { featureFlags } = useConfig();
+  return useMemo(
+    () => [
+      {
+        key: "directory",
+        name: "Directory",
+        href: "/directory",
+        tagline: "Source verified products & suppliers across India.",
+        status: "live",
+        Icon: DirectoryIcon,
+      },
+      {
+        key: "recruitment",
+        name: "Recruitment",
+        href: "/recruitment",
+        tagline: "Post roles and connect with vetted candidates.",
+        status: featureFlags.recruitmentLive ? "live" : "soon",
+        Icon: RecruitmentIcon,
+      },
+    ],
+    [featureFlags.recruitmentLive]
+  );
+}
 
 function ChevronDown() {
   return (
@@ -95,6 +104,7 @@ function ModuleRow({ module, onNavigate }: { module: NavModule; onNavigate?: () 
 // ==================================================================
 export default function SuiteProductsMenu() {
   const pathname = usePathname();
+  const modules = useModules();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const [open, setOpen] = useState(false);
@@ -144,7 +154,7 @@ export default function SuiteProductsMenu() {
         <div className="absolute left-0 top-full pt-2 z-50 animate-scale-in">
           <div className="card card-flat" style={{ width: "min(320px, calc(100vw - 32px))", padding: 10 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {MODULES.map((m) => (
+              {modules.map((m) => (
                 <ModuleRow key={m.key} module={m} onNavigate={() => setOpen(false)} />
               ))}
             </div>
@@ -159,13 +169,14 @@ export default function SuiteProductsMenu() {
 // MOBILE — flat list inside the hamburger overlay
 // ==================================================================
 export function MobileSuiteProductsList({ onNavigate }: { onNavigate?: () => void }) {
+  const modules = useModules();
   return (
     <div>
       <div className="px-3 mb-1">
         <span className="text-xs font-semibold uppercase tracking-wide text-faint">Products</span>
       </div>
       <div className="flex flex-col gap-0.5">
-        {MODULES.map((m) => (
+        {modules.map((m) => (
           <ModuleRow key={m.key} module={m} onNavigate={onNavigate} />
         ))}
       </div>

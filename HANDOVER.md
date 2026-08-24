@@ -137,6 +137,40 @@ between "migration applied" and "new code live".
 
 ---
 
+## File storage (résumés, photos, ad creatives, logos)
+
+Every uploaded file (`POST /api/uploads`, used across the app — seller/employer logos, listing
+photos, ad creative images, candidate résumés) goes through `backend/lib/uploadStorage.js`, a
+pluggable adapter selected by `backend/.env`'s `UPLOAD_STORAGE`:
+
+- **`local`** (default) — writes into `frontend/public/uploads/`, served by Next as a static
+  asset. Zero setup; this is what a fresh clone uses out of the box. Not durable across a
+  redeploy/scale-out to multiple instances, and not backed up by anything — fine for a demo/POC,
+  not for production.
+- **`s3`** — uploads to an S3 bucket instead. **Moving to S3 needs no code change**, only env
+  vars:
+  ```bash
+  UPLOAD_STORAGE=s3
+  AWS_REGION=ap-south-1
+  AWS_S3_BUCKET=bharatsource-uploads
+  # Omit AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY to use the AWS SDK's default credential
+  # chain (IAM role) — the recommended production setup. Only set them for local testing
+  # against a real bucket.
+  # AWS_ACCESS_KEY_ID=
+  # AWS_SECRET_ACCESS_KEY=
+  # Optional — a CloudFront (or other CDN) domain in front of the bucket:
+  # S3_PUBLIC_BASE_URL=https://cdn.bharatsource.in
+  ```
+  **Before flipping this in production**, the bucket needs to actually serve files publicly —
+  uploaded URLs (résumés, photos) are plain unauthenticated links today, matching how local mode
+  already serves `/uploads/*` with no auth. Either: (a) a bucket policy granting public
+  `s3:GetObject`, or (b) put a CloudFront distribution in front of a private bucket and set
+  `S3_PUBLIC_BASE_URL` to its domain. Modern buckets default to "Bucket owner enforced" object
+  ownership, which rejects the old per-object ACL approach — use a bucket policy, not ACLs.
+  The `@aws-sdk/client-s3` package is already a `backend/package.json` dependency (installed).
+
+---
+
 ## Day-to-day checks (the project's definition of "done")
 - Frontend types: `cd frontend && npx tsc --noEmit` → must be clean.
 - API smoke: `curl -s http://localhost:4000/api/config` → `200`.
@@ -162,6 +196,12 @@ SECURITY.md first (the admin panel is reachable at `/admin`).
 3. Put a reverse proxy (Caddy/Nginx/Cloudflare Tunnel) in front of **:3000** for HTTPS.
 4. Set production `JWT_SECRET` + `ADMIN_PASSWORD` + `NODE_ENV=production`.
 5. Schedule a **backup of `backend/DB/`** (it's the whole database).
+6. Decide `UPLOAD_STORAGE` (see "File storage" above) — `local` files don't survive a redeploy
+   or scaling to multiple instances.
+7. **Recruitment stays behind a "Coming soon" page until you explicitly go live** — set
+   `RECRUITMENT_LIVE=true` in `.env` (or flip `featureFlags.recruitmentLive` in the admin
+   Site Config panel, if you'd rather not touch env vars / restart) when it's ready. See
+   RECRUITMENT.md §5.
 
 ---
 

@@ -36,6 +36,7 @@ const DICT: Record<string, { en: string; hi: string }> = {
   "nav.goToDashboard": { en: "Go to dashboard", hi: "डैशबोर्ड पर जाएं" },
   "nav.myProfile": { en: "My Profile", hi: "मेरी प्रोफ़ाइल" },
   "nav.dashboardProfile": { en: "Profile", hi: "प्रोफ़ाइल" },
+  "nav.recruitmentDashboard": { en: "Recruitment profile", hi: "रिक्रूटमेंट प्रोफ़ाइल" },
   "nav.admin": { en: "Admin", hi: "एडमिन" },
   "nav.myListings": { en: "My Listings", hi: "मेरी लिस्टिंग" },
   "nav.inbox": { en: "Inbox", hi: "इनबॉक्स" },

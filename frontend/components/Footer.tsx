@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { useConfig } from "@/lib/config";
 import { DirectoryIcon } from "./suite/products";
@@ -9,32 +9,16 @@ import { RecruitmentIcon } from "./home/icons";
 // Kept in lockstep with SuiteNavMenu's MODULES — the two suite modules with a
 // real destination page today. Consultations/Credit Card/Mutual are future
 // placeholders (see components/suite/products.tsx) and deliberately excluded
-// here, same as the header nav.
-const MODULES: {
+// here, same as the header nav. Recruitment's status tracks
+// featureFlags.recruitmentLive (RECRUITMENT.md §5) rather than being hardcoded.
+interface FooterModule {
   key: string;
   name: string;
   href: string;
   tagline: string;
   status: "live" | "soon";
   Icon: React.FC<{ size?: number }>;
-}[] = [
-  {
-    key: "directory",
-    name: "Directory",
-    href: "/directory",
-    tagline: "Source verified products & suppliers.",
-    status: "live",
-    Icon: DirectoryIcon,
-  },
-  {
-    key: "recruitment",
-    name: "Recruitment",
-    href: "/recruitment",
-    tagline: "Post roles, meet vetted candidates.",
-    status: "soon",
-    Icon: RecruitmentIcon,
-  },
-];
+}
 
 const COMPANY_LINKS = [
   { label: "About", href: "/about" },
@@ -67,7 +51,28 @@ function ColumnLabel({ color, children }: { color: string; children: React.React
 }
 
 export default function Footer() {
-  const { branding, contact, footer } = useConfig();
+  const { branding, contact, footer, featureFlags } = useConfig();
+  const modules: FooterModule[] = useMemo(
+    () => [
+      {
+        key: "directory",
+        name: "Directory",
+        href: "/directory",
+        tagline: "Source verified products & suppliers.",
+        status: "live",
+        Icon: DirectoryIcon,
+      },
+      {
+        key: "recruitment",
+        name: "Recruitment",
+        href: "/recruitment",
+        tagline: "Post roles, meet vetted candidates.",
+        status: featureFlags.recruitmentLive ? "live" : "soon",
+        Icon: RecruitmentIcon,
+      },
+    ],
+    [featureFlags.recruitmentLive]
+  );
   const siteName = branding.siteName || "BharatSource";
   const [head, tail] = splitBrand(siteName);
   const year = new Date().getFullYear();
@@ -133,7 +138,7 @@ export default function Footer() {
           <div className="min-w-[220px]">
             <ColumnLabel color="var(--brand)">Products</ColumnLabel>
             <ul className="flex flex-col gap-3">
-              {MODULES.map((m) => {
+              {modules.map((m) => {
                 const { Icon } = m;
                 return (
                   <li key={m.key}>
