@@ -143,11 +143,16 @@ mapper (matching `backend/lib/db/listings.js`/`users.js`'s batched-`all()` patte
 | My applications (status-tracked) | Recruitment dashboard → My Applications | `GET /api/applications/mine` |
 
 ### Admin
-Backend-only for this build: dedicated moderation endpoints (approve/suspend an employer, moderate a job
-posting), mounted **before** the blanket `/api/admin` guard at their own prefix (`/api/admin/employers`,
-`/api/admin/jobs`) — same nested-admin-route pattern Directory uses for boosts/entitlements/categories
-(`backend/index.js`). **No `/admin` UI work** — the unified cross-product admin experience is a later,
-separate decision.
+**✅ Built (2026-08-25)** — the "later, separate decision" below happened: `/admin` is now a product-scoped
+console (see **ADMIN-CONSOLE.md**) with its own Recruitment section — Employers (approve/suspend),
+Jobs (visibility + pause/activate/close across every status), Taxonomy (Skills/Job Roles/Job Functions
+CRUD), Ads (recruitment placements, employer picker) and Content (employer-authored blogs). Endpoints
+mounted **before** the blanket `/api/admin` guard at their own prefix (`/api/admin/employers`,
+`/api/admin/jobs`, `/api/admin/skills`, `/api/admin/job-roles`, `/api/admin/job-functions`) — same
+nested-admin-route pattern Directory uses for boosts/entitlements/categories (`backend/index.js`). No
+job-moderation review-queue state machine — jobs still default straight to `active` and admin uses the
+existing `PUT /api/jobs/:id` to pause/close one (see the "Known gaps" note below — unchanged, deliberately
+deferred).
 
 ---
 
@@ -266,11 +271,12 @@ suite — `index.js` doesn't currently export `app` separately from its `listen(
 which a proper supertest-style suite would need; DIRECTORY.md flags the same "no
 automated tests" gap for the whole app, not something unique to Recruitment).
 
-Admin: employer approve/suspend exists; there is **no dedicated job-moderation queue**
+Admin: employer approve/suspend and job visibility now have a UI (ADMIN-CONSOLE.md's Recruitment
+section — Employers/Jobs tabs); there is still **no dedicated job-moderation queue**
 (unlike Directory's AI-verification pending-review list) — jobs default straight to
-`status:"active"` and an admin can already `PUT /api/jobs/:id` to pause/close one, which
-covers "stop a bad posting" without a full review queue. Add one later if volume
-warrants it.
+`status:"active"` and an admin can already pause/close one from the Jobs tab (`PUT /api/jobs/:id`
+under the hood), which covers "stop a bad posting" without a full review queue. Add one later if
+volume warrants it.
 
 ### Phases 2+3 — Frontend: employer + candidate flows
 ✅ Mostly done (2026-08-24), built together in one pass rather than sequentially (the
@@ -513,7 +519,8 @@ ordering implied — it's no longer a pre-launch nicety, it's the only thing cur
 standing between "in development" and "publicly reachable."
 
 ### Deferred (explicitly out of scope for this build)
-- Unified admin panel managing Directory + Recruitment data together.
+- ~~Unified admin panel managing Directory + Recruitment data together.~~ **✅ Built 2026-08-25** — see
+  ADMIN-CONSOLE.md.
 - A dedicated job-moderation review queue (see Phase 1 note above — basic admin capability exists).
 - SQL-level WHERE-pushdown for `GET /api/jobs`/`GET /api/applications` — both fetch via
   `store.findMany` and filter/paginate in JS, matching Directory's own current approach

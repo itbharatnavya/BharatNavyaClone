@@ -28,6 +28,9 @@ import type {
   User,
   SellerStatus,
   PlanTier,
+  JobFunction,
+  JobRole,
+  Skill,
 } from "@/lib/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -400,6 +403,141 @@ export function adminDeleteFeature(id: string): Promise<{ deleted: boolean }> {
 }
 
 // ============================================================
+// Recruitment: Employer approval (routes/adminEmployers.js, /api/admin/employers)
+// ============================================================
+export interface EmployerRow {
+  id: string;
+  name: string;
+  email?: string | null;
+  mobile?: string | null;
+  createdAt?: string;
+  companyName: string;
+  slug: string;
+  industry?: string | null;
+  companySize?: string | null;
+  location?: { city?: string; state?: string } | null;
+  status: "pending" | "approved" | "suspended";
+  isVerified: boolean;
+  planTier?: string | null;
+}
+
+export function adminGetEmployers(
+  status?: "pending" | "approved" | "suspended" | "all"
+): Promise<EmployerRow[]> {
+  const qs = status && status !== "all" ? `?status=${status}` : "";
+  return req<EmployerRow[]>(`/api/admin/employers${qs}`);
+}
+export function adminApproveEmployer(userId: string): Promise<{ id: string; status: string }> {
+  return req(`/api/admin/employers/${userId}/approve`, { method: "POST" });
+}
+export function adminSuspendEmployer(userId: string): Promise<{ id: string; status: string }> {
+  return req(`/api/admin/employers/${userId}/suspend`, { method: "POST" });
+}
+
+// ============================================================
+// Recruitment: Jobs admin visibility (routes/adminJobs.js, /api/admin/jobs)
+// Mutations (pause/activate/close) reuse the existing lib/api.ts `updateJob`
+// (PUT /api/jobs/:id — isOwnerOrAdmin already lets an admin patch status).
+// ============================================================
+export interface AdminJobRow {
+  id: string;
+  title: string;
+  status: "active" | "paused" | "closed" | "draft";
+  employmentType?: string | null;
+  experienceLevel?: string | null;
+  location?: { city?: string; state?: string; remote?: boolean } | null;
+  postedAt?: string;
+  applicationCount?: number;
+  employerId: string;
+  employerCompany: string;
+  employerStatus: "pending" | "approved" | "suspended" | null;
+}
+export interface AdminJobQuery {
+  status?: "active" | "paused" | "closed" | "draft" | "all";
+  employerId?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+export interface AdminJobPage {
+  jobs: AdminJobRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export function adminGetJobs(query: AdminJobQuery = {}): Promise<AdminJobPage> {
+  const usp = new URLSearchParams();
+  if (query.status && query.status !== "all") usp.set("status", query.status);
+  if (query.employerId) usp.set("employerId", query.employerId);
+  if (query.q) usp.set("q", query.q);
+  usp.set("page", String(query.page || 1));
+  usp.set("limit", String(query.limit || 20));
+  return req<AdminJobPage>(`/api/admin/jobs?${usp.toString()}`);
+}
+
+// ============================================================
+// Recruitment taxonomy admin CRUD — Skills / Job Roles / Job Functions
+// (routes/adminSkills.js, adminJobRoles.js, adminJobFunctions.js). Each GET
+// returns every row including inactive ones (the public reads filter those out).
+// ============================================================
+export function adminGetJobFunctions(): Promise<JobFunction[]> {
+  return req<JobFunction[]>(`/api/admin/job-functions`);
+}
+export function adminCreateJobFunction(body: { name: string; order?: number }): Promise<JobFunction> {
+  return req<JobFunction>(`/api/admin/job-functions`, { method: "POST", body: JSON.stringify(body) });
+}
+export function adminUpdateJobFunction(
+  id: string,
+  body: Partial<{ name: string; order: number; isActive: boolean }>
+): Promise<JobFunction> {
+  return req<JobFunction>(`/api/admin/job-functions/${id}`, { method: "PUT", body: JSON.stringify(body) });
+}
+export function adminDeleteJobFunction(id: string): Promise<{ deleted: boolean }> {
+  return req<{ deleted: boolean }>(`/api/admin/job-functions/${id}`, { method: "DELETE" });
+}
+
+export function adminGetJobRoles(): Promise<JobRole[]> {
+  return req<JobRole[]>(`/api/admin/job-roles`);
+}
+export function adminCreateJobRole(body: {
+  title: string;
+  jobFunction?: string | null;
+  order?: number;
+}): Promise<JobRole> {
+  return req<JobRole>(`/api/admin/job-roles`, { method: "POST", body: JSON.stringify(body) });
+}
+export function adminUpdateJobRole(
+  id: string,
+  body: Partial<{ title: string; jobFunction: string | null; order: number; isActive: boolean }>
+): Promise<JobRole> {
+  return req<JobRole>(`/api/admin/job-roles/${id}`, { method: "PUT", body: JSON.stringify(body) });
+}
+export function adminDeleteJobRole(id: string): Promise<{ deleted: boolean }> {
+  return req<{ deleted: boolean }>(`/api/admin/job-roles/${id}`, { method: "DELETE" });
+}
+
+export function adminGetSkills(): Promise<Skill[]> {
+  return req<Skill[]>(`/api/admin/skills`);
+}
+export function adminCreateSkill(body: {
+  name: string;
+  jobFunction?: string | null;
+  order?: number;
+}): Promise<Skill> {
+  return req<Skill>(`/api/admin/skills`, { method: "POST", body: JSON.stringify(body) });
+}
+export function adminUpdateSkill(
+  id: string,
+  body: Partial<{ name: string; jobFunction: string | null; order: number; isActive: boolean }>
+): Promise<Skill> {
+  return req<Skill>(`/api/admin/skills/${id}`, { method: "PUT", body: JSON.stringify(body) });
+}
+export function adminDeleteSkill(id: string): Promise<{ deleted: boolean }> {
+  return req<{ deleted: boolean }>(`/api/admin/skills/${id}`, { method: "DELETE" });
+}
+
+// ============================================================
 // Reports moderation — GET/resolve/dismiss (routes/admin.js)
 // ============================================================
 export interface AdminReport {
@@ -587,14 +725,19 @@ export interface ModerationItem {
   title: string;
   snippet: string;
   author: string;
+  authorType: "seller" | "employer" | null;
   target: string | null; // for reviews: the company being reviewed
   status: string; // published | draft | hidden | approved | pending
   date: string | null;
   href: string | null;
 }
 
-export function adminGetContent(type: ModerationType): Promise<ModerationItem[]> {
-  return req<ModerationItem[]>(`/api/admin/moderation/content?type=${type}`);
+export function adminGetContent(
+  type: ModerationType,
+  authorType?: "seller" | "employer"
+): Promise<ModerationItem[]> {
+  const qs = authorType ? `&authorType=${authorType}` : "";
+  return req<ModerationItem[]>(`/api/admin/moderation/content?type=${type}${qs}`);
 }
 
 export function adminModerate(

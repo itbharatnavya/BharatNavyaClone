@@ -3,10 +3,22 @@
 // components/admin/AdsTab.tsx — ad inventory (slots) + campaign bookings.
 //
 // Bookings drive the public slider (routes/ads.js): the admin controls
-//   • WHERE  — placementType (category_top / search_top / home_hero)   [dropdown]
-//   • WHICH  — target category (empty = all) + advertiser seller + listing [dropdowns]
+//   • WHERE  — placementType (category_top / search_top / home_hero, or the
+//              recruitment_* equivalents)   [dropdown]
+//   • WHICH  — target category (Directory only; empty = all) + advertiser
+//              (seller or employer, scoped by `product`) + listing (Directory only)
 //              plus the creative (image, headline, click-through URL)
 //   • HOW/WHEN — start/end date, priority, status (active / scheduled / paused)
+//
+// Scoped by `product`: Directory books against sellers/listings/categories exactly as
+// before; Recruitment books against employers instead. No "advertise a specific job"
+// picker — ad_bookings.listing_id has a DB foreign key straight to Directory's
+// `listings` table (schema.sql), so a job id can't be stored there without a schema
+// change; the existing free-text "Click-through URL" field already covers linking a
+// specific job manually. Target category is likewise Directory-only (categories don't
+// apply to Recruitment placements) and hidden for that product. See ADMIN-CONSOLE.md
+// §Phase 5 for the full reasoning. Ad slots (inventory) aren't split — a slot is just
+// a generic name+size+placementType, not tied to either product in the data model.
 //
 // All selection inputs are native dropdowns (mobile-friendly, non-technical
 // admin). Bookings can be created and edited in place.
@@ -22,10 +34,11 @@ import {
   getCategories,
   getListings,
   adminSellers,
+  adminGetEmployers,
   type AdSlotRow,
   type AdBookingRow,
 } from "./adminApi";
-import type { Category, User, Listing } from "@/lib/types";
+import type { Category, Listing } from "@/lib/types";
 import {
   SectionHeader,
   Panel,
@@ -46,11 +59,13 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { useToast } from "@/components/Toast";
 
-// Placement destinations the public serving layer understands.
-const PLACEMENT_OPTIONS = [
+// Placement destinations the public serving layer understands, split by product.
+const DIRECTORY_PLACEMENTS = [
   { value: "category_top", label: "Category top (category pages)" },
   { value: "search_top", label: "Search top (search results)" },
   { value: "home_hero", label: "Home hero (homepage)" },
+];
+const RECRUITMENT_PLACEMENTS = [
   { value: "recruitment_home", label: "Recruitment — home page" },
   { value: "recruitment_search_top", label: "Recruitment — job search top" },
 ];
@@ -78,28 +93,37 @@ interface BookingForm {
   status: string;
 }
 
-const EMPTY_BOOKING: BookingForm = {
-  placementType: "category_top",
-  categorySlug: "",
-  sellerId: "",
-  listingId: "",
-  creativeImageUrl: "",
-  headline: "",
-  targetUrl: "",
-  startDate: "",
-  endDate: "",
-  priority: "0",
-  amount: "",
-  status: "active",
-};
+function emptyBooking(placementType: string): BookingForm {
+  return {
+    placementType,
+    categorySlug: "",
+    sellerId: "",
+    listingId: "",
+    creativeImageUrl: "",
+    headline: "",
+    targetUrl: "",
+    startDate: "",
+    endDate: "",
+    priority: "0",
+    amount: "",
+    status: "active",
+  };
+}
 
-export default function AdsTab() {
+interface AdsTabProps {
+  product?: "directory" | "recruitment";
+}
+
+export default function AdsTab({ product = "directory" }: AdsTabProps) {
   const { addToast } = useToast();
+  const isRecruitment = product === "recruitment";
+  const placementOptions = isRecruitment ? RECRUITMENT_PLACEMENTS : DIRECTORY_PLACEMENTS;
+
   const [slots, setSlots] = useState<AdSlotRow[]>([]);
   const [bookings, setBookings] = useState<AdBookingRow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [sellers, setSellers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [advertisers, setAdvertisers] = useState<{ id: string; label: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,13 +140,23 @@ export default function AdsTab() {
   // booking modal
   const [bookOpen, setBookOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [bookForm, setBookForm] = useState<BookingForm>(EMPTY_BOOKING);
+  const [bookForm, setBookForm] = useState<BookingForm>(emptyBooking(placementOptions[0].value));
   const [savingBook, setSavingBook] = useState(false);
 
   async function load() {
     setLoading(true);
     setError(null);
     try {
+      if (isRecruitment) {
+        const [s, b, emps] = await Promise.all([getAdSlots(), getAdBookings(), adminGetEmployers("approved")]);
+        setSlots(s);
+        setBookings(b);
+        setAdvertisers(emps.map((e) => ({ id: e.id, label: e.companyName })));
+        setCategories([]);
+        setListings([]);
+        setLoading(false);
+        return;
+      }
       const [s, b, cats, sel, lst] = await Promise.all([
         getAdSlots(),
         getAdBookings(),
@@ -133,7 +167,7 @@ export default function AdsTab() {
       setSlots(s);
       setBookings(b);
       setCategories(cats);
-      setSellers(sel);
+      setAdvertisers(sel.map((u) => ({ id: u.id, label: u.sellerProfile?.companyName || u.name || u.id })));
       setListings(lst.listings || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load ads");
@@ -143,7 +177,8 @@ export default function AdsTab() {
   }
   useEffect(() => {
     void load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
 
   async function toggleSlot(slot: AdSlotRow) {
     try {
@@ -176,14 +211,14 @@ export default function AdsTab() {
 
   function openNewBooking() {
     setEditingId(null);
-    setBookForm(EMPTY_BOOKING);
+    setBookForm(emptyBooking(placementOptions[0].value));
     setBookOpen(true);
   }
 
   function openEditBooking(b: AdBookingRow) {
     setEditingId(b.id);
     setBookForm({
-      placementType: b.placementType || "category_top",
+      placementType: b.placementType || placementOptions[0].value,
       categorySlug: (b.categoryIds && b.categoryIds[0]) || b.categoryId || "",
       sellerId: b.sellerId || "",
       listingId: b.listingId || "",
@@ -225,7 +260,7 @@ export default function AdsTab() {
       }
       setBookOpen(false);
       setEditingId(null);
-      setBookForm(EMPTY_BOOKING);
+      setBookForm(emptyBooking(placementOptions[0].value));
       await load();
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed", "error");
@@ -247,12 +282,9 @@ export default function AdsTab() {
   const sellerOptions = useMemo(
     () => [
       { value: "", label: "— No advertiser —" },
-      ...sellers.map((u) => ({
-        value: u.id,
-        label: u.sellerProfile?.companyName || u.name || u.id,
-      })),
+      ...advertisers.map((a) => ({ value: a.id, label: a.label })),
     ],
-    [sellers]
+    [advertisers]
   );
 
   // Advertise-a-listing picker, scoped to the chosen advertiser when set.
@@ -269,9 +301,7 @@ export default function AdsTab() {
   const slotName = (id?: string | null) =>
     slots.find((s) => s.id === id)?.name || id || "—";
   const sellerName = (id?: string | null) =>
-    (id && sellers.find((u) => u.id === id)?.sellerProfile?.companyName) ||
-    id ||
-    "—";
+    (id && advertisers.find((a) => a.id === id)?.label) || id || "—";
   const catName = (slug: string) =>
     categories.find((c) => c.slug === slug)?.name || slug;
   const targetingLabel = (b: AdBookingRow) => {
@@ -287,7 +317,11 @@ export default function AdsTab() {
     <div>
       <SectionHeader
         title="Ads"
-        subtitle="Ad slot inventory and sponsored placement bookings."
+        subtitle={
+          isRecruitment
+            ? "Sponsored placement bookings on Recruitment pages."
+            : "Ad slot inventory and sponsored placement bookings."
+        }
       />
 
       <div className="space-y-6">
@@ -485,19 +519,21 @@ export default function AdsTab() {
                 setBookForm({ ...bookForm, placementType: e.target.value })
               }
               hint="Which slot this ad runs in."
-              options={PLACEMENT_OPTIONS}
+              options={placementOptions}
             />
+            {!isRecruitment && (
+              <Select
+                label="Target category"
+                value={bookForm.categorySlug}
+                onChange={(e) =>
+                  setBookForm({ ...bookForm, categorySlug: e.target.value })
+                }
+                hint="Leave on “All categories” to run everywhere."
+                options={categoryOptions}
+              />
+            )}
             <Select
-              label="Target category"
-              value={bookForm.categorySlug}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, categorySlug: e.target.value })
-              }
-              hint="Leave on “All categories” to run everywhere."
-              options={categoryOptions}
-            />
-            <Select
-              label="Advertiser (seller)"
+              label={isRecruitment ? "Advertiser (employer)" : "Advertiser (seller)"}
               value={bookForm.sellerId}
               onChange={(e) =>
                 setBookForm({
@@ -508,20 +544,27 @@ export default function AdsTab() {
               }
               options={sellerOptions}
             />
-            <Select
-              label="Advertise a listing (optional)"
-              value={bookForm.listingId}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, listingId: e.target.value })
-              }
-              hint={
-                bookForm.sellerId
-                  ? "Listings from the selected advertiser."
-                  : "Pick an advertiser to narrow this list."
-              }
-              options={listingOptions}
-            />
+            {!isRecruitment && (
+              <Select
+                label="Advertise a listing (optional)"
+                value={bookForm.listingId}
+                onChange={(e) =>
+                  setBookForm({ ...bookForm, listingId: e.target.value })
+                }
+                hint={
+                  bookForm.sellerId
+                    ? "Listings from the selected advertiser."
+                    : "Pick an advertiser to narrow this list."
+                }
+                options={listingOptions}
+              />
+            )}
           </div>
+          {isRecruitment && (
+            <p className="text-xs text-faint">
+              To promote a specific job, paste its page link into “Click-through URL” below.
+            </p>
+          )}
 
           {/* Creative */}
           <Input

@@ -4,6 +4,11 @@
 // stories. Approve / Hide / Delete. Hiding sets status "hidden", which the public
 // site reads already exclude, so the content disappears from the site immediately.
 // Reviews are NOT moderated — they publish immediately (see routes/reviews.js).
+//
+// Scoped by `product`: Directory sees Blogs+Stories authored by sellers; Recruitment
+// sees Blogs only (authorType=employer) — stories are a seller-only feature today, not
+// extended here. Same component/API either way; ADMIN-CONSOLE.md §3 has the story
+// behind the authorType split (a real "Unknown author" bug on the Recruitment side).
 
 import React, { useEffect, useState } from "react";
 import {
@@ -28,9 +33,12 @@ import Button from "@/components/Button";
 import Select from "@/components/Select";
 import { useToast } from "@/components/Toast";
 
-const TYPE_OPTIONS: { value: ModerationType; label: string }[] = [
+const DIRECTORY_TYPE_OPTIONS: { value: ModerationType; label: string }[] = [
   { value: "blog", label: "Blogs" },
   { value: "story", label: "Stories" },
+];
+const RECRUITMENT_TYPE_OPTIONS: { value: ModerationType; label: string }[] = [
+  { value: "blog", label: "Blogs" },
 ];
 
 // Public (live) statuses per type — everything else is off the site.
@@ -43,8 +51,10 @@ function statusTone(status: string): "green" | "amber" | "red" | "gray" {
   return "gray";
 }
 
-export default function ModerationTab() {
+export default function ModerationTab({ product = "directory" as "directory" | "recruitment" } = {}) {
   const { addToast } = useToast();
+  const typeOptions = product === "recruitment" ? RECRUITMENT_TYPE_OPTIONS : DIRECTORY_TYPE_OPTIONS;
+  const authorType = product === "recruitment" ? "employer" : "seller";
   const [type, setType] = useState<ModerationType>("blog");
   const [items, setItems] = useState<ModerationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +65,7 @@ export default function ModerationTab() {
     setLoading(true);
     setError(null);
     try {
-      setItems(await adminGetContent(type));
+      setItems(await adminGetContent(type, authorType));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load content");
     } finally {
@@ -65,7 +75,7 @@ export default function ModerationTab() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [type, product]);
 
   async function moderate(item: ModerationItem, action: ModerationAction) {
     if (action === "delete" && !window.confirm("Delete this permanently?")) return;
@@ -87,13 +97,17 @@ export default function ModerationTab() {
   }
 
   const typeLabel =
-    TYPE_OPTIONS.find((t) => t.value === type)?.label.toLowerCase() || "items";
+    typeOptions.find((t) => t.value === type)?.label.toLowerCase() || "items";
 
   return (
     <div>
       <SectionHeader
-        title="Moderation"
-        subtitle="Approve, hide or remove vendor blogs and stories. Hidden content is removed from the public site immediately."
+        title="Content"
+        subtitle={
+          product === "recruitment"
+            ? "Approve, hide or remove employer blog posts. Hidden content is removed from the public site immediately."
+            : "Approve, hide or remove seller blogs and stories. Hidden content is removed from the public site immediately."
+        }
         actions={<span className="text-sm text-muted">{items.length} item(s)</span>}
       />
 
@@ -102,7 +116,7 @@ export default function ModerationTab() {
           label="Content type"
           value={type}
           onChange={(e) => setType(e.target.value as ModerationType)}
-          options={TYPE_OPTIONS}
+          options={typeOptions}
         />
       </div>
 

@@ -83,12 +83,21 @@ router.get("/", async (req, res, next) => {
         // that read `g.sellerId` directly (StoriesTab.tsx always found zero of the
         // seller's own stories as a result — StoryRail.tsx happened to survive only
         // because it separately normalises both shapes).
+        // isVerified falls back to employerProfile when sellerProfile is absent — a
+        // Recruitment employer's story used to silently lose its verified badge here
+        // (same author-resolution gap blogs.js's attachAuthors() already handled for
+        // blogs — see ADMIN-CONSOLE.md §3). sellerSlug stays seller-only on purpose:
+        // it feeds a hardcoded `/seller/<slug>` link (StoryViewer.tsx), and the
+        // employer public profile has no stories section to link to yet (deliberately
+        // deferred — see /employer/[slug]/page.tsx's own header comment), so an
+        // employer slug here would just produce a wrong link instead of a dead one.
+        const profile = (u && u.sellerProfile) || (u && u.employerProfile) || null;
         groups.set(story.sellerId, {
           sellerId: story.sellerId,
           sellerName: u ? u.name : "Unknown Seller",
           sellerSlug: u && u.sellerProfile ? u.sellerProfile.slug : null,
           avatarUrl: u ? u.avatarUrl || null : null,
-          isVerified: !!(u && u.sellerProfile && u.sellerProfile.isVerified),
+          isVerified: !!(profile && profile.isVerified),
           stories: [],
         });
       }

@@ -7,7 +7,9 @@
  * same nested-admin-route pattern as boosts/entitlements/categories (CLAUDE.md §5).
  * The whole router is self-guarded below, so it's safe regardless of mount order.
  *
- * GET  /pending        employers awaiting approval
+ * GET  /              all employers, optional ?status=pending|approved|suspended
+ *                      (mirrors GET /api/admin/sellers?status= in routes/admin.js)
+ * GET  /pending        employers awaiting approval (kept — used by the AI/legacy path)
  * POST /:userId/approve
  * POST /:userId/suspend
  */
@@ -19,6 +21,29 @@ const store = require("../lib/store");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 router.use(authGuard, requireRole("admin"));
+
+router.get("/", async (req, res, next) => {
+  try {
+    const status = req.query.status;
+    let employers = await store.findMany("users.json", (u) => !!u.employerProfile);
+    if (status && status !== "all") {
+      employers = employers.filter((u) => u.employerProfile.status === status);
+    }
+    const data = employers
+      .map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        mobile: u.mobile,
+        createdAt: u.createdAt,
+        ...u.employerProfile,
+      }))
+      .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    return res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.get("/pending", async (req, res, next) => {
   try {

@@ -51,15 +51,20 @@ function snippet(text, len = 140) {
   return s.length > len ? `${s.slice(0, len)}…` : s;
 }
 
-/** Build a sellerId → { company, name } lookup from users.json. */
-async function sellerLookup() {
+/** Build a userId → { company, name, type } lookup from users.json. Falls back to
+ *  employerProfile when sellerProfile is absent — a Recruitment employer's blog/story
+ *  used to resolve to nothing here (blogs.js's own attachAuthors() already handles
+ *  both; only this admin-side lookup had the gap — see ADMIN-CONSOLE.md §3). */
+async function authorLookup() {
   const users = await store.all("users.json");
   const byId = new Map();
   for (const u of users) {
     const sp = u && u.sellerProfile;
+    const ep = u && u.employerProfile;
     byId.set(u.id, {
-      company: (sp && sp.companyName) || u.name || null,
+      company: (sp && sp.companyName) || (ep && ep.companyName) || u.name || null,
       name: u.name || null,
+      type: sp ? "seller" : ep ? "employer" : null,
     });
   }
   return byId;
@@ -67,14 +72,16 @@ async function sellerLookup() {
 
 /** Normalize one row of the given type into a uniform moderation item. */
 function toItem(type, row, byId) {
+  const who = byId.get(row.sellerId);
+  const authorType = (who && who.type) || null;
   if (type === "blog") {
-    const who = byId.get(row.sellerId);
     return {
       id: row.id,
       type,
       title: row.title || "(untitled)",
       snippet: snippet(row.excerpt || row.body),
       author: (who && who.company) || "Unknown",
+      authorType,
       target: null,
       status: row.status || "published",
       date: row.publishedAt || row.createdAt || null,
@@ -82,13 +89,13 @@ function toItem(type, row, byId) {
     };
   }
   // story
-  const who = byId.get(row.sellerId);
   return {
     id: row.id,
     type,
     title: row.caption ? snippet(row.caption, 60) : "Story",
     snippet: row.media ? `${row.media.type || "media"} · ${row.media.url || ""}` : "",
     author: (who && who.company) || "Unknown",
+    authorType,
     target: null,
     status: row.status || "published",
     date: row.createdAt || null,
@@ -97,7 +104,9 @@ function toItem(type, row, byId) {
 }
 
 /* =========================================================== content queue == */
-// GET /content?type=blog|story|review — every row (hidden/pending included).
+// GET /content?type=blog|story&authorType=seller|employer — every row (hidden/pending
+// included), optionally scoped to which product's accounts authored it (mirrors
+// blogs.js's own GET / authorType filter, applied post-lookup the same way).
 router.get("/content", async (req, res, next) => {
   try {
     const type = String(req.query.type || "").toLowerCase();
@@ -107,10 +116,14 @@ router.get("/content", async (req, res, next) => {
         .status(400)
         .json({ success: false, error: "type must be blog | story" });
     }
-    const [rows, byId] = await Promise.all([store.all(meta.file), sellerLookup()]);
-    const items = rows
+    const authorType = req.query.authorType;
+    const [rows, byId] = await Promise.all([store.all(meta.file), authorLookup()]);
+    let items = rows
       .map((r) => toItem(type, r, byId))
       .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    if (authorType === "seller" || authorType === "employer") {
+      items = items.filter((i) => i.authorType === authorType);
+    }
     return res.json({ success: true, data: items });
   } catch (err) {
     next(err);
@@ -127,7 +140,7 @@ router.get("/verifications", async (req, res, next) => {
     const status = req.query.status;
     const [rows, byId] = await Promise.all([
       store.all(VERIFICATIONS),
-      sellerLookup(),
+      authorLookup(),
     ]);
     let list = rows;
     if (status && status !== "all") list = list.filter((r) => r.status === status);
