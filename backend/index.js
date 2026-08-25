@@ -41,6 +41,8 @@ app.use("/api/listings", require("./routes/listings"));
 app.use("/api/reviews", require("./routes/reviews"));
 app.use("/api/inquiries", require("./routes/inquiries"));
 app.use("/api/job-functions", require("./routes/jobFunctions")); // Recruitment: flat job taxonomy (public read)
+app.use("/api/job-roles", require("./routes/jobRoles")); // Recruitment: predefined job-title picklist (public read)
+app.use("/api/skills", require("./routes/skills")); // Recruitment: predefined skills picklist (public read)
 app.use("/api/jobs", require("./routes/jobs")); // Recruitment: job postings (RECRUITMENT.md)
 app.use("/api/applications", require("./routes/applications")); // Recruitment: candidate applications
 app.use("/api/admin/employers", require("./routes/adminEmployers")); // Recruitment: employer approval (guarded inside; before /api/admin)

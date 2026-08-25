@@ -80,8 +80,12 @@ export default function BlogArticlePage({
     );
   }
 
-  const vendorName = author?.name || "BharatSource Seller";
+  const isEmployerAuthor = author?.type === "employer";
+  const vendorName = author?.name || (isEmployerAuthor ? "A company on BharatSource" : "BharatSource Seller");
   const vendorSlug = author?.slug;
+  // Employer authors link to their /employer/<slug> profile, not /seller/<slug> —
+  // build plan Phase 7, needed once /recruitment/blog started linking articles here.
+  const vendorHref = vendorSlug ? (isEmployerAuthor ? `/employer/${vendorSlug}` : `/seller/${vendorSlug}`) : null;
   const dateStr = fmtDate(blog.publishedAt || blog.createdAt);
   const listingCount = profile?.listings?.length ?? 0;
   const aboutText = profile?.seller?.about;
@@ -90,7 +94,7 @@ export default function BlogArticlePage({
     <article className="container-bs section-pad-sm" style={{ maxWidth: 760 }}>
       <Breadcrumbs
         items={[
-          { label: "Blog", href: "/blog" },
+          isEmployerAuthor ? { label: "Recruitment blog", href: "/recruitment/blog" } : { label: "Blog", href: "/blog" },
           { label: blog.title },
         ]}
         className="mb-4"
@@ -124,9 +128,9 @@ export default function BlogArticlePage({
           flexWrap: "wrap",
         }}
       >
-        {vendorSlug ? (
+        {vendorHref ? (
           <Link
-            href={`/seller/${vendorSlug}`}
+            href={vendorHref}
             style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}
             title={`Visit ${vendorName}`}
           >
@@ -182,11 +186,11 @@ export default function BlogArticlePage({
           <Avatar src={author?.logo} name={vendorName} size={48} />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 600, letterSpacing: "0.02em" }}>
-              {t("blog.aboutVendorEyebrow", "ABOUT THE VENDOR")}
+              {isEmployerAuthor ? t("blog.aboutCompanyEyebrow", "ABOUT THE COMPANY") : t("blog.aboutVendorEyebrow", "ABOUT THE VENDOR")}
             </div>
-            {vendorSlug ? (
+            {vendorHref ? (
               <Link
-                href={`/seller/${vendorSlug}`}
+                href={vendorHref}
                 className="line-clamp-1"
                 style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}
               >
@@ -209,20 +213,25 @@ export default function BlogArticlePage({
           </p>
         )}
 
-        {vendorSlug ? (
+        {vendorHref ? (
           <div className="vendor-card-actions">
-            <Link href={`/seller/${vendorSlug}`} className="btn btn-primary btn-sm">
-              {t("blog.viewVendorProfile", "View vendor profile")}
+            <Link href={vendorHref} className="btn btn-primary btn-sm">
+              {isEmployerAuthor ? t("blog.viewCompanyProfile", "View company profile") : t("blog.viewVendorProfile", "View vendor profile")}
             </Link>
-            <Link href={`/seller/${vendorSlug}`} className="btn btn-secondary btn-sm">
-              {listingCount > 0
-                ? t("blog.viewVendorListingsN", `View ${listingCount} listings`)
-                : t("blog.viewVendorListings", "View their listings")}
-            </Link>
+            {/* Listings are a Directory/seller concept — an employer author has none. */}
+            {!isEmployerAuthor && (
+              <Link href={vendorHref} className="btn btn-secondary btn-sm">
+                {listingCount > 0
+                  ? t("blog.viewVendorListingsN", `View ${listingCount} listings`)
+                  : t("blog.viewVendorListings", "View their listings")}
+              </Link>
+            )}
           </div>
         ) : (
           <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 12 }}>
-            {t("blog.vendorUnlinked", "This vendor's public profile isn't available yet.")}
+            {isEmployerAuthor
+              ? t("blog.companyUnlinked", "This company's public profile isn't available yet.")
+              : t("blog.vendorUnlinked", "This vendor's public profile isn't available yet.")}
           </p>
         )}
       </div>
@@ -238,11 +247,11 @@ export default function BlogArticlePage({
           flexWrap: "wrap",
         }}
       >
-        <Link href="/blog" className="btn btn-ghost btn-sm">
-          ← {t("blog.allArticles", "All articles")}
+        <Link href={isEmployerAuthor ? "/recruitment/blog" : "/blog"} className="btn btn-ghost btn-sm">
+          ← {isEmployerAuthor ? t("blog.allRecruitmentArticles", "All articles") : t("blog.allArticles", "All articles")}
         </Link>
-        {vendorSlug && (
-          <Link href={`/seller/${vendorSlug}`} className="btn btn-secondary btn-sm">
+        {vendorHref && (
+          <Link href={vendorHref} className="btn btn-secondary btn-sm">
             {t("blog.moreFromVendor", `More from ${vendorName}`)}
           </Link>
         )}

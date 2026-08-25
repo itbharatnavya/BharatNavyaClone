@@ -807,6 +807,9 @@ router.post("/become-employer", authGuard, async (req, res, next) => {
       contactMobile: b.contactMobile || req.user.mobile || "",
       contactEmail: b.contactEmail || req.user.email || null,
       location: { city: b.city || req.user.city || "", state: b.state || req.user.state || "" },
+      employeeCount: b.employeeCount || null,
+      benefits: Array.isArray(b.benefits) ? b.benefits.map((x) => String(x).trim()).filter(Boolean) : [],
+      workingHours: b.workingHours || null,
       // --- trust / verification + monetization (admin-owned) ---
       status: "pending",
       isVerified: false,
@@ -841,10 +844,16 @@ router.put("/me/employer", authGuard, async (req, res, next) => {
     const allowed = [
       "about", "logo", "coverImage", "industry", "companySize", "website",
       "contactMobile", "contactEmail", "location",
+      "employeeCount", "benefits", "workingHours",
     ];
     const patch = {};
     for (const key of allowed) {
       if (b[key] !== undefined) patch[key] = b[key];
+    }
+    if (patch.benefits !== undefined) {
+      patch.benefits = Array.isArray(patch.benefits)
+        ? patch.benefits.map((x) => String(x).trim()).filter(Boolean)
+        : [];
     }
     const employerProfile = { ...req.user.employerProfile, ...patch };
     const updated = await store.update("users.json", req.user.id, { employerProfile });

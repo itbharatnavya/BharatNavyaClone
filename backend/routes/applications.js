@@ -22,8 +22,14 @@ const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
 
+// Employer-settable statuses via POST /:id/status — "withdrawn" is deliberately NOT in
+// this set, since it's a candidate-only transition (see POST /:id/withdraw below), not
+// something an employer can set on a candidate's behalf.
 const VALID_STATUSES = ["applied", "viewed", "shortlisted", "interview", "rejected", "hired"];
 const VALID_STATUS_SET = new Set(VALID_STATUSES);
+// Every status an application can actually hold, used only to validate the GET /
+// ?status= filter (an employer should be able to filter on withdrawn applications too).
+const ALL_STATUSES_SET = new Set([...VALID_STATUSES, "withdrawn"]);
 
 /* ------------------------------------------------------------- helpers ----- */
 
@@ -51,7 +57,10 @@ function candidateMiniOf(user) {
 
 function jobMiniOf(job) {
   if (!job) return null;
-  return { id: job.id, title: job.title, jobFunction: job.jobFunction, status: job.status };
+  // questions included so the candidate's My Applications view can show each answer
+  // next to its actual question text (build plan Phase 3) — this is the same
+  // job.questions array already shown to the candidate during apply, not new exposure.
+  return { id: job.id, title: job.title, jobFunction: job.jobFunction, status: job.status, questions: job.questions || [] };
 }
 
 function canViewApplication(user, application, job) {
@@ -209,7 +218,7 @@ router.get("/mine", authGuard, async (req, res, next) => {
 router.get("/", authGuard, async (req, res, next) => {
   try {
     const { jobId, status } = req.query;
-    if (status !== undefined && !VALID_STATUS_SET.has(status)) {
+    if (status !== undefined && !ALL_STATUSES_SET.has(status)) {
       return res.status(400).json({ success: false, error: "invalid status filter" });
     }
 
@@ -298,6 +307,49 @@ router.post("/:id/status", authGuard, async (req, res, next) => {
       jobTitle: job ? job.title : null,
       applicationId: application.id,
       status,
+    }).catch(() => {});
+
+    return res.json({ success: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* ----------------------------------------------- POST /:id/withdraw ------- */
+// Candidate-only, self-service withdrawal (build-plan Phase 1/3). Blocked once
+// hired (nothing to withdraw from) or already withdrawn. Unlike POST /:id/status,
+// this is never reachable by the employer — the candidate is the only party who can
+// initiate it, mirroring the applied-by-candidate-only shape of POST / above.
+router.post("/:id/withdraw", authGuard, async (req, res, next) => {
+  try {
+    const application = await store.getById("applications.json", req.params.id);
+    if (!application) {
+      return res.status(404).json({ success: false, error: "Application not found" });
+    }
+    if (application.candidateId !== req.user.id) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
+    if (application.status === "withdrawn") {
+      return res.status(400).json({ success: false, error: "This application is already withdrawn" });
+    }
+    if (application.status === "hired") {
+      return res.status(400).json({ success: false, error: "Cannot withdraw a hired application" });
+    }
+
+    const now = new Date().toISOString();
+    const statusHistory = [...(application.statusHistory || []), { status: "withdrawn", note: null, changedAt: now }];
+    const updated = await store.update("applications.json", req.params.id, {
+      status: "withdrawn",
+      statusHistory,
+      updatedAt: now,
+    });
+
+    const job = await store.getById("jobs.json", application.jobId);
+    createNotification(application.employerId, "application_withdrawn", {
+      jobId: application.jobId,
+      jobTitle: job ? job.title : null,
+      applicationId: application.id,
+      candidateName: req.user.name,
     }).catch(() => {});
 
     return res.json({ success: true, data: updated });

@@ -98,6 +98,9 @@ const EMPLOYER_COLUMNS = {
   contactMobile: col("contact_mobile", t), contactEmail: col("contact_email", t),
   status: col("status", t), isVerified: col("is_verified", b), planTier: col("plan_tier", t),
   jobPostLimit: col("job_post_limit", i), applicationQuota: col("application_quota", i),
+  // Build-plan Phase 1 (0006_add_recruitment_profile_extras.sql).
+  employeeCount: col("employee_count", t), benefits: col("benefits", arr),
+  workingHours: col("working_hours", t),
 };
 const EMPLOYER_NESTED = [
   { docKey: "location", fields: { city: col("location_city", t), state: col("location_state", t) } },

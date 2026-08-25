@@ -30,12 +30,17 @@ export interface VendorAuthor {
   slug?: string; // seller-profile slug → enables the /seller/<slug> link
   logo?: string | null; // avatar / logo (Avatar falls back to initials if absent)
   city?: string;
+  // "employer" when the author is a Recruitment employer, not a Directory seller
+  // (blogs.js's attachAuthors sets authorType — build plan Phase 7). Defaults to
+  // "seller" when absent, matching every blog authored before this field existed.
+  type?: "seller" | "employer";
 }
 
 // A blog may (now or later) carry denormalized author fields — read them defensively.
 type BlogWithAuthor = Blog & {
   authorName?: string;
   sellerSlug?: string;
+  authorType?: "seller" | "employer";
   seller?: {
     slug?: string;
     companyName?: string;
@@ -133,7 +138,11 @@ export function vendorFor(
   const slug = fromMap?.slug || b.sellerSlug || b.seller?.slug;
   const logo = fromMap?.logo ?? b.seller?.logo ?? null;
   const city = fromMap?.city || b.seller?.city;
-  return { id: blog.sellerId, name, slug, logo, city };
+  // fromMap only ever resolves sellers (see buildIdSlugMap's sources, all
+  // seller-specific) — an employer author is never in it, so b.authorType is the only
+  // source of truth for that case and always wins when present.
+  const type = b.authorType || "seller";
+  return { id: blog.sellerId, name, slug, logo, city, type };
 }
 
 // Hook for the blog index: resolve the authoring vendor for a set of blogs.
@@ -188,7 +197,12 @@ export function useVendorProfile(blog: Blog | null): {
       const a = vendorFor(blog, map);
       setAuthor(a);
 
-      if (a.slug) {
+      // getSeller() only resolves Directory sellers — an employer author has no
+      // seller_profiles row, so this enrichment step (and the listings-promotion data
+      // it feeds) is skipped for type:"employer"; the best-effort author from
+      // vendorFor() (already correctly name/slug/logo-populated from the blog's own
+      // denormalized fields) is used as-is.
+      if (a.slug && a.type !== "employer") {
         try {
           const p = await getSeller(a.slug);
           if (!active) return;
@@ -200,6 +214,7 @@ export function useVendorProfile(blog: Blog | null): {
             slug: p.seller?.slug || a.slug,
             logo: p.seller?.logo ?? a.logo ?? null,
             city: p.seller?.location?.city || p.city || a.city,
+            type: a.type,
           });
         } catch {
           /* non-fatal — keep the best-effort author */

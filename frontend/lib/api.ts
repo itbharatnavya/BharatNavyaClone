@@ -44,6 +44,8 @@ import type {
   Job,
   JobsResponse,
   JobFunction,
+  JobRole,
+  Skill,
   EmployerProfile,
   CandidateProfile,
   Application,
@@ -612,6 +614,7 @@ export interface BlogQuery {
   sellerId?: string;
   category?: string;
   tag?: string;
+  authorType?: "seller" | "employer";
 }
 
 export function getBlogs(query: BlogQuery = {}): Promise<Blog[]> {
@@ -1589,6 +1592,17 @@ export function getJobFunctions(): Promise<JobFunction[]> {
   return request<JobFunction[]>(`/api/job-functions`);
 }
 
+// ---- job-title / skill picklists (build-plan Phase 1/8) ----
+// Static, admin-seeded suggestions for the candidate profile combobox; both routes are
+// public GET-only, optionally filtered by job function.
+export function getJobRoles(jobFunction?: string): Promise<JobRole[]> {
+  return request<JobRole[]>(`/api/job-roles${toQuery({ jobFunction })}`);
+}
+
+export function getSkills(jobFunction?: string): Promise<Skill[]> {
+  return request<Skill[]>(`/api/skills${toQuery({ jobFunction })}`);
+}
+
 // ---- jobs ----
 export interface JobQuery {
   q?: string;
@@ -1681,6 +1695,13 @@ export function updateApplicationStatus(
     method: "POST",
     body: JSON.stringify({ status, note }),
   });
+}
+
+// Candidate-only self-service withdrawal (build-plan Phase 1/3) — deliberately a
+// separate call from updateApplicationStatus, which an employer uses; withdrawing is
+// never something an employer can trigger on the candidate's behalf.
+export function withdrawApplication(id: string): Promise<Application> {
+  return request<Application>(`/api/applications/${id}/withdraw`, { method: "POST" });
 }
 
 // ---- employer profile ----

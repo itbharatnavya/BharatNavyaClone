@@ -486,10 +486,25 @@ export interface RecentActivityItem {
 // ============================================================
 export type BlogStatus = "draft" | "published";
 
+// Author denormalized server-side (backend/routes/blogs.js's attachAuthors) — present
+// once the author has a sellerProfile or employerProfile; absent (undefined) otherwise.
+export interface BlogAuthor {
+  sellerId: string;
+  type: "seller" | "employer";
+  slug: string | null;
+  companyName: string | null;
+  logo: string | null;
+  city: string | null;
+  isVerified: boolean;
+}
+
 export interface Blog {
   id: string;
   sellerId: string;
   authorName?: string;
+  sellerSlug?: string | null;
+  authorType?: "seller" | "employer";
+  author?: BlogAuthor;
   title: string;
   slug: string;
   coverImage?: string | null;
@@ -863,6 +878,9 @@ export interface EmployerProfile {
   planTier?: string | null;
   jobPostLimit?: number | null;
   applicationQuota?: number | null;
+  employeeCount?: string | null;
+  benefits?: string[];
+  workingHours?: string | null;
 }
 
 export interface CandidateEducation {
@@ -898,7 +916,7 @@ export interface CandidateProfile {
 
 export type EmploymentType = "full-time" | "part-time" | "contract" | "internship" | "freelance";
 export type ExperienceLevel = "entry" | "mid" | "senior" | "lead" | "executive";
-export type JobStatus = "active" | "paused" | "closed" | "pending";
+export type JobStatus = "active" | "paused" | "closed" | "draft" | "pending";
 
 export interface JobLocation {
   city?: string;
@@ -953,6 +971,7 @@ export interface Job {
   questions?: JobQuestion[];
   postedAt: string;
   expiresAt?: string | null;
+  qualification?: string | null;
   employer?: JobEmployerMini | null;
 }
 
@@ -971,20 +990,48 @@ export interface JobFunction {
   isActive: boolean;
 }
 
+// Static, admin-seeded picklists (build-plan Phase 1/8) — job-title and skill
+// suggestions for the candidate profile combobox, each optionally tagged to a
+// JobFunction slug.
+export interface JobRole {
+  id: string;
+  title: string;
+  slug: string;
+  jobFunction: string | null;
+  order: number;
+  isActive: boolean;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  slug: string;
+  jobFunction: string | null;
+  order: number;
+  isActive: boolean;
+}
+
 export type ApplicationStatus = "applied" | "viewed" | "shortlisted" | "interview" | "rejected" | "hired";
+// Full set an Application.status can hold, including the candidate-only "withdrawn"
+// transition — kept separate from ApplicationStatus (which is what an employer may set
+// via updateApplicationStatus) so that function's type doesn't allow it by mistake.
+export type FullApplicationStatus = ApplicationStatus | "withdrawn";
 
 export interface ApplicationStatusEvent {
-  status: ApplicationStatus;
+  status: FullApplicationStatus;
   note: string | null;
   changedAt: string;
 }
 
-// Job mini-object denormalized onto an application.
+// Job mini-object denormalized onto an application. questions included so a candidate's
+// own applications view can pair each of their answers with its question text (build
+// plan Phase 3) — the same questions already shown to them at apply time.
 export interface ApplicationJobMini {
   id: string;
   title: string;
   jobFunction: string | null;
   status: JobStatus;
+  questions?: JobQuestion[];
 }
 
 // Candidate mini-object denormalized onto an application for the employer's review —
@@ -1017,7 +1064,7 @@ export interface Application {
   candidateId: string;
   resumeUrl?: string | null;
   coverNote?: string;
-  status: ApplicationStatus;
+  status: FullApplicationStatus;
   statusHistory: ApplicationStatusEvent[];
   answers?: JobAnswer[];
   appliedAt: string;

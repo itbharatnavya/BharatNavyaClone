@@ -719,7 +719,14 @@ CREATE TABLE IF NOT EXISTS employer_profiles (
   is_verified        BOOLEAN NOT NULL DEFAULT false,
   plan_tier          TEXT,
   job_post_limit     INTEGER,
-  application_quota  INTEGER
+  application_quota  INTEGER,
+  -- Added in 0006_add_recruitment_profile_extras.sql — company-profile fields the
+  -- dashboard build plan needed. employee_count is a text range string, same
+  -- convention as seller_profiles.employee_count (e.g. "11-50"). benefits is
+  -- company-level, distinct from the per-job jobs.benefits list below.
+  employee_count     TEXT,
+  benefits           TEXT[] NOT NULL DEFAULT '{}',
+  working_hours      TEXT
   -- No created_at — mirrors seller_profiles (also none); users.created_at covers it.
 );
 CREATE INDEX IF NOT EXISTS employer_profiles_slug_idx ON employer_profiles(slug);
@@ -785,6 +792,29 @@ CREATE TABLE IF NOT EXISTS job_functions (
   is_active   BOOLEAN NOT NULL DEFAULT true
 );
 
+-- Predefined job-title / skill picklists, tagged to a job_functions.slug (nullable —
+-- some skills, e.g. "Communication", aren't tied to one function). Same flat,
+-- no-FK shape as job_functions above; see 0005_add_recruitment_master_data.sql.
+CREATE TABLE IF NOT EXISTS job_roles (
+  id            TEXT PRIMARY KEY,
+  title         TEXT NOT NULL,
+  slug          TEXT UNIQUE NOT NULL,
+  job_function  TEXT,
+  sort_order    INTEGER NOT NULL DEFAULT 0,
+  is_active     BOOLEAN NOT NULL DEFAULT true
+);
+CREATE INDEX IF NOT EXISTS job_roles_job_function_idx ON job_roles(job_function);
+
+CREATE TABLE IF NOT EXISTS skills (
+  id            TEXT PRIMARY KEY,
+  name          TEXT NOT NULL,
+  slug          TEXT UNIQUE NOT NULL,
+  job_function  TEXT,
+  sort_order    INTEGER NOT NULL DEFAULT 0,
+  is_active     BOOLEAN NOT NULL DEFAULT true
+);
+CREATE INDEX IF NOT EXISTS skills_job_function_idx ON skills(job_function);
+
 -- Job postings. No child tables — skills/responsibilities/requirements/benefits are
 -- simple string lists (text[]), same convention as blogs.tags / categories.facets.
 -- Indexed on every column GET /api/jobs filters or sorts by, so the schema is ready for
@@ -820,7 +850,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   -- 0004_add_recruitment_role_and_questions.sql for why this is jsonb, not a child table.
   questions             JSONB NOT NULL DEFAULT '[]',
   posted_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
-  expires_at            TIMESTAMPTZ
+  expires_at            TIMESTAMPTZ,
+  -- Added in 0006_add_recruitment_profile_extras.sql — education/qualification
+  -- requirement, plain text, distinct from experience_level.
+  qualification         TEXT
 );
 CREATE INDEX IF NOT EXISTS jobs_employer_idx ON jobs(employer_id);
 CREATE INDEX IF NOT EXISTS jobs_status_idx ON jobs(status);

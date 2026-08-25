@@ -4,8 +4,8 @@
 // Small, self-contained building blocks styled with the shared design system
 // (.card / .input / .chip / .field-label). No external state libraries.
 
-import React, { useState } from "react";
-import type { PriceTier, RateCardItem, JobQuestion } from "@/lib/types";
+import React, { useId, useState } from "react";
+import type { PriceTier, RateCardItem, JobQuestion, CandidateEducation, CandidateWorkHistory } from "@/lib/types";
 
 // Small inline "remove/close" icon shared by the row editors below.
 function XIcon({ size = 14 }: { size?: number }) {
@@ -64,14 +64,21 @@ export function TagInput({
   value,
   onChange,
   placeholder,
+  suggestions,
 }: {
   label?: string;
   hint?: string;
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
+  // Optional static picklist (e.g. /api/skills) shown as native browser autocomplete —
+  // a <datalist>, not a custom dropdown, per CLAUDE.md's "prefer native controls"
+  // guidance. Purely a suggestion: typing anything not in the list and pressing
+  // Enter/comma still adds it as a plain custom chip, same as today.
+  suggestions?: string[];
 }) {
   const [text, setText] = useState("");
+  const datalistId = useId();
 
   const commit = () => {
     const parts = text
@@ -142,6 +149,7 @@ export function TagInput({
           }}
           onBlur={commit}
           placeholder={value.length ? "" : placeholder}
+          list={suggestions?.length ? datalistId : undefined}
           style={{
             flex: 1,
             minWidth: 120,
@@ -153,6 +161,13 @@ export function TagInput({
           }}
         />
       </div>
+      {suggestions?.length ? (
+        <datalist id={datalistId}>
+          {suggestions.map((s) => (
+            <option key={s} value={s} />
+          ))}
+        </datalist>
+      ) : null}
       {hint && <p className="field-hint">{hint}</p>}
     </div>
   );
@@ -430,6 +445,120 @@ export function QuestionsEditor({
       ))}
       <button type="button" className="btn btn-secondary btn-sm" onClick={addRow} disabled={value.length >= 20}>
         + Add question
+      </button>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// WorkHistoryEditor — candidate's per-company work history (build plan §2). Same row-
+// editor shape as RateCardEditor/QuestionsEditor.
+// ------------------------------------------------------------
+export function WorkHistoryEditor({
+  value,
+  onChange,
+}: {
+  value: CandidateWorkHistory[];
+  onChange: (next: CandidateWorkHistory[]) => void;
+}) {
+  const update = (i: number, patch: Partial<CandidateWorkHistory>) =>
+    onChange(value.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  const addRow = () => onChange([...value, { company: "", role: "", duration: "", description: "" }]);
+  const removeRow = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  return (
+    <div>
+      {value.map((row, i) => (
+        <div key={i} className="card" style={{ padding: 12, marginBottom: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+            <input
+              className="input"
+              placeholder="Company"
+              value={row.company ?? ""}
+              onChange={(e) => update(i, { company: e.target.value })}
+            />
+            <input
+              className="input"
+              placeholder="Role"
+              value={row.role ?? ""}
+              onChange={(e) => update(i, { role: e.target.value })}
+            />
+          </div>
+          <input
+            className="input"
+            placeholder="Duration (e.g. Jan 2022 – Mar 2024)"
+            value={row.duration ?? ""}
+            onChange={(e) => update(i, { duration: e.target.value })}
+            style={{ marginBottom: 8 }}
+          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <textarea
+              className="textarea"
+              rows={2}
+              placeholder="What you worked on"
+              value={row.description ?? ""}
+              onChange={(e) => update(i, { description: e.target.value })}
+              style={{ flex: 1 }}
+            />
+            <button type="button" className="btn btn-ghost btn-sm" aria-label="Remove work history entry" onClick={() => removeRow(i)}>
+              <XIcon />
+            </button>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="btn btn-secondary btn-sm" onClick={addRow}>
+        + Add past role
+      </button>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// EducationEditor — candidate's education history (build plan §2). Same row-editor
+// shape as the others above.
+// ------------------------------------------------------------
+export function EducationEditor({
+  value,
+  onChange,
+}: {
+  value: CandidateEducation[];
+  onChange: (next: CandidateEducation[]) => void;
+}) {
+  const update = (i: number, patch: Partial<CandidateEducation>) =>
+    onChange(value.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+  const addRow = () => onChange([...value, { degree: "", institution: "", year: undefined }]);
+  const removeRow = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  return (
+    <div>
+      {value.map((row, i) => (
+        <div key={i} style={{ display: "grid", gridTemplateColumns: "1.3fr 1.3fr 0.7fr auto", gap: 8, marginBottom: 8 }}>
+          <input
+            className="input"
+            placeholder="Degree (e.g. B.Tech)"
+            value={row.degree ?? ""}
+            onChange={(e) => update(i, { degree: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Institution"
+            value={row.institution ?? ""}
+            onChange={(e) => update(i, { institution: e.target.value })}
+          />
+          <input
+            className="input"
+            type="number"
+            placeholder="Year"
+            value={row.year ?? ""}
+            onChange={(e) => update(i, { year: e.target.value ? Number(e.target.value) : undefined })}
+          />
+          <button type="button" className="btn btn-ghost btn-sm" aria-label="Remove education entry" onClick={() => removeRow(i)}>
+            <XIcon />
+          </button>
+        </div>
+      ))}
+      <button type="button" className="btn btn-secondary btn-sm" onClick={addRow}>
+        + Add education
       </button>
     </div>
   );

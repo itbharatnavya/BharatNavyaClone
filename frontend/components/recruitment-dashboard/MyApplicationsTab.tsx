@@ -6,24 +6,35 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/Toast";
-import { getMyApplications } from "@/lib/api";
-import type { Application, ApplicationStatus } from "@/lib/types";
+import { getMyApplications, withdrawApplication } from "@/lib/api";
+import type { Application, ApplicationStatus, FullApplicationStatus } from "@/lib/types";
+
+// Mirrors backend/routes/applications.js's POST /:id/withdraw guard exactly (400s on
+// "hired" or already "withdrawn") — kept in sync so the button is never shown enabled
+// when the backend would reject the call.
+function canWithdraw(status: FullApplicationStatus): boolean {
+  return status !== "hired" && status !== "withdrawn";
+}
 
 const PIPELINE: ApplicationStatus[] = ["applied", "viewed", "shortlisted", "interview", "hired"];
-const STATUS_LABEL: Record<ApplicationStatus, string> = {
+// Withdrawn is deliberately not in PIPELINE/STATUS_LABEL's happy-path styling below —
+// it's a candidate-initiated terminal state, styled like rejected (see statusColor).
+const STATUS_LABEL: Record<FullApplicationStatus, string> = {
   applied: "Applied",
   viewed: "Viewed",
   shortlisted: "Shortlisted",
   interview: "Interview",
   hired: "Hired",
   rejected: "Rejected",
+  withdrawn: "Withdrawn",
 };
 
-function statusColor(status: ApplicationStatus): { bg: string; color: string } {
+function statusColor(status: FullApplicationStatus): { bg: string; color: string } {
   switch (status) {
     case "hired":
       return { bg: "#DCFCE7", color: "#166534" };
     case "rejected":
+    case "withdrawn":
       return { bg: "#FEE2E2", color: "#991B1B" };
     case "shortlisted":
     case "interview":
@@ -41,9 +52,12 @@ function formatDate(iso: string): string {
   }
 }
 
-function PipelineTrack({ status }: { status: ApplicationStatus }) {
+function PipelineTrack({ status }: { status: FullApplicationStatus }) {
   if (status === "rejected") {
     return <div style={{ fontSize: 12.5, color: "#991B1B", fontWeight: 600 }}>Not moving forward</div>;
+  }
+  if (status === "withdrawn") {
+    return <div style={{ fontSize: 12.5, color: "#991B1B", fontWeight: 600 }}>Withdrawn by you</div>;
   }
   const idx = PIPELINE.indexOf(status);
   return (
@@ -74,6 +88,7 @@ export default function MyApplicationsTab() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
 
   useEffect(() => {
     getMyApplications()
@@ -81,6 +96,22 @@ export default function MyApplicationsTab() {
       .catch(() => addToast("Could not load your applications.", "error"))
       .finally(() => setLoading(false));
   }, [addToast]);
+
+  async function handleWithdraw(app: Application) {
+    if (!window.confirm(`Withdraw your application for "${app.job?.title || "this role"}"? This can't be undone.`)) {
+      return;
+    }
+    setWithdrawingId(app.id);
+    try {
+      const updated = await withdrawApplication(app.id);
+      setApplications((prev) => prev.map((a) => (a.id === app.id ? updated : a)));
+      addToast("Application withdrawn.", "success");
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : "Could not withdraw your application.", "error");
+    } finally {
+      setWithdrawingId(null);
+    }
+  }
 
   return (
     <div className="card card-flat card-pad">
@@ -113,14 +144,60 @@ export default function MyApplicationsTab() {
                   <span className="badge" style={{ background: sc.bg, color: sc.color }}>{STATUS_LABEL[app.status]}</span>
                 </div>
 
-                {expanded && app.statusHistory && app.statusHistory.length > 0 && (
-                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
-                    <strong style={{ fontSize: 13 }}>History</strong>
-                    <ul style={{ marginTop: 6, paddingLeft: 18, fontSize: 13, color: "var(--muted)" }}>
-                      {app.statusHistory.map((h, i) => (
-                        <li key={i}>{STATUS_LABEL[h.status]} — {formatDate(h.changedAt)}</li>
-                      ))}
-                    </ul>
+                {expanded && (
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)", display: "grid", gap: 14 }}>
+                    {app.coverNote && (
+                      <div>
+                        <strong style={{ fontSize: 13 }}>Your cover note</strong>
+                        <p style={{ marginTop: 4, fontSize: 13, color: "var(--muted)", whiteSpace: "pre-wrap" }}>{app.coverNote}</p>
+                      </div>
+                    )}
+
+                    {app.answers && app.answers.length > 0 && (
+                      <div>
+                        <strong style={{ fontSize: 13 }}>Your answers</strong>
+                        <p style={{ fontSize: 12, color: "var(--faint)", marginTop: 2 }}>Submitted with your application — not editable.</p>
+                        <div style={{ marginTop: 6, display: "grid", gap: 8 }}>
+                          {app.answers.map((a) => {
+                            const questionText = app.job?.questions?.find((q) => q.id === a.questionId)?.text;
+                            return (
+                              <div key={a.questionId}>
+                                <div style={{ fontSize: 12.5, color: "var(--muted)", fontWeight: 600 }}>{questionText || "Question"}</div>
+                                <div style={{ fontSize: 13, color: "var(--ink)" }}>{a.text}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {app.statusHistory && app.statusHistory.length > 0 && (
+                      <div>
+                        <strong style={{ fontSize: 13 }}>History</strong>
+                        <ul style={{ marginTop: 6, paddingLeft: 18, fontSize: 13, color: "var(--muted)" }}>
+                          {app.statusHistory.map((h, i) => (
+                            <li key={i}>{STATUS_LABEL[h.status]} — {formatDate(h.changedAt)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {canWithdraw(app.status) && (
+                      <div>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm"
+                          disabled={withdrawingId === app.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWithdraw(app);
+                          }}
+                          style={{ color: "#991B1B" }}
+                        >
+                          {withdrawingId === app.id ? "Withdrawing…" : "Withdraw application"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

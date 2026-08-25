@@ -20,9 +20,18 @@ function statusBadge(status: JobStatus): { bg: string; color: string; label: str
       return { bg: "#FEF3C7", color: "#92400E", label: "Paused" };
     case "closed":
       return { bg: "#F1F5F9", color: "#475569", label: "Closed" };
+    case "draft":
+      return { bg: "#E0E7FF", color: "#3730A3", label: "Draft" };
     default:
       return { bg: "#F1F5F9", color: "#475569", label: status };
   }
+}
+
+// "Expired" is deliberately not a stored status (build plan Phase 5) — it's derived
+// client-side from expiresAt so the backend's status enum stays simple
+// (active|paused|closed|draft).
+function isExpired(job: Job): boolean {
+  return job.status === "active" && !!job.expiresAt && new Date(job.expiresAt).getTime() < Date.now();
 }
 
 export default function MyJobsTab({ onViewApplications }: { onViewApplications: (jobId: string) => void }) {
@@ -70,6 +79,7 @@ export default function MyJobsTab({ onViewApplications }: { onViewApplications: 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {jobs.map((job) => {
             const st = statusBadge(job.status);
+            const expired = isExpired(job);
             return (
               <div key={job.id} className="card" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
@@ -87,15 +97,18 @@ export default function MyJobsTab({ onViewApplications }: { onViewApplications: 
                 >
                   {job.applicationCount} application{job.applicationCount === 1 ? "" : "s"}
                 </button>
+                {expired && (
+                  <span className="badge" style={{ background: "#FEE2E2", color: "#991B1B", flexShrink: 0 }}>Expired</span>
+                )}
                 <span className="badge" style={{ background: st.bg, color: st.color, flexShrink: 0 }}>{st.label}</span>
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                   <Button variant="secondary" size="sm" href={`/post-job?jobId=${job.id}`}>Edit</Button>
-                  {job.status !== "closed" && (
+                  {job.status !== "closed" && job.status !== "draft" && (
                     <Button variant="secondary" size="sm" onClick={() => setStatus(job, job.status === "paused" ? "active" : "paused")} disabled={busyId === job.id}>
                       {job.status === "paused" ? "Resume" : "Pause"}
                     </Button>
                   )}
-                  {job.status !== "closed" && (
+                  {job.status !== "closed" && job.status !== "draft" && (
                     <Button variant="ghost" size="sm" onClick={() => setStatus(job, "closed")} disabled={busyId === job.id}>Close</Button>
                   )}
                 </div>

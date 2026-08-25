@@ -21,6 +21,7 @@ import Link from "next/link";
 import type { Job } from "@/lib/types";
 import Avatar from "@/components/Avatar";
 import Button from "@/components/Button";
+import { useAuth } from "@/lib/auth";
 
 export interface JobCardProps {
   job: Job;
@@ -160,6 +161,12 @@ function JobChips({ skills, max }: { skills: string[]; max: number }) {
 export default function JobCard({ job, href, className = "", layout = "row" }: JobCardProps) {
   const detailHref = href || `/job/${job.id}`;
   const companyName = job.employer?.companyName || "Company";
+  // A recruiter account browsing the marketplace can never apply (RECRUITMENT.md §6) —
+  // this card's CTA just links through to the job detail page either way (no separate
+  // apply flow lives here), but the label shouldn't promise an action a recruiter can't
+  // take once they get there (build plan Phase 7).
+  const { user } = useAuth();
+  const ctaLabel = user?.recruitmentRole === "recruiter" ? "View" : "Apply";
 
   if (layout === "grid") {
     return (
@@ -174,21 +181,34 @@ export default function JobCard({ job, href, className = "", layout = "row" }: J
           <h3 className="line-clamp-2 jc-grid-title">{job.title}</h3>
           <p className="line-clamp-1 jc-grid-company">{companyName}</p>
           <JobMeta job={job} />
-          <JobChips skills={job.skills || []} max={2} />
+          <div className="jc-grid-chips">
+            <JobChips skills={job.skills || []} max={2} />
+          </div>
         </Link>
         <div className="jc-grid-bottom">
           <span className="jc-salary">{salaryLabel(job)}</span>
-          <Button size="sm" variant="green" href={detailHref}>Apply</Button>
+          <Button size="sm" variant="green" href={detailHref}>{ctaLabel}</Button>
         </div>
         <style jsx>{`
-          .jc-grid { display: flex; flex-direction: column; padding: 16px; gap: 10px; }
+          /* height:100% + the grid item's own reveal wrapper also set to
+             height:100% (see recruitment/page.tsx) makes every card in a row
+             match the tallest one, with the Apply row pinned to the bottom via
+             margin-top:auto below — instead of each card sizing to its own
+             content and leaving ragged rows. */
+          .jc-grid { display: flex; flex-direction: column; height: 100%; padding: 16px; gap: 10px; transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease; }
+          .jc-grid:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover, 0 12px 28px rgba(15, 23, 42, 0.12)); border-color: var(--tricolor-green); }
           .jc-grid-link { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
           .jc-grid-top { display: flex; align-items: center; justify-content: space-between; }
           .jc-verified { display: inline-flex; align-items: center; color: var(--tricolor-green); }
-          .jc-grid-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.32; }
+          .jc-grid-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.32; min-height: 2.64em; }
           .jc-grid-company { font-size: 13px; color: var(--muted); }
+          .jc-grid-chips { min-height: 24px; }
           .jc-grid-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 4px; }
           .jc-salary { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+          @media (prefers-reduced-motion: reduce) {
+            .jc-grid { transition: none; }
+            .jc-grid:hover { transform: none; }
+          }
         `}</style>
       </article>
     );
@@ -222,7 +242,7 @@ export default function JobCard({ job, href, className = "", layout = "row" }: J
 
       <div className="jc-row-side">
         <span className="jc-salary">{salaryLabel(job)}</span>
-        <Button size="sm" variant="green" href={detailHref}>Apply</Button>
+        <Button size="sm" variant="green" href={detailHref}>{ctaLabel}</Button>
       </div>
 
       <style jsx>{`

@@ -33,6 +33,13 @@ function isAdmin(user) {
 // interlink blog -> seller without a separate "seller by id" endpoint.
 // Attaches a nested `author` object plus flat `authorName`/`sellerSlug`
 // convenience fields (the frontend reads both). Non-fatal by design.
+//
+// Falls back to `employerProfile` when the author has no `sellerProfile` — a
+// Recruitment employer authoring a company blog (RECRUITMENT.md §7's flagged
+// follow-up; build plan Phase 7). `author.type`/`authorType` distinguishes the two so
+// a consumer can link to /seller/<slug> vs /employer/<slug> correctly — every existing
+// seller-authored blog is unaffected (same object shape as before, just with `type`
+// added).
 async function attachAuthors(blogs) {
   const list = Array.isArray(blogs) ? blogs : [blogs];
   const ids = [...new Set(list.map((b) => b && b.sellerId).filter(Boolean))];
@@ -42,20 +49,21 @@ async function attachAuthors(blogs) {
   const enrich = (b) => {
     if (!b) return b;
     const u = byId.get(b.sellerId);
-    const sp = u && u.sellerProfile;
-    if (!sp) return b;
+    if (!u) return b;
+    const sp = u.sellerProfile;
+    const ep = u.employerProfile;
+    if (!sp && !ep) return b;
+    const type = sp ? "seller" : "employer";
+    const slug = (sp || ep).slug || null;
+    const companyName = (sp || ep).companyName || u.name || null;
+    const logo = (sp || ep).logo || u.avatarUrl || null;
+    const city = ((sp || ep).location && (sp || ep).location.city) || u.city || null;
     return {
       ...b,
-      author: {
-        sellerId: b.sellerId,
-        slug: sp.slug || null,
-        companyName: sp.companyName || u.name || null,
-        logo: sp.logo || u.avatarUrl || null,
-        city: (sp.location && sp.location.city) || u.city || null,
-        isVerified: !!sp.isVerified,
-      },
-      authorName: sp.companyName || u.name || null,
-      sellerSlug: sp.slug || null,
+      author: { sellerId: b.sellerId, type, slug, companyName, logo, city, isVerified: !!(sp || ep).isVerified },
+      authorType: type,
+      authorName: companyName,
+      sellerSlug: slug,
     };
   };
   return Array.isArray(blogs) ? list.map(enrich) : enrich(blogs);
@@ -73,14 +81,19 @@ async function uniqueSlug(base) {
 }
 
 // GET / — published blogs, newest first, optional sellerId / category filters.
+// authorType ("employer" | "seller") added for the Recruitment blog page (build plan
+// Phase 7) — filters AFTER author resolution since that's the only place the
+// distinction exists; the two other filters stay pre-resolution as before.
 router.get("/", async (req, res, next) => {
   try {
-    const { sellerId, category } = req.query;
+    const { sellerId, category, authorType } = req.query;
     let blogs = (await store.all(COLLECTION)).filter((b) => b.status === "published");
     if (sellerId) blogs = blogs.filter((b) => b.sellerId === sellerId);
     if (category) blogs = blogs.filter((b) => b.categoryId === category);
     blogs.sort((a, b) => String(b.publishedAt || "").localeCompare(String(a.publishedAt || "")));
-    return res.json({ success: true, data: await attachAuthors(blogs) });
+    let withAuthors = await attachAuthors(blogs);
+    if (authorType) withAuthors = withAuthors.filter((b) => b.authorType === authorType);
+    return res.json({ success: true, data: withAuthors });
   } catch (err) {
     next(err);
   }

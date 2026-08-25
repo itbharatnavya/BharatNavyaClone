@@ -246,6 +246,26 @@ function buildFlatConfigs(nextId) {
       },
     },
     {
+      // Recruitment master data (0005_add_recruitment_master_data.sql). Predefined
+      // job-title picklist, tagged to a job-functions slug.
+      file: "job-roles.json",
+      table: "job_roles",
+      columns: {
+        id: col("id", t), title: col("title", t), slug: col("slug", t),
+        jobFunction: col("job_function", t), order: col("sort_order", i), isActive: col("is_active", b),
+      },
+    },
+    {
+      // Recruitment master data (0005_add_recruitment_master_data.sql). Predefined
+      // skill picklist; jobFunction is nullable (generic/soft skills apply to none).
+      file: "skills.json",
+      table: "skills",
+      columns: {
+        id: col("id", t), name: col("name", t), slug: col("slug", t),
+        jobFunction: col("job_function", t), order: col("sort_order", i), isActive: col("is_active", b),
+      },
+    },
+    {
       // Recruitment (RECRUITMENT.md §2). No child tables — skills/responsibilities/
       // requirements/benefits are simple string lists (text[]), same convention as
       // blogs.tags. See lib/db/schema-migrations/0002_add_recruitment_tables.sql for
@@ -261,6 +281,8 @@ function buildFlatConfigs(nextId) {
         openings: col("openings", i), status: col("status", t), viewCount: col("view_count", i),
         applicationCount: col("application_count", i), questions: col("questions", "jsonb"),
         postedAt: col("posted_at", ts), expiresAt: col("expires_at", ts),
+        // Build-plan Phase 1 (0006_add_recruitment_profile_extras.sql).
+        qualification: col("qualification", t),
       },
       nested: [
         { docKey: "location", fields: {

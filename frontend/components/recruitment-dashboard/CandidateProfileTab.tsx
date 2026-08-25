@@ -4,15 +4,25 @@
 // recruiter needs to evaluate them (enhancement doc §4). No approval gate: this always
 // succeeds for the authenticated user and can be saved repeatedly.
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
-import { Section, TagInput } from "@/components/sell/editors";
+import ImageUpload from "@/components/ImageUpload";
+import { Section, TagInput, WorkHistoryEditor, EducationEditor } from "@/components/sell/editors";
 import ResumeUpload from "@/components/recruitment/ResumeUpload";
 import Button from "@/components/Button";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
-import { updateCandidateProfile } from "@/lib/api";
+import { updateCandidateProfile, updateProfile, getJobRoles, getSkills } from "@/lib/api";
+import type { CandidateEducation, CandidateWorkHistory, EmploymentType } from "@/lib/types";
+
+const JOB_TYPES: { value: EmploymentType; label: string }[] = [
+  { value: "full-time", label: "Full-time" },
+  { value: "part-time", label: "Part-time" },
+  { value: "contract", label: "Contract" },
+  { value: "internship", label: "Internship" },
+  { value: "freelance", label: "Freelance" },
+];
 
 export default function CandidateProfileTab() {
   const { user, refresh } = useAuth();
@@ -28,8 +38,26 @@ export default function CandidateProfileTab() {
   const [isOpenToWork, setIsOpenToWork] = useState(cp?.isOpenToWork ?? true);
   const [skills, setSkills] = useState<string[]>(cp?.skills || []);
   const [preferredLocations, setPreferredLocations] = useState<string[]>(cp?.preferredLocations || []);
+  const [preferredJobTypes, setPreferredJobTypes] = useState<string[]>(cp?.preferredJobTypes || []);
   const [resumeUrl, setResumeUrl] = useState(cp?.resumeUrl || "");
+  const [contactPhone, setContactPhone] = useState(cp?.contactPhone || "");
+  const [contactEmail, setContactEmail] = useState(cp?.contactEmail || "");
+  const [education, setEducation] = useState<CandidateEducation[]>(cp?.education || []);
+  const [workHistory, setWorkHistory] = useState<CandidateWorkHistory[]>(cp?.workHistory || []);
   const [saving, setSaving] = useState(false);
+
+  // Static role/skill picklists (build plan §8) — suggestions only, shown via native
+  // <datalist> on the existing free-text TagInput; typing a custom value still works.
+  const [roleSuggestions, setRoleSuggestions] = useState<string[]>([]);
+  const [skillSuggestions, setSkillSuggestions] = useState<string[]>([]);
+  useEffect(() => {
+    getJobRoles().then((roles) => setRoleSuggestions(roles.map((r) => r.title))).catch(() => {});
+    getSkills().then((sk) => setSkillSuggestions(sk.map((s) => s.name))).catch(() => {});
+  }, []);
+
+  function togglePreferredJobType(value: string) {
+    setPreferredJobTypes((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
+  }
 
   async function save() {
     if (!headline.trim()) {
@@ -48,7 +76,12 @@ export default function CandidateProfileTab() {
         isOpenToWork,
         skills,
         preferredLocations,
+        preferredJobTypes,
         resumeUrl: resumeUrl || null,
+        contactPhone: contactPhone.trim() || null,
+        contactEmail: contactEmail.trim() || null,
+        education,
+        workHistory,
       });
       addToast(cp ? "Candidate profile updated." : "Candidate profile created.", "success");
       await refresh();
@@ -70,15 +103,31 @@ export default function CandidateProfileTab() {
     }
   }
 
+  // Profile photo reuses the same suite-wide PUT /api/me/profile path every other
+  // avatarUrl-setting flow would use — there's no Recruitment-specific avatar field.
+  async function handlePhotoChange(url: string) {
+    try {
+      await updateProfile({ avatarUrl: url });
+      await refresh();
+      addToast("Profile photo updated.", "success");
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : "Could not save your photo.", "error");
+    }
+  }
+
   return (
     <Section
       title={cp ? "Candidate profile" : "Build your candidate profile"}
       desc="Visible to employers once you apply to one of their roles."
     >
       <div style={{ display: "grid", gap: 16 }}>
+        <div>
+          <label className="field-label">Profile photo</label>
+          <ImageUpload value={user?.avatarUrl || undefined} onChange={handlePhotoChange} label="Upload photo" />
+        </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
           <Input label="Headline" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="e.g. Backend Engineer — Node.js" required />
-          <Input label="Current role" value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} />
+          <Input label="Current role" value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} list="rd-role-suggestions" />
           <Input label="Current company" value={currentCompany} onChange={(e) => setCurrentCompany(e.target.value)} />
           <Input label="Years of experience" type="number" min={0} value={experienceYears} onChange={(e) => setExperienceYears(e.target.value)} />
           <Input label="Expected salary (₹/yr)" type="number" min={0} value={expectedSalary} onChange={(e) => setExpectedSalary(e.target.value)} />
@@ -88,13 +137,41 @@ export default function CandidateProfileTab() {
             onChange={(e) => setIsOpenToWork(e.target.value === "yes")}
             options={[{ value: "yes", label: "Yes, open to opportunities" }, { value: "no", label: "Not right now" }]}
           />
+          <Input label="Mobile" type="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="10-digit mobile" />
+          <Input label="Email" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
         </div>
+        {roleSuggestions.length ? (
+          <datalist id="rd-role-suggestions">
+            {roleSuggestions.map((r) => (
+              <option key={r} value={r} />
+            ))}
+          </datalist>
+        ) : null}
         <div>
           <label className="field-label" htmlFor="rd-summary">Summary</label>
           <textarea id="rd-summary" className="textarea" rows={4} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="A short pitch employers will see." />
         </div>
-        <TagInput label="Skills" hint="Press Enter to add each skill." value={skills} onChange={setSkills} placeholder="e.g. Node.js, SQL" />
+        <TagInput label="Skills" hint="Press Enter to add each skill." value={skills} onChange={setSkills} placeholder="e.g. Node.js, SQL" suggestions={skillSuggestions} />
         <TagInput label="Preferred locations" hint="Press Enter to add each city." value={preferredLocations} onChange={setPreferredLocations} placeholder="e.g. Bengaluru" />
+        <div>
+          <label className="field-label">Preferred job types</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+            {JOB_TYPES.map((t) => (
+              <label key={t.value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, color: "var(--ink)" }}>
+                <input type="checkbox" checked={preferredJobTypes.includes(t.value)} onChange={() => togglePreferredJobType(t.value)} />
+                {t.label}
+              </label>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="field-label">Work history</label>
+          <WorkHistoryEditor value={workHistory} onChange={setWorkHistory} />
+        </div>
+        <div>
+          <label className="field-label">Education</label>
+          <EducationEditor value={education} onChange={setEducation} />
+        </div>
         <div>
           <label className="field-label">CV / résumé</label>
           <ResumeUpload value={resumeUrl} onChange={handleResumeChange} />

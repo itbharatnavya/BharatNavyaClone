@@ -33,9 +33,20 @@ test("candidateMiniOf includes contact fields unconditionally (candidate already
   assert.equal(mini.headline, "Backend Engineer");
 });
 
-test("jobMiniOf exposes only the display-safe subset of a job", () => {
-  const job = { id: "job_1", title: "Backend Engineer", jobFunction: "engineering", status: "active", employerId: "usr_emp1" };
-  assert.deepEqual(jobMiniOf(job), { id: "job_1", title: "Backend Engineer", jobFunction: "engineering", status: "active" });
+test("jobMiniOf exposes only the display-safe subset of a job, including questions for the candidate's own answer display", () => {
+  const job = {
+    id: "job_1", title: "Backend Engineer", jobFunction: "engineering", status: "active", employerId: "usr_emp1",
+    questions: [{ id: "q_0", text: "Willing to relocate?", required: true }],
+  };
+  assert.deepEqual(jobMiniOf(job), {
+    id: "job_1", title: "Backend Engineer", jobFunction: "engineering", status: "active",
+    questions: [{ id: "q_0", text: "Willing to relocate?", required: true }],
+  });
+});
+
+test("jobMiniOf defaults questions to an empty array when the job has none", () => {
+  const job = { id: "job_2", title: "Designer", jobFunction: "design", status: "active", employerId: "usr_emp1" };
+  assert.deepEqual(jobMiniOf(job), { id: "job_2", title: "Designer", jobFunction: "design", status: "active", questions: [] });
 });
 
 test("canViewApplication: candidate owner, job's employer, and admin can all view; a stranger cannot", () => {

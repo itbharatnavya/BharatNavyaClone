@@ -15,7 +15,15 @@ import RecruitmentGate from "@/components/recruitment/RecruitmentGate";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
 import { getJobFunctions, createJob, updateJob, getJob } from "@/lib/api";
-import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion } from "@/lib/types";
+import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion, JobStatus } from "@/lib/types";
+
+// YYYY-MM-DD for an <input type="date">, from a stored ISO timestamp.
+function toDateInputValue(iso?: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
 
 const EMPLOYMENT_TYPES: { value: EmploymentType; label: string }[] = [
   { value: "full-time", label: "Full-time" },
@@ -66,9 +74,14 @@ function PostJobInner() {
   const [requirements, setRequirements] = useState<string[]>([]);
   const [benefits, setBenefits] = useState<string[]>([]);
   const [questions, setQuestions] = useState<JobQuestion[]>([]);
+  const [qualification, setQualification] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [loadingJob, setLoadingJob] = useState(isEdit);
   const [notOwner, setNotOwner] = useState(false);
+  // Only set in edit mode, from the loaded job — drives which submit button(s) show
+  // (build plan Phase 5's draft/publish distinction).
+  const [originalStatus, setOriginalStatus] = useState<JobStatus | null>(null);
 
   // Edit mode: load the existing job and prefill every field. Ownership is enforced
   // server-side too (PUT /:id is owner-or-admin) — this check just avoids flashing the
@@ -100,6 +113,9 @@ function PostJobInner() {
         setRequirements(job.requirements || []);
         setBenefits(job.benefits || []);
         setQuestions(job.questions || []);
+        setQualification(job.qualification || "");
+        setExpiresAt(toDateInputValue(job.expiresAt));
+        setOriginalStatus(job.status);
       })
       .catch(() => setNotOwner(true))
       .finally(() => !cancelled && setLoadingJob(false));
@@ -114,7 +130,10 @@ function PostJobInner() {
     return null;
   }
 
-  async function submit() {
+  // targetStatus is only passed by the draft/publish buttons (Phase 5) — omitted for
+  // a plain "Save changes" on an already-active/paused/closed job, so this never
+  // silently resets a job's status as a side effect of an unrelated field edit.
+  async function submit(targetStatus?: "draft" | "active") {
     const err = validate();
     if (err) {
       addToast(err, "error");
@@ -141,10 +160,13 @@ function PostJobInner() {
         benefits,
         questions: questions.filter((q) => q.text.trim()),
         openings: openings ? Math.max(1, Math.floor(Number(openings))) : 1,
+        qualification: qualification.trim() || null,
+        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+        status: targetStatus,
       };
       const saved = isEdit ? await updateJob(jobId!, body) : await createJob(body);
-      addToast(isEdit ? "Job updated." : "Job posted.", "success");
-      router.push(`/job/${saved.id}`);
+      addToast(targetStatus === "draft" ? "Saved as draft." : isEdit ? "Job updated." : "Job posted.", "success");
+      router.push(targetStatus === "draft" ? "/recruitment/dashboard?tab=jobs" : `/job/${saved.id}`);
     } catch (e) {
       addToast(e instanceof Error ? e.message : "Failed to save job.", "error");
       setSubmitting(false);
@@ -196,6 +218,8 @@ function PostJobInner() {
                 placeholder="Select"
               />
               <Input label="Openings" type="number" min={1} value={openings} onChange={(e) => setOpenings(e.target.value)} />
+              <Input label="Qualification" value={qualification} onChange={(e) => setQualification(e.target.value)} placeholder="e.g. Bachelor's degree, Any graduate" />
+              <Input label="Applications close on" type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} />
             </div>
             <div>
               <label className="field-label" htmlFor="pj-description">Description</label>
@@ -253,9 +277,20 @@ function PostJobInner() {
         </Section>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-          <Button variant="green" size="lg" onClick={submit} disabled={submitting}>
-            {submitting ? "Saving…" : isEdit ? "Save changes" : "Publish job"}
-          </Button>
+          {!isEdit || originalStatus === "draft" ? (
+            <>
+              <Button variant="secondary" size="lg" onClick={() => submit("draft")} disabled={submitting}>
+                {submitting ? "Saving…" : "Save as draft"}
+              </Button>
+              <Button variant="green" size="lg" onClick={() => submit("active")} disabled={submitting}>
+                {submitting ? "Saving…" : "Publish job"}
+              </Button>
+            </>
+          ) : (
+            <Button variant="green" size="lg" onClick={() => submit()} disabled={submitting}>
+              {submitting ? "Saving…" : "Save changes"}
+            </Button>
+          )}
         </div>
       </div>
 

@@ -10,8 +10,10 @@ import Avatar from "@/components/Avatar";
 import Select from "@/components/Select";
 import { useToast } from "@/components/Toast";
 import { getJobApplications, updateApplicationStatus } from "@/lib/api";
-import type { Application, ApplicationStatus } from "@/lib/types";
+import type { Application, ApplicationStatus, FullApplicationStatus } from "@/lib/types";
 
+// Employer-settable statuses only — "withdrawn" is a candidate-only transition (see
+// backend/routes/applications.js's VALID_STATUSES) and never appears as an option here.
 const STATUS_OPTIONS: { value: ApplicationStatus; label: string }[] = [
   { value: "applied", label: "Applied" },
   { value: "viewed", label: "Viewed" },
@@ -21,11 +23,12 @@ const STATUS_OPTIONS: { value: ApplicationStatus; label: string }[] = [
   { value: "rejected", label: "Rejected" },
 ];
 
-function statusColor(status: ApplicationStatus): { bg: string; color: string } {
+function statusColor(status: FullApplicationStatus): { bg: string; color: string } {
   switch (status) {
     case "hired":
       return { bg: "#DCFCE7", color: "#166534" };
     case "rejected":
+    case "withdrawn":
       return { bg: "#FEE2E2", color: "#991B1B" };
     case "shortlisted":
     case "interview":

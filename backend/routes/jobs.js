@@ -35,7 +35,10 @@ const DEFAULT_LIMIT = 12;
 // does, deliberately, without touching listings.js (out of scope here).
 const MAX_LIMIT = 50;
 
-const VALID_JOB_STATUSES = new Set(["active", "paused", "closed"]);
+// "draft" added in the dashboard/flow build plan Phase 1 — a job saved but not yet
+// published. Only POST / (create) may set it directly (see below); PUT /:id also
+// allows transitioning a draft to any other status once the employer publishes it.
+const VALID_JOB_STATUSES = new Set(["active", "paused", "closed", "draft"]);
 const VALID_EMPLOYMENT_TYPES = new Set(["full-time", "part-time", "contract", "internship", "freelance"]);
 const VALID_EXPERIENCE_LEVELS = new Set(["entry", "mid", "senior", "lead", "executive"]);
 
@@ -267,11 +270,14 @@ router.post("/", authGuard, async (req, res, next) => {
       benefits: normalizeStringList(b.benefits, 30),
       questions: normalizeQuestions(b.questions),
       openings: Number.isFinite(Number(b.openings)) && Number(b.openings) > 0 ? Math.floor(Number(b.openings)) : 1,
-      status: "active",
+      // Only "draft" is accepted from the client at creation time — every other status
+      // value (paused/closed) is reachable only via PUT /:id after the job exists.
+      status: b.status === "draft" ? "draft" : "active",
       viewCount: 0,
       applicationCount: 0,
       postedAt: new Date().toISOString(),
       expiresAt: b.expiresAt || null,
+      qualification: b.qualification ? String(b.qualification).trim() : null,
     };
 
     const inserted = await store.insert("jobs.json", job, "job");

@@ -7,6 +7,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   getNotifications,
   markNotificationRead,
@@ -47,10 +48,44 @@ function describe(n: NotificationItem): string {
     }
     case "new_review":
       return `${who} left a review`;
+    // Recruitment (build plan Phase 6) — previously fell through to the raw-text
+    // default below.
+    case "new_application": {
+      const job = typeof data.jobTitle === "string" && data.jobTitle ? data.jobTitle : "your job";
+      const candidate = typeof data.candidateName === "string" && data.candidateName ? data.candidateName : "Someone";
+      return `${candidate} applied for ${job}`;
+    }
+    case "application_withdrawn": {
+      const job = typeof data.jobTitle === "string" && data.jobTitle ? data.jobTitle : "your job";
+      const candidate = typeof data.candidateName === "string" && data.candidateName ? data.candidateName : "A candidate";
+      return `${candidate} withdrew their application for ${job}`;
+    }
+    case "application_status": {
+      const job = typeof data.jobTitle === "string" && data.jobTitle ? data.jobTitle : "a role";
+      const status = typeof data.status === "string" ? data.status : "updated";
+      return `Your application for ${job} is now ${status}`;
+    }
     default:
       return typeof data.message === "string"
         ? data.message
         : n.type.replace(/_/g, " ");
+  }
+}
+
+// Where clicking a notification should navigate — Recruitment types only (build plan
+// Phase 6); every other existing type keeps its current mark-read-only behavior (null
+// here means "no navigation"), so this is purely additive for Directory/suite notifications.
+function notificationHref(n: NotificationItem): string | null {
+  const data = (n.data || {}) as Record<string, unknown>;
+  const jobId = typeof data.jobId === "string" ? data.jobId : null;
+  switch (n.type) {
+    case "new_application":
+    case "application_withdrawn":
+      return jobId ? `/recruitment/dashboard?tab=applications&job=${jobId}` : "/recruitment/dashboard?tab=applications";
+    case "application_status":
+      return "/recruitment/dashboard?tab=myapplications";
+    default:
+      return null;
   }
 }
 
@@ -69,6 +104,7 @@ function timeAgo(iso: string): string {
 
 export default function NotificationBell() {
   const { t } = useT();
+  const router = useRouter();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -125,6 +161,22 @@ export default function NotificationBell() {
     }
   }, []);
 
+  // Recruitment click-through (build plan Phase 6) — navigates when the notification
+  // has a known destination, always marks read regardless. Every other existing
+  // notification type has no destination (notificationHref returns null) and keeps the
+  // original mark-read-only behavior.
+  const onItemClick = useCallback(
+    (n: NotificationItem) => {
+      if (!n.read) onRead(n.id);
+      const href = notificationHref(n);
+      if (href) {
+        setOpen(false);
+        router.push(href);
+      }
+    },
+    [onRead, router]
+  );
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -171,7 +223,7 @@ export default function NotificationBell() {
                 <button
                   key={n.id}
                   type="button"
-                  onClick={() => !n.read && onRead(n.id)}
+                  onClick={() => onItemClick(n)}
                   className={`flex w-full items-start gap-2.5 px-4 py-3 text-left hover:bg-bg-subtle transition-colors ${
                     n.read ? "" : "bg-bg-subtle/60"
                   }`}
