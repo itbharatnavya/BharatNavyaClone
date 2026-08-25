@@ -75,12 +75,13 @@ part of this build.
 
 | Collection / field | Shape / notes |
 |---|---|
-| `users.json` → `employerProfile` | Mirrors `sellerProfile`'s shape (`backend/routes/users.js`'s `publicSeller`/become-seller pattern). Fields: `companyName`, `slug`, `about`, `logo`, `coverImage`, `industry`, `companySize`, `website`, `location{city,state}`, `contactMobile`, `contactEmail` (gated — see below), `status` (`pending`\|`approved`\|`suspended`), `isVerified`, monetization stubs (`planTier`, `jobPostLimit`, `applicationQuota`) mirroring the seller plan/quota fields, admin-owned. |
-| `users.json` → `candidateProfile` | No approval gate — any user can create/edit one freely (mirrors how any buyer can send an RFQ without a special profile). Fields: `headline`, `summary`, `resumeUrl`, `skills[]`, `experienceYears`, `currentRole`, `currentCompany`, `education[]`, `workHistory[]`, `expectedSalary`, `preferredLocations[]`, `preferredJobTypes[]`, `contactPhone`, `contactEmail` (gated), `isOpenToWork`. |
+| `users.json` → `employerProfile` | Mirrors `sellerProfile`'s shape (`backend/routes/users.js`'s `publicSeller`/become-seller pattern). Fields: `companyName`, `slug`, `about`, `logo`, `coverImage`, `industry`, `companySize`, `website`, `location{city,state}`, `contactMobile`, `contactEmail` (gated — see below), `status` (`pending`\|`approved`\|`suspended`), `isVerified`, monetization stubs (`planTier`, `jobPostLimit`, `applicationQuota`) mirroring the seller plan/quota fields, admin-owned. Added 2026-08-25 (dashboard/flow build pass): `employeeCount` (text range string, e.g. `"51-200"`, same convention as `sellerProfile.employeeCount`), `benefits[]` (company-level — distinct from the per-job `jobs.benefits[]` below, shown on every job the company posts), `workingHours` (plain text, e.g. `"Mon–Fri, 9:30 AM–6:30 PM"`). |
+| `users.json` → `candidateProfile` | No approval gate — any user can create/edit one freely (mirrors how any buyer can send an RFQ without a special profile). Fields: `headline`, `summary`, `resumeUrl`, `skills[]`, `experienceYears`, `currentRole`, `currentCompany`, `education[]`, `workHistory[]`, `expectedSalary`, `preferredLocations[]`, `preferredJobTypes[]`, `contactPhone`, `contactEmail` (gated), `isOpenToWork`. `education[]`/`workHistory[]` are Postgres child tables (`candidate_education`/`candidate_work_history`, `lib/db/users.js`), not jsonb — built and wired (read + write, both backends) since Phase 1; only the *UI* for them (plus a profile-photo upload and mobile/email inputs) was missing until the 2026-08-25 dashboard/flow build pass added `WorkHistoryEditor`/`EducationEditor` (`components/sell/editors.tsx`) to `CandidateProfileTab.tsx`. |
 | `users.json` → `recruitmentRole` / `recruitmentRoleLockedAt` | Added in the 2026-08-24 role-lock pass. `recruitmentRole: "candidate"\|"recruiter"\|null` — top-level, sibling to the two profile objects (not nested in either, since it must outlive which profile exists). Locks (`recruitmentRoleLockedAt` set) the moment the first `become-employer`/`PUT me/candidate` call actually creates that profile; the opposite profile-mutating endpoint 403s once locked. See the dated entry below Phase 4 for full rationale. |
-| `jobs.json` | One row per job posting. `id`, `employerId`, `title`, `description`, `jobFunction` (flat taxonomy — see below), `employmentType` (`full-time`\|`part-time`\|`contract`\|`internship`\|`freelance`), `experienceLevel` (`entry`\|`mid`\|`senior`\|`lead`\|`executive`), `location{city,state,remote}`, `salaryRange{min,max,currency,isDisclosed}`, `skills[]`, `responsibilities[]`/`requirements[]`/`benefits[]`, `openings`, `status` (`active`\|`paused`\|`closed`\|`pending`), `viewCount`, `applicationCount`, `questions[]` (`{id,text,required}`, added 2026-08-24), `postedAt`, `expiresAt`. |
-| `applications.json` | One row per candidate→job application (no fan-out — always exactly one job). `id`, `jobId`, `employerId` (denormalized), `candidateId`, `resumeUrl` (snapshot at apply time), `coverNote`, `status` (`applied`\|`viewed`\|`shortlisted`\|`interview`\|`rejected`\|`hired`), `statusHistory[]`, `answers[]` (`{questionId,text}`, added 2026-08-24), `appliedAt`, `updatedAt`. |
+| `jobs.json` | One row per job posting. `id`, `employerId`, `title`, `description`, `jobFunction` (flat taxonomy — see below), `employmentType` (`full-time`\|`part-time`\|`contract`\|`internship`\|`freelance`), `experienceLevel` (`entry`\|`mid`\|`senior`\|`lead`\|`executive`), `location{city,state,remote}`, `salaryRange{min,max,currency,isDisclosed}`, `skills[]`, `responsibilities[]`/`requirements[]`/`benefits[]`, `openings`, `status` (`active`\|`paused`\|`closed`\|`draft`\|`pending`), `viewCount`, `applicationCount`, `questions[]` (`{id,text,required}`, added 2026-08-24), `postedAt`, `expiresAt`, `qualification` (added 2026-08-25, plain text education/qualification requirement, distinct from `experienceLevel`). `draft` (added 2026-08-25) is only settable by the client at creation (`POST /` — anything else still forces `active`); `paused`/`closed` remain reachable only via `PUT /:id`. Public browse's existing `status !== "active"` filter already excludes drafts — no separate visibility rule was needed. |
+| `applications.json` | One row per candidate→job application (no fan-out — always exactly one job). `id`, `jobId`, `employerId` (denormalized), `candidateId`, `resumeUrl` (snapshot at apply time), `coverNote`, `status` (`applied`\|`viewed`\|`shortlisted`\|`interview`\|`rejected`\|`hired`\|`withdrawn`), `statusHistory[]`, `answers[]` (`{questionId,text}`, added 2026-08-24), `appliedAt`, `updatedAt`. `withdrawn` (added 2026-08-25) is a candidate-only, self-service transition via `POST /:id/withdraw` — deliberately **not** in the employer-settable status set used by `POST /:id/status`, so an employer can never withdraw an application on a candidate's behalf. Blocked once `hired` or already `withdrawn`; fires an `application_withdrawn` notification to the employer. |
 | `job-functions.json` | New, small, admin-editable **flat** list ("Engineering", "Sales", "Design", "Operations"…) — deliberately not a nested tree like `categories.json`. Job taxonomy doesn't need Directory's category-tree depth. |
+| `job-roles.json` / `skills.json` | Added 2026-08-24, wired to the frontend 2026-08-25. Predefined, admin-seeded, **read-only** picklists (`GET /api/job-roles`/`GET /api/skills`, optional `?jobFunction=` filter) — same flat, no-FK shape as `job-functions.json`. Consumed by `CandidateProfileTab.tsx`'s skill/current-role inputs as a native `<datalist>` of suggestions (not a restrictive `<select>` — typing a value not in the list still works, stored as plain free text exactly as before). No admin CRUD UI yet (`routes/jobRoles.js`/`routes/skills.js`'s own header comments note this as later work). |
 
 ### Reused as-is (no new collection needed)
 
@@ -448,6 +449,56 @@ upload endpoint) — the gaps closed this pass:
   reviews rail were judged lower priority than the role-lock/apply-flow/ads work above and
   left for a future pass.
 
+### Dashboard, flow & feature completion pass (2026-08-25)
+
+Built against a phased plan the user asked for by name (repo-root "Recruitment — Dashboard,
+Flow & Feature Build Plan.md", not committed — reference-only, see that file's own tracker for
+the fuller per-phase writeup this section summarizes). Investigated the existing implementation
+first via three parallel audits (candidate-side, recruiter-side, ads) before writing any code —
+most of what RECRUITMENT.md already documented as built was confirmed accurate; the gaps closed
+this pass:
+
+- **Data model foundation**: `employerProfile` gained `employeeCount`/`benefits[]`/`workingHours`;
+  `jobs` gained `qualification` and a `draft` status; `applications` gained a `withdrawn` status.
+  Migration `0006_add_recruitment_profile_extras.sql`. See §2 above for the full shape.
+- **Candidate profile UI completion**: profile-photo upload (reuses the suite-wide
+  `PUT /api/me/profile` `avatarUrl` path — no Recruitment-specific avatar flow), mobile/email
+  inputs, work-history/education editors, preferred-job-types checkboxes, and a skills/current-role
+  `<datalist>` wired to the previously-unconsumed `/api/job-roles`/`/api/skills` endpoints.
+- **Candidate applications**: self-service withdraw (`POST /api/applications/:id/withdraw`,
+  candidate-owner-only) and a read-only display of submitted answers + cover note in
+  `MyApplicationsTab.tsx` (required denormalizing `job.questions` onto the application via
+  `jobMiniOf()` so the UI can label each answer with its actual question text).
+- **Recruiter company profile**: logo/cover upload wired to the already-existing backend fields
+  (there was no upload UI at all before this), employee strength/benefits/working-hours fields, and
+  a tabular (identity/details/benefits) redesign of `CompanyProfileTab.tsx`.
+- **Job posting form**: qualification field, an expiry-date picker (backend already accepted
+  `expiresAt`, just never surfaced), and a draft/publish choice. `MyJobsTab.tsx` gained a
+  client-derived "Expired" badge (`expiresAt < now`, deliberately not a new stored status).
+- **Notifications**: `NotificationBell.tsx`'s `describe()` gained readable text for
+  `new_application`/`application_withdrawn`/`application_status` (previously raw
+  `type.replace(/_/g," ")` text) plus click-through navigation to the relevant job's applicant
+  list or the candidate's own applications. The Applications-tab deep-link this depended on
+  (`?tab=applications&job=`) turned out to already exist (`RecruitmentDashboardShell.tsx`) —
+  a reminder that "not yet built" claims from an earlier audit pass are worth re-checking against
+  the actual component before building around them.
+- **Apply-Now consistency + `/recruitment/blog`**: `JobCard.tsx`'s CTA now reads "View" instead of
+  "Apply" for a logged-in recruiter (it was always just a link to `/job/[id]`, never a parallel
+  apply flow, but the label was misleading). New `/recruitment/blog` — a filtered
+  (`GET /api/blogs?authorType=employer`) view of the existing generic blog list, no new collection.
+  See §7's gotcha entry above for the `blogs.js`/`vendorAuthors.ts`/`/blog/[slug]` follow-on fix
+  this required.
+
+**Verification**: `npx tsc --noEmit` clean throughout; `backend/`'s unit + integration suite went
+19 → 20 passing tests (jobMiniOf's shape assertion updated for the new `questions` field). Every
+phase was exercised live against the real running backend/Postgres (not just curl-checked once —
+full round trips: draft→publish→public-visible, apply→withdraw→re-withdraw-400s,
+employer-approve→job-post→candidate-apply→status-change→notification, blog author resolution for
+both seller and employer authors) rather than assumed from the diff alone. **Not done this pass**:
+a live-browser/screenshot 390px check (no headless browser tooling was available in this session) —
+flag this as the next thing to verify before calling any of the touched dashboard tabs, `/post-job`,
+or `/recruitment/blog` fully production-verified.
+
 ### Phase 4 — Production gating switch
 🔲 **Not started — and now the important caveat**: §5's plan assumed `/recruitment`
 would keep showing `ComingSoon` until this flag existed. That assumption no longer
@@ -536,7 +587,15 @@ standing between "in development" and "publicly reachable."
   gate the landing page and forget `/job/[id]` or `/post-job` are reachable directly.
 - **Reviews/stories/blogs are already generic — don't build new collections for them.** `reviews.js`
   keys off `targetUserId` (§2); `stories.js`/`blogs.js` only require `authGuard`, not a `sellerProfile`.
-  All three work for an employer author today. Their denormalization (`stories.js:89-91`,
-  `blogs.js:38-50`) currently only reads `u.sellerProfile` for the author badge/name — extend it to also
-  check `u.employerProfile` so an employer's story/blog shows a company badge instead of none. That's the
-  only change needed in those two files; the create/read/delete logic is untouched.
+  All three work for an employer author today. Their denormalization previously only read
+  `u.sellerProfile` for the author badge/name, showing no badge at all for an employer author.
+  **`blogs.js` was fixed 2026-08-25** — `attachAuthors()` now falls back to `u.employerProfile` when
+  `sellerProfile` is absent, and attaches an `author.type`/`authorType` (`"seller"\|"employer"`)
+  discriminator so a consumer can link to `/employer/<slug>` instead of `/seller/<slug>`. This mattered
+  in practice, not just in theory: `/recruitment/blog` (new page, same pass) is the first thing that
+  deliberately surfaces employer-authored posts, and the existing `/blog/[slug]` article page hard-linked
+  every byline to `/seller/<slug>` and called a seller-only profile-enrichment hook
+  (`components/seller/vendorAuthors.ts`'s `useVendorProfile`) — both had to be made `type`-aware too
+  (additively; a seller-authored blog, where `type` is absent/`"seller"`, renders byte-for-byte as
+  before). **`stories.js`'s equivalent denormalization (`stories.js:89-91`) is still seller-only** —
+  same fix needed there whenever an employer "company story" surface is built; not done this pass.
