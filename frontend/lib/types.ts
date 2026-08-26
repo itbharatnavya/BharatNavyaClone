@@ -388,38 +388,39 @@ export interface Inquiry {
   targetBudget?: string | null;
   message: string;
   status: InquiryStatus;
+  // Set true when a broad RFQ matched zero sellers at submit time (novel
+  // category/product); admin's "Unmatched RFQs" queue can forward it to a
+  // seller, which flips this back to false.
+  unmatched?: boolean;
   stage?: string;
   createdAt: string;
 
-  // quote-back layer (populated by GET /api/inquiries/mine)
-  quotes?: Quote[];
-  quoteCount?: number;
+  // The seller(s) this RFQ was delivered to, each with their own contact
+  // status (populated by GET /api/inquiries/mine for the buyer, and by
+  // admin's RFQ Log). A seller's OWN list (GET /api/inquiries) instead gets
+  // these fields flattened directly onto the row — see RfqDeliveryRow.
+  sellers?: SellerDelivery[];
 }
 
-// A structured quote a seller sends back against an inquiry. The buyer compares all
-// quotes for one RFQ side by side. `seller` is a flat mini resolved from users.json.
-export interface Quote {
-  id: string;
-  inquiryId: string;
+// A "Connect" (Call/WhatsApp) action a seller can take on an RFQ delivered to
+// them, replacing the old quote-back flow — see routes/inquiries.js's POST
+// /leads/:leadId/contact. `contactedAt`/`contactedVia` are null until acted on.
+export type ContactChannel = "call" | "whatsapp";
+
+// One seller delivery of an RFQ, as seen by the buyer or an admin — a flat
+// seller mini plus this specific lead's contact status.
+export interface SellerDelivery {
   sellerId: string;
-  price: number;
-  unit?: string;
-  moq?: number | null;
-  deliveryDays?: number | null;
-  note?: string;
-  validUntil?: string | null;
-  status: string;
-  createdAt: string;
-  seller?: {
-    companyName?: string | null;
-    slug?: string | null;
-    city?: string | null;
-    rating?: number;
-    isVerified?: boolean;
-  };
+  leadId: string;
+  deliveredDate: string;
+  contactedAt: string | null;
+  contactedVia: ContactChannel | null;
+  companyName: string | null;
+  slug: string | null;
+  city: string | null;
+  rating: number;
+  isVerified: boolean;
 }
-
-export type LeadBillingStatus = "unbilled" | "billed" | "paid" | "waived";
 
 export interface Lead {
   leadId: string;
@@ -429,11 +430,9 @@ export interface Lead {
   inquiryId?: string | null;
   leadType: string;
   deliveredDate: string;
-  consumedFromQuota: boolean;
-  chargeable: boolean;
-  leadPrice: number;
-  billingStatus: LeadBillingStatus;
   status: string;
+  contactedAt?: string | null;
+  contactedVia?: ContactChannel | null;
 }
 
 // ============================================================

@@ -46,14 +46,6 @@ function SparkleIcon({ size = 16 }: { size?: number }) {
     </svg>
   );
 }
-function CheckCircleIcon() {
-  return (
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M8 12l3 3 5-6" />
-    </svg>
-  );
-}
 function CloseIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>
@@ -79,7 +71,6 @@ export default function FloatingRfqButton() {
   const [isFallback, setIsFallback] = useState(false);
   const [form, setForm] = useState<RfqFormState>(EMPTY_RFQ);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const patch = (p: Partial<RfqFormState>) => setForm((f) => ({ ...f, ...p }));
 
@@ -109,6 +100,7 @@ export default function FloatingRfqButton() {
       });
       setIsFallback(!!d.fallback);
       setShowForm(true);
+      addToast("Draft ready — review and edit below.", "success");
     } catch (e) {
       addToast(e instanceof Error ? e.message : "Could not draft your requirement.", "error");
     } finally {
@@ -146,7 +138,7 @@ export default function FloatingRfqButton() {
       if (form.timeline.trim()) meta.push(`Timeline: ${form.timeline.trim()}`);
       const message = [form.details.trim() || need.trim(), meta.join("\n")].filter(Boolean).join("\n\n");
 
-      await postInquiry({
+      const { leadsCreated } = await postInquiry({
         productName,
         categoryId: form.categorySlug || null,
         quantity: qty,
@@ -158,7 +150,13 @@ export default function FloatingRfqButton() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
-      setSubmitted(true);
+      addToast(
+        leadsCreated > 0
+          ? "Your requirement was sent to matching suppliers — they'll contact you soon with quotes."
+          : "We couldn't find an exact match among current suppliers yet — our team has been notified and will follow up.",
+        "success"
+      );
+      resetAndClose();
     } catch (e) {
       addToast(e instanceof Error ? e.message : "Could not send your requirement.", "error");
       setSubmitting(false);
@@ -167,7 +165,6 @@ export default function FloatingRfqButton() {
 
   const resetAndClose = () => {
     setOpen(false);
-    setSubmitted(false);
     setSubmitting(false);
     setShowForm(false);
     setIsFallback(false);
@@ -213,7 +210,7 @@ export default function FloatingRfqButton() {
           aria-label="Post a requirement"
           className="fixed z-[120] flex flex-col overflow-hidden border border-border bg-surface shadow-pop
                      inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
-                     sm:inset-x-auto sm:bottom-5 sm:right-[5.25rem] sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:h-[560px] sm:max-h-[calc(100vh-2.5rem)]"
+                     sm:inset-x-auto sm:bottom-5 sm:right-[5.25rem] sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:max-h-[calc(100vh-2.5rem)]"
         >
           {/* Header */}
           <div className="flex flex-shrink-0 items-center gap-2.5 px-4 py-3 text-white" style={{ background: "var(--brand)" }}>
@@ -221,11 +218,9 @@ export default function FloatingRfqButton() {
               <RequirementIcon size={17} />
             </span>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold leading-tight">
-                {submitted ? "Requirement sent" : "Tell us what you need"}
-              </div>
+              <div className="text-sm font-semibold leading-tight">Tell us what you need</div>
               <div className="text-[11px] leading-tight text-white/80">
-                {submitted ? "We'll take it from here" : "We'll match you with verified suppliers"}
+                We&apos;ll match you with verified suppliers
               </div>
             </div>
             <button
@@ -238,75 +233,55 @@ export default function FloatingRfqButton() {
             </button>
           </div>
 
-          {/* Body */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4" style={{ background: "var(--bg-subtle)" }}>
-            {submitted ? (
-              <div className="flex flex-col items-center py-4 text-center">
-                <span style={{ color: "var(--success)", lineHeight: 0 }}>
-                  <CheckCircleIcon />
-                </span>
-                <p className="mt-3.5 text-[13.5px] leading-relaxed text-muted">
-                  Your requirement was sent to matching suppliers — they&apos;ll contact you soon
-                  with quotes.
-                </p>
-                <div className="mt-5 flex flex-wrap justify-center gap-2">
-                  <Button variant="brand" size="sm" href="/dashboard">
-                    Go to dashboard
+          {/* Body — sized to whichever step is showing, not a fixed height. */}
+          <div className="overflow-y-auto overscroll-contain px-4 py-4" style={{ background: "var(--bg-subtle)" }}>
+            <div className="grid gap-4">
+              <div className="card card-flat" style={{ padding: 14 }}>
+                <Textarea
+                  label="Describe what you need"
+                  placeholder="e.g. 500 kg stainless steel 304 sheets, Mumbai, ~₹50,000, within 2 weeks."
+                  value={need}
+                  onChange={(e) => setNeed(e.target.value)}
+                  style={{ minHeight: 80 }}
+                />
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  <Button variant="brand" size="sm" onClick={draft} disabled={drafting}>
+                    {drafting ? (
+                      "Drafting…"
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5">
+                        <SparkleIcon />
+                        Draft with AI
+                      </span>
+                    )}
                   </Button>
-                  <Button variant="secondary" size="sm" onClick={resetAndClose}>
-                    Close
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                <div>
-                  <Textarea
-                    label="Describe what you need"
-                    placeholder="e.g. 500 kg stainless steel 304 sheets, Mumbai, ~₹50,000, within 2 weeks."
-                    value={need}
-                    onChange={(e) => setNeed(e.target.value)}
-                    style={{ minHeight: 80 }}
-                  />
-                  <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                    <Button variant="brand" size="sm" onClick={draft} disabled={drafting}>
-                      {drafting ? (
-                        "Drafting…"
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5">
-                          <SparkleIcon />
-                          Draft with AI
-                        </span>
-                      )}
+                  {!showForm && (
+                    <Button variant="ghost" size="sm" onClick={editManually}>
+                      Fill manually
                     </Button>
-                    {!showForm && (
-                      <Button variant="ghost" size="sm" onClick={editManually}>
-                        Fill manually
-                      </Button>
-                    )}
-                  </div>
+                  )}
                 </div>
-
-                {showForm && (
-                  <div className="border-t border-border pt-4">
-                    <div className="mb-3 flex items-baseline justify-between gap-3">
-                      <h3 className="text-[13.5px] font-semibold text-ink">Your requirement</h3>
-                      {isFallback && <span className="text-[11px] text-faint">AI draft</span>}
-                    </div>
-                    <RfqForm value={form} onChange={patch} categories={categories} />
-                    {!user && (
-                      <p className="mt-3.5 text-[12px] text-muted">
-                        You&apos;ll be asked to log in to send this requirement.
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
-            )}
+
+              {showForm && (
+                <div className="card card-flat" style={{ padding: 14 }}>
+                  <div className="mb-3 flex items-baseline justify-between gap-3">
+                    <h3 className="text-[13.5px] font-semibold text-ink">Your requirement</h3>
+                    {isFallback && <span className="text-[11px] text-faint">AI draft</span>}
+                  </div>
+                  <RfqForm value={form} onChange={patch} categories={categories} />
+                  {!user && (
+                    <p className="mt-3.5 text-[12px] text-muted">
+                      You&apos;ll be asked to log in to send this requirement.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sticky submit — only once there's a form to submit. */}
-          {!submitted && showForm && (
+          {showForm && (
             <div className="flex-shrink-0 border-t border-border bg-surface px-4 py-3">
               <Button variant="primary" onClick={submit} disabled={submitting} block>
                 {submitting ? "Sending…" : "Send to matching suppliers"}

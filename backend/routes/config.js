@@ -20,6 +20,10 @@ router.get("/", async (req, res, next) => {
     if (config.RECRUITMENT_LIVE !== null) {
       featureFlags.recruitmentLive = config.RECRUITMENT_LIVE;
     }
+    // Same override mechanism for Consultations (not a promoted product this phase).
+    if (config.CONSULTATIONS_LIVE !== null) {
+      featureFlags.consultationsLive = config.CONSULTATIONS_LIVE;
+    }
     // Public-safe subset (everything in settings.json is non-sensitive, but we shape it explicitly).
     res.json({
       success: true,

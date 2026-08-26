@@ -7,103 +7,25 @@
  *     approved sellers — each delivery is a Lead row in the append-only ledger.
  *
  * Every delivered inquiry produces a Lead in leads-ledger.jsonl (leadType "rfq").
- * All persistence goes through lib/store.js.
+ * A seller reaches the buyer directly (Call/WhatsApp — the "Connect" action,
+ * POST /leads/:leadId/contact) rather than filling in a quote; there is no
+ * quote-back step in this flow. All persistence goes through lib/store.js.
  */
 
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
-const notify = require("../lib/notify");
+const { appendLead, notifySellerOfLead, attachSellerDeliveries } = require("../lib/leads");
+const { validate, schemas } = require("../lib/validate");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 
 const MAX_FANOUT = 6;
-
-/** Coerce a loose value to a finite Number, or null when absent/invalid. */
-function num(v) {
-  if (v === undefined || v === null || v === "") return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-/** Is this user an admin? (roles array may be absent on legacy records.) */
-function isAdmin(user) {
-  return !!user && Array.isArray(user.roles) && user.roles.includes("admin");
-}
-
-/**
- * Flat seller "mini" resolved from a users.json record — the same shape
- * /api/listings denormalizes onto a listing card:
- *   { companyName, slug, city, rating, isVerified }
- */
-function sellerMini(user) {
-  const sp = (user && user.sellerProfile) || {};
-  return {
-    companyName: sp.companyName || (user && user.name) || null,
-    slug: sp.slug || null,
-    city: (sp.location && sp.location.city) || (user && user.city) || null,
-    rating: sp.rating ?? 0,
-    isVerified: !!sp.isVerified,
-  };
-}
-
-/** Enrich a list of quotes with their resolved seller mini (users loaded once). */
-function enrichQuotes(quotes, users) {
-  const byId = new Map(users.map((u) => [u.id, u]));
-  return quotes.map((q) => ({ ...q, seller: sellerMini(byId.get(q.sellerId)) }));
-}
 
 /** The category signal the buyer gave us, if any (accepts a few field names). */
 function categoryTerm(body) {
   return String(body.categoryId || body.category || body.legacyCategory || "")
     .trim()
     .toLowerCase();
-}
-
-/** Append one Lead row for a (seller, listing) delivery of an inquiry. */
-async function appendLead({ sellerId, buyerId, inquiryId, listingId }) {
-  const lead = {
-    leadId: await store.nextId("lead"),
-    sellerId,
-    buyerId: buyerId || null,
-    inquiryId,
-    listingId: listingId || null,
-    leadType: "rfq",
-    deliveredDate: new Date().toISOString(),
-    consumedFromQuota: true,
-    chargeable: false,
-    billingStatus: "free_quota",
-    status: "new",
-  };
-  await store.appendJsonl("leads-ledger.jsonl", lead);
-  return lead;
-}
-
-/**
- * Alert a seller that a new lead was delivered to them, reusing lib/notify's
- * createNotification (type "new_lead" — the type NotificationBell already renders).
- * The notification surfaces in GET /api/notifications (bell + dashboard).
- *
- * Best-effort: wrapped so a notify failure NEVER breaks the inquiry POST, and
- * skipped when a seller would be notified about their own inquiry.
- */
-async function notifySellerOfLead(sellerId, inquiry) {
-  if (!sellerId) return;
-  if (inquiry.buyerId && inquiry.buyerId === sellerId) return; // don't self-notify
-  try {
-    const productName = inquiry.productName || inquiry.categoryId || "your products";
-    const buyerName = inquiry.buyerName || "A buyer";
-    await notify.createNotification(sellerId, "new_lead", {
-      name: buyerName,
-      buyerId: inquiry.buyerId || null,
-      inquiryId: inquiry.id,
-      productName,
-      message: `New lead — ${buyerName} is looking for ${productName}. Respond with a quote.`,
-      link: "/dashboard?tab=leads",
-    });
-  } catch (err) {
-    // Notifications are non-critical: log and move on, never fail the inquiry.
-    console.error("notifySellerOfLead failed:", err && err.message);
-  }
 }
 
 /**
@@ -171,21 +93,26 @@ async function resolveTargets(body, inquiry) {
 
 /* -------------------------------------------------- POST /api/inquiries ---- */
 // Create an inquiry and fan it out to matching sellers as leads.
-router.post("/", optionalAuth, async (req, res, next) => {
+router.post("/", optionalAuth, validate(schemas.postInquiry), async (req, res, next) => {
   try {
     const body = req.body || {};
     const id = await store.nextId("inq");
 
-    // An authenticated poster is stamped as the buyer (so the RFQ shows up in their
-    // "My RFQs" inbox and quote-back is scoped to them). Guests can still post.
-    const buyerId = (req.user && req.user.id) || body.buyerId || null;
+    // The buyer identity is ONLY ever taken from the verified req.user — never
+    // from the request body. optionalAuth means this route is reachable by an
+    // unauthenticated caller (guests can still post), so trusting a client-
+    // supplied buyerId would let anyone attribute a forged RFQ to any account.
+    const buyerId = req.user ? req.user.id : null;
 
+    // Same reasoning for contact fields: once logged in, the account's own
+    // name/mobile/email are used, not whatever the client happened to send.
+    // Only a genuine guest (no req.user) falls back to the body's values.
     const inquiry = {
       id,
       buyerId,
-      buyerName: body.buyerName || "",
-      buyerMobile: body.buyerMobile || "",
-      buyerEmail: body.buyerEmail || "",
+      buyerName: (req.user ? req.user.name : body.buyerName) || "",
+      buyerMobile: (req.user ? req.user.mobile : body.buyerMobile) || "",
+      buyerEmail: (req.user ? req.user.email : body.buyerEmail) || "",
       productName: body.productName || "",
       quantity: body.quantity || "",
       message: body.message || "",
@@ -198,6 +125,11 @@ router.post("/", optionalAuth, async (req, res, next) => {
     };
 
     const targets = await resolveTargets(body, inquiry);
+    // No seller matched at all (novel category/product, or a real category
+    // nobody stocks yet) — flag it so the admin "Unmatched RFQs" queue
+    // (routes/adminInquiries.js) can pick it up and manually forward it,
+    // instead of it silently vanishing with a false "sent" confirmation.
+    inquiry.unmatched = targets.length === 0;
     await store.insert("inquiries.json", inquiry);
 
     const leads = [];
@@ -224,34 +156,80 @@ router.post("/", optionalAuth, async (req, res, next) => {
 });
 
 /* --------------------------------------------------- GET /api/inquiries ---- */
-// Authenticated: leads delivered to the caller's seller profile + direct inquiries.
+// Authenticated: the caller's own delivered RFQs, one row per lead (a seller
+// gets at most one delivery per inquiry), server-paginated + filterable —
+// same envelope shape as GET /api/admin/inquiries. Powers the seller
+// dashboard's "RFQs" table (components/dashboard/LeadsTab.tsx).
 router.get("/", authGuard, async (req, res, next) => {
   try {
     const sellerId = req.user.id;
-    const allLeads = await store.readJsonl("leads-ledger.jsonl");
-    const leads = allLeads.filter((l) => l.sellerId === sellerId);
+    const q = typeof req.query.q === "string" ? req.query.q.trim().toLowerCase() : "";
+    const status = req.query.status; // "all" | "contacted" | "not_contacted"
+    const from = typeof req.query.from === "string" ? req.query.from : "";
+    const to = typeof req.query.to === "string" ? req.query.to : "";
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    const inquiryIds = new Set(leads.map((l) => l.inquiryId));
-    const allInquiries = await store.all("inquiries.json");
-    const inquiries = allInquiries.filter(
-      (i) => i.sellerId === sellerId || inquiryIds.has(i.id)
-    );
+    const [allLeads, allInquiries] = await Promise.all([
+      store.readJsonl("leads-ledger.jsonl"),
+      store.all("inquiries.json"),
+    ]);
+    const inquiriesById = new Map(allInquiries.map((i) => [i.id, i]));
 
-    return res.json({ success: true, data: { leads, inquiries } });
+    let rows = allLeads
+      .filter((l) => l.sellerId === sellerId)
+      .map((l) => {
+        const inq = inquiriesById.get(l.inquiryId) || {};
+        return {
+          ...inq,
+          leadId: l.leadId,
+          deliveredDate: l.deliveredDate,
+          contactedAt: l.contactedAt || null,
+          contactedVia: l.contactedVia || null,
+        };
+      });
+
+    const summary = {
+      total: rows.length,
+      contacted: rows.filter((r) => r.contactedAt).length,
+      notContacted: rows.filter((r) => !r.contactedAt).length,
+    };
+
+    if (q) {
+      rows = rows.filter(
+        (r) =>
+          (r.buyerName || "").toLowerCase().includes(q) ||
+          (r.buyerMobile || "").includes(q) ||
+          (r.productName || "").toLowerCase().includes(q)
+      );
+    }
+    if (status === "contacted") rows = rows.filter((r) => r.contactedAt);
+    else if (status === "not_contacted") rows = rows.filter((r) => !r.contactedAt);
+    if (from) rows = rows.filter((r) => String(r.deliveredDate) >= from);
+    if (to) rows = rows.filter((r) => String(r.deliveredDate) <= to + "T23:59:59.999Z");
+
+    rows = rows.slice().sort((a, b) => String(b.deliveredDate).localeCompare(String(a.deliveredDate)));
+
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    const items = rows.slice(start, start + limit);
+
+    return res.json({ success: true, data: { items, total, page, totalPages, summary } });
   } catch (err) {
     next(err);
   }
 });
 
 /* --------------------------------------- GET /api/inquiries/mine ---------- */
-// The authenticated buyer's own RFQs (newest first), each with its quoteCount and
-// an enriched quotes[] array. Powers the buyer "My RFQs" comparison inbox.
+// The authenticated buyer's own RFQs (newest first), each with the seller(s)
+// it was delivered to and their contact status. Powers "My RFQs".
 router.get("/mine", authGuard, async (req, res, next) => {
   try {
     const buyerId = req.user.id;
-    const [allInquiries, allQuotes, users] = await Promise.all([
+    const [allInquiries, allLeads, users] = await Promise.all([
       store.all("inquiries.json"),
-      store.all("quotes.json"),
+      store.readJsonl("leads-ledger.jsonl"),
       store.all("users.json"),
     ]);
 
@@ -259,17 +237,7 @@ router.get("/mine", authGuard, async (req, res, next) => {
       .filter((i) => i.buyerId === buyerId)
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
 
-    const quotesByInquiry = new Map();
-    for (const q of allQuotes) {
-      const arr = quotesByInquiry.get(q.inquiryId) || [];
-      arr.push(q);
-      quotesByInquiry.set(q.inquiryId, arr);
-    }
-
-    const data = mine.map((inq) => {
-      const quotes = enrichQuotes(quotesByInquiry.get(inq.id) || [], users);
-      return { ...inq, quotes, quoteCount: quotes.length };
-    });
+    const data = attachSellerDeliveries(mine, allLeads, users);
 
     return res.json({ success: true, data });
   } catch (err) {
@@ -277,111 +245,35 @@ router.get("/mine", authGuard, async (req, res, next) => {
   }
 });
 
-/* ------------------------------ POST /api/inquiries/:id/quote ------------- */
-// A seller submits (or revises) a quote against an inquiry they RECEIVED a lead for.
-// One quote per (seller, inquiry): an existing quote is updated in place.
-router.post("/:id/quote", authGuard, async (req, res, next) => {
+/* ------------------------------- POST /api/inquiries/leads/:leadId/contact */
+// The RFQ "Connect" action — a seller records that they called/WhatsApp'd the
+// buyer directly for this delivered RFQ (replacing the old quote-back step).
+// Called alongside opening the tel:/wa.me link client-side, not instead of it.
+router.post("/leads/:leadId/contact", authGuard, async (req, res, next) => {
   try {
-    const inquiryId = req.params.id;
-    const sellerId = req.user.id;
-    const body = req.body || {};
-
-    // Authorization: the seller must have been delivered a lead for this inquiry.
-    const allLeads = await store.readJsonl("leads-ledger.jsonl");
-    const hasLead = allLeads.some(
-      (l) => l.sellerId === sellerId && l.inquiryId === inquiryId
-    );
-    if (!hasLead) {
-      return res.status(403).json({
-        success: false,
-        error: "You can only quote on inquiries delivered to you.",
-      });
-    }
-
-    const price = num(body.price);
-    if (price === null || price <= 0) {
+    const { leadId } = req.params;
+    const via = req.body && req.body.via;
+    if (via !== "call" && via !== "whatsapp") {
       return res
         .status(400)
-        .json({ success: false, error: "A valid price is required." });
+        .json({ success: false, error: 'via must be "call" or "whatsapp"' });
     }
 
-    const fields = {
-      inquiryId,
-      sellerId,
-      price,
-      unit: body.unit || "",
-      moq: num(body.moq),
-      deliveryDays: num(body.deliveryDays),
-      note: body.note || "",
-      validUntil: body.validUntil || null,
-      status: "sent",
-    };
-
-    // One quote per (seller, inquiry) — update the existing one if present.
-    const existing = await store.findOne(
-      "quotes.json",
-      (q) => q.inquiryId === inquiryId && q.sellerId === sellerId
-    );
-    if (existing) {
-      const updated = await store.update("quotes.json", existing.id, fields);
-      return res.json({ success: true, data: updated });
+    const allLeads = await store.readJsonl("leads-ledger.jsonl");
+    const lead = allLeads.find((l) => l.leadId === leadId);
+    if (!lead) {
+      return res.status(404).json({ success: false, error: "Lead not found" });
     }
-
-    const quote = {
-      id: await store.nextId("q"),
-      ...fields,
-      createdAt: new Date().toISOString(),
-    };
-    const inserted = await store.insert("quotes.json", quote);
-    return res.json({ success: true, data: inserted });
-  } catch (err) {
-    next(err);
-  }
-});
-
-/* ------------------------------ GET /api/inquiries/:id/quotes ------------- */
-// The quotes for an inquiry — visible ONLY to that inquiry's buyer or an admin.
-// Each quote is enriched with a flat seller mini.
-router.get("/:id/quotes", authGuard, async (req, res, next) => {
-  try {
-    const inquiryId = req.params.id;
-    const inquiry = await store.getById("inquiries.json", inquiryId);
-    if (!inquiry) {
+    if (lead.sellerId !== req.user.id) {
       return res
-        .status(404)
-        .json({ success: false, error: "Inquiry not found" });
-    }
-    if (inquiry.buyerId !== req.user.id && !isAdmin(req.user)) {
-      return res.status(403).json({ success: false, error: "Forbidden" });
+        .status(403)
+        .json({ success: false, error: "You can only update your own leads." });
     }
 
-    const [allQuotes, users] = await Promise.all([
-      store.all("quotes.json"),
-      store.all("users.json"),
-    ]);
-    const quotes = enrichQuotes(
-      allQuotes.filter((q) => q.inquiryId === inquiryId),
-      users
-    );
-
-    return res.json({ success: true, data: quotes });
-  } catch (err) {
-    next(err);
-  }
-});
-
-/* ----------------------------------------------- PUT /api/inquiries/:id ---- */
-// Compatibility: update an inquiry's stage (preserved from the legacy route).
-router.put("/:id", authGuard, async (req, res, next) => {
-  try {
-    const patch = {};
-    if (req.body && req.body.stage !== undefined) patch.stage = req.body.stage;
-    const updated = await store.update("inquiries.json", req.params.id, patch);
-    if (!updated) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Inquiry not found" });
-    }
+    const updated = await store.updateLead(leadId, {
+      contactedAt: new Date().toISOString(),
+      contactedVia: via,
+    });
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);

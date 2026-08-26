@@ -148,6 +148,11 @@ async function writeJsonl(name, items) {
   throw new Error(`writeJsonl: no relational mapping for log ${name}`);
 }
 
+/** Patch one lead row by leadId (the RFQ "Connect" contact-status fields). */
+async function updateLead(leadId, patch) {
+  return leadsLedgerStore.update(leadId, patch);
+}
+
 // store.js's file-backed branch tracks a per-collection version counter for
 // route-level memoization (see routes/categories.js, brands.js, users.js).
 // Postgres has no equivalent in-process cache to invalidate, so this always
@@ -165,6 +170,7 @@ module.exports = {
   appendJsonl,
   readJsonl,
   writeJsonl,
+  updateLead,
   nextId,
   seedCounter,
   all,

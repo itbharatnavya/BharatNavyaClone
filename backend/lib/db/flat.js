@@ -211,6 +211,9 @@ function buildFlatConfigs(nextId) {
         message: col("message", t), listingId: col("listing_id", t), categoryId: col("category_id", t),
         intent: col("intent", t), sellerId: col("seller_id", t), createdAt: col("created_at", ts),
         stage: col("stage", t), buyerId: col("buyer_id", t),
+        // Admin "Unmatched RFQs" queue (0008_add_inquiry_admin_review_columns.sql).
+        unmatched: col("unmatched", b), adminStatus: col("admin_status", t),
+        decidedBy: col("decided_by", t), decidedAt: col("decided_at", ts),
       },
     },
     {
@@ -319,15 +322,6 @@ function buildFlatConfigs(nextId) {
         paymentStatus: col("payment_status", t), validFrom: col("valid_from", ts), validTo: col("valid_to", ts),
         referenceNo: col("reference_no", t), notes: col("notes", t), markedPaidDate: col("marked_paid_date", ts),
         createdAt: col("created_at", ts),
-      },
-    },
-    {
-      file: "quotes.json",
-      table: "quotes",
-      columns: {
-        id: col("id", t), inquiryId: col("inquiry_id", t), sellerId: col("seller_id", t), price: col("price", n),
-        unit: col("unit", t), moq: col("moq", i), deliveryDays: col("delivery_days", i), note: col("note", t),
-        validUntil: col("valid_until", ts), status: col("status", t), createdAt: col("created_at", ts),
       },
     },
     {

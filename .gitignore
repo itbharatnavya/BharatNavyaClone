@@ -36,6 +36,9 @@ yarn-error.log*
 backend/public/uploads/
 frontend/public/uploads/
 
+# Client-facing cost/planning deliverables — not for the repo
+docs/production-plan/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

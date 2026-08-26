@@ -7,10 +7,9 @@
 // now (no change-email/change-mobile flow exists yet).
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { Category, User } from "@/lib/types";
 import { getCategories, updateProfile } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useToast } from "@/components/Toast";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
@@ -99,8 +98,7 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
 
 export default function ProfilePage() {
   const tr = useTr();
-  const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading } = useRequireAuth({ redirectTo: "/login?next=/profile" });
   const { addToast } = useToast();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -132,9 +130,6 @@ export default function ProfilePage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!loading && !user) router.replace("/login?next=/profile");
-  }, [loading, user, router]);
 
   function toggleInterest(slug: string) {
     setInterests((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));

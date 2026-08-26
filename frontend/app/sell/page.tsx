@@ -7,7 +7,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useConfig } from "@/lib/config";
 import { useToast } from "@/components/Toast";
 import { getCategories, createListing } from "@/lib/api";
@@ -31,7 +31,7 @@ import AutofillButton from "@/components/sell/AutofillButton";
 import ProductFields from "@/components/sell/ProductFields";
 import ServiceFields from "@/components/sell/ServiceFields";
 import { Section, TagInput, MediaEditor } from "@/components/sell/editors";
-import { statesList, citiesForState } from "@/lib/indiaGeo";
+import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
 import {
   initialProduct,
   initialService,
@@ -49,75 +49,12 @@ const STEPS = [
 // Location picker sentinels for the "Available in" <select>.
 const LOC_PAN = "__pan__";
 const LOC_CITIES = "__cities__";
-const STATE_OPTIONS = statesList().map((s) => ({ value: s, label: s }));
-const OTHER_CITY = "__other__";
-
-// City <select> driven by the chosen state, with a free-text fallback so a city
-// that isn't in our dataset is never blocked. Remount (via `key`) to reset "other".
-function CityField({
-  state,
-  city,
-  onChange,
-  idPrefix,
-}: {
-  state: string;
-  city: string;
-  onChange: (city: string) => void;
-  idPrefix: string;
-}) {
-  const cities = citiesForState(state);
-  const known = city !== "" && cities.includes(city);
-  const [other, setOther] = useState<boolean>(city !== "" && !known);
-  const selectValue = other ? OTHER_CITY : known ? city : "";
-
-  return (
-    <div>
-      <Select
-        label="City"
-        placeholder={state ? "Select city" : "Select state first"}
-        value={selectValue}
-        disabled={!state}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v === OTHER_CITY) {
-            setOther(true);
-            onChange("");
-          } else {
-            setOther(false);
-            onChange(v);
-          }
-        }}
-        options={[
-          ...cities.map((c) => ({ value: c, label: c })),
-          { value: OTHER_CITY, label: "Other city…" },
-        ]}
-        id={`${idPrefix}-city`}
-      />
-      {other && (
-        <Input
-          placeholder="Enter city name"
-          value={city}
-          onChange={(e) => onChange(e.target.value)}
-          id={`${idPrefix}-city-other`}
-          style={{ marginTop: 8 }}
-        />
-      )}
-    </div>
-  );
-}
 
 export default function SellPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading } = useRequireAuth({ redirectTo: "/login?next=/sell" });
   const { featureFlags } = useConfig();
   const { addToast } = useToast();
-
-  // ---- auth gate ----
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace("/login?next=/sell");
-    }
-  }, [loading, user, router]);
 
   // ---- categories ----
   const [categories, setCategories] = useState<Category[]>([]);

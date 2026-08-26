@@ -4,10 +4,12 @@
 // only: the parent owns state, submit and the AI-draft flow. Uses shared Input /
 // Select / Textarea so it matches the rest of the light theme.
 
-import React from "react";
+import React, { useState } from "react";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
+import { suggestCategory } from "@/lib/api";
+import { useToast } from "@/components/Toast";
 import type { Category } from "@/lib/types";
 
 export interface RfqFormState {
@@ -41,6 +43,36 @@ export default function RfqForm({
   onChange: (patch: Partial<RfqFormState>) => void;
   categories: Category[];
 }) {
+  const { addToast } = useToast();
+
+  // "Other (not listed)" — buyer flags a category we don't have yet. Same
+  // pattern as components/sell/CategoryPicker.tsx's seller-side suggestion:
+  // independent of the RFQ itself (category stays optional either way), just
+  // routes the missing-category signal to the same admin review queue.
+  const [otherOpen, setOtherOpen] = useState(false);
+  const [otherName, setOtherName] = useState("");
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestedName, setSuggestedName] = useState<string | null>(null);
+
+  const submitSuggestion = async () => {
+    const name = otherName.trim();
+    if (!name || suggesting) return;
+    setSuggesting(true);
+    try {
+      await suggestCategory({ name, context: "rfq" });
+      setSuggestedName(name);
+      setOtherName("");
+      addToast(`Thanks! "${name}" was sent to our team to review.`, "success");
+    } catch (e) {
+      addToast(
+        e instanceof Error ? e.message : "Couldn't send your suggestion.",
+        "error"
+      );
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
   const set =
     (key: keyof RfqFormState) =>
     (
@@ -66,6 +98,66 @@ export default function RfqForm({
         onChange={set("categorySlug")}
         options={categories.map((c) => ({ value: c.slug, label: c.name }))}
       />
+
+      {!otherOpen ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+            marginTop: -6,
+          }}
+        >
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+            Can&apos;t find your category?
+          </span>
+          <button type="button" className="chip" onClick={() => setOtherOpen(true)}>
+            + Suggest one
+          </button>
+        </div>
+      ) : (
+        <div className="card card-flat" style={{ padding: 14, borderStyle: "dashed", marginTop: -6 }}>
+          <label className="field-label">Suggest a new category</label>
+          <p style={{ fontSize: 12.5, color: "var(--muted)", margin: "0 0 8px" }}>
+            Tell us what to call it. Your requirement still gets sent below —
+            this just flags the gap for our team.
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <input
+              className="input"
+              style={{ flex: "1 1 200px" }}
+              placeholder="e.g. Solar inverter repair, Millet flour…"
+              value={otherName}
+              onChange={(e) => setOtherName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void submitSuggestion();
+                }
+              }}
+              maxLength={80}
+            />
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              disabled={!otherName.trim() || suggesting}
+              onClick={() => void submitSuggestion()}
+            >
+              {suggesting ? "Sending…" : "Suggest"}
+            </button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setOtherOpen(false)}>
+              Cancel
+            </button>
+          </div>
+          {suggestedName && (
+            <p style={{ fontSize: 12.5, color: "var(--brand)", marginTop: 10, marginBottom: 0 }}>
+              Sent &ldquo;{suggestedName}&rdquo; for review.
+            </p>
+          )}
+        </div>
+      )}
 
       <div
         style={{

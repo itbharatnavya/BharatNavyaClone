@@ -66,6 +66,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void refresh();
   }, [refresh]);
 
+  // A mid-session 401 (token revoked, or the rare expiry) is reported here by
+  // lib/api.ts's doRequest via a plain DOM event rather than a direct import,
+  // so the API client doesn't need to know about React context. Just flips
+  // `user` to null — every protected page already redirects on `!user` via
+  // useRequireAuth()/its own guard, so no navigation logic is duplicated here.
+  useEffect(() => {
+    const onSessionExpired = () => setUser(null);
+    window.addEventListener("bs:session-expired", onSessionExpired);
+    return () => window.removeEventListener("bs:session-expired", onSessionExpired);
+  }, []);
+
   const login = useCallback(
     async (email: string, password: string): Promise<User> => {
       const { token, user: u } = await api.login(email, password);

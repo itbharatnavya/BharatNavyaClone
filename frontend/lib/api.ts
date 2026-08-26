@@ -18,8 +18,8 @@ import type {
   ListingType,
   AiSearchResult,
   Inquiry,
-  Quote,
   Lead,
+  ContactChannel,
   Review,
   SearchTrendItem,
   RecentActivityItem,
@@ -148,6 +148,19 @@ async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T>
       json && "error" in json && json.error
         ? json.error
         : `Request failed (${res.status})`;
+    // A 401 on a request that carried OUR OWN token means the session died
+    // server-side (revoked, or — rare, given the 30-day expiry — expired):
+    // clear it and let AuthProvider know so `user` flips to null and stale
+    // "logged in" UI doesn't linger. Distinct from a 401 on a public auth
+    // endpoint (wrong password/OTP on /login) — those never attach a token,
+    // so `token` is falsy and this block correctly does nothing, leaving the
+    // error to surface as a normal inline "wrong password" message.
+    if (res.status === 401 && token) {
+      clearToken();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("bs:session-expired"));
+      }
+    }
     throw new Error(message);
   }
 
@@ -477,48 +490,91 @@ export function getAds(placement: string, category?: string): Promise<any[]> {
 // ============================================================
 // Inquiries / RFQ / Leads
 // ============================================================
-export function postInquiry(body: Partial<Inquiry>): Promise<Inquiry> {
-  return request<Inquiry>(`/api/inquiries`, {
+export interface PostInquiryResult {
+  inquiry: Inquiry;
+  leads: Lead[];
+  leadsCreated: number;
+}
+
+export function postInquiry(body: Partial<Inquiry>): Promise<PostInquiryResult> {
+  return request<PostInquiryResult>(`/api/inquiries`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 }
 
-// authGuard: returns the current seller's delivered leads.
-export function getInquiries(): Promise<Lead[]> {
-  return request<Lead[]>(`/api/inquiries`);
-}
-
-// Body a seller sends when quoting back on an inquiry.
-export interface QuoteInput {
-  price: number;
-  unit?: string;
-  moq?: number | null;
-  deliveryDays?: number | null;
-  note?: string;
-  validUntil?: string | null;
-}
-
-// Seller: submit (or revise) a quote against an inquiry delivered to them.
-export function submitQuote(
-  inquiryId: string,
-  body: QuoteInput
-): Promise<Quote> {
-  return request<Quote>(`/api/inquiries/${inquiryId}/quote`, {
+// Admin: manually deliver an unmatched RFQ to a chosen seller as a real lead.
+export function forwardInquiry(
+  id: string,
+  body: { sellerId: string; listingId?: string }
+): Promise<Inquiry> {
+  return request<Inquiry>(`/api/admin/inquiries/${id}/forward`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 }
 
-// Buyer/admin: the quotes for a single inquiry (enriched with seller minis).
-export async function getInquiryQuotes(inquiryId: string): Promise<Quote[]> {
-  const res = await request<Quote[] | { quotes?: Quote[] }>(
-    `/api/inquiries/${inquiryId}/quotes`
-  );
-  return Array.isArray(res) ? res : res?.quotes || [];
+// Admin: reviewed an unmatched RFQ and chose not to forward it.
+export function dismissInquiry(id: string): Promise<Inquiry> {
+  return request<Inquiry>(`/api/admin/inquiries/${id}/dismiss`, {
+    method: "POST",
+  });
 }
 
-// Buyer: the authenticated buyer's own RFQs, each with its quotes[] + quoteCount.
+// Seller: their own delivered RFQs, one row per lead — server-paginated and
+// filterable, same envelope shape as the admin RFQ log.
+export interface RfqDeliveryRow extends Inquiry {
+  leadId: string;
+  deliveredDate: string;
+  contactedAt: string | null;
+  contactedVia: ContactChannel | null;
+}
+export type RfqDeliveryStatusFilter = "all" | "contacted" | "not_contacted";
+export interface RfqDeliveryQuery {
+  q?: string;
+  status?: RfqDeliveryStatusFilter;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+export interface RfqDeliverySummary {
+  total: number;
+  contacted: number;
+  notContacted: number;
+}
+export interface RfqDeliveryPage {
+  items: RfqDeliveryRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+  summary: RfqDeliverySummary;
+}
+
+export function getMyRfqDeliveries(query: RfqDeliveryQuery = {}): Promise<RfqDeliveryPage> {
+  const qs = toQuery({
+    q: query.q,
+    status: query.status && query.status !== "all" ? query.status : undefined,
+    from: query.from,
+    to: query.to,
+    page: query.page || 1,
+    limit: query.limit || 20,
+  });
+  return request<RfqDeliveryPage>(`/api/inquiries${qs}`);
+}
+
+// The RFQ "Connect" action — a seller records that they called/WhatsApp'd the
+// buyer directly for this delivered RFQ. Call this alongside opening the
+// tel:/wa.me link, never instead of it (fire-and-forget from the UI).
+export function contactLead(leadId: string, via: ContactChannel): Promise<Lead> {
+  return request<Lead>(`/api/inquiries/leads/${leadId}/contact`, {
+    method: "POST",
+    body: JSON.stringify({ via }),
+  });
+}
+
+// Buyer: the authenticated buyer's own RFQs, each with the seller(s) it was
+// delivered to and their contact status.
 export async function getMyRfqs(): Promise<Inquiry[]> {
   const res = await request<Inquiry[] | { inquiries?: Inquiry[] }>(
     `/api/inquiries/mine`

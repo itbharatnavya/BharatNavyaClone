@@ -2,11 +2,14 @@
 
 // app/admin/page.tsx — BharatSource Admin Control Center.
 // Gated on useAuth().isAdmin. Two-level nav: a product SECTION switcher
-// (Global / Directory / Recruitment / Credit Card / Mutual) and, within the
-// active section, that section's tabs. See ADMIN-CONSOLE.md for the
-// architecture decision and phase history behind this structure.
+// (Global / Directory / Recruitment) and, within the active section, that
+// section's tabs. Credit Card and Mutual are pruned from the switcher — no
+// admin tooling exists for either yet (see SectionKey below to re-add one).
+// See ADMIN-CONSOLE.md for the architecture decision and phase history
+// behind this structure.
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import AdminLogin from "@/components/admin/AdminLogin";
 import OverviewTab from "@/components/admin/OverviewTab";
@@ -28,8 +31,13 @@ import SiteConfigTab from "@/components/admin/SiteConfigTab";
 import EmployersTab from "@/components/admin/EmployersTab";
 import JobsAdminTab from "@/components/admin/JobsAdminTab";
 import RecruitmentTaxonomyTab from "@/components/admin/RecruitmentTaxonomyTab";
+import UnmatchedRfqsTab from "@/components/admin/UnmatchedRfqsTab";
+import RfqLogTab from "@/components/admin/RfqLogTab";
 
-type SectionKey = "global" | "directory" | "recruitment" | "creditcard" | "mutual";
+// Credit Card and Mutual aren't built out yet — no admin tooling exists for
+// either, so they're pruned from the switcher entirely (trivially reversible:
+// re-add the ~10-line section object once one of them has real admin tabs).
+type SectionKey = "global" | "directory" | "recruitment";
 
 type TabKey =
   | "overview"
@@ -52,7 +60,9 @@ type TabKey =
   | "jobsAdmin"
   | "taxonomy"
   | "recruitmentAds"
-  | "recruitmentContent";
+  | "recruitmentContent"
+  | "unmatchedRfqs"
+  | "rfqLog";
 
 interface NavItem {
   key: TabKey;
@@ -97,6 +107,8 @@ const ICONS: Record<TabKey, React.ReactNode> = {
   taxonomy: icon("M4 6h16M4 12h10M4 18h16"),
   recruitmentAds: icon("M3 11l18-5v12L3 14v-3ZM11.6 16.8a3 3 0 1 1-5.8-1.6"),
   recruitmentContent: icon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"),
+  unmatchedRfqs: icon("M12 9v4M12 17h.01M10.29 3.86l-8.4 14.54A2 2 0 0 0 3.6 21.5h16.8a2 2 0 0 0 1.71-3.1l-8.4-14.54a2 2 0 0 0-3.42 0Z"),
+  rfqLog: icon("M9 3.5h6a1 1 0 011 1V5h1.5A1.5 1.5 0 0119 6.5v13A1.5 1.5 0 0117.5 21h-11A1.5 1.5 0 015 19.5v-13A1.5 1.5 0 016.5 5H8v-.5a1 1 0 011-1zM8.5 12h7M8.5 15.5h5M8.5 9h3"),
 };
 
 const nav = (key: TabKey, label: string): NavItem => ({ key, label, icon: ICONS[key] });
@@ -141,6 +153,8 @@ const SECTIONS: Section[] = [
       nav("verification", "Verification"),
       nav("reports", "Reports"),
       nav("listingVerification", "Listing AI Check"),
+      nav("unmatchedRfqs", "Unmatched RFQs"),
+      nav("rfqLog", "RFQ Log"),
     ],
   },
   {
@@ -155,18 +169,6 @@ const SECTIONS: Section[] = [
       nav("recruitmentContent", "Content"),
     ],
   },
-  {
-    key: "creditcard",
-    label: "Credit Card",
-    defaultTab: null,
-    tabs: [],
-  },
-  {
-    key: "mutual",
-    label: "Mutual",
-    defaultTab: null,
-    tabs: [],
-  },
 ];
 
 const SECTION_LABEL: Record<SectionKey, string> = Object.fromEntries(
@@ -176,7 +178,7 @@ const SECTION_LABEL: Record<SectionKey, string> = Object.fromEntries(
 const ALL_TAB_KEYS = new Set<string>(SECTIONS.flatMap((s) => s.tabs.map((t) => t.key)).concat(["sellers"]));
 
 function isSectionKey(v: string): v is SectionKey {
-  return v === "global" || v === "directory" || v === "recruitment" || v === "creditcard" || v === "mutual";
+  return v === "global" || v === "directory" || v === "recruitment";
 }
 function isTabKey(v: string): v is TabKey {
   return ALL_TAB_KEYS.has(v);
@@ -204,12 +206,25 @@ const TITLES: Record<TabKey, string> = {
   taxonomy: "Taxonomy",
   recruitmentAds: "Ads",
   recruitmentContent: "Content",
+  unmatchedRfqs: "Unmatched RFQs",
+  rfqLog: "RFQ Log",
 };
 
 export default function AdminPage() {
+  const router = useRouter();
   const { user, loading, isAdmin, logout } = useAuth();
   const [section, setSection] = useState<SectionKey>("global");
   const [tab, setTab] = useState<TabKey>("overview");
+
+  // An authenticated non-admin used to see a dead-end "not allowed" login
+  // form on this exact page with no way forward. Send them somewhere useful
+  // instead — mirrors how every other role/auth guard in the app redirects
+  // rather than stranding the user. (Logged-out visitors still get the
+  // inline <AdminLogin/> form below, unchanged — that's intentional, this
+  // page is the one place a guest logs in without leaving it.)
+  useEffect(() => {
+    if (!loading && user && !isAdmin) router.replace("/");
+  }, [loading, user, isAdmin, router]);
 
   // sync section+tab with URL hash (#section:tab) so refresh/deep-links keep the place
   useEffect(() => {
@@ -256,7 +271,9 @@ export default function AdminPage() {
   }
 
   if (!user) return <AdminLogin />;
-  if (!isAdmin) return <AdminLogin notAllowed />;
+  // Non-admin: the redirect effect above is already navigating away — render
+  // nothing rather than a dead-end form.
+  if (!isAdmin) return null;
 
   return (
     <div className="container-bs py-8">
@@ -359,6 +376,8 @@ export default function AdminPage() {
               {tab === "moderation" && <ModerationTab product="directory" />}
               {tab === "verification" && <VerificationTab />}
               {tab === "listingVerification" && <ListingVerificationTab />}
+              {tab === "unmatchedRfqs" && <UnmatchedRfqsTab />}
+              {tab === "rfqLog" && <RfqLogTab />}
               {tab === "plans" && <PlansTab />}
               {tab === "ads" && <AdsTab product="directory" />}
               {tab === "boosts" && <BoostsTab />}

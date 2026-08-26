@@ -12,7 +12,7 @@ import Select from "@/components/Select";
 import Button from "@/components/Button";
 import { Section, TagInput, QuestionsEditor } from "@/components/sell/editors";
 import RecruitmentGate from "@/components/recruitment/RecruitmentGate";
-import { useAuth } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useToast } from "@/components/Toast";
 import { getJobFunctions, createJob, updateJob, getJob } from "@/lib/api";
 import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion, JobStatus } from "@/lib/types";
@@ -41,16 +41,15 @@ const EXPERIENCE_LEVELS: { value: ExperienceLevel; label: string }[] = [
 ];
 
 function PostJobInner() {
-  const { user, loading } = useAuth();
   const router = useRouter();
   const { addToast } = useToast();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEdit = !!jobId;
 
-  useEffect(() => {
-    if (!loading && !user) router.replace(`/login?next=/post-job${jobId ? `?jobId=${jobId}` : ""}`);
-  }, [loading, user, router, jobId]);
+  const { user, loading } = useRequireAuth({
+    redirectTo: `/login?next=/post-job${jobId ? `?jobId=${jobId}` : ""}`,
+  });
 
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
   useEffect(() => {

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import type { User } from "@/lib/types";
-import { getMyListings, getConversations, getInquiries, getNotifications } from "@/lib/api";
+import { getMyListings, getConversations, getMyRfqDeliveries, getNotifications } from "@/lib/api";
 import Button from "@/components/Button";
 import {
   PanelHeader,
@@ -33,10 +33,10 @@ export default function OverviewTab({ user, onNavigate }: Props) {
     let alive = true;
     (async () => {
       // Each source is independent; a failure in one shouldn't blank the rest.
-      const [listingsRes, convRes, leadsRes, notifRes] = await Promise.allSettled([
+      const [listingsRes, convRes, rfqsRes, notifRes] = await Promise.allSettled([
         getMyListings(),
         getConversations(),
-        getInquiries(),
+        getMyRfqDeliveries({ limit: 1 }),
         getNotifications(),
       ]);
       if (!alive) return;
@@ -47,13 +47,8 @@ export default function OverviewTab({ user, onNavigate }: Props) {
       if (convRes.status === "fulfilled") {
         setUnread(convRes.value.reduce((sum, c) => sum + (c.unread || 0), 0));
       }
-      if (leadsRes.status === "fulfilled") {
-        const v = leadsRes.value as unknown;
-        const n = Array.isArray(v)
-          ? v.length
-          : (((v as { leads?: unknown[] })?.leads?.length || 0) +
-            ((v as { inquiries?: unknown[] })?.inquiries?.length || 0));
-        setLeadCount(n);
+      if (rfqsRes.status === "fulfilled") {
+        setLeadCount(rfqsRes.value.total);
       }
       if (notifRes.status === "fulfilled") {
         // getNotifications() resolves to { notifications, unreadCount } — pull the
@@ -108,7 +103,7 @@ export default function OverviewTab({ user, onNavigate }: Props) {
           icon={<Icon name="inbox" size={18} />}
         />
         <StatCard
-          label={tr("dashboard.stat.leads", "Leads & RFQs")}
+          label={tr("dashboard.stat.leads", "RFQs")}
           value={leadCount}
           accent="var(--success)"
           hint={tr("dashboard.stat.leadsHint", "Buyer enquiries delivered")}

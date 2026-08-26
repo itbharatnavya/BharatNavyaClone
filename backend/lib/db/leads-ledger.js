@@ -11,6 +11,8 @@ function fromRow(r) {
     deliveredDate: r.delivered_date instanceof Date ? r.delivered_date.toISOString() : r.delivered_date,
     consumedFromQuota: r.consumed_from_quota, chargeable: r.chargeable, billingStatus: r.billing_status,
     status: r.status,
+    contactedAt: r.contacted_at instanceof Date ? r.contacted_at.toISOString() : (r.contacted_at ?? null),
+    contactedVia: r.contacted_via ?? null,
   };
 }
 
@@ -31,6 +33,17 @@ function createLeadsLedgerStore(pool) {
           !!lead.consumedFromQuota, !!lead.chargeable, lead.billingStatus ?? null, lead.status ?? null,
         ]
       );
+    },
+    // The RFQ "Connect" feature — a seller records that they called/WhatsApp'd
+    // the buyer directly for this delivered RFQ, instead of the removed
+    // Quote-back flow. Scoped to just these two columns; nothing else on a
+    // lead row is ever mutated after creation.
+    async update(leadId, patch) {
+      const res = await pool.query(
+        `UPDATE leads_ledger SET contacted_at = $1, contacted_via = $2 WHERE lead_id = $3 RETURNING *`,
+        [patch.contactedAt ?? null, patch.contactedVia ?? null, leadId]
+      );
+      return res.rowCount ? fromRow(res.rows[0]) : null;
     },
     // Bulk-replace (migration use): upsert every entry, then drop anything not in the set.
     async writeAll(items) {

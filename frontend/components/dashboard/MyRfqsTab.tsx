@@ -1,20 +1,39 @@
 "use client";
 
-// MyRfqsTab — the buyer's "My RFQs" inbox. Lists the requirements the buyer posted,
-// with a live quote count. Expanding one reveals a side-by-side comparison of every
-// quote sellers sent back (QuotesComparison), so the buyer can compare and connect.
+// MyRfqsTab — the buyer's "My RFQs" inbox. Lists the requirements the buyer
+// posted; expanding one shows which seller(s) it reached and whether they've
+// connected yet (Call/WhatsApp — see routes/inquiries.js's POST
+// /leads/:leadId/contact). There's no quote-back step in this flow — a
+// seller reaches the buyer directly, the same way Directory works everywhere
+// else (listing page, seller profile).
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import type { User, Inquiry } from "@/lib/types";
+import type { User, Inquiry, SellerDelivery } from "@/lib/types";
 import { getMyRfqs } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import Badge from "@/components/Badge";
-import QuotesComparison from "./QuotesComparison";
-import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./shared";
+import { PanelHeader, EmptyState, Loading, Icon, formatDate, timeAgo, useTr } from "./shared";
 
 interface Props {
   user: User;
+}
+
+function ContactStatus({ seller }: { seller: SellerDelivery }) {
+  const tr = useTr();
+  if (!seller.contactedAt) {
+    return (
+      <span style={{ fontSize: 13, color: "var(--muted)" }}>
+        {tr("dashboard.myrfqs.notContacted", "Not contacted yet")}
+      </span>
+    );
+  }
+  const via = seller.contactedVia === "whatsapp" ? "WhatsApp" : "Call";
+  return (
+    <span style={{ fontSize: 13, color: "var(--success)" }}>
+      {tr("dashboard.myrfqs.contactedVia", "Contacted via")} {via} — {timeAgo(seller.contactedAt)}
+    </span>
+  );
 }
 
 export default function MyRfqsTab({ user }: Props) {
@@ -49,7 +68,7 @@ export default function MyRfqsTab({ user }: Props) {
         title={tr("dashboard.myrfqs.title", "My RFQs")}
         subtitle={tr(
           "dashboard.myrfqs.subtitle",
-          "Requirements you posted and the quotes sellers sent back — compare and connect."
+          "Requirements you posted and which suppliers reached out to you."
         )}
         actions={
           <Link href="/rfq" className="btn btn-primary btn-sm">
@@ -66,7 +85,7 @@ export default function MyRfqsTab({ user }: Props) {
           title={tr("dashboard.myrfqs.empty", "No RFQs yet")}
           subtitle={tr(
             "dashboard.myrfqs.emptyHint",
-            "Post a requirement and matching sellers will send you quotes to compare here."
+            "Post a requirement and matching suppliers will reach out to you here."
           )}
           action={
             <Link href="/rfq" className="btn btn-primary">
@@ -78,7 +97,8 @@ export default function MyRfqsTab({ user }: Props) {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {rfqs.map((r) => {
             const isOpen = expanded === r.id;
-            const count = r.quoteCount ?? r.quotes?.length ?? 0;
+            const sellers = r.sellers || [];
+            const contactedCount = sellers.filter((s) => s.contactedAt).length;
             return (
               <div key={r.id} className="card card-flat" style={{ padding: 0, overflow: "hidden" }}>
                 <button
@@ -110,10 +130,10 @@ export default function MyRfqsTab({ user }: Props) {
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexShrink: 0 }}>
-                    <Badge variant={count > 0 ? "new" : "neutral"}>
-                      {count} {count === 1
-                        ? tr("dashboard.myrfqs.quote", "quote")
-                        : tr("dashboard.myrfqs.quotes", "quotes")}
+                    <Badge variant={contactedCount > 0 ? "new" : "neutral"}>
+                      {sellers.length === 0
+                        ? tr("dashboard.myrfqs.noSellers", "0 suppliers")
+                        : `${sellers.length} ${sellers.length === 1 ? tr("dashboard.myrfqs.supplier", "supplier") : tr("dashboard.myrfqs.suppliers", "suppliers")}`}
                     </Badge>
                     <Icon
                       name="chevron"
@@ -129,8 +149,38 @@ export default function MyRfqsTab({ user }: Props) {
 
                 {isOpen && (
                   <div style={{ padding: 16, borderTop: "1px solid var(--border)" }}>
-                    {count > 0 && r.quotes && r.quotes.length > 0 ? (
-                      <QuotesComparison quotes={r.quotes} />
+                    {sellers.length > 0 ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {sellers.map((s) => (
+                          <div
+                            key={s.leadId}
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              gap: 10,
+                              flexWrap: "wrap",
+                              padding: "8px 0",
+                              borderBottom: "1px solid var(--border)",
+                            }}
+                          >
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>
+                                {s.companyName || "Seller"}
+                                {s.isVerified && (
+                                  <span style={{ marginLeft: 6, fontSize: 11, color: "var(--brand)" }}>
+                                    {tr("dashboard.myrfqs.verified", "Verified")}
+                                  </span>
+                                )}
+                              </div>
+                              {s.city && (
+                                <div style={{ fontSize: 12, color: "var(--faint)" }}>{s.city}</div>
+                              )}
+                            </div>
+                            <ContactStatus seller={s} />
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div
                         style={{
@@ -140,7 +190,12 @@ export default function MyRfqsTab({ user }: Props) {
                           fontSize: 14,
                         }}
                       >
-                        {tr("dashboard.myrfqs.waiting", "Waiting for sellers to quote…")}
+                        {r.unmatched
+                          ? tr(
+                              "dashboard.myrfqs.unmatched",
+                              "No matching suppliers yet — our team is reviewing this requirement."
+                            )
+                          : tr("dashboard.myrfqs.waiting", "Waiting for a supplier match…")}
                       </div>
                     )}
                   </div>

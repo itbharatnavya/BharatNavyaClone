@@ -57,6 +57,11 @@ const DEFAULT_FLAGS: FeatureFlags = {
   // from the environment with backend/.env's RECRUITMENT_LIVE (env wins over admin —
   // see backend/routes/config.js) — RECRUITMENT.md §5.
   recruitmentLive: false,
+  // Same reasoning as recruitmentLive above — Consultations isn't a promoted
+  // suite product this phase (see CLAUDE.md §1). Flip via the admin panel
+  // (Site Config's "+ Add flag" grid), or force it from the environment with
+  // backend/.env's CONSULTATIONS_LIVE.
+  consultationsLive: false,
 };
 
 const DEFAULT_BRANDING: Branding = {

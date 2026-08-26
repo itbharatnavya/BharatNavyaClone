@@ -179,7 +179,7 @@ export default function PricingPage() {
             <div style={{ marginTop: 20 }}>
               <Button
                 block
-                href="/register"
+                href="/login?next=/pricing"
                 variant={t.highlight ? "primary" : "secondary"}
               >
                 {t.tier === "free" ? tr("pricing.startFree", "Start free") : `${tr("pricing.choose", "Choose")} ${t.name}`}

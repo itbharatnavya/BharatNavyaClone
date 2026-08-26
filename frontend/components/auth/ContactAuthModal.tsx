@@ -7,14 +7,16 @@
 // leaves the listing/seller page. On success the caller's `user` from
 // useAuth() becomes truthy and the Call/WhatsApp buttons unlock.
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
 import { sendOtp } from "@/lib/api";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import Button from "@/components/Button";
 import { useTr } from "@/components/discovery/hooks";
+import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
 
 export interface ContactAuthModalProps {
   open: boolean;
@@ -40,6 +42,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   // login — password
@@ -56,6 +59,26 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
   const [regState, setRegState] = useState("");
   const [registering, setRegistering] = useState(false);
 
+  // Inline field-validation messages (toast is reserved for API/submit outcomes).
+  const [mobileError, setMobileError] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [regNameError, setRegNameError] = useState("");
+  const [regMobileError, setRegMobileError] = useState("");
+  const [regEmailError, setRegEmailError] = useState("");
+  const [regPasswordError, setRegPasswordError] = useState("");
+
+  const RESEND_COOLDOWN_SECONDS = 30;
+
+  // Countdown for the Resend OTP action, ticking only while the modal is open
+  // and the OTP-entry stage is showing.
+  useEffect(() => {
+    if (!open || stage !== "otp" || resendCooldown <= 0) return;
+    const timer = window.setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [open, stage, resendCooldown]);
+
   function resetAll() {
     setMode("login");
     setLoginTab("otp");
@@ -70,6 +93,15 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
     setRegPassword("");
     setRegCity("");
     setRegState("");
+    setResendCooldown(0);
+    setMobileError("");
+    setOtpError("");
+    setEmailError("");
+    setPasswordError("");
+    setRegNameError("");
+    setRegMobileError("");
+    setRegEmailError("");
+    setRegPasswordError("");
   }
 
   function handleClose() {
@@ -84,15 +116,19 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
   }
 
   const handleSendOtp = async () => {
-    if (mobile.trim().length < 10) {
-      addToast("Enter a valid 10-digit mobile number.", "error");
+    const trimmed = mobile.trim();
+    if (!/^\d{10}$/.test(trimmed)) {
+      setMobileError("Enter a valid 10-digit mobile number.");
       return;
     }
+    setMobileError("");
     setSending(true);
     try {
-      const res = await sendOtp(mobile.trim());
+      const res = await sendOtp(trimmed);
       setStage("otp");
       setOtp(["", "", "", "", "", ""]);
+      setOtpError("");
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
       addToast(res.otp ? `OTP sent (dev: ${res.otp})` : "OTP sent.", "success");
       window.setTimeout(() => otpRefs.current[0]?.focus(), 0);
     } catch (err) {
@@ -100,6 +136,11 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
     } finally {
       setSending(false);
     }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || sending) return;
+    await handleSendOtp();
   };
 
   const handleOtpChange = (index: number, raw: string) => {
@@ -120,10 +161,11 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
 
   const handleVerify = async () => {
     const code = otp.join("");
-    if (code.length < 6) {
-      addToast("Enter the 6-digit OTP.", "error");
+    if (!/^\d{6}$/.test(code)) {
+      setOtpError("Enter the 6-digit OTP.");
       return;
     }
+    setOtpError("");
     setVerifying(true);
     try {
       await loginOtp(mobile.trim(), code);
@@ -138,10 +180,20 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password) {
-      addToast("Enter your email and password.", "error");
-      return;
+    let hasError = false;
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailError("Enter a valid email address.");
+      hasError = true;
+    } else {
+      setEmailError("");
     }
+    if (!password) {
+      setPasswordError("Enter your password.");
+      hasError = true;
+    } else {
+      setPasswordError("");
+    }
+    if (hasError) return;
     setLoggingIn(true);
     try {
       await login(email.trim(), password);
@@ -156,10 +208,32 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regName.trim() || regMobile.trim().length < 10) {
-      addToast("Enter your name and a valid 10-digit mobile.", "error");
-      return;
+    let hasError = false;
+    if (!regName.trim()) {
+      setRegNameError("Enter your full name.");
+      hasError = true;
+    } else {
+      setRegNameError("");
     }
+    if (!/^\d{10}$/.test(regMobile.trim())) {
+      setRegMobileError("Enter a valid 10-digit mobile number.");
+      hasError = true;
+    } else {
+      setRegMobileError("");
+    }
+    if (regEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail.trim())) {
+      setRegEmailError("Enter a valid email address.");
+      hasError = true;
+    } else {
+      setRegEmailError("");
+    }
+    if (regPassword && regPassword.length < 6) {
+      setRegPasswordError("Password must be at least 6 characters.");
+      hasError = true;
+    } else {
+      setRegPasswordError("");
+    }
+    if (hasError) return;
     setRegistering(true);
     try {
       await register({
@@ -247,7 +321,11 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
                   autoComplete="tel"
                   placeholder="10-digit mobile number"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  onChange={(e) => {
+                    setMobile(e.target.value);
+                    if (mobileError) setMobileError("");
+                  }}
+                  error={mobileError}
                 />
                 <div style={{ marginTop: 16 }}>
                   <Button block variant="brand" onClick={handleSendOtp} disabled={sending}>
@@ -261,40 +339,56 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
                   {t("auth.otpSentTo", "Enter the 6-digit OTP sent to")}{" "}
                   <span style={{ color: "var(--ink)", fontWeight: 600 }}>{mobile}</span>
                 </label>
-                <div style={{ display: "flex", gap: 8, margin: "8px 0 16px" }}>
+                <div style={{ display: "flex", gap: 8, margin: "8px 0 4px" }}>
                   {otp.map((value, index) => (
                     <input
                       key={index}
                       ref={(el) => {
                         otpRefs.current[index] = el;
                       }}
-                      className="input"
+                      className={["input", otpError ? "input-error" : ""].filter(Boolean).join(" ")}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
                       value={value}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onChange={(e) => {
+                        if (otpError) setOtpError("");
+                        handleOtpChange(index, e.target.value);
+                      }}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
                       aria-label={`OTP digit ${index + 1}`}
                       style={{ textAlign: "center", padding: "10px 0", fontSize: 17 }}
                     />
                   ))}
                 </div>
+                {otpError ? <p className="field-error" style={{ marginBottom: 12 }}>{otpError}</p> : <div style={{ marginBottom: 16 }} />}
                 <Button block variant="brand" onClick={handleVerify} disabled={verifying}>
                   {verifying ? t("auth.verifying", "Verifying…") : t("auth.verify", "Verify & log in")}
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => setStage("mobile")}
-                  className="btn btn-ghost btn-block"
-                  style={{ marginTop: 8 }}
-                >
-                  {t("auth.changeNumber", "Change number")}
-                </button>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setStage("mobile")}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    {t("auth.changeNumber", "Change number")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={resendCooldown > 0 || sending}
+                    className="btn btn-ghost btn-sm"
+                    style={resendCooldown > 0 ? { color: "var(--faint)", cursor: "default" } : undefined}
+                  >
+                    {resendCooldown > 0
+                      ? t("auth.resendOtpIn", `Resend OTP in ${resendCooldown}s`)
+                      : t("auth.resendOtp", "Resend OTP")}
+                  </button>
+                </div>
               </div>
             )
           ) : (
-            <form onSubmit={handlePasswordLogin}>
+            <form onSubmit={handlePasswordLogin} noValidate>
               <div style={{ display: "grid", gap: 14 }}>
                 <Input
                   label={t("auth.email", "Email")}
@@ -302,7 +396,11 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
                   autoComplete="email"
                   placeholder="you@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError("");
+                  }}
+                  error={emailError}
                 />
                 <Input
                   label={t("auth.password", "Password")}
@@ -310,7 +408,11 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
                   autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordError) setPasswordError("");
+                  }}
+                  error={passwordError}
                 />
               </div>
               <div style={{ marginTop: 16 }}>
@@ -341,14 +443,17 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
           </div>
         </>
       ) : (
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleRegister} noValidate>
           <div style={{ display: "grid", gap: 14 }}>
             <Input
               label={t("auth.fullName", "Full name")}
               placeholder="Your name"
               value={regName}
-              onChange={(e) => setRegName(e.target.value)}
-              required
+              onChange={(e) => {
+                setRegName(e.target.value);
+                if (regNameError) setRegNameError("");
+              }}
+              error={regNameError}
             />
             <Input
               label={t("auth.mobileLabel", "Mobile number")}
@@ -356,38 +461,56 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
               inputMode="numeric"
               placeholder="10-digit mobile number"
               value={regMobile}
-              onChange={(e) => setRegMobile(e.target.value)}
-              required
+              onChange={(e) => {
+                setRegMobile(e.target.value);
+                if (regMobileError) setRegMobileError("");
+              }}
+              error={regMobileError}
             />
             <Input
               label={t("auth.email", "Email")}
-              hint="Optional — needed for password login."
+              hint={regEmailError ? undefined : "Optional — needed for password login."}
               type="email"
               placeholder="you@company.com"
               value={regEmail}
-              onChange={(e) => setRegEmail(e.target.value)}
+              onChange={(e) => {
+                setRegEmail(e.target.value);
+                if (regEmailError) setRegEmailError("");
+              }}
+              error={regEmailError}
             />
             <Input
               label={t("auth.password", "Password")}
-              hint="Optional — you can always log in with OTP."
+              hint={regPasswordError ? undefined : "Optional — you can always log in with OTP."}
               type="password"
               autoComplete="new-password"
               placeholder="Set a password (optional)"
               value={regPassword}
-              onChange={(e) => setRegPassword(e.target.value)}
+              onChange={(e) => {
+                setRegPassword(e.target.value);
+                if (regPasswordError) setRegPasswordError("");
+              }}
+              error={regPasswordError}
             />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <Input
-                label={t("auth.city", "City")}
-                placeholder="e.g. Pune"
-                value={regCity}
-                onChange={(e) => setRegCity(e.target.value)}
-              />
-              <Input
+              <Select
                 label={t("auth.state", "State")}
-                placeholder="e.g. Maharashtra"
+                placeholder="Select state"
                 value={regState}
-                onChange={(e) => setRegState(e.target.value)}
+                onChange={(e) => {
+                  setRegState(e.target.value);
+                  setRegCity("");
+                }}
+                options={STATE_OPTIONS}
+                id="cam-reg-state"
+              />
+              <CityField
+                key={`cam-reg-city-${regState}`}
+                state={regState}
+                city={regCity}
+                onChange={setRegCity}
+                idPrefix="cam-reg"
+                label={t("auth.city", "City")}
               />
             </div>
           </div>

@@ -162,7 +162,7 @@ export default function SuiteHomePage() {
           {!loading && !user && (
             <Reveal delay={140}>
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 12 }}>
-                <Link href="/register" className="btn btn-primary btn-sm">Join us</Link>
+                <Link href="/login?next=/" className="btn btn-primary btn-sm">Join us</Link>
               </div>
             </Reveal>
           )}
@@ -377,7 +377,7 @@ export default function SuiteHomePage() {
             </p>
             {!loading && !user && (
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
-                <Link href="/register" className="btn btn-primary btn-lg">Join us</Link>
+                <Link href="/login?next=/" className="btn btn-primary btn-lg">Join us</Link>
               </div>
             )}
           </div>

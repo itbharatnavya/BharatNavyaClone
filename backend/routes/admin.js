@@ -283,9 +283,38 @@ router.put("/ad-slots/:id", async (req, res, next) => {
 });
 
 /* ============================================================ ad bookings ===== */
+// GET /ad-bookings?product=directory|recruitment&status=&page=&limit=
+// Directory and Recruitment share one ad-bookings collection, split only by
+// placementType prefix ("recruitment_*" vs everything else — myAds.js's
+// isRecruitmentPlacement() uses the same rule). `product` filters to the
+// matching set so the two admin Ads tabs never leak each other's campaigns.
+function isRecruitmentBooking(b) {
+  return typeof b.placementType === "string" && b.placementType.startsWith("recruitment_");
+}
+
 router.get("/ad-bookings", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.all("ad-bookings.json") });
+    const product = req.query.product;
+    const status = req.query.status;
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+
+    let list = await store.all("ad-bookings.json");
+    if (product === "recruitment") list = list.filter(isRecruitmentBooking);
+    else if (product === "directory") list = list.filter((b) => !isRecruitmentBooking(b));
+
+    if (status && status !== "all") {
+      list = list.filter((b) => b.status === status);
+    }
+
+    list = list.slice().sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+
+    const total = list.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    const items = list.slice(start, start + limit);
+
+    return res.json({ success: true, data: { items, total, page, totalPages } });
   } catch (err) {
     next(err);
   }

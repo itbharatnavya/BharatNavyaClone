@@ -31,6 +31,8 @@ import type {
   JobFunction,
   JobRole,
   Skill,
+  Inquiry,
+  SellerDelivery,
 } from "@/lib/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -77,6 +79,61 @@ export const adminSuspend = api.adminSuspend;
 export const adminMonetization = api.adminMonetization;
 export const getCategories = api.getCategories;
 export const getListings = api.getListings;
+export const forwardInquiry = api.forwardInquiry;
+export const dismissInquiry = api.dismissInquiry;
+
+// ============================================================
+// RFQ log — GET /api/admin/inquiries (routes/adminInquiries.js)
+// Every RFQ ever submitted, who sent it, and which seller(s) it was actually
+// delivered to. Server-paginated + filterable, same envelope shape as
+// adminGetUsers below: { items, total, page, totalPages, summary }.
+// ============================================================
+export interface RfqLogRow extends Inquiry {
+  sellers: SellerDelivery[];
+}
+
+export type RfqLogStatusFilter = "all" | "matched" | "unmatched";
+export type RfqLogAdminStatusFilter = "all" | "pending" | "forwarded" | "dismissed";
+
+export interface RfqLogQuery {
+  q?: string;
+  sellerId?: string;
+  status?: RfqLogStatusFilter;
+  adminStatus?: RfqLogAdminStatusFilter;
+  categoryId?: string;
+  from?: string; // yyyy-mm-dd
+  to?: string; // yyyy-mm-dd
+  page?: number;
+  limit?: number;
+}
+
+export interface RfqLogSummary {
+  total: number;
+  matched: number;
+  unmatched: number;
+}
+
+export interface RfqLogPage {
+  items: RfqLogRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+  summary: RfqLogSummary;
+}
+
+export function getRfqLog(query: RfqLogQuery = {}): Promise<RfqLogPage> {
+  const usp = new URLSearchParams();
+  if (query.q) usp.set("q", query.q);
+  if (query.sellerId) usp.set("sellerId", query.sellerId);
+  if (query.status && query.status !== "all") usp.set("status", query.status);
+  if (query.adminStatus && query.adminStatus !== "all") usp.set("adminStatus", query.adminStatus);
+  if (query.categoryId) usp.set("categoryId", query.categoryId);
+  if (query.from) usp.set("from", query.from);
+  if (query.to) usp.set("to", query.to);
+  usp.set("page", String(query.page || 1));
+  usp.set("limit", String(query.limit || 20));
+  return req<RfqLogPage>(`/api/admin/inquiries?${usp.toString()}`);
+}
 
 // ============================================================
 // Unified user directory — GET /api/admin/users (routes/admin.js)
@@ -309,7 +366,7 @@ export function updatePayment(id: string, body: PaymentInput): Promise<PaymentRo
 export interface AdBookingRow {
   id: string;
   // WHERE the ad runs (public /api/ads serving fields)
-  placementType?: string | null; // category_top | search_top | home_hero
+  placementType?: string | null; // category_top | search_top | home_hero | recruitment_*
   adSlotId?: string | null;
   slotId?: string | null;
   // WHICH audience it targets (empty categoryIds = all categories)
@@ -328,13 +385,34 @@ export interface AdBookingRow {
   priority: number;
   amount?: number | null;
   paymentRecordId?: string | null;
-  status: string; // active | scheduled | paused | …
+  status: string; // pending | active | scheduled | paused | …
   createdAt: string;
 }
 export type AdBookingInput = Partial<Omit<AdBookingRow, "id" | "createdAt">>;
 
-export function getAdBookings(): Promise<AdBookingRow[]> {
-  return api.adminAdBookings() as unknown as Promise<AdBookingRow[]>;
+export type AdBookingProductFilter = "directory" | "recruitment";
+
+export interface AdBookingQuery {
+  product: AdBookingProductFilter;
+  status?: string | "all";
+  page?: number;
+  limit?: number;
+}
+
+export interface AdBookingPage {
+  items: AdBookingRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export function getAdBookings(query: AdBookingQuery): Promise<AdBookingPage> {
+  const usp = new URLSearchParams();
+  usp.set("product", query.product);
+  if (query.status && query.status !== "all") usp.set("status", query.status);
+  usp.set("page", String(query.page || 1));
+  usp.set("limit", String(query.limit || 20));
+  return req<AdBookingPage>(`/api/admin/ad-bookings?${usp.toString()}`);
 }
 export function createAdBooking(body: AdBookingInput): Promise<AdBookingRow> {
   return api.adminCreateAdBooking(

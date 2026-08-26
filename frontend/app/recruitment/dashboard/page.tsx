@@ -8,9 +8,9 @@
 // PUT me/candidate; this page just reflects it, and never offers a "switch role"
 // control once locked).
 
-import React, { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { Suspense, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useToast } from "@/components/Toast";
 import { setRecruitmentRole } from "@/lib/api";
 import RecruitmentDashboardShell from "@/components/recruitment-dashboard/RecruitmentDashboardShell";
@@ -128,12 +128,7 @@ function RecruitmentDashboardBody() {
 }
 
 function RecruitmentDashboardInner() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) router.replace("/login?next=/recruitment/dashboard");
-  }, [loading, user, router]);
+  const { user, loading } = useRequireAuth({ redirectTo: "/login?next=/recruitment/dashboard" });
 
   return loading || !user ? null : <RecruitmentDashboardBody />;
 }

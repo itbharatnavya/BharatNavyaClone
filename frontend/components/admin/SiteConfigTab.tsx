@@ -28,6 +28,8 @@ import { useToast } from "@/components/Toast";
 
 // pretty labels for known feature flags
 const FLAG_LABEL: Record<string, string> = {
+  recruitmentLive: "Recruitment (go-live)",
+  consultationsLive: "Consultations (go-live)",
   chat: "In-app Chat",
   ai: "AI Concierge Search",
   voiceSearch: "Voice Search",

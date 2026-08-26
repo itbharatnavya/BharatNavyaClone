@@ -94,3 +94,22 @@ export function enquiryText({
 
   return `${greeting}I'm interested in ${title}${priceFrag} on BharatSource. Could you please share your best quote${moqFrag}?${linkFrag}`;
 }
+
+export interface SellerReplyTextInput {
+  buyerName?: string | null;
+  productName?: string | null;
+}
+
+/**
+ * A concise message a SELLER sends when reaching out about an RFQ delivered
+ * to them (the "Connect" action) — the reverse direction from enquiryText()
+ * above (seller -> buyer, not buyer -> seller).
+ */
+export function sellerReplyText({ buyerName, productName }: SellerReplyTextInput): string {
+  const name = buyerName && buyerName.trim() ? buyerName.trim() : "there";
+  const what =
+    productName && productName.trim()
+      ? `your requirement for "${productName.trim()}"`
+      : "your requirement";
+  return `Hi ${name}, I saw ${what} on BharatSource and wanted to connect.`;
+}

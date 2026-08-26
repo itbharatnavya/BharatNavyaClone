@@ -157,6 +157,28 @@ if (usePostgres) {
     return out;
   }
 
+  /**
+   * Patch one lead row by leadId (the RFQ "Connect" contact-status fields).
+   * leads-ledger.jsonl is otherwise append-only; this is the one place a row
+   * in it is mutated after creation, so it rewrites the whole log atomically
+   * (temp file + rename) rather than exposing a general JSONL update API.
+   */
+  async function updateLead(leadId, patch) {
+    return withLock("leads-ledger.jsonl", async () => {
+      const rows = await readJsonl("leads-ledger.jsonl");
+      const i = rows.findIndex((r) => r.leadId === leadId);
+      if (i === -1) return null;
+      rows[i] = { ...rows[i], ...patch, leadId };
+      const file = dbPath("leads-ledger.jsonl");
+      await ensureDir(path.dirname(file));
+      const tmp = `${file}.tmp.${process.pid}.${_tmpCounter++}`;
+      const content = rows.map((r) => JSON.stringify(r)).join("\n") + (rows.length ? "\n" : "");
+      await fsp.writeFile(tmp, content, "utf-8");
+      await fsp.rename(tmp, file);
+      return rows[i];
+    });
+  }
+
   /* -------------------------------------------------------------- IDs -------- */
   // Persisted monotonic counters, one per prefix, in DB/_counters.json.
 
@@ -248,6 +270,7 @@ if (usePostgres) {
     writeJson,
     appendJsonl,
     readJsonl,
+    updateLead,
     nextId,
     all,
     findOne,

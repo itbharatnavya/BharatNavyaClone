@@ -146,17 +146,31 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
     <div
       style={{
         position: "relative",
-        overflow: "hidden",
         borderRadius: 22,
         padding: "clamp(24px, 4vw, 40px) clamp(24px, 4.4vw, 46px)",
-        background:
-          "radial-gradient(560px 260px at 100% -25%, rgba(245,130,31,0.4) 0%, rgba(245,130,31,0) 65%)," +
-          "radial-gradient(480px 220px at -5% 120%, rgba(30,158,82,0.3) 0%, rgba(30,158,82,0) 65%)," +
-          "linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 55%, var(--navy-deep) 100%)",
         border: "1px solid var(--navy-deep)",
       }}
     >
-      <WatermarkIcon />
+      {/* Background + watermark live in their own clipped layer, separate from
+          the content below — the content includes the search bar's suggestions
+          dropdown, which is position:absolute and needs to overflow past the
+          card's bottom edge (e.g. category/listing results) without being cut
+          off by the rounded-corner clip this layer needs. */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          borderRadius: 22,
+          background:
+            "radial-gradient(560px 260px at 100% -25%, rgba(245,130,31,0.4) 0%, rgba(245,130,31,0) 65%)," +
+            "radial-gradient(480px 220px at -5% 120%, rgba(30,158,82,0.3) 0%, rgba(30,158,82,0) 65%)," +
+            "linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 55%, var(--navy-deep) 100%)",
+        }}
+      >
+        <WatermarkIcon />
+      </div>
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 620 }}>
         <div

@@ -102,6 +102,11 @@ export default function Navbar() {
   // (lib/searchDock.tsx) and selling is reached through the listing flow, not
   // a persistent nav button.
   const p = pathname || "/";
+  // "Join us" opens Login first (not Registration) so a returning user isn't
+  // forced through a signup screen; ?next brings them back to whatever page
+  // they clicked it from once they finish logging in (or registering from
+  // there). Same pattern as FloatingRfqButton's login redirect.
+  const joinHref = `/login?next=${encodeURIComponent(p)}`;
   // `/dashboard` and `/admin` are non-Directory pages too: neither needs the
   // Directory category strip/mega-menu/Advertise button — the dashboard has
   // its own tab nav (or, for a non-seller, its single Profile view).
@@ -351,7 +356,7 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <Link href="/register" className="btn btn-primary btn-sm">{t("nav.joinUs")}</Link>
+            <Link href={joinHref} className="btn btn-primary btn-sm">{t("nav.joinUs")}</Link>
           )}
         </div>
 
@@ -429,7 +434,7 @@ export default function Navbar() {
             // bar at all — only the desktop row (hidden nav:flex) carried
             // this "Join us" fallback. Mirrors it here, same as the Avatar
             // above mirrors the desktop dropdown trigger.
-            <Link href="/register" className="btn btn-primary btn-sm">
+            <Link href={joinHref} className="btn btn-primary btn-sm">
               {t("nav.joinUs")}
             </Link>
           )}
@@ -626,7 +631,7 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/register" className="btn btn-primary btn-block">{t("nav.joinUs")}</Link>
+            <Link href={joinHref} className="btn btn-primary btn-block">{t("nav.joinUs")}</Link>
           )}
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useConfig } from "@/lib/config";
 import Button from "@/components/Button";
 import Avatar from "@/components/Avatar";
@@ -57,8 +57,8 @@ const ALL_TABS: TabMeta[] = [
   { id: "promote", label: "Promote", icon: "promote", sellerOnly: true },
   { id: "bulk", label: "Bulk upload", icon: "bulk", sellerOnly: true },
   { id: "inbox", label: "Inbox", icon: "inbox", flag: "chat", sellerOnly: true },
-  { id: "leads", label: "Leads & RFQs", icon: "leads", sellerOnly: true },
-  { id: "consultations", label: "Consultation requests", icon: "consultations", expertOnly: true },
+  { id: "leads", label: "RFQs", icon: "leads", sellerOnly: true },
+  { id: "consultations", label: "Consultation requests", icon: "consultations", flag: "consultationsLive", expertOnly: true },
   { id: "myrfqs", label: "My RFQs", icon: "myrfqs" },
   { id: "saved", label: "Saved", icon: "saved" },
   { id: "following", label: "Following", icon: "following", flag: "follow" },
@@ -271,7 +271,7 @@ export default function DashboardShell() {
   const tr = useTr();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading } = useAuth();
+  const { user, loading } = useRequireAuth();
   const narrow = useIsNarrow();
 
   // feature flags come from admin config (useConfig is a shared-additions contract item)
@@ -304,10 +304,7 @@ export default function DashboardShell() {
       ? "overview"
       : "profile";
 
-  // redirect unauthenticated users to /login
-  useEffect(() => {
-    if (!loading && !user) router.replace("/login");
-  }, [loading, user, router]);
+  // Redirect-if-unauthenticated is now handled by useRequireAuth() above.
 
   function setTab(id: DashTabId) {
     const qs = new URLSearchParams(Array.from(searchParams.entries()));
@@ -355,7 +352,7 @@ export default function DashboardShell() {
             <Button href="/login" variant="primary">
               {tr("dashboard.gate.login", "Log in")}
             </Button>
-            <Button href="/register" variant="secondary">
+            <Button href="/login" variant="secondary">
               {tr("dashboard.gate.register", "Create account")}
             </Button>
           </div>

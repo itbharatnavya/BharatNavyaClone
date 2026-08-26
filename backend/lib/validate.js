@@ -43,6 +43,22 @@ const schemas = {
     email: z.string().email(),
     password: z.string().min(1, "password is required"),
   }),
+  // POST /api/inquiries (buyer RFQ/enquiry submission). buyerId is intentionally
+  // NOT accepted here — the route derives it only from the authenticated req.user,
+  // never from the client, to close an identity-spoofing hole (see WORKFLOW.md).
+  postInquiry: z.object({
+    productName: z.string().trim().min(1, "productName is required").max(200),
+    message: z.string().max(4000).optional(),
+    buyerName: z.string().max(120).optional(),
+    // Client sends "" for a not-yet-set profile field — accept that alongside a
+    // properly formatted value rather than rejecting the whole submission for it.
+    buyerMobile: z.union([mobile, z.literal("")]).optional(),
+    buyerEmail: z.union([z.string().email().max(200), z.literal("")]).optional(),
+    quantity: z.string().max(100).optional(),
+    listingId: z.string().max(100).optional().nullable(),
+    categoryId: z.string().max(100).optional().nullable(),
+    intent: z.string().max(100).optional().nullable(),
+  }),
 };
 
 module.exports = { z, validate, schemas };

@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 
-export default function AdminLogin({ notAllowed }: { notAllowed?: boolean }) {
+export default function AdminLogin() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,12 +40,6 @@ export default function AdminLogin({ notAllowed }: { notAllowed?: boolean }) {
               Sign in with an admin account to manage the platform.
             </p>
           </div>
-
-          {notAllowed && (
-            <div className="mb-4 rounded-lg border border-border bg-amber-50 px-3 py-2.5 text-sm text-warn">
-              This account isn’t an admin. Sign in with an admin account.
-            </div>
-          )}
 
           <form onSubmit={onSubmit} className="space-y-4">
             <Input

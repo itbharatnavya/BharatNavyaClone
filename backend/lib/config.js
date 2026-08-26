@@ -34,12 +34,23 @@ const path = require("path");
 })();
 
 const NODE_ENV = process.env.NODE_ENV || "development";
-const isDev = NODE_ENV !== "production";
+// Only these NODE_ENV values get dev conveniences (insecure JWT_SECRET default,
+// the "123456" OTP bypass, OTP echoed back in API responses — see lib/auth.js,
+// routes/auth.js). Anything else — "production", a typo, an unrecognized value
+// like "staging" — is treated as NOT dev, so a misconfigured deploy fails loud
+// instead of silently running with a well-known secret and a universal OTP.
+const RECOGNIZED_DEV_ENVS = ["development", "test"];
+const isDev = RECOGNIZED_DEV_ENVS.includes(NODE_ENV);
 
 const JWT_SECRET =
   process.env.JWT_SECRET || (isDev ? "dev-insecure-secret-change-me" : null);
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET must be set in production (see backend/.env)");
+  throw new Error(
+    NODE_ENV === "production"
+      ? "JWT_SECRET must be set in production (see backend/.env)"
+      : `JWT_SECRET must be set explicitly when NODE_ENV="${NODE_ENV}" — only ` +
+        `NODE_ENV=development/test get the insecure dev default (see backend/.env)`
+  );
 }
 
 module.exports = {
@@ -85,6 +96,17 @@ module.exports = {
     process.env.RECRUITMENT_LIVE === "true"
       ? true
       : process.env.RECRUITMENT_LIVE === "false"
+        ? false
+        : null,
+
+  // --- Consultations go-live gate (same mechanism as RECRUITMENT_LIVE above) ---
+  // Consultations isn't a promoted suite product this phase — unset (default)
+  // defers to the admin-editable featureFlags.consultationsLive in
+  // settings.json; set the env var to force it, env wins when explicitly set.
+  CONSULTATIONS_LIVE:
+    process.env.CONSULTATIONS_LIVE === "true"
+      ? true
+      : process.env.CONSULTATIONS_LIVE === "false"
         ? false
         : null,
 };

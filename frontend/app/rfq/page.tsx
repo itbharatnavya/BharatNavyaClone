@@ -45,7 +45,6 @@ function RfqInner() {
   const [isFallback, setIsFallback] = useState(false);
   const [form, setForm] = useState<RfqFormState>(EMPTY_RFQ);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const patch = (p: Partial<RfqFormState>) => setForm((f) => ({ ...f, ...p }));
 
@@ -117,7 +116,7 @@ function RfqInner() {
         .filter(Boolean)
         .join("\n\n");
 
-      await postInquiry({
+      const { leadsCreated } = await postInquiry({
         productName,
         categoryId: form.categorySlug || null,
         quantity: qty,
@@ -129,72 +128,29 @@ function RfqInner() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
-      setSubmitted(true);
+      addToast(
+        leadsCreated > 0
+          ? "Your requirement was sent to matching suppliers — they'll contact you soon with quotes."
+          : "We couldn't find an exact match among current suppliers yet — our team has been notified and will follow up.",
+        "success"
+      );
+      reset();
     } catch (e) {
       addToast(
         e instanceof Error ? e.message : "Could not send your requirement.",
         "error"
       );
+    } finally {
       setSubmitting(false);
     }
   };
 
   const reset = () => {
-    setSubmitted(false);
     setShowForm(false);
     setIsFallback(false);
     setForm(EMPTY_RFQ);
     setNeed("");
   };
-
-  // ---------- confirmation ----------
-  if (submitted) {
-    return (
-      <div className="container-bs section-pad" style={{ maxWidth: 620 }}>
-        <div className="card" style={{ padding: 34, textAlign: "center" }}>
-          <div style={{ color: "var(--success)", lineHeight: 0 }}>
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 12l3 3 5-6" />
-            </svg>
-          </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginTop: 14 }}>
-            Requirement sent
-          </h1>
-          <p style={{ color: "var(--muted)", marginTop: 8, lineHeight: 1.5 }}>
-            Your requirement was sent to matching suppliers — they&apos;ll contact
-            you soon with quotes.
-          </p>
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              justifyContent: "center",
-              marginTop: 22,
-              flexWrap: "wrap",
-            }}
-          >
-            <Button variant="brand" href="/dashboard">
-              Go to dashboard
-            </Button>
-            <Button variant="secondary" onClick={reset}>
-              Post another
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // ---------- main ----------
   return (

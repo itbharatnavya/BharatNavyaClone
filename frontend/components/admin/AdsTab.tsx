@@ -1,29 +1,24 @@
 "use client";
 
-// components/admin/AdsTab.tsx — ad inventory (slots) + campaign bookings.
+// components/admin/AdsTab.tsx — ad inventory (slots) + campaign approval list.
 //
-// Bookings drive the public slider (routes/ads.js): the admin controls
-//   • WHERE  — placementType (category_top / search_top / home_hero, or the
-//              recruitment_* equivalents)   [dropdown]
-//   • WHICH  — target category (Directory only; empty = all) + advertiser
-//              (seller or employer, scoped by `product`) + listing (Directory only)
-//              plus the creative (image, headline, click-through URL)
-//   • HOW/WHEN — start/end date, priority, status (active / scheduled / paused)
+// Ad slots (inventory — banner/sponsored_row/sidebar) are a generic, product-agnostic
+// name+size+placementType catalog; not split by product, left untouched here.
 //
-// Scoped by `product`: Directory books against sellers/listings/categories exactly as
-// before; Recruitment books against employers instead. No "advertise a specific job"
-// picker — ad_bookings.listing_id has a DB foreign key straight to Directory's
-// `listings` table (schema.sql), so a job id can't be stored there without a schema
-// change; the existing free-text "Click-through URL" field already covers linking a
-// specific job manually. Target category is likewise Directory-only (categories don't
-// apply to Recruitment placements) and hidden for that product. See ADMIN-CONSOLE.md
-// §Phase 5 for the full reasoning. Ad slots (inventory) aren't split — a slot is just
-// a generic name+size+placementType, not tied to either product in the data model.
+// Campaign bookings drive the public slider (routes/ads.js) and are split by product
+// via `GET /api/admin/ad-bookings?product=directory|recruitment` (backend/routes/admin.js) —
+// a booking belongs to Recruitment iff its placementType starts with "recruitment_", same
+// rule as myAds.js's isRecruitmentPlacement(). Server-paginated + status-filterable, same
+// { items, total, page, totalPages } envelope as adminGetUsers (see UsersTab.tsx).
 //
-// All selection inputs are native dropdowns (mobile-friendly, non-technical
-// admin). Bookings can be created and edited in place.
+// A seller/employer self-serve campaign (POST /api/my-ads) always lands here with
+// status "pending" — admin approval IS switching its status to "active"/"scheduled" via
+// the Edit modal. A separate read-only View modal shows the full creative + details
+// without exposing form inputs.
+//
+// All selection inputs are native dropdowns (mobile-friendly, non-technical admin).
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getAdSlots,
   createAdSlot,
@@ -51,13 +46,14 @@ import {
   ErrorState,
   EmptyState,
   fmtDate,
-  money,
 } from "./ui";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { useToast } from "@/components/Toast";
+
+const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 // Placement destinations the public serving layer understands, split by product.
 const DIRECTORY_PLACEMENTS = [
@@ -71,12 +67,15 @@ const RECRUITMENT_PLACEMENTS = [
 ];
 
 // Serving statuses. Public /api/ads serves "active" + "scheduled" (within the
-// date window); "paused" is the admin off-switch.
+// date window); "paused" is the admin off-switch; "pending" is an unreviewed
+// seller/employer submission awaiting approval.
 const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending review" },
   { value: "active", label: "Active" },
   { value: "scheduled", label: "Scheduled" },
   { value: "paused", label: "Paused" },
 ];
+const STATUS_FILTER_OPTIONS = [{ value: "all", label: "Any status" }, ...STATUS_OPTIONS];
 
 interface BookingForm {
   placementType: string;
@@ -88,8 +87,6 @@ interface BookingForm {
   targetUrl: string;
   startDate: string;
   endDate: string;
-  priority: string;
-  amount: string;
   status: string;
 }
 
@@ -104,8 +101,6 @@ function emptyBooking(placementType: string): BookingForm {
     targetUrl: "",
     startDate: "",
     endDate: "",
-    priority: "0",
-    amount: "",
     status: "active",
   };
 }
@@ -120,12 +115,19 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
   const placementOptions = isRecruitment ? RECRUITMENT_PLACEMENTS : DIRECTORY_PLACEMENTS;
 
   const [slots, setSlots] = useState<AdSlotRow[]>([]);
-  const [bookings, setBookings] = useState<AdBookingRow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [advertisers, setAdvertisers] = useState<{ id: string; label: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // campaign approval list — server-paginated, filtered to this product
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [bookings, setBookings] = useState<AdBookingRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // slot modal
   const [slotOpen, setSlotOpen] = useState(false);
@@ -137,53 +139,74 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
   });
   const [savingSlot, setSavingSlot] = useState(false);
 
-  // booking modal
+  // booking modals
   const [bookOpen, setBookOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [bookForm, setBookForm] = useState<BookingForm>(emptyBooking(placementOptions[0].value));
   const [savingBook, setSavingBook] = useState(false);
+  const [viewing, setViewing] = useState<AdBookingRow | null>(null);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
+  // Product switch (Directory tab vs Recruitment tab) or a filter/page change
+  // resets to page 1 so stale offsets from the other view never leak in.
+  useEffect(() => {
+    setPage(1);
+  }, [product, statusFilter, limit]);
+
+  async function loadStatic() {
     try {
       if (isRecruitment) {
-        const [s, b, emps] = await Promise.all([getAdSlots(), getAdBookings(), adminGetEmployers("approved")]);
+        const [s, emps] = await Promise.all([getAdSlots(), adminGetEmployers("approved")]);
         setSlots(s);
-        setBookings(b);
         setAdvertisers(emps.map((e) => ({ id: e.id, label: e.companyName })));
         setCategories([]);
         setListings([]);
-        setLoading(false);
         return;
       }
-      const [s, b, cats, sel, lst] = await Promise.all([
+      const [s, cats, sel, lst] = await Promise.all([
         getAdSlots(),
-        getAdBookings(),
         getCategories(),
         adminSellers(),
         getListings({ limit: 500 }),
       ]);
       setSlots(s);
-      setBookings(b);
       setCategories(cats);
       setAdvertisers(sel.map((u) => ({ id: u.id, label: u.sellerProfile?.companyName || u.name || u.id })));
       setListings(lst.listings || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load ads");
+    }
+  }
+
+  async function loadBookings() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getAdBookings({ product, status: statusFilter, page, limit });
+      setBookings(res.items);
+      setTotal(res.total);
+      setTotalPages(res.totalPages);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load ad bookings");
     } finally {
       setLoading(false);
     }
   }
+
   useEffect(() => {
-    void load();
+    void loadStatic();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
+
+  useEffect(() => {
+    void loadBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product, statusFilter, page, limit]);
 
   async function toggleSlot(slot: AdSlotRow) {
     try {
       await updateAdSlot(slot.id, { isActive: !slot.isActive });
-      await load();
+      const s = await getAdSlots();
+      setSlots(s);
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed", "error");
     }
@@ -201,7 +224,8 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
       addToast("Ad slot created", "success");
       setSlotOpen(false);
       setSlotForm({ name: "", placementType: "banner", defaultSize: "", isActive: true });
-      await load();
+      const s = await getAdSlots();
+      setSlots(s);
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed", "error");
     } finally {
@@ -227,14 +251,22 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
       targetUrl: b.targetUrl || "",
       startDate: b.startDate ? b.startDate.slice(0, 10) : "",
       endDate: b.endDate ? b.endDate.slice(0, 10) : "",
-      priority: String(b.priority ?? 0),
-      amount: b.amount != null ? String(b.amount) : "",
       status: b.status || "active",
     });
     setBookOpen(true);
   }
 
+  const dateOrderInvalid =
+    !!bookForm.startDate && !!bookForm.endDate && bookForm.endDate < bookForm.startDate;
+
+  const canSaveBooking =
+    !savingBook &&
+    bookForm.creativeImageUrl.trim() !== "" &&
+    bookForm.headline.trim() !== "" &&
+    !dateOrderInvalid;
+
   async function saveBooking() {
+    if (!canSaveBooking) return;
     setSavingBook(true);
     try {
       const payload = {
@@ -247,8 +279,6 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
         targetUrl: bookForm.targetUrl.trim() || null,
         startDate: bookForm.startDate || null,
         endDate: bookForm.endDate || null,
-        priority: Number(bookForm.priority) || 0,
-        amount: bookForm.amount.trim() === "" ? null : Number(bookForm.amount),
         status: bookForm.status,
       };
       if (editingId) {
@@ -261,7 +291,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
       setBookOpen(false);
       setEditingId(null);
       setBookForm(emptyBooking(placementOptions[0].value));
-      await load();
+      await loadBookings();
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed", "error");
     } finally {
@@ -269,26 +299,19 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
     }
   }
 
-  const categoryOptions = useMemo(
-    () => [
-      { value: "", label: "All categories" },
-      ...[...categories]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((c) => ({ value: c.slug, label: c.name })),
-    ],
-    [categories]
-  );
+  const categoryOptions = [
+    { value: "", label: "All categories" },
+    ...[...categories]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((c) => ({ value: c.slug, label: c.name })),
+  ];
 
-  const sellerOptions = useMemo(
-    () => [
-      { value: "", label: "— No advertiser —" },
-      ...advertisers.map((a) => ({ value: a.id, label: a.label })),
-    ],
-    [advertisers]
-  );
+  const sellerOptions = [
+    { value: "", label: "— No advertiser —" },
+    ...advertisers.map((a) => ({ value: a.id, label: a.label })),
+  ];
 
-  // Advertise-a-listing picker, scoped to the chosen advertiser when set.
-  const listingOptions = useMemo(() => {
+  const listingOptions = (() => {
     const scoped = bookForm.sellerId
       ? listings.filter((l) => l.sellerId === bookForm.sellerId)
       : listings;
@@ -296,10 +319,8 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
       { value: "", label: "— No listing —" },
       ...scoped.map((l) => ({ value: l.id, label: l.title })),
     ];
-  }, [listings, bookForm.sellerId]);
+  })();
 
-  const slotName = (id?: string | null) =>
-    slots.find((s) => s.id === id)?.name || id || "—";
   const sellerName = (id?: string | null) =>
     (id && advertisers.find((a) => a.id === id)?.label) || id || "—";
   const catName = (slug: string) =>
@@ -309,9 +330,8 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
     if (ids.length === 0) return "All categories";
     return ids.map(catName).join(", ");
   };
-
-  if (loading) return <LoadingState label="Loading ad inventory…" />;
-  if (error) return <ErrorState message={error} onRetry={load} />;
+  const placementLabel = (b: AdBookingRow) =>
+    placementOptions.find((p) => p.value === b.placementType)?.label || b.placementType || "—";
 
   return (
     <div>
@@ -330,11 +350,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
           title="Ad slots"
           desc="Placements available across the site."
           right={
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => setSlotOpen(true)}
-            >
+            <Button size="sm" variant="secondary" onClick={() => setSlotOpen(true)}>
               + New slot
             </Button>
           }
@@ -354,11 +370,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
                   </Td>
                   <Td className="text-muted">{s.defaultSize || "—"}</Td>
                   <Td>
-                    <button
-                      type="button"
-                      onClick={() => toggleSlot(s)}
-                      className="cursor-pointer"
-                    >
+                    <button type="button" onClick={() => toggleSlot(s)} className="cursor-pointer">
                       <Pill status={s.isActive ? "on" : "off"}>
                         {s.isActive ? "Active" : "Inactive"}
                       </Pill>
@@ -370,58 +382,100 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
           )}
         </Panel>
 
-        {/* Bookings */}
+        {/* Campaign approval list */}
         <Panel
           title="Ad bookings"
-          desc="Sponsored campaigns that run in the on-site ad slider."
+          desc="Sponsored campaigns that run in the on-site ad slider. Seller/employer submissions arrive as Pending review — edit to approve."
           right={
             <Button size="sm" variant="brand" onClick={openNewBooking}>
               + New booking
             </Button>
           }
         >
-          {bookings.length === 0 ? (
-            <EmptyState title="No bookings yet" />
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              options={STATUS_FILTER_OPTIONS}
+              containerClassName="min-w-[180px]"
+            />
+            <span className="text-sm text-muted">
+              {total} campaign{total === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          {loading ? (
+            <LoadingState label="Loading ad bookings…" />
+          ) : error ? (
+            <ErrorState message={error} onRetry={loadBookings} />
+          ) : bookings.length === 0 ? (
+            <EmptyState title="No bookings" hint="No campaigns match this filter." />
           ) : (
-            <AdminTable
-              columns={[
-                "Placement",
-                "Advertiser",
-                "Targeting",
-                "Dates",
-                "Priority",
-                "Amount",
-                "Status",
-                "",
-              ]}
-            >
-              {bookings.map((b) => (
-                <Row key={b.id}>
-                  <Td>
-                    <Pill tone="blue">{b.placementType || slotName(b.adSlotId || b.slotId)}</Pill>
-                  </Td>
-                  <Td className="text-muted">{sellerName(b.sellerId)}</Td>
-                  <Td className="text-muted">{targetingLabel(b)}</Td>
-                  <Td className="whitespace-nowrap text-muted">
-                    {fmtDate(b.startDate)} → {fmtDate(b.endDate)}
-                  </Td>
-                  <Td className="text-muted">{b.priority}</Td>
-                  <Td className="text-muted">{money(b.amount)}</Td>
-                  <Td>
-                    <Pill status={b.status}>{b.status}</Pill>
-                  </Td>
-                  <Td>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => openEditBooking(b)}
+            <>
+              <AdminTable columns={["Placement", "Advertiser", "Targeting", "Dates", "Status", ""]}>
+                {bookings.map((b) => (
+                  <Row key={b.id}>
+                    <Td>
+                      <Pill tone="blue">{placementLabel(b)}</Pill>
+                    </Td>
+                    <Td className="text-muted">{sellerName(b.sellerId)}</Td>
+                    <Td className="text-muted">{targetingLabel(b)}</Td>
+                    <Td className="whitespace-nowrap text-muted">
+                      {fmtDate(b.startDate)} → {fmtDate(b.endDate)}
+                    </Td>
+                    <Td>
+                      <Pill status={b.status}>{b.status}</Pill>
+                    </Td>
+                    <Td className="whitespace-nowrap text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="secondary" onClick={() => setViewing(b)}>
+                          View
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={() => openEditBooking(b)}>
+                          Edit
+                        </Button>
+                      </div>
+                    </Td>
+                  </Row>
+                ))}
+              </AdminTable>
+
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-sm text-muted">
+                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
+                </span>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-1.5 text-sm text-muted">
+                    Rows per page
+                    <select
+                      value={limit}
+                      onChange={(e) => setLimit(Number(e.target.value))}
+                      className="input !w-auto !py-1"
                     >
-                      Edit
-                    </Button>
-                  </Td>
-                </Row>
-              ))}
-            </AdminTable>
+                      {PAGE_SIZE_OPTIONS.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <Button size="sm" variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted">
+                    Page {page} of {totalPages}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </Panel>
       </div>
@@ -436,11 +490,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Button variant="secondary" onClick={() => setSlotOpen(false)}>
               Cancel
             </Button>
-            <Button
-              variant="brand"
-              disabled={savingSlot || !slotForm.name.trim()}
-              onClick={saveSlot}
-            >
+            <Button variant="brand" disabled={savingSlot || !slotForm.name.trim()} onClick={saveSlot}>
               {savingSlot ? "Saving…" : "Create slot"}
             </Button>
           </>
@@ -458,9 +508,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Select
               label="Placement type"
               value={slotForm.placementType}
-              onChange={(e) =>
-                setSlotForm({ ...slotForm, placementType: e.target.value })
-              }
+              onChange={(e) => setSlotForm({ ...slotForm, placementType: e.target.value })}
               options={[
                 { value: "banner", label: "Banner" },
                 { value: "sponsored_row", label: "Sponsored row" },
@@ -470,9 +518,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Input
               label="Default size"
               value={slotForm.defaultSize}
-              onChange={(e) =>
-                setSlotForm({ ...slotForm, defaultSize: e.target.value })
-              }
+              onChange={(e) => setSlotForm({ ...slotForm, defaultSize: e.target.value })}
               placeholder="1200x300"
             />
           </div>
@@ -495,16 +541,8 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Button variant="secondary" onClick={() => setBookOpen(false)}>
               Cancel
             </Button>
-            <Button
-              variant="brand"
-              disabled={savingBook || !bookForm.creativeImageUrl.trim()}
-              onClick={saveBooking}
-            >
-              {savingBook
-                ? "Saving…"
-                : editingId
-                ? "Save changes"
-                : "Create booking"}
+            <Button variant="brand" disabled={!canSaveBooking} onClick={saveBooking}>
+              {savingBook ? "Saving…" : editingId ? "Save changes" : "Create booking"}
             </Button>
           </>
         }
@@ -515,9 +553,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Select
               label="Where (placement)"
               value={bookForm.placementType}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, placementType: e.target.value })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, placementType: e.target.value })}
               hint="Which slot this ad runs in."
               options={placementOptions}
             />
@@ -525,9 +561,7 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
               <Select
                 label="Target category"
                 value={bookForm.categorySlug}
-                onChange={(e) =>
-                  setBookForm({ ...bookForm, categorySlug: e.target.value })
-                }
+                onChange={(e) => setBookForm({ ...bookForm, categorySlug: e.target.value })}
                 hint="Leave on “All categories” to run everywhere."
                 options={categoryOptions}
               />
@@ -535,27 +569,15 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
             <Select
               label={isRecruitment ? "Advertiser (employer)" : "Advertiser (seller)"}
               value={bookForm.sellerId}
-              onChange={(e) =>
-                setBookForm({
-                  ...bookForm,
-                  sellerId: e.target.value,
-                  listingId: "",
-                })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, sellerId: e.target.value, listingId: "" })}
               options={sellerOptions}
             />
             {!isRecruitment && (
               <Select
                 label="Advertise a listing (optional)"
                 value={bookForm.listingId}
-                onChange={(e) =>
-                  setBookForm({ ...bookForm, listingId: e.target.value })
-                }
-                hint={
-                  bookForm.sellerId
-                    ? "Listings from the selected advertiser."
-                    : "Pick an advertiser to narrow this list."
-                }
+                onChange={(e) => setBookForm({ ...bookForm, listingId: e.target.value })}
+                hint={bookForm.sellerId ? "Listings from the selected advertiser." : "Pick an advertiser to narrow this list."}
                 options={listingOptions}
               />
             )}
@@ -570,27 +592,32 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
           <Input
             label="Creative image URL"
             value={bookForm.creativeImageUrl}
-            onChange={(e) =>
-              setBookForm({ ...bookForm, creativeImageUrl: e.target.value })
-            }
+            onChange={(e) => setBookForm({ ...bookForm, creativeImageUrl: e.target.value })}
             placeholder="/demo/steel-2.jpg or https://…"
             required
           />
+          {bookForm.creativeImageUrl.trim() && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={bookForm.creativeImageUrl.trim()}
+              alt=""
+              className="h-32 w-full rounded-lg border border-border object-cover"
+              onError={(e) => (e.currentTarget.style.display = "none")}
+              onLoad={(e) => (e.currentTarget.style.display = "block")}
+            />
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <Input
               label="Headline"
               value={bookForm.headline}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, headline: e.target.value })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, headline: e.target.value })}
               placeholder="Bulk SS/MS/TMT at factory rates"
+              required
             />
             <Input
               label="Click-through URL"
               value={bookForm.targetUrl}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, targetUrl: e.target.value })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, targetUrl: e.target.value })}
               placeholder="/seller/… or https://…"
             />
           </div>
@@ -601,46 +628,98 @@ export default function AdsTab({ product = "directory" }: AdsTabProps) {
               label="Start date"
               type="date"
               value={bookForm.startDate}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, startDate: e.target.value })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, startDate: e.target.value })}
             />
             <Input
               label="End date"
               type="date"
               value={bookForm.endDate}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, endDate: e.target.value })
-              }
-            />
-            <Input
-              label="Priority"
-              type="number"
-              value={bookForm.priority}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, priority: e.target.value })
-              }
-              hint="Higher = shown first."
-            />
-            <Input
-              label="Amount (₹)"
-              type="number"
-              value={bookForm.amount}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, amount: e.target.value })
-              }
+              onChange={(e) => setBookForm({ ...bookForm, endDate: e.target.value })}
+              error={dateOrderInvalid ? "End date can't be before start date" : undefined}
             />
             <Select
               label="Status"
               value={bookForm.status}
-              onChange={(e) =>
-                setBookForm({ ...bookForm, status: e.target.value })
-              }
-              hint="Active & scheduled serve; paused is off."
+              onChange={(e) => setBookForm({ ...bookForm, status: e.target.value })}
+              hint="Active & scheduled serve; paused is off; pending stays hidden until approved."
               options={STATUS_OPTIONS}
             />
           </div>
         </div>
+      </Modal>
+
+      {/* Read-only view modal */}
+      <Modal
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        title="Campaign details"
+        size="lg"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setViewing(null)}>
+              Close
+            </Button>
+            {viewing && (
+              <Button
+                variant="brand"
+                onClick={() => {
+                  const b = viewing;
+                  setViewing(null);
+                  openEditBooking(b);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+          </>
+        }
+      >
+        {viewing && (
+          <div className="space-y-4">
+            {viewing.creativeImageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={viewing.creativeImageUrl}
+                alt={viewing.headline || ""}
+                className="max-h-80 w-full rounded-lg border border-border object-contain bg-bg-subtle"
+              />
+            )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Headline</div>
+                <div className="mt-0.5 text-sm text-ink">{viewing.headline || "—"}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Status</div>
+                <div className="mt-0.5">
+                  <Pill status={viewing.status}>{viewing.status}</Pill>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Placement</div>
+                <div className="mt-0.5 text-sm text-ink">{placementLabel(viewing)}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Advertiser</div>
+                <div className="mt-0.5 text-sm text-ink">{sellerName(viewing.sellerId)}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Targeting</div>
+                <div className="mt-0.5 text-sm text-ink">{targetingLabel(viewing)}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Dates</div>
+                <div className="mt-0.5 text-sm text-ink">
+                  {fmtDate(viewing.startDate)} → {fmtDate(viewing.endDate)}
+                </div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-xs font-semibold uppercase tracking-wide text-faint">Click-through URL</div>
+                <div className="mt-0.5 break-all text-sm text-ink">{viewing.targetUrl || "—"}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

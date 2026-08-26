@@ -67,7 +67,7 @@ export default function FeaturesPage() {
           )}
         </p>
         <div style={{ marginTop: 20, display: "inline-flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-          <Button href="/register" variant="primary">
+          <Button href="/login?next=/features" variant="primary">
             {t("features.getStartedFree", "Get started free")}
           </Button>
           <Button href="/pricing" variant="secondary">
@@ -180,7 +180,7 @@ export default function FeaturesPage() {
           <Button href="/sell" variant="primary" size="lg">
             {t("cta.startSelling", "Start selling")}
           </Button>
-          <Button href="/register" variant="secondary" size="lg">
+          <Button href="/login?next=/features" variant="secondary" size="lg">
             {t("features.createAccount", "Create account")}
           </Button>
         </div>
