@@ -366,7 +366,8 @@ CREATE TABLE IF NOT EXISTS blogs (
   tags          TEXT[] NOT NULL DEFAULT '{}',
   status        TEXT,
   published_at  TIMESTAMPTZ,
-  views         INTEGER NOT NULL DEFAULT 0
+  views         INTEGER NOT NULL DEFAULT 0,
+  author_type   TEXT NOT NULL DEFAULT 'seller' -- 'seller' | 'employer' — see schema-migrations/0007
 );
 
 CREATE TABLE IF NOT EXISTS boost_requests (
@@ -577,7 +578,8 @@ CREATE TABLE IF NOT EXISTS stories (
   expires_at       TIMESTAMPTZ,
   views            INTEGER NOT NULL DEFAULT 0,
   is_highlight     BOOLEAN NOT NULL DEFAULT false,
-  status           TEXT
+  status           TEXT,
+  author_type      TEXT NOT NULL DEFAULT 'seller' -- 'seller' | 'employer' — see schema-migrations/0007
 );
 CREATE INDEX IF NOT EXISTS stories_seller_idx ON stories(seller_id);
 

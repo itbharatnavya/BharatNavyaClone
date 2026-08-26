@@ -135,6 +135,7 @@ function buildFlatConfigs(nextId) {
         id: col("id", t), sellerId: col("seller_id", t), title: col("title", t), slug: col("slug", t),
         coverImage: col("cover_image", t), body: col("body", t), categoryId: col("category_id", t),
         tags: col("tags", arr), status: col("status", t), publishedAt: col("published_at", ts), views: col("views", i),
+        authorType: col("author_type", t),
       },
     },
     {
@@ -370,6 +371,7 @@ function buildFlatConfigs(nextId) {
         id: col("id", t), sellerId: col("seller_id", t), caption: col("caption", t),
         linkListingId: col("link_listing_id", t), createdAt: col("created_at", ts), expiresAt: col("expires_at", ts),
         views: col("views", i), isHighlight: col("is_highlight", b), status: col("status", t),
+        authorType: col("author_type", t),
       },
       nested: [{ docKey: "media", fields: { type: col("media_type", t), url: col("media_url", t) } }],
     },

@@ -650,8 +650,11 @@ export function deleteBlog(id: string): Promise<{ deleted: boolean }> {
 // ============================================================
 // Stories
 // ============================================================
-export function getStories(): Promise<StoryGroup[]> {
-  return request<StoryGroup[]>(`/api/stories`);
+// authorType defaults to "seller" server-side when omitted (see backend/routes/
+// stories.js header comment) — pass "employer" for the Recruitment dashboard, or
+// "all" to opt out of that default.
+export function getStories(authorType?: "seller" | "employer" | "all"): Promise<StoryGroup[]> {
+  return request<StoryGroup[]>(`/api/stories${authorType ? `?authorType=${authorType}` : ""}`);
 }
 
 export function postStory(body: Partial<Story>): Promise<Story> {
@@ -1019,11 +1022,11 @@ export function highlightStory(id: string, isHighlight = true): Promise<Story> {
     body: JSON.stringify({ isHighlight }),
   });
 }
-export function getHighlights(sellerId: string): Promise<Story[]> {
-  return request<Story[]>(`/api/stories/highlights${toQuery({ sellerId })}`);
+export function getHighlights(sellerId: string, authorType?: "seller" | "employer" | "all"): Promise<Story[]> {
+  return request<Story[]>(`/api/stories/highlights${toQuery({ sellerId, authorType })}`);
 }
-export function getActiveStories(sellerId: string): Promise<Story[]> {
-  return request<Story[]>(`/api/stories/active${toQuery({ sellerId })}`);
+export function getActiveStories(sellerId: string, authorType?: "seller" | "employer" | "all"): Promise<Story[]> {
+  return request<Story[]>(`/api/stories/active${toQuery({ sellerId, authorType })}`);
 }
 
 // ============================================================

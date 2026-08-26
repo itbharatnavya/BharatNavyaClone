@@ -92,7 +92,7 @@ export default function StoryRail({ groups: provided, className = "", heading }:
       return;
     }
     let alive = true;
-    getStories()
+    getStories("seller")
       .then((g) => alive && setGroups(normalizeGroups(g)))
       .catch(() => alive && setGroups([]))
       .finally(() => alive && setLoading(false));

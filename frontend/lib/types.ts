@@ -526,6 +526,7 @@ export interface StoryMedia {
 export interface Story {
   id: string;
   sellerId: string;
+  authorType?: "seller" | "employer";
   media: StoryMedia;
   caption?: string;
   linkListingId?: string | null;

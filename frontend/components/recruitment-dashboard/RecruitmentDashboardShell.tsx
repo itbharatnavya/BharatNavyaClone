@@ -97,9 +97,9 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
       case "profile":
         return isRecruiter ? <CompanyProfileTab /> : <CandidateProfileTab />;
       case "stories":
-        return <StoriesTab user={user} />;
+        return <StoriesTab user={user} product="recruitment" />;
       case "blogs":
-        return <BlogsTab user={user} />;
+        return <BlogsTab user={user} product="recruitment" />;
       case "reviews":
         return <ReviewsTab user={user} />;
       case "advertise":

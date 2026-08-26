@@ -49,7 +49,7 @@ export default function SellerStoriesSection({
     let cancelled = false;
     setLoading(true);
     const fetcher = segment === "new" ? getActiveStories : getHighlights;
-    fetcher(sellerId)
+    fetcher(sellerId, "seller")
       .then((s) => {
         if (!cancelled) setStories(s || []);
       })

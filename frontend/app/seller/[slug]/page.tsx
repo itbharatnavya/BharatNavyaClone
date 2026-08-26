@@ -398,7 +398,7 @@ export default function SellerProfilePage() {
 
       if (loaded) {
         try {
-          const b = await getBlogs({ sellerId: loaded.id });
+          const b = await getBlogs({ sellerId: loaded.id, authorType: "seller" });
           if (!cancelled) setBlogs(b);
         } catch {
           /* non-fatal */

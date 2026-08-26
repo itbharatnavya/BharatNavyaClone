@@ -14,6 +14,11 @@ import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./sha
 
 interface Props {
   user: User;
+  // Which dashboard this is mounted in — Directory (default) or Recruitment. Scopes
+  // the blog list to that product's own posts; a user can hold both a sellerProfile
+  // and an employerProfile, and their content must stay separated between the two
+  // dashboards (see backend/routes/blogs.js's authorType field).
+  product?: "directory" | "recruitment";
 }
 
 interface DraftState {
@@ -35,9 +40,10 @@ const EMPTY: DraftState = {
   status: "draft",
 };
 
-export default function BlogsTab({ user }: Props) {
+export default function BlogsTab({ user, product = "directory" }: Props) {
   const tr = useTr();
   const { addToast } = useToast();
+  const authorType = product === "recruitment" ? "employer" : "seller";
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [draft, setDraft] = useState<DraftState | null>(null);
@@ -47,14 +53,14 @@ export default function BlogsTab({ user }: Props) {
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
-      const list = await getBlogs({ sellerId: user.id });
+      const list = await getBlogs({ sellerId: user.id, authorType });
       setBlogs(list);
     } catch (e) {
       addToast((e as Error).message || "Failed to load blogs", "error");
     } finally {
       setLoading(false);
     }
-  }, [user.id, addToast]);
+  }, [user.id, authorType, addToast]);
 
   useEffect(() => {
     void load();
@@ -95,7 +101,7 @@ export default function BlogsTab({ user }: Props) {
         setBlogs((prev) => prev.map((b) => (b.id === draft.id ? { ...b, ...updated } : b)));
         addToast(tr("dashboard.blogs.updated", "Blog updated"), "success");
       } else {
-        const created = await createBlog(body);
+        const created = await createBlog({ ...body, authorType });
         setBlogs((prev) => [created, ...prev]);
         addToast(tr("dashboard.blogs.created", "Blog created"), "success");
       }

@@ -14,6 +14,11 @@ import { PanelHeader, EmptyState, Loading, Icon, timeAgo, useTr } from "./shared
 
 interface Props {
   user: User;
+  // Which dashboard this is mounted in — Directory (default) or Recruitment. Scopes
+  // the story list to that product's own posts; a user can hold both a sellerProfile
+  // and an employerProfile, and their content must stay separated between the two
+  // dashboards (see backend/routes/stories.js's authorType field).
+  product?: "directory" | "recruitment";
 }
 
 // Page size per section — a seller's highlights never expire, so that list is the
@@ -177,9 +182,10 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
   );
 }
 
-export default function StoriesTab({ user }: Props) {
+export default function StoriesTab({ user, product = "directory" }: Props) {
   const tr = useTr();
   const { addToast } = useToast();
+  const authorType = product === "recruitment" ? "employer" : "seller";
   const [loading, setLoading] = useState(true);
   const [stories, setStories] = useState<Story[]>([]);
   const [open, setOpen] = useState(false);
@@ -205,7 +211,7 @@ export default function StoriesTab({ user }: Props) {
       // expired highlight drops out of it — see backend/routes/stories.js). The
       // seller still needs to see/unpin/delete their own highlights after they
       // expire, so merge in GET /highlights, which never applies the expiry filter.
-      const [groups, highlights] = await Promise.all([getStories(), getHighlights(user.id)]);
+      const [groups, highlights] = await Promise.all([getStories(authorType), getHighlights(user.id, authorType)]);
       const mine = groups.find((g) => g.sellerId === user.id);
       const byId = new Map<string, Story>((mine?.stories || []).map((s) => [s.id, s]));
       for (const h of highlights) byId.set(h.id, h);
@@ -215,7 +221,7 @@ export default function StoriesTab({ user }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [user.id, addToast]);
+  }, [user.id, authorType, addToast]);
 
   useEffect(() => {
     void load();
@@ -235,6 +241,7 @@ export default function StoriesTab({ user }: Props) {
         media: { type: mediaType, url: url.trim() },
         caption: caption.trim() || undefined,
         linkListingId: linkListingId.trim() || undefined,
+        authorType,
       });
       setStories((prev) => [created, ...prev]);
       addToast(tr("dashboard.stories.posted", "Story posted"), "success");
@@ -304,9 +311,9 @@ export default function StoriesTab({ user }: Props) {
     ? {
         sellerId: user.id,
         sellerName: user.name,
-        sellerSlug: user.sellerProfile?.slug,
+        sellerSlug: product === "recruitment" ? undefined : user.sellerProfile?.slug,
         avatarUrl: user.avatarUrl,
-        isVerified: user.sellerProfile?.isVerified,
+        isVerified: product === "recruitment" ? user.employerProfile?.isVerified : user.sellerProfile?.isVerified,
         stories: previewList,
       }
     : null;
