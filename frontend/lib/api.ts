@@ -474,7 +474,13 @@ export function aiRfq(need: string): Promise<any> {
 export function assistantChat(
   message: string,
   history?: Array<{ role: string; content: string }>
-): Promise<{ reply: string; suggestions: Array<{ label: string; href: string }>; usedAI: boolean; remaining: number }> {
+): Promise<{
+  reply: string;
+  suggestions: Array<{ label: string; href: string }>;
+  results: Array<{ title: string; subtitle: string; href: string }>;
+  usedAI: boolean;
+  remaining: number;
+}> {
   return request(`/api/assistant/chat`, {
     method: "POST",
     body: JSON.stringify({ message, history }),

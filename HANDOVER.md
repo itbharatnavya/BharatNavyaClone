@@ -45,6 +45,17 @@ bharatsource/
 - **Node 18+** (developed on Node 24) and npm.
 - **The `claude` CLI**, logged into a Claude Code subscription — powers AI search/RFQ.
   Without it the app still runs; AI features fall back to deterministic search (never blank).
+  **Any Claude Code plugin that changes response style/tone (e.g. a "caveman mode" output
+  plugin) enabled in `~/.claude/settings.json` (user-level) or this repo's `.claude/settings.json`
+  (project-level) affects `claude -p` too** — `backend/lib/claudeCli.js` shells out to the same
+  binary the host account uses interactively, so a style-altering plugin enabled for that account
+  silently reshapes real end-user chat replies (routes/assistant.js, routes/ai.js), not just your
+  own terminal sessions. Project-level `enabledPlugins` overrides do **not** reliably win over a
+  user-level enable for this (confirmed empirically — see WORKFLOW.md, caveman-mode entry). Before
+  going live: run `claude -p "test"` from the production host's `backend/` directory and confirm
+  the output reads like normal prose. If it doesn't, either disable the plugin at the user level
+  on that host, or add `--safe-mode` to the `spawn(...)` call in `claudeCli.js` (verified: keeps
+  OAuth/keychain auth working, unlike `--bare` which breaks it — only `--safe-mode` is safe here).
 - macOS or Linux. (Windows: use WSL — the shell scripts assume a POSIX shell.)
 
 ---
@@ -192,7 +203,9 @@ SECURITY.md first (the admin panel is reachable at `/admin`).
 ## Deployment sketch (see SECURITY.md for the hard requirements)
 1. A small VM (2 vCPU / 2–4 GB is plenty for the file-DB at POC scale).
 2. Run backend (`node index.js`) and frontend (`npm run build && npm start`) under a process
-   manager (pm2/systemd). Keep the **`claude` CLI logged in** on the host for AI.
+   manager (pm2/systemd). Keep the **`claude` CLI logged in** on the host for AI, and verify no
+   style-altering Claude Code plugin is enabled on that host's account (see Prerequisites above)
+   — it would silently reshape real chat-AI replies to end users.
 3. Put a reverse proxy (Caddy/Nginx/Cloudflare Tunnel) in front of **:3000** for HTTPS.
 4. Set production `JWT_SECRET` + `ADMIN_PASSWORD` + `NODE_ENV=production`.
 5. Schedule a **backup of `backend/DB/`** (it's the whole database).

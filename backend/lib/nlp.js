@@ -397,4 +397,51 @@ function parseQuery(text, categories = [], opts = {}) {
   return { category, city, type, budgetMax, keywords, confidence };
 }
 
-module.exports = { parseQuery };
+/**
+ * Rank all categories against a query locally (reuses matchCategory()'s scoring,
+ * synchronous, no CLI call) and return only the top few — for callers that build
+ * an AI prompt and would otherwise dump every category into it on every request
+ * (e.g. routes/assistant.js's buildAssistantPrompt(), which used to send all 280
+ * rows regardless of relevance). The CLI still sees enough real candidates to
+ * pick correctly or say "none of these," at a fraction of the prompt tokens.
+ */
+function selectRelevantCategories(text, categories = [], limit = 20) {
+  const rawTokens = tokenize(text);
+  const expanded = expandTokens(rawTokens);
+  const querySet = new Set(expanded);
+
+  const scored = (categories || [])
+    .filter((c) => c && c.slug)
+    .map((cat) => {
+      const catToks = categoryTokens(cat);
+      let score = 0;
+      for (const ct of catToks) {
+        if (querySet.has(ct)) score += 2;
+        else if (ct.length >= 4) {
+          for (const qt of querySet) {
+            if (qt.length >= 4 && (qt.includes(ct) || ct.includes(qt))) {
+              score += 1;
+              break;
+            }
+          }
+        }
+      }
+      return { cat, score };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (scored.length >= limit) return scored.slice(0, limit).map((s) => s.cat);
+
+  // Not enough scored hits to fill the shortlist (short/ambiguous query) — pad
+  // with top-level categories so the CLI still has a reasonable spread to
+  // choose "none of these fit" from, rather than an unnaturally short list.
+  const chosen = new Map(scored.map((s) => [s.cat.slug, s.cat]));
+  for (const cat of categories || []) {
+    if (chosen.size >= limit) break;
+    if (cat && cat.slug && !cat.parentId && !chosen.has(cat.slug)) chosen.set(cat.slug, cat);
+  }
+  return [...chosen.values()];
+}
+
+module.exports = { parseQuery, selectRelevantCategories };

@@ -27,6 +27,7 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
+const { searchJobs, employerMiniOf } = require("../lib/jobSearch");
 
 const DEFAULT_LIMIT = 12;
 // Hard cap regardless of what a client asks for — an unbounded ?limit= could force a
@@ -115,78 +116,34 @@ function normalizeStringList(input, max = 30) {
   return out;
 }
 
-/** Public employer mini-object for a job card/detail — never includes contact fields;
- *  those are only ever served from GET /api/employers/:slug (optionalAuth-gated). */
-function employerMiniOf(user) {
-  if (!user) return null;
-  const ep = user.employerProfile || {};
-  return {
-    id: user.id,
-    companyName: ep.companyName || user.name || null,
-    slug: ep.slug || null,
-    logo: ep.logo || user.avatarUrl || null,
-    city: (ep.location && ep.location.city) || null,
-    state: (ep.location && ep.location.state) || null,
-    isVerified: !!ep.isVerified,
-  };
-}
-
 /* --------------------------------------------------- GET / (browse) -------- */
 
 router.get("/", async (req, res, next) => {
   try {
     const { page, limit } = paginationOf(req.query);
-    const q = req.query.q ? String(req.query.q).trim().toLowerCase() : "";
-    const company = req.query.company ? String(req.query.company).trim().toLowerCase() : "";
-    const jobFunction = req.query.jobFunction ? String(req.query.jobFunction).trim() : undefined;
-    const employmentType = req.query.employmentType ? String(req.query.employmentType).trim() : undefined;
-    const experienceLevel = req.query.experienceLevel ? String(req.query.experienceLevel).trim() : undefined;
-    const city = req.query.city ? String(req.query.city).trim().toLowerCase() : undefined;
-    const state = req.query.state ? String(req.query.state).trim().toLowerCase() : undefined;
-    const remoteOnly = toBool(req.query.remote);
-    const minSalary = toNumberOrNull(req.query.minSalary);
-    const maxSalary = toNumberOrNull(req.query.maxSalary);
+    const q = req.query.q ? String(req.query.q).trim() : "";
 
-    // Public browse: only jobs from approved employers (mirrors Directory's
-    // approvedSellerIds gate in routes/listings.js) — one query, reused below for the
-    // batched employer-mini denormalization (no N+1: never fetched per-row).
-    const users = await store.all("users.json");
-    const employerById = new Map(users.filter((u) => u.employerProfile).map((u) => [u.id, u]));
-
-    let jobs = await store.findMany("jobs.json", (j) => {
-      if (j.status !== "active") return false;
-      const employer = employerById.get(j.employerId);
-      if (!employer || employer.employerProfile.status !== "approved") return false;
-      if (jobFunction && j.jobFunction !== jobFunction) return false;
-      if (employmentType && j.employmentType !== employmentType) return false;
-      if (experienceLevel && j.experienceLevel !== experienceLevel) return false;
-      const loc = j.location || {};
-      if (city && String(loc.city || "").toLowerCase() !== city) return false;
-      if (state && String(loc.state || "").toLowerCase() !== state) return false;
-      if (remoteOnly && !loc.remote) return false;
-      const sr = j.salaryRange || {};
-      if (minSalary !== null && (sr.max === null || sr.max === undefined || sr.max < minSalary)) return false;
-      if (maxSalary !== null && (sr.min === null || sr.min === undefined || sr.min > maxSalary)) return false;
-      if (q) {
-        const hay = `${j.title || ""} ${j.description || ""}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      if (company) {
-        const companyName = (employer.employerProfile.companyName || "").toLowerCase();
-        if (!companyName.includes(company)) return false;
-      }
-      return true;
+    // Filtering/gating logic lives in lib/jobSearch.js (shared with the chat
+    // assistant's job-search intent, routes/assistant.js) — pagination stays
+    // route-local since the shared helper is a plain match+sort, no paging.
+    const { jobs: allMatches, total } = await searchJobs({
+      q,
+      filters: {
+        company: req.query.company,
+        jobFunction: req.query.jobFunction,
+        employmentType: req.query.employmentType,
+        experienceLevel: req.query.experienceLevel,
+        city: req.query.city,
+        state: req.query.state,
+        remote: toBool(req.query.remote),
+        minSalary: toNumberOrNull(req.query.minSalary),
+        maxSalary: toNumberOrNull(req.query.maxSalary),
+      },
     });
 
-    jobs = jobs.slice().sort((a, b) => (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0));
-
-    const total = jobs.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
-    const pageItems = jobs.slice(start, start + limit).map((j) => ({
-      ...j,
-      employer: employerMiniOf(employerById.get(j.employerId)),
-    }));
+    const pageItems = allMatches.slice(start, start + limit);
 
     return res.json({ success: true, data: { jobs: pageItems, total, page, totalPages } });
   } catch (err) {

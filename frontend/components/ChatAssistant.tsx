@@ -10,10 +10,16 @@ interface Suggestion {
   label: string;
   href: string;
 }
+interface ResultCard {
+  title: string;
+  subtitle: string;
+  href: string;
+}
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   suggestions?: Suggestion[];
+  results?: ResultCard[];
 }
 
 const GREETING: ChatMessage = {
@@ -112,6 +118,7 @@ export default function ChatAssistant() {
           role: "assistant",
           content: res.reply,
           suggestions: Array.isArray(res.suggestions) ? res.suggestions : [],
+          results: Array.isArray(res.results) ? res.results : [],
         },
       ]);
       if (typeof res.remaining === "number") setRemaining(res.remaining);
@@ -199,6 +206,22 @@ export default function ChatAssistant() {
                   >
                     {m.content}
                   </div>
+
+                  {m.results && m.results.length > 0 && (
+                    <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-surface p-1.5">
+                      {m.results.map((r, j) => (
+                        <Link
+                          key={`${i}-r-${j}`}
+                          href={r.href || "#"}
+                          onClick={() => setOpen(false)}
+                          className="flex flex-col gap-0.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-bg-subtle"
+                        >
+                          <span className="truncate text-sm font-medium text-ink">{r.title}</span>
+                          {r.subtitle && <span className="truncate text-xs text-muted">{r.subtitle}</span>}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                   {m.suggestions && m.suggestions.length > 0 && (
                     <div className="flex flex-wrap gap-2">
