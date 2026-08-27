@@ -28,6 +28,7 @@ import { isDirectoryPage } from "@/lib/directoryPaths";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import RfqForm, { EMPTY_RFQ, type RfqFormState } from "@/components/rfq/RfqForm";
+import { validateRfq, type RfqErrors } from "@/components/rfq/validation";
 
 function RequirementIcon({ size = 20 }: { size?: number }) {
   return (
@@ -71,8 +72,11 @@ export default function FloatingRfqButton() {
   const [isFallback, setIsFallback] = useState(false);
   const [form, setForm] = useState<RfqFormState>(EMPTY_RFQ);
   const [submitting, setSubmitting] = useState(false);
+  const [triedSubmit, setTriedSubmit] = useState(false);
 
   const patch = (p: Partial<RfqFormState>) => setForm((f) => ({ ...f, ...p }));
+
+  const errors: RfqErrors = triedSubmit ? validateRfq(form, { needText: need }) : {};
 
   // Close on route change, same as ChatAssistant — navigating away via a link
   // inside the page underneath should feel clean, not leave a stale panel up.
@@ -122,11 +126,15 @@ export default function FloatingRfqButton() {
       router.push(`/login?next=${encodeURIComponent(pathname || "/directory")}`);
       return;
     }
-    const productName = form.productName.trim() || need.trim();
-    if (!productName) {
-      addToast("Add what you're looking for.", "error");
+
+    setTriedSubmit(true);
+    const errs = validateRfq(form, { needText: need });
+    if (Object.keys(errs).length > 0) {
+      addToast("Please fix the highlighted fields.", "error");
       return;
     }
+
+    const productName = form.productName.trim() || need.trim();
 
     setSubmitting(true);
     try {
@@ -170,6 +178,7 @@ export default function FloatingRfqButton() {
     setIsFallback(false);
     setForm(EMPTY_RFQ);
     setNeed("");
+    setTriedSubmit(false);
   };
 
   // Placed after every hook so hook order stays stable across the pathname
@@ -269,7 +278,17 @@ export default function FloatingRfqButton() {
                     <h3 className="text-[13.5px] font-semibold text-ink">Your requirement</h3>
                     {isFallback && <span className="text-[11px] text-faint">AI draft</span>}
                   </div>
-                  <RfqForm value={form} onChange={patch} categories={categories} />
+                  <RfqForm
+                    value={form}
+                    onChange={patch}
+                    categories={categories}
+                    errors={errors}
+                  />
+                  {triedSubmit && Object.keys(errors).length > 0 && (
+                    <p className="field-error" style={{ marginTop: 12 }}>
+                      Fix the highlighted fields to send.
+                    </p>
+                  )}
                   {!user && (
                     <p className="mt-3.5 text-[12px] text-muted">
                       You&apos;ll be asked to log in to send this requirement.

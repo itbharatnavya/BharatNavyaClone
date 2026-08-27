@@ -123,6 +123,9 @@ export interface User {
   // opposite profile-mutating endpoint (become-employer / PUT me/candidate) 403s.
   recruitmentRole?: "candidate" | "recruiter" | null;
   recruitmentRoleLockedAt?: string | null;
+  // Account-level suspend (ADMIN-CONSOLE.md). Undefined/"active" = normal;
+  // "suspended" blocks login + every authenticated request server-side.
+  status?: "active" | "suspended";
   legacy?: boolean;
   createdAt: string;
 }

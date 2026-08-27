@@ -346,7 +346,8 @@ function buildFlatConfigs(nextId) {
       table: "reviews",
       columns: {
         id: col("id", t), targetUserId: col("target_user_id", t), sellerId: col("seller_id", t),
-        direction: col("direction", t), buyerId: col("buyer_id", t), buyerName: col("buyer_name", t),
+        direction: col("direction", t), context: col("context", t),
+        buyerId: col("buyer_id", t), buyerName: col("buyer_name", t),
         rating: col("rating", n), reviewText: col("review_text", t), status: col("status", t),
         createdAt: col("created_at", ts),
       },

@@ -27,6 +27,7 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import ImageUpload from "@/components/ImageUpload";
 import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./shared";
+import { validateAd, type Errors } from "./validation";
 import {
   useEntitlements,
   tierOf,
@@ -103,6 +104,19 @@ export default function AdvertiseTab({ user }: Props) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [tried, setTried] = useState(false);
+
+  const adErrors: Errors = tried
+    ? validateAd({
+        source,
+        listingId,
+        creativeImageUrl,
+        headline,
+        targetUrl,
+        startDate,
+        endDate,
+      })
+    : {};
 
   const loadAds = React.useCallback(async () => {
     try {
@@ -186,13 +200,28 @@ export default function AdvertiseTab({ user }: Props) {
     setCategorySlug("");
     setStartDate("");
     setEndDate("");
+    setTried(false);
   }
 
-  const canSubmit =
-    creativeImageUrl.trim() !== "" && headline.trim() !== "" && !submitting;
-
   async function submit() {
-    if (!canSubmit) return;
+    if (submitting) return;
+    setTried(true);
+    const errs = validateAd({
+      source,
+      listingId,
+      creativeImageUrl,
+      headline,
+      targetUrl,
+      startDate,
+      endDate,
+    });
+    if (Object.keys(errs).length > 0) {
+      addToast(
+        tr("dashboard.advertise.fixFields", "Please fix the highlighted fields."),
+        "error"
+      );
+      return;
+    }
     setSubmitting(true);
     try {
       await createMyAd({
@@ -326,6 +355,7 @@ export default function AdvertiseTab({ user }: Props) {
                 label={tr("dashboard.advertise.pickListing", "Which listing?")}
                 value={listingId}
                 onChange={(e) => onPickListing(e.target.value)}
+                error={adErrors.listingId || adErrors.creativeImageUrl}
                 hint={
                   listings.length === 0
                     ? "You have no listings yet — switch to a custom image."
@@ -370,17 +400,22 @@ export default function AdvertiseTab({ user }: Props) {
                   onChange={setCreativeImageUrl}
                   label="Upload image"
                 />
+                {adErrors.creativeImageUrl && (
+                  <p className="field-error">{adErrors.creativeImageUrl}</p>
+                )}
               </div>
               <Input
                 label={tr("dashboard.advertise.headline", "Headline")}
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
+                error={adErrors.headline}
                 placeholder="e.g. Bulk steel at factory rates"
               />
               <Input
                 label={tr("dashboard.advertise.targetUrl", "Link (optional)")}
                 value={targetUrl}
                 onChange={(e) => setTargetUrl(e.target.value)}
+                error={adErrors.targetUrl}
                 placeholder="/seller/your-store or https://…"
                 hint="Where buyers go when they tap your ad."
               />
@@ -429,6 +464,7 @@ export default function AdvertiseTab({ user }: Props) {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+              error={adErrors.endDate}
             />
           </div>
 
@@ -436,7 +472,7 @@ export default function AdvertiseTab({ user }: Props) {
             <Button
               variant="primary"
               onClick={submit}
-              disabled={!canSubmit}
+              disabled={submitting}
               leftIcon={<Icon name="send" size={16} />}
             >
               {submitting

@@ -2,20 +2,22 @@
 
 // components/recruitment/ApplyModal.tsx — the post-login half of the Apply flow
 // (login gating itself stays in job/[id]/page.tsx's existing ContactAuthModal wiring,
-// unchanged). Extracted out of the page because the flow grew from a single textarea
-// into a short, conditionally-skipped sequence: CV check → recruiter questions →
-// cover note → review → submit (enhancement doc §5/§6/§7).
+// unchanged).
 //
-// Each step is skipped when already satisfied — a candidate with a CV on file and a
-// job with no custom questions goes straight to cover-note → review, same as before.
+// First gate: the candidate profile must be complete (candidateProfileGaps) — an
+// incomplete profile can't apply at all, it's sent to the dashboard's Profile tab to
+// finish. Once complete, the flow is: recruiter questions (if any) → cover note →
+// review → submit. There is no inline CV upload here anymore — the CV, like every
+// other required field, is filled on the profile form.
 
 import React, { useMemo, useState } from "react";
+import Link from "next/link";
 import Modal from "@/components/Modal";
 import Button from "@/components/Button";
-import ResumeUpload from "@/components/recruitment/ResumeUpload";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
-import { applyToJob, updateCandidateProfile } from "@/lib/api";
+import { applyToJob } from "@/lib/api";
+import { candidateProfileGaps } from "@/lib/recruitmentProfile";
 import type { Job, JobAnswer } from "@/lib/types";
 
 interface Props {
@@ -25,7 +27,7 @@ interface Props {
   onApplied: () => void;
 }
 
-type Step = "cv" | "questions" | "note" | "review";
+type Step = "questions" | "note" | "review";
 
 function CheckIcon() {
   return (
@@ -52,22 +54,23 @@ function ChecklistRow({ label, done }: { label: string; done: boolean }) {
 }
 
 export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
-  const { user, refresh } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
 
   const cp = user?.candidateProfile;
   const questions = useMemo(() => job.questions || [], [job.questions]);
 
-  const [resumeUrl, setResumeUrl] = useState(cp?.resumeUrl || "");
+  // Gaps that must be filled on the profile form before this candidate can apply.
+  const gaps = useMemo(() => candidateProfileGaps(user), [user]);
+  const blocked = gaps.length > 0;
+
+  const resumeUrl = cp?.resumeUrl || "";
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [coverNote, setCoverNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
 
-  // Recomputed each render (not memoized) — resumeUrl can change mid-flow via the
-  // inline uploader, which should immediately drop the CV step from the sequence.
   const steps: Step[] = [
-    ...(!resumeUrl ? (["cv"] as Step[]) : []),
     ...(questions.length ? (["questions"] as Step[]) : []),
     "note",
     "review",
@@ -83,17 +86,6 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
   function close() {
     reset();
     onClose();
-  }
-
-  async function handleResumeChange(url: string) {
-    setResumeUrl(url);
-    try {
-      await updateCandidateProfile({ resumeUrl: url });
-      await refresh();
-    } catch {
-      // Non-fatal here — resumeUrl is already applied locally for this application;
-      // the dashboard's own CandidateSection is the durable place to retry a save.
-    }
   }
 
   function goNext() {
@@ -144,42 +136,52 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
       title={`Apply to ${job.title}`}
       size="sm"
       footer={
-        <>
-          {stepIndex > 0 && (
-            <Button variant="secondary" onClick={goBack} disabled={submitting}>Back</Button>
-          )}
-          <Button variant="secondary" onClick={close} disabled={submitting}>Cancel</Button>
-          {isLast ? (
-            <Button variant="green" onClick={submit} disabled={submitting}>
-              {submitting ? "Sending…" : "Submit application"}
+        blocked ? (
+          <>
+            <Button variant="secondary" onClick={close}>Cancel</Button>
+            <Button variant="green" href="/recruitment/dashboard?tab=profile" onClick={close}>
+              Go to profile
             </Button>
-          ) : (
-            <Button variant="green" onClick={goNext} disabled={step === "cv" && !resumeUrl}>
-              Continue
-            </Button>
-          )}
-        </>
+          </>
+        ) : (
+          <>
+            {stepIndex > 0 && (
+              <Button variant="secondary" onClick={goBack} disabled={submitting}>Back</Button>
+            )}
+            <Button variant="secondary" onClick={close} disabled={submitting}>Cancel</Button>
+            {isLast ? (
+              <Button variant="green" onClick={submit} disabled={submitting}>
+                {submitting ? "Sending…" : "Submit application"}
+              </Button>
+            ) : (
+              <Button variant="green" onClick={goNext}>Continue</Button>
+            )}
+          </>
+        )
       }
     >
-      {step === "cv" && (
+      {blocked && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ fontSize: 13.5, color: "var(--muted)" }}>
-            Your application cannot be submitted yet. Complete these before continuing:
+            Finish your candidate profile before applying. {companyName} sees these
+            details with every application:
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <ChecklistRow label="Name" done={!!user.name} />
-            <ChecklistRow label="Mobile number" done={!!user.mobile} />
-            <ChecklistRow label="CV / résumé" done={!!resumeUrl} />
+            {gaps.map((g) => (
+              <ChecklistRow key={g.key} label={g.label} done={false} />
+            ))}
           </div>
-          {!resumeUrl && (
-            <div>
-              <ResumeUpload value={resumeUrl} onChange={handleResumeChange} />
-            </div>
-          )}
+          <p style={{ fontSize: 12.5, color: "var(--faint)" }}>
+            You only need to do this once —{" "}
+            <Link href="/recruitment/dashboard?tab=profile" style={{ color: "var(--brand)" }}>
+              open your profile
+            </Link>{" "}
+            to fill them in.
+          </p>
         </div>
       )}
 
-      {step === "questions" && (
+      {!blocked && step === "questions" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>
             {companyName} asks a few questions before reviewing applications.
@@ -202,7 +204,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
         </div>
       )}
 
-      {step === "note" && (
+      {!blocked && step === "note" && (
         <div>
           <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4, marginBottom: 14 }}>
             Applying as {user.name}. Your profile details go to {companyName} — add a short note if you'd like.
@@ -220,7 +222,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
         </div>
       )}
 
-      {step === "review" && (
+      {!blocked && step === "review" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>Review before you submit.</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14 }}>
@@ -229,7 +231,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
             <div>
               <strong>CV:</strong>{" "}
               {resumeUrl ? (
-                <a href={resumeUrl} target="_blank" rel="noreferrer" style={{ color: "var(--brand)" }}>View résumé</a>
+                <a href={resumeUrl} target="_blank" rel="noreferrer" style={{ color: "var(--brand)" }}>View resume</a>
               ) : (
                 "—"
               )}

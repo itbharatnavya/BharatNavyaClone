@@ -119,7 +119,7 @@ mapper (matching `backend/lib/db/listings.js`/`users.js`'s batched-`all()` patte
 |---|---|---|
 | Register / login | `/register`, `/login` | Same suite-wide auth as Directory |
 | Become an employer | Recruitment dashboard → Profile (or lazily on first job post) | `POST /api/become-employer`, or lazy minimal-profile creation on `POST /api/jobs` (mirrors `minimalSellerProfile`, `backend/routes/listings.js:162-209`) |
-| Post a job | `/post-job` | `POST /api/jobs` |
+| Post a job | `/post-job` | `POST /api/jobs` — **company-profile-complete gate** (see below); an incomplete profile 403s with `code: employer_profile_incomplete` + `missing[]`, and `/post-job` shows that checklist instead of the form |
 | Edit / close a job | Recruitment dashboard → My Jobs | `PUT /api/jobs/:id`, `DELETE /api/jobs/:id` |
 | My jobs (incl. non-active) | Recruitment dashboard → My Jobs | `GET /api/jobs/mine` (or `/api/me/jobs`, matching Directory's `/api/me/listings` — **not** the public browse, same "pending seller sees 0 listings" trap applies) |
 | Review applications, update status | Recruitment dashboard → Applications (Applied / Shortlisted / Interview / Rejected / Hired sub-views) | `GET /api/applications` (filterable by `status`), `POST /api/applications/:id/status` |
@@ -135,12 +135,45 @@ mapper (matching `backend/lib/db/listings.js`/`users.js`'s batched-`all()` patte
 |---|---|---|
 | Browse / search jobs (role, company, city) | `/recruitment/jobs` | `GET /api/jobs` (filters: jobFunction/role keyword `q`, `employerId` or company-name text match, city/state/remote, employmentType, experienceLevel, salary range) |
 | Job detail | `/job/[id]` | `GET /api/jobs/:id` (increments `viewCount`) |
-| Apply (login-gated) | `/job/[id]` | `POST /api/applications` — `authGuard`; logged-out click opens the same inline login/register modal pattern as Directory's `ContactAuthModal` instead of a public form |
+| Apply (login-gated) | `/job/[id]` | `POST /api/applications` — `authGuard`; logged-out click opens the same inline login/register modal pattern as Directory's `ContactAuthModal`. Then a **candidate-profile-complete gate** (see below): an incomplete profile 400s with `code: candidate_profile_incomplete` + `missing[]`, and `ApplyModal` shows that checklist + a "Go to profile" button instead of the apply steps |
 | Upload résumé | Recruitment dashboard → Profile | `POST /api/uploads` extended to accept `application/pdf` (see §2) |
 | Upload profile photo | Recruitment dashboard → Profile | `POST /api/uploads` (existing, reused — writes to `user.avatarUrl`, same as the rest of the suite) |
 | Edit candidate profile | Recruitment dashboard → Profile | Candidate-profile update route on `backend/routes/users.js` (no approval gate) |
 | Review a company (post-application) | `/employer/[slug]` | `POST /api/reviews` (existing route, `targetUserId=<employerUserId>`, reused) |
 | My applications (status-tracked) | Recruitment dashboard → My Applications | `GET /api/applications/mine` |
+
+### Profile-completeness gate (2026-08-27)
+
+**You cannot act in Recruitment on a half-filled profile.** A candidate must have a
+complete candidate profile before applying to any job; a recruiter must have a
+complete company profile before posting any job. This also closes the old "I applied
+but the dashboard still offers *Switch role*" confusion — the role only locks when
+the matching profile is *created* (`become-employer` / `PUT me/candidate`), so forcing
+a real profile before the first action means the role is always locked by the time
+one acts.
+
+- **Single source of truth:** `backend/lib/recruitmentProfile.js` — `candidateProfileGaps(user)` /
+  `employerProfileGaps(user)`, each returning `[{ key, label }]` (empty = ready).
+  Mirrored verbatim in `frontend/lib/recruitmentProfile.ts` so every surface can
+  preview the same gaps without a round-trip. **Keep the two in sync.**
+- **Candidate required fields:** name, `headline`, `summary` (≥ 30 chars),
+  `experienceYears` (0–60), `skills` (≥ 3), a 10-digit mobile (`contactPhone` or
+  `user.mobile`), a valid email (`contactEmail` or `user.email`), `resumeUrl`.
+- **Recruiter required fields:** `companyName`, `about` (≥ 30 chars), `industry`,
+  `companySize`, `location.city`, `location.state`; `website` must be a valid
+  `http(s)://` URL *if* provided.
+- **Enforcement points:**
+  - `POST /api/applications` — `candidateProfileGaps`; 400 `code: candidate_profile_incomplete` + `missing[]`.
+  - `POST /api/jobs` — `employerProfileGaps`; 403 `code: employer_profile_incomplete` (or `employer_profile_required` when there's no profile at all) + `missing[]`.
+  - `ApplyModal` (`components/recruitment/ApplyModal.tsx`) — pre-checks and shows the
+    checklist + "Go to profile" instead of the apply steps; the inline CV-upload step
+    was **removed** (the CV is now filled on the profile form like every other field).
+  - `/post-job` (`app/post-job/page.tsx`) — pre-checks and renders the checklist +
+    "Go to company profile" instead of the form (edit-mode is exempt).
+  - `CandidateProfileTab` / `CompanyProfileTab` — field-wise `validate()` with inline
+    `error=` per field, plus a top banner listing what's still missing to act.
+- **Demo data:** `scripts/seed-recruitment-demo.js` now gives every demo candidate a
+  stand-in `DEMO_RESUME_URL` so the personas still clear the gate.
 
 ### Admin
 **✅ Built (2026-08-25)** — the "later, separate decision" below happened: `/admin` is now a product-scoped
@@ -153,6 +186,12 @@ nested-admin-route pattern Directory uses for boosts/entitlements/categories (`b
 job-moderation review-queue state machine — jobs still default straight to `active` and admin uses the
 existing `PUT /api/jobs/:id` to pause/close one (see the "Known gaps" note below — unchanged, deliberately
 deferred).
+
+**Candidates in admin (2026-08-27):** `/admin` › Recruitment › **Users** (`UsersTab` with `scope="recruitment"`)
+lists employers *and* candidates — candidates had no admin surface before. Every row opens the shared full
+account page `/admin/users/[id]`, which shows the candidate profile + application counts alongside any
+seller/employer hat the same account holds. Account-level **Suspend** (blocks login + every authenticated
+request, `users.status`) also lives there. See ADMIN-CONSOLE.md Phase 7.
 
 ---
 
@@ -301,9 +340,24 @@ list (not Directory's image-tile grid), and `Navbar`'s Directory-page detection
 suite nav + a "Recruitment profile" menu link instead of Directory's chrome — a real
 integration gap caught before it shipped, not a hypothetical one.
 
-**Not yet built**: `GET /api/employers/:slug`'s reviews (RECRUITMENT.md always intended
-these via the existing generic `reviews.json` — no UI surfaces them yet), company
-story/blogs surfacing on the employer profile page.
+**Not yet built**: company story surfacing on the employer profile page.
+
+**Company reviews (built 2026-08-27):** the generic `reviews.json` route now carries a
+`context` column (`directory` | `recruitment`, NULL = legacy directory) so the same
+user id can be reviewed independently as a Directory seller and a Recruitment employer
+without the two pools — or `sellerProfile.rating` — mixing. `GET/POST /api/reviews`
+take an optional `context`; `lib/sellerRating.js` and `GET /api/reviews/recent` count
+directory-only. UI: `components/employer/EmployerReviewsSection.tsx` on `/employer/[slug]`
+(post + list + filter/sort, green-accented sibling of Directory's `ReviewsPanel`), and
+the recruitment dashboard Reviews tab passes `context="recruitment"`. Schema migration
+`0011_add_review_context.sql` backfills the 30 demo company reviews. The home page
+testimonials strip uses a dedicated server-capped endpoint
+`GET /api/reviews/recruitment-recent?limit=6` (latest messaged review, one per
+company) — one request, not one per hiring company.
+
+**Career guides:** `seed-recruitment-demo.js` seeds 6 employer-authored blogs
+(`authorType: "employer"`); the recruitment home page's "Career guides" strip renders
+them from `GET /api/blogs?authorType=employer`, falling back to a static list if none.
 
 #### Home page v2 + nav scroll-dock + self-serve ads (2026-08-24, same day, follow-up pass)
 User feedback on the first landing page pass: wanted more of a real destination (took
@@ -579,6 +633,10 @@ standing between "in development" and "publicly reachable."
   `store.js` interface.
 - **Don't add tabs to `DashboardShell.tsx`** — Recruitment's dashboard is a separate component tree under
   `/recruitment/dashboard` (§4).
+- **The profile-completeness gate has two copies that must agree** — `backend/lib/recruitmentProfile.js`
+  and `frontend/lib/recruitmentProfile.ts` (§3). Change a required field in one, change it in the other,
+  or the client shows "ready" and the server 4xxs (or vice-versa). Adding a new Recruitment action that
+  needs a profile? Gate it with the same helper, don't re-derive "is this complete" inline.
 - **Nested admin routers mount BEFORE the blanket `/api/admin` guard** (`backend/index.js`) — same
   pattern as Directory's boosts/entitlements/categories. Any Recruitment admin sub-API follows it.
 - **Design rules are enforced** — no emojis (inline SVG only), native `<select>` filters, local images

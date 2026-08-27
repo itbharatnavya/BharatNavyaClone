@@ -101,7 +101,7 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
       case "blogs":
         return <BlogsTab user={user} product="recruitment" />;
       case "reviews":
-        return <ReviewsTab user={user} />;
+        return <ReviewsTab user={user} context="recruitment" />;
       case "advertise":
         return <AdvertisementsTab />;
       default:

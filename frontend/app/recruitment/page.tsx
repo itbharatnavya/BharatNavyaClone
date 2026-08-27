@@ -32,8 +32,18 @@ import Avatar from "@/components/Avatar";
 import AdSlider from "@/components/AdSlider";
 import { useAuth } from "@/lib/auth";
 import { useSearchDock } from "@/lib/searchDock";
-import { getJobs, getJobFunctions, getReviews } from "@/lib/api";
-import type { Job, JobFunction, JobEmployerMini, Review } from "@/lib/types";
+import { getJobs, getJobFunctions, getBlogs, getRecruitmentRecentReviews } from "@/lib/api";
+import type { RecruitmentRecentReview } from "@/lib/api";
+import type { Job, JobFunction, JobEmployerMini, Blog } from "@/lib/types";
+
+// First readable sentence(s) of a markdown body, for a card preview.
+function excerptOf(body: string, max = 120): string {
+  const plain = (body || "")
+    .replace(/[#>*_`-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain.length > max ? `${plain.slice(0, max).trimEnd()}…` : plain;
+}
 
 const ROTATING_ROLES = [
   "Software Engineer",
@@ -139,7 +149,7 @@ function RupeeIcon() {
 const GUIDES = [
   {
     icon: <DocIcon />,
-    title: "Write a résumé recruiters actually read",
+    title: "Write a resume recruiters actually read",
     copy: "Lead with impact, not duties — the six-second scan test and what to cut.",
   },
   {
@@ -169,11 +179,15 @@ export default function RecruitmentPage() {
   const [allJobs, setAllJobs] = useState<Job[]>([]);
   const [totalOpenRoles, setTotalOpenRoles] = useState<number | null>(null);
   const [loadingFeatured, setLoadingFeatured] = useState(true);
-  const [testimonials, setTestimonials] = useState<{ review: Review; companyName: string }[]>([]);
+  const [testimonials, setTestimonials] = useState<RecruitmentRecentReview[]>([]);
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
+  // Real employer-authored career guides (GET /api/blogs?authorType=employer).
+  // Falls back to the static GUIDES list below only if none are published yet.
+  const [guides, setGuides] = useState<Blog[]>([]);
 
   useEffect(() => {
     getJobFunctions().then(setJobFunctions).catch(() => {});
+    getBlogs({ authorType: "employer" }).then((b) => setGuides(b.slice(0, 4))).catch(() => {});
     // Fetch the full active-role set in one call (well under the API's 50-item cap) —
     // powers both the "Recently posted roles" grid (already sorted newest-first by the
     // backend) and the "Companies hiring now" rail's real per-company open-role counts,
@@ -226,34 +240,23 @@ export default function RecruitmentPage() {
     return Array.from(map.values());
   }, [allJobs]);
 
-  // One review per company (up to 8 companies) — a light, varied sample rather than
-  // a dedicated aggregate endpoint; reuses the existing generic GET /api/reviews
-  // (RECRUITMENT.md: "reviews are already generic, no new collection needed").
+  // Latest messaged company reviews — one per company, capped server-side. A
+  // single request to a dedicated endpoint (was previously one GET /api/reviews
+  // per hiring company).
   useEffect(() => {
-    if (companyStats.length === 0) {
-      setLoadingTestimonials(false);
-      return;
-    }
     let alive = true;
-    const targets = companyStats.slice(0, 8);
-    Promise.all(
-      targets.map((c) =>
-        getReviews(c.employer.id)
-          .then((reviews) => reviews.filter((r) => r.reviewText).slice(0, 1).map((review) => ({ review, companyName: c.employer.companyName || "Company" })))
-          .catch(() => [])
-      )
-    )
-      .then((lists) => {
-        if (!alive) return;
-        setTestimonials(lists.flat().slice(0, 6));
+    getRecruitmentRecentReviews(6)
+      .then((rows) => {
+        if (alive) setTestimonials(rows);
       })
+      .catch(() => {})
       .finally(() => {
         if (alive) setLoadingTestimonials(false);
       });
     return () => {
       alive = false;
     };
-  }, [companyStats]);
+  }, []);
 
   // Custom scroll-progress indicator for the companies rail — see the render-site
   // comment for why this replaces relying on the native scrollbar. widthPct 100 means
@@ -502,19 +505,19 @@ export default function RecruitmentPage() {
                     </div>
                   ))
                 : testimonials.map((t, i) => (
-                    <Reveal key={t.review.id} delay={i * 70}>
+                    <Reveal key={t.reviewId} delay={i * 70}>
                       <div className="card card-flat rc-testimonial-card">
-                        <div className="rc-testimonial-stars" aria-label={`${t.review.rating} out of 5 stars`}>
+                        <div className="rc-testimonial-stars" aria-label={`${t.rating} out of 5 stars`}>
                           {Array.from({ length: 5 }).map((_, si) => (
-                            <StarIcon key={si} filled={si < Math.round(t.review.rating)} />
+                            <StarIcon key={si} filled={si < Math.round(t.rating)} />
                           ))}
                         </div>
-                        <p className="line-clamp-3 rc-testimonial-text">&ldquo;{t.review.reviewText}&rdquo;</p>
+                        <p className="line-clamp-3 rc-testimonial-text">&ldquo;{t.reviewText}&rdquo;</p>
                         <div className="rc-testimonial-meta">
-                          <Avatar name={t.review.buyerName} size={32} />
+                          <Avatar name={t.buyerName} size={32} />
                           <div className="rc-testimonial-who">
-                            <span className="rc-testimonial-name">{t.review.buyerName}</span>
-                            <span className="rc-testimonial-company line-clamp-1">on {t.companyName}</span>
+                            <span className="rc-testimonial-name">{t.buyerName}</span>
+                            <span className="rc-testimonial-company line-clamp-1">on {t.company.name}</span>
                           </div>
                         </div>
                       </div>
@@ -540,15 +543,32 @@ export default function RecruitmentPage() {
             </div>
           </Reveal>
           <div className="rc-guides-grid">
-            {GUIDES.map((g, i) => (
-              <Reveal key={g.title} delay={i * 60}>
-                <Link href="/recruitment/blog" className="card card-flat rc-guide">
-                  <span className="rc-guide-icon">{g.icon}</span>
-                  <h3 className="rc-guide-title">{g.title}</h3>
-                  <p className="rc-guide-copy">{g.copy}</p>
-                </Link>
-              </Reveal>
-            ))}
+            {guides.length > 0
+              ? guides.map((b, i) => (
+                  <Reveal key={b.id} delay={i * 60}>
+                    <Link href={`/blog/${b.slug}`} className="card card-flat rc-guide">
+                      {b.coverImage ? (
+                        <span className="rc-guide-cover">
+                          <img src={b.coverImage} alt="" aria-hidden loading="lazy" />
+                        </span>
+                      ) : (
+                        <span className="rc-guide-icon"><DocIcon /></span>
+                      )}
+                      <h3 className="rc-guide-title">{b.title}</h3>
+                      <p className="rc-guide-copy">{b.excerpt || excerptOf(b.body || "")}</p>
+                      {b.authorName && <span className="rc-guide-author">{b.authorName}</span>}
+                    </Link>
+                  </Reveal>
+                ))
+              : GUIDES.map((g, i) => (
+                  <Reveal key={g.title} delay={i * 60}>
+                    <Link href="/recruitment/blog" className="card card-flat rc-guide">
+                      <span className="rc-guide-icon">{g.icon}</span>
+                      <h3 className="rc-guide-title">{g.title}</h3>
+                      <p className="rc-guide-copy">{g.copy}</p>
+                    </Link>
+                  </Reveal>
+                ))}
           </div>
         </div>
       </section>
@@ -563,7 +583,7 @@ export default function RecruitmentPage() {
                 <h3 className="rc-path-title">Looking for a role?</h3>
                 <p className="rc-path-copy">
                   Search open positions by role, city or company, and apply directly — your profile and
-                  résumé stay with your one BharatSource account.
+                  resume stay with your one BharatSource account.
                 </p>
                 <Button variant="green" href="/recruitment/jobs">Browse roles</Button>
               </div>
@@ -992,6 +1012,26 @@ export default function RecruitmentPage() {
           align-items: center;
           justify-content: center;
           margin-bottom: 6px;
+        }
+        .rc-guide-cover {
+          display: block;
+          margin: -20px -20px 12px;
+          height: 128px;
+          overflow: hidden;
+          background: var(--bg-subtle);
+        }
+        .rc-guide-cover :global(img) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .rc-guide-author {
+          margin-top: auto;
+          padding-top: 8px;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--tricolor-green-hover);
         }
         .rc-guide-title {
           font-size: 15px;

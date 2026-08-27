@@ -31,7 +31,7 @@ function fileNameFromUrl(url: string): string {
   return parts[parts.length - 1] || "resume.pdf";
 }
 
-export default function ResumeUpload({ value, onChange, label = "Upload CV / résumé" }: Props) {
+export default function ResumeUpload({ value, onChange, label = "Upload CV / resume" }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

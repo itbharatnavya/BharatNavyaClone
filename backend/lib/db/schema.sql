@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS users (
   roles               TEXT[] NOT NULL DEFAULT '{}',
   interests           TEXT[] NOT NULL DEFAULT '{}',
   contact_visibility  TEXT,
+  -- Account-level suspend (ADMIN-CONSOLE.md). NULL = active; 'suspended' blocks
+  -- login + every authenticated request (middleware/authGuard.js).
+  status              TEXT,
   -- Recruitment role lock (RECRUITMENT.md enhancement pass) — see
   -- 0004_add_recruitment_role_and_questions.sql for the full rationale.
   recruitment_role            TEXT CHECK (recruitment_role IS NULL OR recruitment_role IN ('candidate', 'recruiter')),
@@ -551,6 +554,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   target_user_id  TEXT REFERENCES users(id) ON DELETE CASCADE,
   seller_id       TEXT REFERENCES users(id) ON DELETE SET NULL,
   direction       TEXT,
+  context         TEXT,   -- 'directory' | 'recruitment' (NULL = 'directory', legacy)
   buyer_id        TEXT REFERENCES users(id) ON DELETE SET NULL,
   buyer_name      TEXT,
   rating          NUMERIC(3,2),

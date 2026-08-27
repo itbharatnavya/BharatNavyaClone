@@ -16,6 +16,11 @@ import Select from "@/components/Select";
 import LocationsManager from "@/components/seller/LocationsManager";
 import { statesList, citiesForState } from "@/lib/indiaGeo";
 import { PanelHeader, useTr } from "./shared";
+import {
+  validateSellerProfile,
+  validateVerification,
+  type Errors,
+} from "./validation";
 
 interface Props {
   user: User;
@@ -110,6 +115,20 @@ export default function ProfileTab({ user }: Props) {
   const [contactMobile, setContactMobile] = useState(sp?.contactMobile || "");
   const [contactEmail, setContactEmail] = useState(sp?.contactEmail || "");
   const [savingSeller, setSavingSeller] = useState(false);
+  const [sellerTried, setSellerTried] = useState(false);
+
+  const sellerErrors: Errors = sellerTried
+    ? validateSellerProfile({
+        companyName,
+        gstNumber,
+        yearEstablished,
+        website,
+        employeeCount,
+        contactMobile,
+        contactEmail,
+        about,
+      })
+    : {};
 
   // Get verified — GST/PAN submission for the trust badge + seal.
   const [vGst, setVGst] = useState(sp?.gstNumber || "");
@@ -119,11 +138,18 @@ export default function ProfileTab({ user }: Props) {
   const [vNote, setVNote] = useState("");
   const [vSubmitting, setVSubmitting] = useState(false);
   const [vSubmitted, setVSubmitted] = useState(false);
+  const [vTried, setVTried] = useState(false);
+
+  const vErrors: Errors = vTried
+    ? validateVerification({ gst: vGst, pan: vPan, note: vNote })
+    : {};
 
   async function submitVerification() {
-    if (!vGst.trim() && !vPan.trim()) {
+    setVTried(true);
+    const errs = validateVerification({ gst: vGst, pan: vPan, note: vNote });
+    if (Object.keys(errs).length > 0) {
       addToast(
-        tr("dashboard.profile.verifyNeedsId", "Enter your GST or PAN number."),
+        tr("dashboard.profile.fixFields", "Please fix the highlighted fields."),
         "error"
       );
       return;
@@ -176,6 +202,13 @@ export default function ProfileTab({ user }: Props) {
       return;
     }
     const city = saCity.trim();
+    if (city.length > 60 || !/^[\p{L}\p{M}][\p{L}\p{M}\s.'-]*$/u.test(city)) {
+      addToast(
+        tr("dashboard.profile.areaBadCity", "Enter a valid city name."),
+        "error"
+      );
+      return;
+    }
     const exists = serviceAreas.some(
       (a) => a.state === saState && a.city.toLowerCase() === city.toLowerCase()
     );
@@ -194,8 +227,22 @@ export default function ProfileTab({ user }: Props) {
   }
 
   async function saveSeller() {
-    if (!companyName.trim()) {
-      addToast(tr("dashboard.profile.companyRequired", "Company name is required"), "error");
+    setSellerTried(true);
+    const errs = validateSellerProfile({
+      companyName,
+      gstNumber,
+      yearEstablished,
+      website,
+      employeeCount,
+      contactMobile,
+      contactEmail,
+      about,
+    });
+    if (Object.keys(errs).length > 0) {
+      addToast(
+        tr("dashboard.profile.fixFields", "Please fix the highlighted fields."),
+        "error"
+      );
       return;
     }
     setSavingSeller(true);
@@ -247,40 +294,48 @@ export default function ProfileTab({ user }: Props) {
               label={tr("dashboard.profile.companyName", "Company name")}
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
+              error={sellerErrors.companyName}
             />
             <Input
               label={tr("dashboard.profile.gst", "GST number")}
               value={gstNumber}
               onChange={(e) => setGstNumber(e.target.value)}
+              error={sellerErrors.gstNumber}
+              placeholder="22AAAAA0000A1Z5"
             />
             <Input
               label={tr("dashboard.profile.year", "Year established")}
               type="number"
               value={yearEstablished}
               onChange={(e) => setYearEstablished(e.target.value)}
+              error={sellerErrors.yearEstablished}
             />
             <Input
               label={tr("dashboard.profile.employees", "Employee count")}
               value={employeeCount}
               onChange={(e) => setEmployeeCount(e.target.value)}
+              error={sellerErrors.employeeCount}
               placeholder="e.g. 11-50"
             />
             <Input
               label={tr("dashboard.profile.website", "Website")}
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
+              error={sellerErrors.website}
               placeholder="https://…"
             />
             <Input
               label={tr("dashboard.profile.contactMobile", "Contact mobile")}
               value={contactMobile}
               onChange={(e) => setContactMobile(e.target.value)}
+              error={sellerErrors.contactMobile}
             />
             <Input
               label={tr("dashboard.profile.contactEmail", "Contact email")}
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
+              error={sellerErrors.contactEmail}
             />
           </div>
           <div style={{ marginTop: 14 }}>
@@ -289,6 +344,7 @@ export default function ProfileTab({ user }: Props) {
               value={about}
               onChange={(e) => setAbout(e.target.value)}
               rows={4}
+              error={sellerErrors.about}
             />
           </div>
           <div style={{ marginTop: 16 }}>
@@ -406,12 +462,14 @@ export default function ProfileTab({ user }: Props) {
                     value={vGst}
                     onChange={(e) => setVGst(e.target.value)}
                     placeholder="22AAAAA0000A1Z5"
+                    error={vErrors.vGst}
                   />
                   <Input
                     label={tr("dashboard.profile.pan", "PAN number")}
                     value={vPan}
                     onChange={(e) => setVPan(e.target.value)}
                     placeholder="AAAAA0000A"
+                    error={vErrors.vPan}
                   />
                 </div>
                 <div style={{ marginTop: 14 }}>
@@ -420,6 +478,7 @@ export default function ProfileTab({ user }: Props) {
                     value={vNote}
                     onChange={(e) => setVNote(e.target.value)}
                     rows={3}
+                    error={vErrors.vNote}
                     placeholder={tr(
                       "dashboard.profile.verifyNotePlaceholder",
                       "Anything the reviewer should know."

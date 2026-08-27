@@ -19,6 +19,7 @@ import type { Category } from "@/lib/types";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import RfqForm, { EMPTY_RFQ, type RfqFormState } from "@/components/rfq/RfqForm";
+import { validateRfq, type RfqErrors } from "@/components/rfq/validation";
 
 function RfqInner() {
   const router = useRouter();
@@ -45,8 +46,12 @@ function RfqInner() {
   const [isFallback, setIsFallback] = useState(false);
   const [form, setForm] = useState<RfqFormState>(EMPTY_RFQ);
   const [submitting, setSubmitting] = useState(false);
+  const [triedSubmit, setTriedSubmit] = useState(false);
 
   const patch = (p: Partial<RfqFormState>) => setForm((f) => ({ ...f, ...p }));
+
+  // Inline errors surface only after the first send attempt, then track live.
+  const errors: RfqErrors = triedSubmit ? validateRfq(form, { needText: need }) : {};
 
   // ---- AI draft: turn the free-text need into a structured requirement ----
   const draft = async () => {
@@ -92,11 +97,20 @@ function RfqInner() {
       router.push("/login?next=/rfq");
       return;
     }
-    const productName = form.productName.trim() || need.trim();
-    if (!productName) {
-      addToast("Add what you're looking for.", "error");
+
+    setTriedSubmit(true);
+    const errs = validateRfq(form, { needText: need });
+    if (Object.keys(errs).length > 0) {
+      addToast("Please fix the highlighted fields.", "error");
+      requestAnimationFrame(() => {
+        document
+          .querySelector(".field-error")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
       return;
     }
+
+    const productName = form.productName.trim() || need.trim();
 
     setSubmitting(true);
     try {
@@ -150,6 +164,7 @@ function RfqInner() {
     setIsFallback(false);
     setForm(EMPTY_RFQ);
     setNeed("");
+    setTriedSubmit(false);
   };
 
   // ---------- main ----------
@@ -236,7 +251,20 @@ function RfqInner() {
             )}
           </div>
 
-          <RfqForm value={form} onChange={patch} categories={categories} />
+          <RfqForm
+            value={form}
+            onChange={patch}
+            categories={categories}
+            errors={errors}
+          />
+
+          {triedSubmit && Object.keys(errors).length > 0 && (
+            <p className="field-error" style={{ marginTop: 14 }}>
+              {Object.keys(errors).length} field
+              {Object.keys(errors).length > 1 ? "s need" : " needs"} attention before
+              you can send.
+            </p>
+          )}
 
           {!user && (
             <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 16 }}>

@@ -13,6 +13,9 @@ import { Section, TagInput } from "@/components/sell/editors";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
 import { becomeEmployer, updateEmployerProfile } from "@/lib/api";
+import { employerProfileGaps } from "@/lib/recruitmentProfile";
+
+const URL_RE = /^https?:\/\/.+/i;
 
 // Small labelled row for the tabular company-details grouping below — a plain
 // label/value line, not a new form control.
@@ -43,10 +46,28 @@ export default function CompanyProfileTab() {
   const [workingHours, setWorkingHours] = useState(ep?.workingHours || "");
   const [benefits, setBenefits] = useState<string[]>(ep?.benefits || []);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Remaining gaps on the *saved* profile — drives the "you can't post a job yet" banner.
+  const savedGaps = employerProfileGaps(user);
+
+  function validate(): Record<string, string> {
+    const e: Record<string, string> = {};
+    if (!companyName.trim()) e.companyName = "Company name is required.";
+    if (about.trim().length < 30) e.about = "Write at least 30 characters — candidates read this on every job.";
+    if (!industry.trim()) e.industry = "Industry is required.";
+    if (!companySize.trim()) e.companySize = "Company size is required (e.g. 11-50).";
+    if (!city.trim()) e.city = "City is required.";
+    if (!state.trim()) e.state = "State is required.";
+    if (website.trim() && !URL_RE.test(website.trim())) e.website = "Start with http:// or https://";
+    return e;
+  }
 
   async function save() {
-    if (!companyName.trim()) {
-      addToast("Company name is required.", "error");
+    const e = validate();
+    setErrors(e);
+    if (Object.keys(e).length) {
+      addToast("Fix the highlighted fields before saving.", "error");
       return;
     }
     setSaving(true);
@@ -91,9 +112,29 @@ export default function CompanyProfileTab() {
           </p>
         )}
 
+        {savedGaps.length > 0 && (
+          <div
+            style={{
+              border: "1px solid var(--border)",
+              background: "var(--bg-subtle)",
+              borderRadius: 10,
+              padding: "12px 14px",
+              fontSize: 13,
+              color: "var(--ink)",
+            }}
+          >
+            <strong style={{ fontWeight: 700 }}>Finish these before you can post a job:</strong>
+            <ul style={{ margin: "6px 0 0", paddingLeft: 18, color: "var(--muted)" }}>
+              {savedGaps.map((g) => (
+                <li key={g.key}>{g.label}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Identity: name, logo, cover */}
         <div style={{ display: "grid", gap: 14 }}>
-          <Input label="Company name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
+          <Input label="Company name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required error={errors.companyName} />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
             <div>
               <label className="field-label">Logo</label>
@@ -111,22 +152,26 @@ export default function CompanyProfileTab() {
           <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>Company details</span>
           <div className="card card-flat" style={{ padding: 14, display: "grid", gap: 12 }}>
             <DetailRow label="Industry">
-              <input className="input" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="e.g. Information Technology" />
+              <input className={`input${errors.industry ? " input-error" : ""}`} value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="e.g. Information Technology" />
+              {errors.industry && <p className="field-error">{errors.industry}</p>}
             </DetailRow>
             <DetailRow label="Company size">
-              <input className="input" value={companySize} onChange={(e) => setCompanySize(e.target.value)} placeholder="e.g. 11-50" />
+              <input className={`input${errors.companySize ? " input-error" : ""}`} value={companySize} onChange={(e) => setCompanySize(e.target.value)} placeholder="e.g. 11-50" />
+              {errors.companySize && <p className="field-error">{errors.companySize}</p>}
             </DetailRow>
             <DetailRow label="Employee strength">
               <input className="input" value={employeeCount} onChange={(e) => setEmployeeCount(e.target.value)} placeholder="e.g. 150" />
             </DetailRow>
             <DetailRow label="Website">
-              <input className="input" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://…" />
+              <input className={`input${errors.website ? " input-error" : ""}`} value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://…" />
+              {errors.website && <p className="field-error">{errors.website}</p>}
             </DetailRow>
             <DetailRow label="Location">
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <input className="input" style={{ flex: 1, minWidth: 100 }} value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" />
-                <input className="input" style={{ flex: 1, minWidth: 100 }} value={state} onChange={(e) => setState(e.target.value)} placeholder="State" />
+                <input className={`input${errors.city ? " input-error" : ""}`} style={{ flex: 1, minWidth: 100 }} value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" />
+                <input className={`input${errors.state ? " input-error" : ""}`} style={{ flex: 1, minWidth: 100 }} value={state} onChange={(e) => setState(e.target.value)} placeholder="State" />
               </div>
+              {(errors.city || errors.state) && <p className="field-error">{errors.city || errors.state}</p>}
             </DetailRow>
             <DetailRow label="Working hours">
               <input className="input" value={workingHours} onChange={(e) => setWorkingHours(e.target.value)} placeholder="e.g. Mon–Fri, 9:30 AM–6:30 PM" />
@@ -139,7 +184,12 @@ export default function CompanyProfileTab() {
 
         <div>
           <label className="field-label" htmlFor="rd-about">About the company</label>
-          <textarea id="rd-about" className="textarea" rows={4} value={about} onChange={(e) => setAbout(e.target.value)} />
+          <textarea id="rd-about" className={`textarea${errors.about ? " input-error" : ""}`} rows={4} value={about} onChange={(e) => setAbout(e.target.value)} />
+          {errors.about ? (
+            <p className="field-error">{errors.about}</p>
+          ) : (
+            <p className="field-hint">{about.trim().length}/30 characters minimum.</p>
+          )}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           {ep && (

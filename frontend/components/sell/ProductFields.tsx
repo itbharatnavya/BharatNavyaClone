@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { Section, TierEditor, KeyValueEditor } from "./editors";
 import type { ProductFormState } from "./formTypes";
+import type { Errors } from "./validation";
 
 // Common units of measure — a dropdown keeps entry consistent for non-technical,
 // mobile-first sellers. "Other…" reveals a free-text input for anything unlisted.
-const UNIT_OPTIONS = [
+export const UNIT_OPTIONS = [
   "kg", "gram", "ton", "piece", "dozen", "box", "carton", "meter", "foot",
   "sq.ft", "litre", "ml", "set", "pair", "roll", "bag", "bundle", "packet",
 ];
@@ -17,23 +18,26 @@ const OTHER_UNIT = "__other__";
 export default function ProductFields({
   value,
   onChange,
+  errors = {},
+  unitOther,
+  onUnitOtherChange,
 }: {
   value: ProductFormState;
   onChange: (patch: Partial<ProductFormState>) => void;
+  errors?: Errors;
+  // "Other" unit mode is lifted to the page so submit-time validation can tell an
+  // empty custom-unit box from "no unit chosen".
+  unitOther: boolean;
+  onUnitOtherChange: (next: boolean) => void;
 }) {
-  // "Other" mode when a non-empty unit isn't one of the presets.
-  const [unitMode, setUnitMode] = useState<"preset" | "other">(
-    value.unitOfMeasure && !UNIT_OPTIONS.includes(value.unitOfMeasure)
-      ? "other"
-      : "preset"
-  );
+  const unitMode: "preset" | "other" = unitOther ? "other" : "preset";
 
   const onUnitSelect = (v: string) => {
     if (v === OTHER_UNIT) {
-      setUnitMode("other");
+      onUnitOtherChange(true);
       onChange({ unitOfMeasure: "" });
     } else {
-      setUnitMode("preset");
+      onUnitOtherChange(false);
       onChange({ unitOfMeasure: v });
     }
   };
@@ -59,6 +63,7 @@ export default function ProductFields({
             placeholder="e.g. 250"
             value={value.price}
             onChange={(e) => onChange({ price: e.target.value })}
+            error={errors.price}
           />
           <Select
             label="Currency"
@@ -87,6 +92,7 @@ export default function ProductFields({
             placeholder="e.g. 100"
             value={value.moq}
             onChange={(e) => onChange({ moq: e.target.value })}
+            error={errors.moq}
           />
           {unitMode === "other" && (
             <Input
@@ -94,6 +100,7 @@ export default function ProductFields({
               placeholder="e.g. quintal, gross"
               value={value.unitOfMeasure}
               onChange={(e) => onChange({ unitOfMeasure: e.target.value })}
+              error={errors.customUnit}
             />
           )}
         </div>
@@ -107,6 +114,7 @@ export default function ProductFields({
             value={value.priceTiers}
             onChange={(priceTiers) => onChange({ priceTiers })}
           />
+          {errors.priceTiers && <p className="field-error">{errors.priceTiers}</p>}
         </div>
       </Section>
 
@@ -133,6 +141,9 @@ export default function ProductFields({
           value={value.specifications}
           onChange={(specifications) => onChange({ specifications })}
         />
+        {errors.specifications && (
+          <p className="field-error">{errors.specifications}</p>
+        )}
       </Section>
     </>
   );

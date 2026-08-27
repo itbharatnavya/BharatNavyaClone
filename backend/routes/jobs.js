@@ -28,6 +28,7 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { searchJobs, employerMiniOf } = require("../lib/jobSearch");
+const { employerProfileGaps } = require("../lib/recruitmentProfile");
 
 const DEFAULT_LIMIT = 12;
 // Hard cap regardless of what a client asks for — an unbounded ?limit= could force a
@@ -201,15 +202,23 @@ router.post("/", authGuard, async (req, res, next) => {
     }
 
     const user = req.user;
-    if (!user.employerProfile) {
-      return res.status(403).json({
-        success: false,
-        error: "Complete your recruiter profile before posting a job.",
-        code: "employer_profile_required",
-      });
-    }
     if (user.recruitmentRoleLockedAt && user.recruitmentRole !== "recruiter") {
       return res.status(403).json({ success: false, error: "Candidates cannot post jobs." });
+    }
+    // Full company-profile gate — an incomplete company profile can't post a job. Same
+    // rules as frontend/lib/recruitmentProfile.ts (the Post-a-job page pre-checks and
+    // shows the same checklist). `missing` is [{ key, label }]; when there's no profile
+    // at all it's a single { key: "profile" } row.
+    const missing = employerProfileGaps(user);
+    if (missing.length) {
+      return res.status(403).json({
+        success: false,
+        error: user.employerProfile
+          ? "Complete your company profile before posting a job."
+          : "Create your company profile before posting a job.",
+        code: user.employerProfile ? "employer_profile_incomplete" : "employer_profile_required",
+        missing,
+      });
     }
 
     const job = {

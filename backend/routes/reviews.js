@@ -25,6 +25,13 @@ const REVIEW_DIRECTIONS = new Set([
   "seller_to_buyer",
 ]);
 
+// Product scope for a review. The same user id can be a Directory seller AND a
+// Recruitment employer — `context` keeps the two review pools (and the ratings
+// derived from them) separate. Legacy rows carry no context and count as
+// "directory" everywhere (here + lib/sellerRating.js).
+const REVIEW_CONTEXTS = new Set(["directory", "recruitment"]);
+const contextOf = (r) => r.context || "directory";
+
 /**
  * GET /api/reviews/recent?limit=6&city= — Directory homepage "Recent Activity"
  * feed: latest approved reviews joined with the reviewed seller's business
@@ -47,7 +54,7 @@ router.get("/recent", async (req, res, next) => {
     const usersById = new Map(users.map((u) => [u.id, u]));
 
     const approved = reviews
-      .filter((r) => r.status === "approved")
+      .filter((r) => r.status === "approved" && contextOf(r) === "directory")
       .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
 
     const out = [];
@@ -87,6 +94,66 @@ router.get("/recent", async (req, res, next) => {
   }
 });
 
+/**
+ * GET /api/reviews/recruitment-recent?limit=6 — Recruitment homepage testimonials
+ * strip: the latest messaged, approved company reviews, ONE per company, joined
+ * with the employer's company info. Server-capped so the home page makes a single
+ * small request instead of one GET /api/reviews per hiring company. Recruitment
+ * analog of GET /recent above (that one is Directory/seller-scoped).
+ */
+router.get("/recruitment-recent", async (req, res, next) => {
+  try {
+    const limit = Math.max(1, Math.min(12, parseInt(req.query.limit, 10) || 6));
+
+    const [reviews, users] = await Promise.all([
+      store.all("reviews.json"),
+      store.all("users.json"),
+    ]);
+    const usersById = new Map(users.map((u) => [u.id, u]));
+
+    const approved = reviews
+      .filter(
+        (r) =>
+          r.status === "approved" &&
+          contextOf(r) === "recruitment" &&
+          typeof r.reviewText === "string" &&
+          r.reviewText.trim()
+      )
+      .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+
+    const out = [];
+    const seenCompanies = new Set();
+    for (const r of approved) {
+      if (out.length >= limit) break;
+      const companyId = r.targetUserId;
+      if (!companyId || seenCompanies.has(companyId)) continue;
+      const employer = usersById.get(companyId);
+      const ep = employer && employer.employerProfile;
+      if (!ep) continue; // only reviews of real employers with a company profile
+
+      seenCompanies.add(companyId);
+      const buyer = usersById.get(r.buyerId);
+      out.push({
+        reviewId: r.id,
+        rating: r.rating,
+        reviewText: r.reviewText,
+        createdAt: r.createdAt,
+        buyerName: (buyer && buyer.name) || r.buyerName || "A candidate",
+        company: {
+          id: employer.id,
+          name: ep.companyName || employer.name || "Company",
+          slug: ep.slug || null,
+          logo: ep.logo || null,
+        },
+      });
+    }
+
+    res.json({ success: true, data: out });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/reviews?targetUserId= (or ?sellerId= alias) — every review for a user,
 // newest first. Reviews are live the moment they're submitted (no moderation
 // gate), so this is a plain public read.
@@ -99,11 +166,16 @@ router.get("/", async (req, res, next) => {
   try {
     // targetUserId is canonical; sellerId is accepted as a back-compat alias.
     const target = req.query.targetUserId || req.query.sellerId;
+    // Optional product scope. Omitted → every context (back-compat); the
+    // Directory seller page passes "directory", the Recruitment company page
+    // passes "recruitment", so the two never see each other's reviews.
+    const context = REVIEW_CONTEXTS.has(req.query.context) ? req.query.context : null;
     const matchesTarget = (r) =>
       !target || r.targetUserId === target || r.sellerId === target;
+    const matchesContext = (r) => !context || contextOf(r) === context;
 
     const all = await store.all("reviews.json");
-    const reviews = all.filter(matchesTarget);
+    const reviews = all.filter((r) => matchesTarget(r) && matchesContext(r));
     reviews.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
     return res.json({ success: true, data: reviews });
   } catch (err) {
@@ -132,12 +204,16 @@ router.post("/", authGuard, async (req, res, next) => {
         .status(400)
         .json({ success: false, error: "rating must be a number 1-5" });
     }
+    const context = REVIEW_CONTEXTS.has(b.context) ? b.context : "directory";
 
+    // One review per (buyer, target, context) — a user can leave one Directory
+    // review and one Recruitment review for the same person, but not two of either.
     const existing = await store.findOne(
       "reviews.json",
       (r) =>
         r.buyerId === req.user.id &&
-        (r.targetUserId === targetUserId || r.sellerId === targetUserId)
+        (r.targetUserId === targetUserId || r.sellerId === targetUserId) &&
+        contextOf(r) === context
     );
 
     let review;
@@ -152,15 +228,18 @@ router.post("/", authGuard, async (req, res, next) => {
       const direction = REVIEW_DIRECTIONS.has(b.direction)
         ? b.direction
         : "buyer_to_seller";
-      // sellerId alias is only meaningful when the target is a seller.
+      // sellerId alias is only meaningful for a Directory review of a seller;
+      // a Recruitment company review always leaves it null.
       const targetIsSeller =
-        direction === "buyer_to_seller" || direction === "seller_to_seller";
+        context === "directory" &&
+        (direction === "buyer_to_seller" || direction === "seller_to_seller");
 
       review = {
         id: await store.nextId("rev"),
         targetUserId,
         sellerId: targetIsSeller ? targetUserId : null,
         direction,
+        context,
         buyerId: req.user.id,
         buyerName: req.user.name,
         rating,

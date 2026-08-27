@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import type { User } from "@/lib/types";
-import { getMyListings, getConversations, getMyRfqDeliveries, getNotifications } from "@/lib/api";
+import { getMyListings, getMyRfqDeliveries, getNotifications } from "@/lib/api";
 import Button from "@/components/Button";
 import {
   PanelHeader,
@@ -25,7 +25,6 @@ export default function OverviewTab({ user, onNavigate }: Props) {
   const tr = useTr();
   const [loading, setLoading] = useState(true);
   const [listingCount, setListingCount] = useState(0);
-  const [unread, setUnread] = useState(0);
   const [leadCount, setLeadCount] = useState(0);
   const [notifications, setNotifications] = useState<DashNotification[]>([]);
 
@@ -33,9 +32,8 @@ export default function OverviewTab({ user, onNavigate }: Props) {
     let alive = true;
     (async () => {
       // Each source is independent; a failure in one shouldn't blank the rest.
-      const [listingsRes, convRes, rfqsRes, notifRes] = await Promise.allSettled([
+      const [listingsRes, rfqsRes, notifRes] = await Promise.allSettled([
         getMyListings(),
-        getConversations(),
         getMyRfqDeliveries({ limit: 1 }),
         getNotifications(),
       ]);
@@ -43,9 +41,6 @@ export default function OverviewTab({ user, onNavigate }: Props) {
 
       if (listingsRes.status === "fulfilled") {
         setListingCount((listingsRes.value || []).length);
-      }
-      if (convRes.status === "fulfilled") {
-        setUnread(convRes.value.reduce((sum, c) => sum + (c.unread || 0), 0));
       }
       if (rfqsRes.status === "fulfilled") {
         setLeadCount(rfqsRes.value.total);
@@ -94,13 +89,6 @@ export default function OverviewTab({ user, onNavigate }: Props) {
           value={listingCount}
           hint={tr("dashboard.stat.listingsHint", "Active & draft items")}
           icon={<Icon name="listings" size={18} />}
-        />
-        <StatCard
-          label={tr("dashboard.stat.unread", "Unread messages")}
-          value={unread}
-          accent="var(--action)"
-          hint={tr("dashboard.stat.unreadHint", "Across conversations")}
-          icon={<Icon name="inbox" size={18} />}
         />
         <StatCard
           label={tr("dashboard.stat.leads", "RFQs")}

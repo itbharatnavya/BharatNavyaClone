@@ -35,6 +35,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { useToast } from "@/components/Toast";
+import SupplierPicker from "./SupplierPicker";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
@@ -82,9 +83,8 @@ export default function RfqLogTab({ queueMode = false }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [sellers, setSellers] = useState<User[]>([]);
 
-  // Per-row "add seller" picker state.
+  // Per-row "add suppliers" picker state.
   const [addingFor, setAddingFor] = useState<string | null>(null);
-  const [pickedSeller, setPickedSeller] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
 
   // Debounce the search box.
@@ -137,20 +137,25 @@ export default function RfqLogTab({ queueMode = false }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, sellerFilter, status, categoryId, from, to, page, limit]);
 
-  async function handleAddSeller(row: RfqLogRow) {
-    const sellerId = pickedSeller[row.id];
-    if (!sellerId) {
-      addToast("Pick a seller to add", "error");
-      return;
-    }
+  async function handleAssign(row: RfqLogRow, sellerIds: string[]) {
+    if (sellerIds.length === 0) return;
     setBusyId(row.id);
     try {
-      await forwardInquiry(row.id, { sellerId, listingId: row.listingId || undefined });
-      addToast("Seller added — they now have this as a lead", "success");
-      setAddingFor(null);
+      const res = await forwardInquiry(row.id, { sellerIds });
+      const a = res.added.length;
+      const s = res.alreadyHad.length;
+      addToast(
+        a > 0
+          ? `Added ${a} supplier${a === 1 ? "" : "s"}${
+              s ? ` · ${s} already had it` : ""
+            } — they now have this as a lead.`
+          : "No new suppliers added — the selected ones already had this RFQ.",
+        a > 0 ? "success" : "info"
+      );
+      if (a > 0) setAddingFor(null);
       await load();
     } catch (err) {
-      addToast(err instanceof Error ? err.message : "Could not add this seller", "error");
+      addToast(err instanceof Error ? err.message : "Could not assign suppliers", "error");
     } finally {
       setBusyId(null);
     }
@@ -196,14 +201,20 @@ export default function RfqLogTab({ queueMode = false }: Props) {
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div
+        className={`mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 ${
+          queueMode ? "lg:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-5"
+        }`}
+      >
         <Input
-          placeholder="Search buyer or product…"
+          label="Search"
+          placeholder="Buyer or product…"
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}
         />
         {!queueMode && (
           <Select
+            label="Seller"
             value={sellerFilter}
             onChange={(e) => setSellerFilter(e.target.value)}
             options={sellerOptions}
@@ -211,18 +222,56 @@ export default function RfqLogTab({ queueMode = false }: Props) {
         )}
         {!queueMode && (
           <Select
+            label="Status"
             value={status}
             onChange={(e) => setStatus(e.target.value as RfqLogStatusFilter)}
             options={STATUS_OPTIONS}
           />
         )}
         <Select
+          label="Category"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
           options={categoryOptions}
         />
-        <Input type="date" label="From" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <Input type="date" label="To" value={to} onChange={(e) => setTo(e.target.value)} />
+        {/* From + To as one aligned unit — never orphaned in the grid, and each
+            side bounds the other so the range can't invert. */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between">
+            <label className="field-label">Date range</label>
+            {(from || to) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFrom("");
+                  setTo("");
+                }}
+                className="text-xs font-medium text-muted hover:text-ink"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="date"
+              className="input"
+              aria-label="From date"
+              value={from}
+              max={to || undefined}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+            <span className="flex-shrink-0 text-faint">–</span>
+            <input
+              type="date"
+              className="input"
+              aria-label="To date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
       {loading ? (
@@ -288,7 +337,11 @@ export default function RfqLogTab({ queueMode = false }: Props) {
                           variant="secondary"
                           onClick={() => setAddingFor((cur) => (cur === r.id ? null : r.id))}
                         >
-                          {addingFor === r.id ? "Close" : queueMode ? "Forward" : "+ Add seller"}
+                          {addingFor === r.id
+                            ? "Close"
+                            : queueMode
+                            ? "Forward"
+                            : "+ Add suppliers"}
                         </Button>
                         {queueMode && (
                           <Button size="sm" variant="ghost" disabled={busy} onClick={() => handleDismiss(r)}>
@@ -301,31 +354,19 @@ export default function RfqLogTab({ queueMode = false }: Props) {
                   {addingFor === r.id && (
                     <Row>
                       <Td colSpan={7}>
-                        <div className="flex flex-wrap items-center gap-2 py-1">
-                          <select
-                            className="select"
-                            style={{ maxWidth: 280 }}
-                            value={pickedSeller[r.id] || ""}
-                            onChange={(e) =>
-                              setPickedSeller((prev) => ({ ...prev, [r.id]: e.target.value }))
+                        <div className="py-1">
+                          <SupplierPicker
+                            categories={categories}
+                            approvedSellers={sellers}
+                            excludeSellerIds={
+                              new Set(r.sellers.map((s) => s.sellerId))
                             }
-                            disabled={busy}
-                          >
-                            <option value="">Select a seller to add…</option>
-                            {sellers.map((s) => (
-                              <option key={s.id} value={s.id}>
-                                {sellerLabel(s)}
-                              </option>
-                            ))}
-                          </select>
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            onClick={() => handleAddSeller(r)}
-                            disabled={busy}
-                          >
-                            {busy ? "Working…" : "Add"}
-                          </Button>
+                            defaultCategorySlug={r.categoryId || ""}
+                            defaultLocationText={r.deliveryLocation || ""}
+                            busy={busy}
+                            onAssign={(ids) => handleAssign(r, ids)}
+                            onCancel={() => setAddingFor(null)}
+                          />
                         </div>
                       </Td>
                     </Row>

@@ -17,6 +17,7 @@ import React from "react";
 import Link from "next/link";
 import { AgentIcon, RecruitmentIcon } from "./icons";
 import { DirectoryIcon, ArrowRightIcon } from "@/components/suite/products";
+import { useConfig } from "@/lib/config";
 
 interface NestedProduct {
   key: string;
@@ -61,6 +62,15 @@ const PRODUCTS: NestedProduct[] = [
 ];
 
 export default function AgentHeroCard() {
+  const { featureFlags } = useConfig();
+  // Recruitment's tile drops the "Coming soon" badge and becomes a live entry point
+  // once featureFlags.recruitmentLive is on (env RECRUITMENT_LIVE or admin Site Config)
+  // — same flag SuiteNavMenu/Footer already track. See RECRUITMENT.md §5.
+  const products = PRODUCTS.map((p) =>
+    p.key === "recruitment" && featureFlags.recruitmentLive
+      ? { ...p, badge: undefined, cta: "Explore", ctaColor: "var(--tricolor-green)" }
+      : p
+  );
   return (
     <div className="agent-hero-card">
       <div className="agent-hero-body">
@@ -115,7 +125,7 @@ export default function AgentHeroCard() {
 
         <div className="agent-hero-side">
           <span className="agent-hero-side-label">Also in the suite</span>
-          {PRODUCTS.map((p) => (
+          {products.map((p) => (
             <Link key={p.key} href={p.href} aria-label={`${p.title}${p.badge ? " (coming soon)" : ""}`} className="card agent-hero-product">
               <span
                 aria-hidden

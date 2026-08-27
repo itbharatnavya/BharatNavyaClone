@@ -19,6 +19,7 @@ import Reveal from "@/components/Reveal";
 import Rating from "@/components/Rating";
 import AgentHeroCard from "@/components/home/AgentHeroCard";
 import { useAuth } from "@/lib/auth";
+import { useConfig } from "@/lib/config";
 
 function CheckShield() {
   return (
@@ -121,6 +122,7 @@ const FEEDBACK = [
 
 export default function SuiteHomePage() {
   const { user, loading } = useAuth();
+  const { featureFlags } = useConfig();
 
   return (
     <div>
@@ -249,8 +251,11 @@ export default function SuiteHomePage() {
                 </li>
               ))}
             </ul>
-            <div style={{ marginTop: 24 }}>
-              <Link href="/directory" className="btn btn-brand">See the Directory in action</Link>
+            <div style={{ marginTop: 24, display: "flex", flexWrap: "wrap", gap: 10 }}>
+              <Link href="/directory" className="btn btn-brand">Explore the Directory</Link>
+              {featureFlags.recruitmentLive && (
+                <Link href="/recruitment" className="btn btn-secondary">Explore Recruitment</Link>
+              )}
             </div>
           </Reveal>
         </div>

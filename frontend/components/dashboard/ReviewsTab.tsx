@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import type { User, Review } from "@/lib/types";
-import { getReviews } from "@/lib/api";
+import { getReviews, type ReviewContext } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import Rating from "@/components/Rating";
 import Avatar from "@/components/Avatar";
@@ -10,19 +10,24 @@ import { PanelHeader, EmptyState, Loading, StatCard, Icon, formatDate, useTr } f
 
 interface Props {
   user: User;
+  // Which product's reviews to show. Directory dashboard omits it (defaults to
+  // "directory"); the Recruitment dashboard passes "recruitment" so a user who is
+  // both a seller and an employer sees only the right set in each place.
+  context?: ReviewContext;
 }
 
-export default function ReviewsTab({ user }: Props) {
+export default function ReviewsTab({ user, context = "directory" }: Props) {
   const tr = useTr();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const isRecruitment = context === "recruitment";
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const list = await getReviews(user.id);
+        const list = await getReviews(user.id, context);
         if (alive) setReviews(list);
       } catch (e) {
         addToast((e as Error).message || "Failed to load reviews", "error");
@@ -33,7 +38,7 @@ export default function ReviewsTab({ user }: Props) {
     return () => {
       alive = false;
     };
-  }, [user.id, addToast]);
+  }, [user.id, context, addToast]);
 
   const avg = useMemo(() => {
     if (!reviews.length) return 0;
@@ -44,7 +49,11 @@ export default function ReviewsTab({ user }: Props) {
     <div>
       <PanelHeader
         title={tr("dashboard.reviews.title", "Reviews about me")}
-        subtitle={tr("dashboard.reviews.subtitle", "What buyers are saying about your business.")}
+        subtitle={
+          isRecruitment
+            ? tr("dashboard.reviews.subtitleRecruitment", "What candidates are saying about hiring with your company.")
+            : tr("dashboard.reviews.subtitle", "What buyers are saying about your business.")
+        }
       />
 
       {loading ? (
@@ -53,7 +62,11 @@ export default function ReviewsTab({ user }: Props) {
         <EmptyState
           icon={<Icon name="reviews" size={22} />}
           title={tr("dashboard.reviews.empty", "No reviews yet")}
-          subtitle={tr("dashboard.reviews.emptyHint", "Reviews from buyers you've dealt with will show here.")}
+          subtitle={
+            isRecruitment
+              ? tr("dashboard.reviews.emptyHintRecruitment", "Reviews from candidates who applied to your roles will show here.")
+              : tr("dashboard.reviews.emptyHint", "Reviews from buyers you've dealt with will show here.")
+          }
         />
       ) : (
         <>

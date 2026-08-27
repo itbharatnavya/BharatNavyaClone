@@ -8,7 +8,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { useConfig } from "@/lib/config";
 import { useToast } from "@/components/Toast";
 import { getCategories, createListing } from "@/lib/api";
 import type {
@@ -19,7 +18,6 @@ import type {
   ServiceDetail,
   SellerLocation,
 } from "@/lib/types";
-import type { AiAutofillDraft } from "@/lib/api";
 
 import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
@@ -27,10 +25,10 @@ import Select from "@/components/Select";
 import Button from "@/components/Button";
 import Stepper from "@/components/sell/Stepper";
 import CategoryPicker from "@/components/sell/CategoryPicker";
-import AutofillButton from "@/components/sell/AutofillButton";
 import ProductFields from "@/components/sell/ProductFields";
 import ServiceFields from "@/components/sell/ServiceFields";
-import { Section, TagInput, MediaEditor } from "@/components/sell/editors";
+import { Section, TagInput } from "@/components/sell/editors";
+import MediaUpload from "@/components/sell/MediaUpload";
 import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
 import {
   initialProduct,
@@ -39,6 +37,17 @@ import {
   type ServiceFormState,
   type ProductCondition,
 } from "@/components/sell/formTypes";
+import {
+  LIMITS,
+  mergeErrors,
+  validateBasics,
+  validateCategory,
+  validateLocation,
+  validateMedia,
+  validateProduct,
+  validateService,
+  type Errors,
+} from "@/components/sell/validation";
 
 const STEPS = [
   { key: "type", label: "Type" },
@@ -53,7 +62,6 @@ const LOC_CITIES = "__cities__";
 export default function SellPage() {
   const router = useRouter();
   const { user, loading } = useRequireAuth({ redirectTo: "/login?next=/sell" });
-  const { featureFlags } = useConfig();
   const { addToast } = useToast();
 
   // ---- categories ----
@@ -76,9 +84,19 @@ export default function SellPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [keywords, setKeywords] = useState<string[]>([]);
-  const [media, setMedia] = useState<string[]>([""]);
+  const [media, setMedia] = useState<string[]>([]);
   const [city, setCity] = useState(user?.city || "");
   const [state, setState] = useState(user?.state || "");
+
+  // "Other" (custom) unit-of-measure mode — lifted out of ProductFields so submit
+  // validation can require a non-empty custom unit once it's chosen.
+  const [unitOther, setUnitOther] = useState(false);
+
+  // Inline validation: errors only surface once the seller has tried to advance /
+  // publish (`triedDetails`), then update live as fields are fixed. Step 2 has its
+  // own flag so the category prompt doesn't show before the first Continue tap.
+  const [triedCategory, setTriedCategory] = useState(false);
+  const [triedDetails, setTriedDetails] = useState(false);
 
   // ---- seller branch locations (multi-location) ----
   const sellerLocations = useMemo<SellerLocation[]>(() => {
@@ -173,47 +191,43 @@ export default function SellPage() {
     setStep(1);
   };
 
-  // ---- AI auto-fill: merge the draft into the form ----
-  const applyDraft = (draft: AiAutofillDraft) => {
-    if (draft.title) setTitle(draft.title);
-    if (draft.description) setDescription(draft.description);
-    if (draft.keywords?.length)
-      setKeywords((k) => Array.from(new Set([...k, ...draft.keywords!])));
-    if (draft.specifications && type === "product") {
-      patchProduct({
-        specifications: { ...product.specifications, ...draft.specifications },
-      });
-    }
-    if (draft.categorySlug) {
-      const match = categories.find((c) => c.slug === draft.categorySlug);
-      if (match) {
-        setCategory(match);
-        addToast(`Category set to “${match.name}” from AI.`, "info");
-      }
-    }
-  };
+  // ---- validation ----
+  // Full field-level check for the details step. Recomputed each render so inline
+  // messages clear the moment a field is corrected (once `triedDetails` is set).
+  const buildDetailErrors = (): Errors =>
+    mergeErrors(
+      validateBasics({ title, description, keywords }),
+      validateMedia(media),
+      validateLocation({
+        locChoice,
+        isPan: locChoice === LOC_PAN,
+        isCities: locChoice === LOC_CITIES,
+        city,
+        serviceCitiesCount: serviceCities.length,
+      }),
+      type === "product"
+        ? validateProduct(product, unitOther ? "other" : "preset")
+        : type === "service"
+        ? validateService(service)
+        : {}
+    );
 
-  // ---- submit ----
-  const validate = (): string | null => {
-    if (!type) return "Choose product or service.";
-    if (!category) return "Pick a category.";
-    if (!title.trim()) return "Add a title.";
-    if (!description.trim()) return "Add a description.";
-    // Location: PAN India needs no city; specific-cities needs at least one; a branch
-    // (or the derived single location) needs a city.
-    if (locChoice === LOC_CITIES) {
-      if (serviceCities.length === 0)
-        return "Add at least one city, or choose PAN India.";
-    } else if (locChoice !== LOC_PAN) {
-      if (!city.trim()) return "Add your city.";
-    }
-    return null;
+  const detailErrors: Errors = triedDetails ? buildDetailErrors() : {};
+
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const el = document.querySelector(".field-error");
+      if (el)
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   };
 
   const submit = async () => {
-    const err = validate();
-    if (err) {
-      addToast(err, "error");
+    setTriedDetails(true);
+    const errs = buildDetailErrors();
+    if (Object.keys(errs).length > 0) {
+      addToast("Please fix the highlighted fields.", "error");
+      scrollToFirstError();
       return;
     }
     setSubmitting(true);
@@ -288,8 +302,6 @@ export default function SellPage() {
       setSubmitting(false);
     }
   };
-
-  const showAutofill = type === "product" && featureFlags.aiAutofill !== false;
 
   const canGoDetails = !!category;
 
@@ -427,8 +439,16 @@ export default function SellPage() {
             categories={categories}
             type={type}
             value={category?.id}
-            onSelect={setCategory}
+            onSelect={(c) => {
+              setCategory(c);
+              setTriedCategory(false);
+            }}
           />
+          {triedCategory && validateCategory(category?.id).category && (
+            <p className="field-error" style={{ marginTop: 12 }}>
+              {validateCategory(category?.id).category}
+            </p>
+          )}
           <div
             style={{ display: "flex", gap: 10, marginTop: 24, justifyContent: "space-between" }}
           >
@@ -437,8 +457,13 @@ export default function SellPage() {
             </Button>
             <Button
               variant="brand"
-              disabled={!category}
-              onClick={() => setStep(2)}
+              onClick={() => {
+                if (!category) {
+                  setTriedCategory(true);
+                  return;
+                }
+                setStep(2);
+              }}
             >
               Continue →
             </Button>
@@ -449,10 +474,6 @@ export default function SellPage() {
       {/* ---------- Step 3: details ---------- */}
       {step === 2 && type && (
         <div>
-          {showAutofill && (
-            <AutofillButton hintContext={title} onDraft={applyDraft} />
-          )}
-
           <Section title="Basics">
             <div style={{ display: "grid", gap: 16 }}>
               <Input
@@ -464,6 +485,13 @@ export default function SellPage() {
                 }
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                maxLength={LIMITS.titleMax + 20}
+                error={detailErrors.title}
+                hint={
+                  !detailErrors.title
+                    ? `${title.trim().length}/${LIMITS.titleMax}`
+                    : undefined
+                }
               />
               <Textarea
                 label="Description"
@@ -471,10 +499,18 @@ export default function SellPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 style={{ minHeight: 130 }}
+                maxLength={LIMITS.descMax + 100}
+                error={detailErrors.description}
+                hint={
+                  !detailErrors.description
+                    ? `At least ${LIMITS.descMin} characters — ${description.trim().length} so far.`
+                    : undefined
+                }
               />
               <TagInput
                 label="Keywords"
                 hint="Help buyers find you. Press Enter to add each keyword."
+                error={detailErrors.keywords}
                 value={keywords}
                 onChange={setKeywords}
                 placeholder="e.g. wholesale, ss304, industrial"
@@ -483,16 +519,31 @@ export default function SellPage() {
           </Section>
 
           {type === "product" ? (
-            <ProductFields value={product} onChange={patchProduct} />
+            <ProductFields
+              value={product}
+              onChange={patchProduct}
+              errors={detailErrors}
+              unitOther={unitOther}
+              onUnitOtherChange={setUnitOther}
+            />
           ) : (
-            <ServiceFields value={service} onChange={patchService} />
+            <ServiceFields
+              value={service}
+              onChange={patchService}
+              errors={detailErrors}
+            />
           )}
 
           <Section
             title="Photos"
-            desc="Add image URLs. Clear photos get far more responses."
+            desc="Upload clear photos from your phone or computer — listings with photos get far more responses."
           >
-            <MediaEditor value={media} onChange={setMedia} />
+            <MediaUpload
+              value={media}
+              onChange={setMedia}
+              max={LIMITS.mediaMax}
+              error={detailErrors.media}
+            />
           </Section>
 
           <Section title="Available in" desc="Where buyers can find this listing.">
@@ -502,6 +553,7 @@ export default function SellPage() {
                 hint="Serve all of India, a specific branch, or a set of cities."
                 value={locChoice}
                 onChange={(e) => onLocChoice(e.target.value)}
+                error={detailErrors.location}
                 options={[
                   { value: LOC_PAN, label: "PAN India (all of India)" },
                   ...sellerLocations.map((l) => ({
@@ -583,6 +635,17 @@ export default function SellPage() {
               )}
             </div>
           </Section>
+
+          {triedDetails && Object.keys(detailErrors).length > 0 && (
+            <p
+              className="field-error"
+              style={{ marginTop: 16, textAlign: "right" }}
+            >
+              {Object.keys(detailErrors).length} field
+              {Object.keys(detailErrors).length > 1 ? "s need" : " needs"} attention
+              before you can publish.
+            </p>
+          )}
 
           <div
             style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "space-between" }}

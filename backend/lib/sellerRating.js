@@ -21,6 +21,10 @@ async function recomputeSellerRating(targetUserId) {
   const mine = reviews.filter(
     (r) =>
       r.status === "approved" &&
+      // Directory rating only — a Recruitment company review of the same user id
+      // must not move their seller score (reviews.js scopes reviews by `context`;
+      // legacy rows without one are Directory).
+      (r.context || "directory") === "directory" &&
       (r.targetUserId === targetUserId || r.sellerId === targetUserId)
   );
   const reviewCount = mine.length;

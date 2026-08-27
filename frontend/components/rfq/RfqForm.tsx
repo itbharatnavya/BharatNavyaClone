@@ -11,6 +11,7 @@ import Textarea from "@/components/Textarea";
 import { suggestCategory } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import type { Category } from "@/lib/types";
+import type { RfqErrors } from "./validation";
 
 export interface RfqFormState {
   productName: string;
@@ -38,10 +39,12 @@ export default function RfqForm({
   value,
   onChange,
   categories,
+  errors = {},
 }: {
   value: RfqFormState;
   onChange: (patch: Partial<RfqFormState>) => void;
   categories: Category[];
+  errors?: RfqErrors;
 }) {
   const { addToast } = useToast();
 
@@ -89,6 +92,7 @@ export default function RfqForm({
         placeholder="e.g. Stainless steel 304 sheets"
         value={value.productName}
         onChange={set("productName")}
+        error={errors.productName}
       />
 
       <Select
@@ -169,14 +173,17 @@ export default function RfqForm({
         <Input
           label="Quantity"
           placeholder="e.g. 500"
+          inputMode="numeric"
           value={value.quantity}
           onChange={set("quantity")}
+          error={errors.quantity}
         />
         <Input
           label="Unit"
           placeholder="e.g. kg, pieces"
           value={value.unit}
           onChange={set("unit")}
+          error={errors.unit}
         />
       </div>
 
@@ -194,12 +201,14 @@ export default function RfqForm({
           inputMode="numeric"
           value={value.targetPrice}
           onChange={set("targetPrice")}
+          error={errors.targetPrice}
         />
         <Input
           label="Delivery location"
           placeholder="e.g. Mumbai"
           value={value.deliveryLocation}
           onChange={set("deliveryLocation")}
+          error={errors.deliveryLocation}
         />
       </div>
 
@@ -208,6 +217,7 @@ export default function RfqForm({
         placeholder="e.g. Within 2 weeks"
         value={value.timeline}
         onChange={set("timeline")}
+        error={errors.timeline}
       />
 
       <Textarea
@@ -216,6 +226,7 @@ export default function RfqForm({
         value={value.details}
         onChange={set("details")}
         style={{ minHeight: 130 }}
+        error={errors.details}
       />
     </div>
   );

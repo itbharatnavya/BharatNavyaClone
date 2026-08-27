@@ -509,12 +509,19 @@ export function postInquiry(body: Partial<Inquiry>): Promise<PostInquiryResult> 
   });
 }
 
-// Admin: manually deliver an unmatched RFQ to a chosen seller as a real lead.
+// Admin: manually deliver an RFQ to one or more chosen sellers as real leads.
+// Partial success is normal — sellers who already had the RFQ come back in
+// `alreadyHad` rather than failing the call.
+export interface ForwardResult {
+  added: string[]; // seller ids that got a new lead
+  alreadyHad: string[]; // seller ids skipped — they already had this RFQ
+  inquiry: Inquiry;
+}
 export function forwardInquiry(
   id: string,
-  body: { sellerId: string; listingId?: string }
-): Promise<Inquiry> {
-  return request<Inquiry>(`/api/admin/inquiries/${id}/forward`, {
+  body: { sellerIds: string[]; listingId?: string | null }
+): Promise<ForwardResult> {
+  return request<ForwardResult>(`/api/admin/inquiries/${id}/forward`, {
     method: "POST",
     body: JSON.stringify(body),
   });
@@ -591,20 +598,31 @@ export async function getMyRfqs(): Promise<Inquiry[]> {
 // ============================================================
 // Reviews
 // ============================================================
-export async function getReviews(sellerId: string): Promise<Review[]> {
+export type ReviewContext = "directory" | "recruitment";
+
+export async function getReviews(
+  target: string,
+  context?: ReviewContext
+): Promise<Review[]> {
   // Backend returns { reviews: [...] }; normalize to a bare array so consumers
   // (dashboard ReviewsTab, seller ReviewsPanel) can .map/.reduce safely.
+  // `context` scopes to one product — omit it and every context comes back.
   const res = await request<{ reviews?: Review[] } | Review[]>(
-    `/api/reviews${toQuery({ sellerId })}`
+    `/api/reviews${toQuery({ sellerId: target, context })}`
   );
   return Array.isArray(res) ? res : res?.reviews || [];
 }
 
+// `sellerId` OR `targetUserId` — the backend treats them as aliases for the
+// reviewed user (routes/reviews.js). Directory callers pass `sellerId`;
+// Recruitment company reviews pass `targetUserId` (the employer's user id).
 export function postReview(body: {
-  sellerId: string;
+  sellerId?: string;
+  targetUserId?: string;
   listingId?: string;
   rating: number;
   reviewText?: string;
+  context?: ReviewContext;
 }): Promise<Review> {
   return request<Review>(`/api/reviews`, {
     method: "POST",
@@ -615,6 +633,23 @@ export function postReview(body: {
 // Directory homepage "Recent Activity" — real reviews joined with seller info.
 export function getRecentActivity(params: { limit?: number; city?: string } = {}): Promise<RecentActivityItem[]> {
   return request<RecentActivityItem[]>(`/api/reviews/recent${toQuery(params as Record<string, unknown>)}`);
+}
+
+// Recruitment homepage testimonials — latest messaged company reviews, one per
+// company, server-capped (one request, not one per company).
+export interface RecruitmentRecentReview {
+  reviewId: string;
+  rating: number;
+  reviewText: string;
+  createdAt: string;
+  buyerName: string;
+  company: { id: string; name: string; slug: string | null; logo: string | null };
+}
+
+export function getRecruitmentRecentReviews(limit = 6): Promise<RecruitmentRecentReview[]> {
+  return request<RecruitmentRecentReview[]>(
+    `/api/reviews/recruitment-recent${toQuery({ limit })}`
+  );
 }
 
 // ============================================================

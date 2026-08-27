@@ -13,7 +13,6 @@ import AnalyticsTab from "./AnalyticsTab";
 import ListingsTab from "./ListingsTab";
 import PromoteTab from "./PromoteTab";
 import BulkUploadTab from "./BulkUploadTab";
-import InboxTab from "./InboxTab";
 import LeadsTab from "./LeadsTab";
 import MyRfqsTab from "./MyRfqsTab";
 import SavedTab from "./SavedTab";
@@ -56,7 +55,6 @@ const ALL_TABS: TabMeta[] = [
   { id: "listings", label: "My listings", icon: "listings", sellerOnly: true },
   { id: "promote", label: "Promote", icon: "promote", sellerOnly: true },
   { id: "bulk", label: "Bulk upload", icon: "bulk", sellerOnly: true },
-  { id: "inbox", label: "Inbox", icon: "inbox", flag: "chat", sellerOnly: true },
   { id: "leads", label: "RFQs", icon: "leads", sellerOnly: true },
   { id: "consultations", label: "Consultation requests", icon: "consultations", flag: "consultationsLive", expertOnly: true },
   { id: "myrfqs", label: "My RFQs", icon: "myrfqs" },
@@ -294,7 +292,6 @@ export default function DashboardShell() {
   );
 
   const tabParam = searchParams.get("tab") as DashTabId | null;
-  const convParam = searchParams.get("c");
   // Default landing tab: sellers land on Overview as before; a plain main user
   // (no sellerProfile — Overview is sellerOnly and filtered out) lands on Profile,
   // the one tab they actually have.
@@ -309,7 +306,7 @@ export default function DashboardShell() {
   function setTab(id: DashTabId) {
     const qs = new URLSearchParams(Array.from(searchParams.entries()));
     qs.set("tab", id);
-    if (id !== "inbox") qs.delete("c");
+    qs.delete("c");
     router.replace(`/dashboard?${qs.toString()}`, { scroll: false });
   }
 
@@ -346,7 +343,7 @@ export default function DashboardShell() {
             {tr("dashboard.gate.title", "Sign in to view your dashboard")}
           </h1>
           <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8, marginBottom: 20 }}>
-            {tr("dashboard.gate.subtitle", "Manage your listings, leads, chats and profile in one place.")}
+            {tr("dashboard.gate.subtitle", "Manage your listings, leads and profile in one place.")}
           </p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
             <Button href="/login" variant="primary">
@@ -367,9 +364,14 @@ export default function DashboardShell() {
       style={
         narrow
           ? {
+              alignSelf: "stretch",
+              width: "100%",
+              minWidth: 0,
               display: "flex",
               gap: 6,
               overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              overscrollBehaviorX: "contain",
               paddingBottom: 4,
               borderBottom: "1px solid var(--border)",
               marginBottom: 20,
@@ -379,6 +381,10 @@ export default function DashboardShell() {
               flexShrink: 0,
               position: "sticky",
               top: 84,
+              maxHeight: "calc(100vh - 104px)",
+              overflowY: "auto",
+              overscrollBehavior: "contain",
+              paddingRight: 4,
               display: "flex",
               flexDirection: "column",
               gap: 2,
@@ -400,6 +406,7 @@ export default function DashboardShell() {
               border: "none",
               cursor: "pointer",
               whiteSpace: "nowrap",
+              flexShrink: 0,
               fontSize: 14,
               fontWeight: isActive ? 600 : 500,
               color: isActive ? "var(--brand)" : "var(--muted)",
@@ -445,8 +452,6 @@ export default function DashboardShell() {
         return <PromoteTab user={user} />;
       case "bulk":
         return <BulkUploadTab user={user} />;
-      case "inbox":
-        return <InboxTab user={user} initialConversationId={convParam} />;
       case "leads":
         return <LeadsTab user={user} />;
       case "consultations":

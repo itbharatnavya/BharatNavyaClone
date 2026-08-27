@@ -65,6 +65,11 @@ machine on a shared/office network**. See also **HANDOVER.md** and **CLAUDE.md**
 - [ ] **Uploads:** confirm where base64 image uploads persist (`routes/uploads.js`) and cap
       size/type; move to disk (`public/uploads/`, gitignored) or object storage, not into JSON.
 - [ ] **Security headers:** add `helmet` (or equivalent) for sensible defaults.
+- [x] **Account-level suspend** (2026-08-27, ADMIN-CONSOLE.md Phase 7). `users.status = "suspended"`
+      is enforced in `middleware/authGuard.js` (403 `account_suspended` on every authenticated request),
+      at `POST /api/auth/login` and `/verify-otp`, and degrades to guest under `optionalAuth`. Admin
+      accounts and self cannot be suspended. Note: existing tokens are rejected on their next request
+      (no server-side session/blacklist needed) since `authGuard` reloads the user every request.
 - [ ] **Dependency audit:** `npm audit` in both `backend/` and `frontend/`. Known note: two
       residual highs need a Next.js major upgrade — evaluate `npm audit` output and plan it.
 

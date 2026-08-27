@@ -13,9 +13,10 @@
  *                           with status=unmatched&adminStatus=pending (see
  *                           components/admin/RfqLogTab.tsx's queueMode prop) —
  *                           there is no separate /unmatched route.
- * POST /:id/forward        — admin delivers/re-delivers it to a chosen seller
- *                           (creates a real lead + notification, same as
- *                           automatic fan-out) — usable on ANY inquiry
+ * POST /:id/forward        — admin delivers/re-delivers it to one OR MANY chosen
+ *                           sellers (body.sellerIds[] or legacy body.sellerId)
+ *                           (creates a real lead + notification per seller, same
+ *                           as automatic fan-out) — usable on ANY inquiry
  * POST /:id/dismiss        — admin reviewed an unmatched RFQ and chose not to
  *                           forward it
  *
@@ -111,49 +112,87 @@ router.get("/", async (req, res, next) => {
 });
 
 /* ------------------------------------------------------------ POST /:id/forward */
-// body: { sellerId, listingId? } — admin picks a seller to deliver this RFQ to.
-// Works on ANY inquiry (matched or unmatched) — used from both the Unmatched
-// RFQs queue and the general RFQ Log's "add seller" action.
+// body: { sellerIds: string[], listingId? }  (legacy: { sellerId } — a single id)
+// Admin picks one or more sellers to deliver this RFQ to. Works on ANY inquiry
+// (matched or unmatched) — used from both the Unmatched RFQs queue and the
+// general RFQ Log's "add sellers" action.
+//
+// Partial success is normal (an admin bulk-assigns a set, some of whom already
+// had the RFQ from the auto fan-out), so this never 409s on a duplicate: it
+// skips the ones that already have a lead and reports them in `alreadyHad`.
+// 400 only when the request names no seller at all.
 router.post("/:id/forward", async (req, res, next) => {
   try {
     const inquiry = await store.getById("inquiries.json", req.params.id);
     if (!inquiry) {
       return res.status(404).json({ success: false, error: "Inquiry not found" });
     }
-    const sellerId = req.body && req.body.sellerId;
-    if (!sellerId) {
-      return res.status(400).json({ success: false, error: "sellerId is required" });
-    }
-    const listingId = (req.body && req.body.listingId) || null;
 
-    // Don't double-deliver: this seller may already have a lead for this RFQ,
-    // either from the automatic fan-out or an earlier manual forward.
-    const existingLeads = await store.readJsonl("leads-ledger.jsonl");
-    const alreadyHasLead = existingLeads.some(
-      (l) => l.inquiryId === inquiry.id && l.sellerId === sellerId
+    const body = req.body || {};
+    const raw = Array.isArray(body.sellerIds)
+      ? body.sellerIds
+      : body.sellerId
+      ? [body.sellerId]
+      : [];
+    const sellerIds = [
+      ...new Set(raw.filter((s) => typeof s === "string" && s.trim())),
+    ];
+    if (sellerIds.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, error: "sellerIds is required" });
+    }
+    const listingId = body.listingId || null;
+
+    // Validate every id is a real seller before writing anything.
+    const users = await store.all("users.json");
+    const sellerSet = new Set(
+      users.filter((u) => u && u.sellerProfile).map((u) => u.id)
     );
-    if (alreadyHasLead) {
-      return res.status(409).json({
+    const unknown = sellerIds.filter((id) => !sellerSet.has(id));
+    if (unknown.length) {
+      return res.status(400).json({
         success: false,
-        error: "This seller already has this RFQ as a lead.",
+        error: `Unknown seller id(s): ${unknown.join(", ")}`,
       });
     }
 
-    await appendLead({
-      sellerId,
-      buyerId: inquiry.buyerId || null,
-      inquiryId: inquiry.id,
-      listingId,
-    });
-    await notifySellerOfLead(sellerId, inquiry);
+    // Don't double-deliver: a seller may already have a lead for this RFQ from
+    // the automatic fan-out or an earlier manual forward.
+    const existingLeads = await store.readJsonl("leads-ledger.jsonl");
+    const hasLead = new Set(
+      existingLeads
+        .filter((l) => l.inquiryId === inquiry.id)
+        .map((l) => l.sellerId)
+    );
 
-    const updated = await store.update("inquiries.json", inquiry.id, {
-      unmatched: false,
-      adminStatus: "forwarded",
-      decidedBy: req.user.id,
-      decidedAt: new Date().toISOString(),
-    });
-    return res.json({ success: true, data: updated });
+    const added = [];
+    const alreadyHad = [];
+    for (const sellerId of sellerIds) {
+      if (hasLead.has(sellerId)) {
+        alreadyHad.push(sellerId);
+        continue;
+      }
+      await appendLead({
+        sellerId,
+        buyerId: inquiry.buyerId || null,
+        inquiryId: inquiry.id,
+        listingId,
+      });
+      await notifySellerOfLead(sellerId, inquiry);
+      added.push(sellerId);
+    }
+
+    let updated = inquiry;
+    if (added.length > 0) {
+      updated = await store.update("inquiries.json", inquiry.id, {
+        unmatched: false,
+        adminStatus: "forwarded",
+        decidedBy: req.user.id,
+        decidedAt: new Date().toISOString(),
+      });
+    }
+    return res.json({ success: true, data: { added, alreadyHad, inquiry: updated } });
   } catch (err) {
     next(err);
   }

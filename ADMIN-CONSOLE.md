@@ -30,9 +30,11 @@ taxonomy) *before* it's public — making admin access depend on browsing that p
 | Section | Tabs | Notes |
 |---|---|---|
 | **Global** | Overview, Users, Payments, Entitlements, Features, Site Config | No single-product data dependency. |
-| **Directory** | Categories, Collections, Plans, Boosts, Verification, Reports, Listing AI Check, Sellers (legacy, unlinked from visible sub-nav — same as before), Ads, Content (Blogs & Stories) | Ads/Content moved here as Directory-scoped instances once Phase 5 lands (see §4). |
-| **Recruitment** | Employers, Jobs, Taxonomy (Skills/Job Roles/Job Functions), Ads, Content (Blogs) | Built incrementally, Phases 2-5. |
+| **Directory** | Users, Categories, Collections, Plans, Boosts, Verification, Reports, Listing AI Check, Sellers (legacy, unlinked from visible sub-nav — same as before), Ads, Content (Blogs & Stories) | Ads/Content moved here as Directory-scoped instances once Phase 5 lands (see §4). |
+| **Recruitment** | Users, Employers, Jobs, Taxonomy (Skills/Job Roles/Job Functions), Ads, Content (Blogs) | Built incrementally, Phases 2-5. |
 | **Credit Card / Mutual** | — | Empty "not built yet" placeholder; those products don't exist beyond a coming-soon page. |
+
+**Users is one component, three scopes** (Phase 7). `components/admin/UsersTab.tsx` takes a `scope` prop — `global` (every account + hats + account-status), `directory` (buyers + sellers), `recruitment` (employers + candidates). All three list off one endpoint, `GET /api/admin/users?scope=…`, and every row links to the shared full-detail page `/admin/users/[id]` (see §5). The legacy **Employers** tab stays for now (superset lives in Recruitment › Users); **Sellers** stays unlinked as before.
 
 ## 3. Two confirmed bugs found and fixed along the way
 
@@ -84,3 +86,27 @@ taxonomy) *before* it's public — making admin access depend on browsing that p
 Out of scope, checked and deliberately not touched: the employer profile page (`/employer/[slug]`) not
 showing the employer's blogs — that's an existing, explicitly-commented deferral ("dashboard-adjacent,
 deferred"), not something this restructure needed to fix.
+
+- [x] **Phase 7** (2026-08-27) — Users: one directory, three scopes + a full detail page + account-level
+      suspend.
+  - **`GET /api/admin/users`** gained `scope=global|directory|recruitment`. `type` now filters by hat
+    (`buyer|seller|employer|candidate|admin`), not just user-vs-seller. Each row carries `hats[]`,
+    `accountStatus`, and trimmed `employerProfile`/`candidateProfile` slices. `summary` counts per hat +
+    `suspended`. `status` filters `sellerProfile.status`, or `employerProfile.status` in recruitment scope.
+    Back-compat: old `type=user|seller` still works; `accountType` still on every row.
+  - **`GET /api/admin/users/:id`** (new) — one account, all four profile blocks + cross-product activity
+    counts (listings, RFQs sent, jobs posted, applications sent/received, reviews written/received).
+  - **`POST /api/admin/users/:id/suspend` · `/reactivate`** (new) — sets `users.status`
+    (`0012_add_user_status.sql`). A suspended account is blocked at `middleware/authGuard.js` (403
+    `account_suspended` on every authenticated request), at login and OTP verify, and degrades to guest
+    under `optionalAuth` so public pages still render. **Admin accounts and your own account can't be
+    suspended.**
+  - **Frontend:** `UsersTab.tsx` takes `scope`; mounted three times (Global/Directory/Recruitment ›
+    Users). Rows link to **`/admin/users/[id]`** — a full page (not a modal) with a Back button to the
+    originating list, sections per hat (Account & roles / Directory seller / Recruitment employer /
+    Recruitment candidate), the activity strip, per-hat approve/reject/suspend + plan & monetization
+    (ported from the old Users-tab modal), and the account Suspend/Reactivate control.
+  - Verified end-to-end via admin token: all three scopes list + filter (candidates now visible),
+    detail shape, suspend → target's `/api/auth/me` 403s + login blocked while public `/api/jobs` stays
+    200, reactivate restores, suspending an admin 400s. `tsc --noEmit` clean; `/admin` +
+    `/admin/users/:id` both 200.

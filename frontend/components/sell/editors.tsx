@@ -61,6 +61,7 @@ export function Section({
 export function TagInput({
   label,
   hint,
+  error,
   value,
   onChange,
   placeholder,
@@ -68,6 +69,7 @@ export function TagInput({
 }: {
   label?: string;
   hint?: string;
+  error?: string;
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
@@ -168,7 +170,11 @@ export function TagInput({
           ))}
         </datalist>
       ) : null}
-      {hint && <p className="field-hint">{hint}</p>}
+      {error ? (
+        <p className="field-error">{error}</p>
+      ) : hint ? (
+        <p className="field-hint">{hint}</p>
+      ) : null}
     </div>
   );
 }

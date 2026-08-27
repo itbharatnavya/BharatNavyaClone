@@ -150,7 +150,7 @@ export default function AdSlider({
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
       onKeyDown={onKeyDown}
-      style={{ marginBottom: fillHeight ? 0 : 24, minWidth: 0, height: fillHeight ? "100%" : undefined }}
+      style={{ marginBottom: fillHeight ? 0 : 24, minWidth: 0, height: fillHeight ? "100%" : undefined, minHeight: fillHeight ? 152 : undefined }}
     >
       <div
         className="card card-flat"
@@ -160,6 +160,7 @@ export default function AdSlider({
           padding: 0,
           minWidth: 0,
           height: fillHeight ? "100%" : "clamp(120px, 42vw, 180px)",
+          minHeight: fillHeight ? 152 : undefined,
         }}
       >
         {ads.map((ad, i) => {

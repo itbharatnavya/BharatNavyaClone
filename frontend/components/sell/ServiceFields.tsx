@@ -6,13 +6,16 @@ import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import { Section, RateCardEditor, TagInput } from "./editors";
 import type { ServiceFormState } from "./formTypes";
+import type { Errors } from "./validation";
 
 export default function ServiceFields({
   value,
   onChange,
+  errors = {},
 }: {
   value: ServiceFormState;
   onChange: (patch: Partial<ServiceFormState>) => void;
+  errors?: Errors;
 }) {
   return (
     <>
@@ -44,6 +47,7 @@ export default function ServiceFields({
           value={value.rateCard}
           onChange={(rateCard) => onChange({ rateCard })}
         />
+        {errors.rateCard && <p className="field-error">{errors.rateCard}</p>}
       </Section>
 
       <Section title="Service details">
@@ -77,6 +81,7 @@ export default function ServiceFields({
               placeholder="e.g. 8"
               value={value.experienceYears}
               onChange={(e) => onChange({ experienceYears: e.target.value })}
+              error={errors.experienceYears}
             />
           </div>
           <Textarea

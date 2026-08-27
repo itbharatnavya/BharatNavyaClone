@@ -35,6 +35,12 @@ export default function Avatar({
   ring = false,
 }: AvatarProps) {
   const [bg, fg] = bgFromName(name).split("|");
+  // A broken/blocked image URL would otherwise render the browser's broken-image
+  // glyph — track the load failure and fall back to the initials block instead.
+  const [failed, setFailed] = React.useState(false);
+  // Reset the failure flag if the src changes to a new candidate URL.
+  React.useEffect(() => setFailed(false), [src]);
+
   const common: React.CSSProperties = {
     width: size,
     height: size,
@@ -43,14 +49,15 @@ export default function Avatar({
     boxShadow: ring ? "0 0 0 2px #fff, 0 0 0 3px #E5E7EB" : undefined,
   };
 
-  if (src) {
+  if (src && !failed) {
     // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
         src={src}
         alt={name || "avatar"}
         className={className}
-        style={{ ...common, objectFit: "cover" }}
+        onError={() => setFailed(true)}
+        style={{ ...common, objectFit: "cover", background: bg }}
       />
     );
   }

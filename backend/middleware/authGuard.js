@@ -31,6 +31,15 @@ async function authGuard(req, res, next) {
         .status(401)
         .json({ success: false, error: "Authentication required" });
     }
+    // Account-level suspend (ADMIN-CONSOLE.md) — a suspended account keeps its token
+    // but cannot make any authenticated request.
+    if (user.status === "suspended") {
+      return res.status(403).json({
+        success: false,
+        error: "This account has been suspended. Contact support.",
+        code: "account_suspended",
+      });
+    }
     req.user = user;
     next();
   } catch (err) {
@@ -38,11 +47,14 @@ async function authGuard(req, res, next) {
   }
 }
 
-/** Soft gate: attaches req.user if a valid token is present, else null. Never blocks. */
+/** Soft gate: attaches req.user if a valid token is present, else null. Never blocks.
+ *  A suspended account degrades to guest (req.user = null) rather than 403 — public
+ *  pages stay readable, but nothing treats it as logged in. */
 async function optionalAuth(req, res, next) {
   try {
     const payload = auth.verifyToken(extractToken(req));
-    req.user = (await loadUser(payload)) || null;
+    const user = await loadUser(payload);
+    req.user = user && user.status !== "suspended" ? user : null;
     next();
   } catch (err) {
     next(err);

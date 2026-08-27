@@ -327,14 +327,16 @@ export function Panel({
   desc,
   children,
   right,
+  className = "",
 }: {
   title?: string;
   desc?: string;
   children: React.ReactNode;
   right?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <section className="card card-flat p-5">
+    <section className={`card card-flat p-5 ${className}`}>
       {(title || right) && (
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>

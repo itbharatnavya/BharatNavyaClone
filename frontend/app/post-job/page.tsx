@@ -15,6 +15,7 @@ import RecruitmentGate from "@/components/recruitment/RecruitmentGate";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useToast } from "@/components/Toast";
 import { getJobFunctions, createJob, updateJob, getJob } from "@/lib/api";
+import { employerProfileGaps } from "@/lib/recruitmentProfile";
 import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion, JobStatus } from "@/lib/types";
 
 // YYYY-MM-DD for an <input type="date">, from a stored ISO timestamp.
@@ -173,6 +174,42 @@ function PostJobInner() {
   }
 
   if (loading || !user || loadingJob) return null;
+
+  // Company-profile gate — mirrors the backend's POST /api/jobs 403. Editing an
+  // existing job is exempt (the profile already existed when it was posted); only a
+  // fresh post is blocked, and the recruiter is sent to the Profile tab to finish.
+  const companyGaps = isEdit ? [] : employerProfileGaps(user);
+  if (companyGaps.length) {
+    return (
+      <div className="container-bs section-pad-sm" style={{ maxWidth: 620 }}>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "var(--tricolor-green-hover)",
+          }}
+        >
+          Recruitment
+        </span>
+        <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)", marginTop: 6 }}>
+          {user.employerProfile ? "Complete your company profile first" : "Create your company profile first"}
+        </h1>
+        <p style={{ fontSize: 14.5, color: "var(--muted)", marginTop: 6 }}>
+          Candidates see your company details on every job you post. Add these before publishing a role:
+        </p>
+        <ul style={{ margin: "16px 0 0", paddingLeft: 20, color: "var(--ink)", fontSize: 14, lineHeight: 1.9 }}>
+          {companyGaps.map((g) => (
+            <li key={g.key}>{g.label}</li>
+          ))}
+        </ul>
+        <Button variant="green" href="/recruitment/dashboard?tab=profile" style={{ marginTop: 20 }}>
+          Go to company profile
+        </Button>
+      </div>
+    );
+  }
 
   if (notOwner) {
     return (

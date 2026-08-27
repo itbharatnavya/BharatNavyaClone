@@ -81,6 +81,7 @@ export const getCategories = api.getCategories;
 export const getListings = api.getListings;
 export const forwardInquiry = api.forwardInquiry;
 export const dismissInquiry = api.dismissInquiry;
+export type ForwardResult = api.ForwardResult;
 
 // ============================================================
 // RFQ log — GET /api/admin/inquiries (routes/adminInquiries.js)
@@ -137,19 +138,42 @@ export function getRfqLog(query: RfqLogQuery = {}): Promise<RfqLogPage> {
 
 // ============================================================
 // Unified user directory — GET /api/admin/users (routes/admin.js)
-// Server-paginated, filterable by account type (plain user vs seller) and,
-// for sellers, by approval status. A seller is still a normal user underneath
-// (accountType just reflects whether sellerProfile is attached).
+//
+// One paginated view over every account. An account wears any mix of "hats"
+// (buyer/seller/employer/candidate/admin) at once. `scope` narrows the base set
+// to one product's people and decides which approval-status field `status`
+// filters on. GET /api/admin/users/:id is the per-person cross-product detail.
 // ============================================================
-export type AdminUserTypeFilter = "all" | "user" | "seller";
+export type AdminUserScope = "global" | "directory" | "recruitment";
+export type AdminUserTypeFilter =
+  | "all"
+  | "buyer"
+  | "seller"
+  | "employer"
+  | "candidate"
+  | "admin";
+export type AdminUserHat = "buyer" | "seller" | "employer" | "candidate" | "admin";
+export type AdminAccountStatus = "active" | "suspended";
 
-export interface AdminUserRow extends User {
+// Trimmed employer/candidate slices the list actually renders (full blocks live
+// on the detail response). sellerProfile stays whole — the seller columns read many fields.
+export interface AdminUserRow
+  extends Omit<User, "employerProfile" | "candidateProfile"> {
   accountType: "user" | "seller";
+  accountStatus: AdminAccountStatus;
+  hats: AdminUserHat[];
+  employerProfile:
+    | { companyName: string; slug: string | null; status: SellerStatus; isVerified: boolean }
+    | null;
+  candidateProfile:
+    | { headline: string; skills: string[]; resumeUrl: string | null }
+    | null;
 }
 
 export type AdminUserFeaturedFilter = "all" | "yes" | "no";
 
 export interface AdminUserQuery {
+  scope?: AdminUserScope;
   type?: AdminUserTypeFilter;
   status?: SellerStatus | "all";
   planTier?: PlanTier | "all";
@@ -161,8 +185,12 @@ export interface AdminUserQuery {
 
 export interface AdminUserSummary {
   total: number;
-  users: number;
+  buyers: number;
   sellers: number;
+  employers: number;
+  candidates: number;
+  admins: number;
+  suspended: number;
 }
 
 export interface AdminUserPage {
@@ -175,6 +203,7 @@ export interface AdminUserPage {
 
 export function adminGetUsers(query: AdminUserQuery = {}): Promise<AdminUserPage> {
   const usp = new URLSearchParams();
+  if (query.scope && query.scope !== "global") usp.set("scope", query.scope);
   if (query.type && query.type !== "all") usp.set("type", query.type);
   if (query.status && query.status !== "all") usp.set("status", query.status);
   if (query.planTier && query.planTier !== "all") usp.set("planTier", query.planTier);
@@ -183,6 +212,33 @@ export function adminGetUsers(query: AdminUserQuery = {}): Promise<AdminUserPage
   usp.set("page", String(query.page || 1));
   usp.set("limit", String(query.limit || 20));
   return req<AdminUserPage>(`/api/admin/users?${usp.toString()}`);
+}
+
+// GET /api/admin/users/:id — one account, every hat + cross-product activity counts.
+export interface AdminUserDetail extends User {
+  accountStatus: AdminAccountStatus;
+  hats: AdminUserHat[];
+}
+export interface AdminUserStats {
+  listings: number;
+  inquiriesSent: number;
+  jobsPosted: number;
+  applicationsSent: number;
+  applicationsReceived: number;
+  reviewsWritten: number;
+  reviewsReceived: number;
+}
+export function adminGetUser(id: string): Promise<{ user: AdminUserDetail; stats: AdminUserStats }> {
+  return req<{ user: AdminUserDetail; stats: AdminUserStats }>(`/api/admin/users/${id}`);
+}
+
+// POST /api/admin/users/:id/suspend | /reactivate — account-level (blocks login +
+// every authenticated request). Admin accounts and your own account are protected.
+export function adminSuspendAccount(id: string): Promise<{ id: string; status: AdminAccountStatus }> {
+  return req(`/api/admin/users/${id}/suspend`, { method: "POST" });
+}
+export function adminReactivateAccount(id: string): Promise<{ id: string; status: AdminAccountStatus }> {
+  return req(`/api/admin/users/${id}/reactivate`, { method: "POST" });
 }
 
 // ============================================================
@@ -255,6 +311,12 @@ export function updateAdSlot(id: string, body: AdSlotInput): Promise<AdSlotRow> 
 // ============================================================
 // Analytics — real GET /api/admin/analytics shape
 // ============================================================
+export interface MonthCount {
+  month: string;
+  year: number;
+  count: number;
+}
+
 export interface AdminAnalyticsData {
   totals: {
     users: number;
@@ -266,7 +328,21 @@ export interface AdminAnalyticsData {
   };
   sellersByTier: Record<string, number>;
   activePaidSellersByTier: Record<string, number>;
-  monthlyInquiries: { month: string; year: number; count: number }[];
+  monthlyInquiries: MonthCount[];
+  recruitment?: {
+    totals: {
+      employers: number;
+      pendingEmployers: number;
+      candidates: number;
+      jobs: number;
+      activeJobs: number;
+      openings: number;
+      applications: number;
+      hires: number;
+    };
+    applicationsByStatus: Record<string, number>;
+    monthlyApplications: MonthCount[];
+  };
 }
 
 export function getAnalytics(): Promise<AdminAnalyticsData> {

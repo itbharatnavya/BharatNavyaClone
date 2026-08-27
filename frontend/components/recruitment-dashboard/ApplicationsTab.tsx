@@ -122,7 +122,7 @@ export default function ApplicationsTab({ jobId }: { jobId?: string | null }) {
                     <div>
                       <strong>CV:</strong>{" "}
                       {app.resumeUrl ? (
-                        <a href={app.resumeUrl} target="_blank" rel="noreferrer" style={{ color: "var(--brand)" }}>View résumé</a>
+                        <a href={app.resumeUrl} target="_blank" rel="noreferrer" style={{ color: "var(--brand)" }}>View resume</a>
                       ) : "—"}
                     </div>
                     <div><strong>Contact:</strong> {c?.contactPhone || "—"}{c?.contactEmail ? ` · ${c.contactEmail}` : ""}</div>

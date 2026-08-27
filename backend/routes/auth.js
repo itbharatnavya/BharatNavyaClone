@@ -91,6 +91,13 @@ router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) =
       user = await buildUser({ name: mobile, mobile });
       await store.insert("users.json", user);
     }
+    if (user.status === "suspended") {
+      return res.status(403).json({
+        success: false,
+        error: "This account has been suspended. Contact support.",
+        code: "account_suspended",
+      });
+    }
 
     return res.json({
       success: true,
@@ -108,6 +115,13 @@ router.post("/login", validate(schemas.passwordLogin), async (req, res, next) =>
     const user = await store.findOne("users.json", (u) => u.email === email);
     if (!user || !(await auth.verifyPassword(password, user.passwordHash))) {
       return res.status(401).json({ success: false, error: "Invalid credentials" });
+    }
+    if (user.status === "suspended") {
+      return res.status(403).json({
+        success: false,
+        error: "This account has been suspended. Contact support.",
+        code: "account_suspended",
+      });
     }
 
     return res.json({

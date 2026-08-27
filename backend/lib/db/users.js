@@ -33,6 +33,7 @@ const USER_COLUMNS = {
   state: col("state", t), roles: col("roles", arr), interests: col("interests", arr),
   contactVisibility: col("contact_visibility", t), createdAt: col("created_at", ts),
   recruitmentRole: col("recruitment_role", t), recruitmentRoleLockedAt: col("recruitment_role_locked_at", ts),
+  status: col("status", t),
 };
 
 const SELLER_COLUMNS = {

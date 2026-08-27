@@ -576,6 +576,11 @@ const EMPLOYERS = [
 
 /* --------------------------------------------------------------- candidates -- */
 
+// A stand-in CV for every demo candidate so they clear the "profile complete"
+// gate (lib/recruitmentProfile) and can actually apply in a demo. Points at a file
+// already in frontend/public/uploads/; the gate only needs a non-empty URL.
+const DEMO_RESUME_URL = "/uploads/up_1787570327506_dofy26.pdf";
+
 const CANDIDATES = [
   {
     id: "usr_cand1",
@@ -587,7 +592,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Backend Engineer — Node.js & Postgres",
       summary: "5 years building high-throughput APIs for logistics and fintech platforms.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Node.js", "PostgreSQL", "TypeScript", "Docker", "AWS"],
       experienceYears: 5,
       currentRole: "Senior Software Engineer",
@@ -617,7 +622,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Regional Sales Manager — FMCG",
       summary: "8 years in FMCG distribution sales across Western India.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["B2B Sales", "Distributor Management", "Negotiation", "Excel"],
       experienceYears: 8,
       currentRole: "Area Sales Manager",
@@ -646,7 +651,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Digital Marketing Executive — Performance & SEO",
       summary: "4 years running paid and organic acquisition for D2C and healthcare brands.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["SEO", "Google Ads (SEM)", "Google Analytics", "Content Writing", "Social Media Marketing"],
       experienceYears: 4,
       currentRole: "Digital Marketing Associate",
@@ -673,7 +678,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "DevOps Engineer — AWS & Kubernetes",
       summary: "6 years automating deployment pipelines and infrastructure for SaaS products.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["AWS", "Kubernetes", "Docker", "CI/CD", "System Design"],
       experienceYears: 6,
       currentRole: "DevOps Engineer",
@@ -700,7 +705,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "HR Business Partner — Talent & Engagement",
       summary: "7 years partnering with business leaders on hiring, engagement and performance cycles.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Recruitment", "Employee Engagement", "Performance Management", "HRIS"],
       experienceYears: 7,
       currentRole: "HR Business Partner",
@@ -727,7 +732,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Product Manager — Fintech & Lending",
       summary: "6 years shaping consumer lending and payments products from 0-to-1.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Product Strategy", "Roadmapping", "A/B Testing", "Agile/Scrum", "Market Research"],
       experienceYears: 6,
       currentRole: "Senior Product Manager",
@@ -754,7 +759,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "UI/UX Designer — Product & Design Systems",
       summary: "5 years designing mobile-first experiences for consumer apps.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Figma", "Design Systems", "User Research", "Prototyping", "Wireframing"],
       experienceYears: 5,
       currentRole: "Product Designer",
@@ -781,7 +786,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Financial Analyst — FP&A",
       summary: "4 years in financial planning & analysis for mid-size financial services firms.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Financial Modeling", "Excel", "Budgeting", "SAP"],
       experienceYears: 4,
       currentRole: "Financial Analyst",
@@ -808,7 +813,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Customer Success Manager — SaaS & Healthcare",
       summary: "5 years managing enterprise accounts and reducing churn for B2B platforms.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Customer Service", "Zendesk", "Conflict Resolution", "Communication"],
       experienceYears: 5,
       currentRole: "Customer Success Manager",
@@ -835,7 +840,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Operations Manager — Manufacturing & Logistics",
       summary: "9 years running plant and warehouse operations for mid-size manufacturers.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Supply Chain Management", "Six Sigma", "Vendor Management", "ERP Software"],
       experienceYears: 9,
       currentRole: "Operations Manager",
@@ -862,7 +867,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Business Development Executive — B2B & Industrial",
       summary: "3 years generating and closing B2B leads in the industrial components space.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Lead Generation", "B2B Sales", "Cold Calling", "CRM Software"],
       experienceYears: 3,
       currentRole: "Business Development Executive",
@@ -889,7 +894,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Full Stack Developer — React & Node.js",
       summary: "4 years building end-to-end web applications for e-commerce and edtech products.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["React", "Node.js", "TypeScript", "PostgreSQL", "REST APIs"],
       experienceYears: 4,
       currentRole: "Full Stack Developer",
@@ -916,7 +921,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Content Marketing Specialist — B2B SaaS",
       summary: "3 years writing and managing content programs for B2B and edtech brands.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Content Writing", "Copywriting", "SEO", "Social Media Marketing"],
       experienceYears: 3,
       currentRole: "Content Marketing Specialist",
@@ -943,7 +948,7 @@ const CANDIDATES = [
     candidateProfile: {
       headline: "Supply Chain Analyst — Procurement & Planning",
       summary: "5 years in demand planning and vendor coordination for FMCG and agri-supply chains.",
-      resumeUrl: null,
+      resumeUrl: DEMO_RESUME_URL,
       skills: ["Supply Chain Management", "Inventory Management", "Vendor Management", "Excel"],
       experienceYears: 5,
       currentRole: "Supply Chain Analyst",
@@ -1124,7 +1129,7 @@ const APPLICATIONS = APPLICATION_SPECS.map((a) => {
     jobId: a.jobId,
     employerId: a.employerId,
     candidateId: a.candidateId,
-    resumeUrl: null,
+    resumeUrl: DEMO_RESUME_URL,
     coverNote: a.coverNote,
     status: a.status,
     statusHistory: statusHistoryFor(a.status),
@@ -1176,6 +1181,9 @@ const REVIEWS = REVIEW_SPECS.map((r) => ({
   targetUserId: r.employerId,
   sellerId: null,
   direction: "buyer_to_seller",
+  // Scopes these to the Recruitment product so they never mix with a Directory
+  // seller rating for the same user id (routes/reviews.js `context`).
+  context: "recruitment",
   buyerId: r.candidateId,
   buyerName: CANDIDATE_NAME_BY_ID.get(r.candidateId) || "Anonymous",
   rating: r.rating,
@@ -1218,11 +1226,133 @@ const AD_BOOKINGS = AD_BOOKING_SPECS.map((a) => ({
   createdAt: daysAgoIso(5),
 }));
 
+/* --------------------------------------------------------------- career guides -- */
+// Employer-authored blog posts (authorType: "employer") — these power both
+// /recruitment/blog and the "Career guides" strip on the Recruitment home page,
+// via the existing generic GET /api/blogs?authorType=employer. Reuses blogs.json,
+// no new collection (RECRUITMENT.md: "reviews/stories/blogs are already generic").
+
+const BLOG_SPECS = [
+  {
+    id: "blog_recruit1",
+    employerId: "usr_emp1",
+    title: "Write a resume recruiters actually read",
+    coverImage: "/demo/business-3.jpg",
+    tags: ["Resume", "Job search"],
+    daysAgo: 6,
+    body:
+      "Most resumes get a six-second scan before anyone decides to read properly. Make those seconds count.\n\n" +
+      "## Lead with impact, not duties\n\n" +
+      "Swap \"Responsible for managing the sales pipeline\" for \"Grew qualified pipeline 40% in two quarters by reworking lead scoring\". Numbers and outcomes travel; job descriptions do not.\n\n" +
+      "## Cut anything older than ten years\n\n" +
+      "Early-career roles can become a single line. The space is better spent on what you did recently.\n\n" +
+      "## One page until it genuinely can't be\n\n" +
+      "If you have fifteen years of relevant work, two pages is fine. For everyone else, one page forces you to keep only what matters.\n\n" +
+      "## Match the words in the job post\n\n" +
+      "If the role asks for \"stakeholder management\" and you've done exactly that, use their phrase. This isn't gaming a filter — it's making the match obvious to a busy human.",
+  },
+  {
+    id: "blog_recruit2",
+    employerId: "usr_emp12",
+    title: "Answering the salary expectation question",
+    coverImage: "/demo/business-1.jpg",
+    tags: ["Salary", "Negotiation", "Interview"],
+    daysAgo: 11,
+    body:
+      "The question comes early and it feels like a trap. It isn't — it's a filter for whether the conversation is worth continuing for both sides.\n\n" +
+      "## Give a range, with a reason\n\n" +
+      "\"Based on the scope we've discussed and market data for similar roles in this city, I'm looking at 18 to 22 lakh.\" A range shows flexibility; the reason shows you've done the work.\n\n" +
+      "## Anchor to the role, not your current pay\n\n" +
+      "What you earn today is about your last job. What you're asking for is about this one.\n\n" +
+      "## It's fine to ask first\n\n" +
+      "\"Do you have a band budgeted for this role?\" is a reasonable, professional response. Many employers will share it.",
+  },
+  {
+    id: "blog_recruit3",
+    employerId: "usr_emp11",
+    title: "Acing a video interview",
+    coverImage: "/demo/business-2.jpg",
+    tags: ["Interview", "Remote"],
+    daysAgo: 15,
+    body:
+      "A video interview is still an interview. The difference is a few small things that are entirely in your control.\n\n" +
+      "## Fix the basics once\n\n" +
+      "Camera at eye level, a light source in front of you (not behind), and a wired or strong connection. Test the actual link 10 minutes early.\n\n" +
+      "## Look at the lens, not the face\n\n" +
+      "It feels unnatural and it reads as eye contact. Practice for one call and it becomes automatic.\n\n" +
+      "## Have two questions ready before you hang up\n\n" +
+      "\"What does success in this role look like at six months?\" and \"What's the biggest challenge the team is facing right now?\" both give you real signal.",
+  },
+  {
+    id: "blog_recruit4",
+    employerId: "usr_emp3",
+    title: "Following up without being pushy",
+    coverImage: "/demo/logistics-1.jpg",
+    tags: ["Job search", "Communication"],
+    daysAgo: 20,
+    body:
+      "Silence after applying usually means a busy hiring team, not a no. A short, well-timed follow-up helps.\n\n" +
+      "## Wait about a week after each stage\n\n" +
+      "Apply, then a week later a one-line check-in. After an interview, 3 to 5 working days.\n\n" +
+      "## Keep it to two sentences\n\n" +
+      "\"Following up on my application for the Ops Coordinator role — still very interested and happy to share anything else that would help. Thanks for your time.\"\n\n" +
+      "## Then let it go\n\n" +
+      "One follow-up per stage. More than that shifts the impression in the wrong direction.",
+  },
+  {
+    id: "blog_recruit5",
+    employerId: "usr_emp8",
+    title: "What a strong reference call sounds like",
+    coverImage: "/demo/automotive-2.jpg",
+    tags: ["References", "Hiring"],
+    daysAgo: 26,
+    body:
+      "References are one of the most under-used steps in hiring. Done well, a 15-minute call tells you more than another interview round.\n\n" +
+      "## Ask about specifics, not adjectives\n\n" +
+      "\"Tell me about a time the project went sideways — what did they actually do?\" beats \"Were they a good team player?\".\n\n" +
+      "## Talk to a manager, not just a peer\n\n" +
+      "Peers describe what someone is like to work with. Managers can speak to judgement, ownership and growth.\n\n" +
+      "## Listen for the pause\n\n" +
+      "How someone answers \"Would you hire them again?\" — including how quickly — is often the most honest moment of the call.",
+  },
+  {
+    id: "blog_recruit6",
+    employerId: "usr_emp9",
+    title: "Your first 30 days in a new role",
+    coverImage: "/demo/retail-3.jpg",
+    tags: ["Onboarding", "Career"],
+    daysAgo: 33,
+    body:
+      "The first month sets how people see you for the next year. Spend it learning, not proving.\n\n" +
+      "## Meet people before you propose changes\n\n" +
+      "Book 20 minutes with everyone you'll work with. Ask what's working, what isn't, and what they wish someone would fix.\n\n" +
+      "## Write down what confuses you\n\n" +
+      "In three months this list is gone from your memory — and it's exactly what the next new joiner needs.\n\n" +
+      "## Ship one small, visible thing\n\n" +
+      "Not a reorg. A fixed report, a cleaned-up doc, a faster process. It builds trust for the bigger work later.",
+  },
+];
+
+const BLOGS = BLOG_SPECS.map((b) => ({
+  id: b.id,
+  sellerId: b.employerId,
+  authorType: "employer",
+  title: b.title,
+  slug: slugify(b.title),
+  coverImage: b.coverImage,
+  body: b.body,
+  categoryId: null,
+  tags: b.tags,
+  status: "published",
+  views: 0,
+  publishedAt: daysAgoIso(b.daysAgo),
+}));
+
 /* --------------------------------------------------------------------- run -- */
 
 (async () => {
   const counts = {
-    jobFunctions: 0, jobRoles: 0, skills: 0, users: 0, jobs: 0, applications: 0, reviews: 0, adBookings: 0,
+    jobFunctions: 0, jobRoles: 0, skills: 0, users: 0, jobs: 0, applications: 0, reviews: 0, blogs: 0, adBookings: 0,
   };
 
   for (const jf of JOB_FUNCTIONS) {
@@ -1321,6 +1451,17 @@ const AD_BOOKINGS = AD_BOOKING_SPECS.map((a) => ({
     counts.reviews++;
   }
 
+  for (const blog of BLOGS) {
+    const existing = await store.getById("blogs.json", blog.id);
+    if (existing) {
+      const { id, ...patch } = blog;
+      await store.update("blogs.json", blog.id, patch);
+    } else {
+      await store.insert("blogs.json", blog);
+    }
+    counts.blogs++;
+  }
+
   for (const booking of AD_BOOKINGS) {
     const existing = await store.getById("ad-bookings.json", booking.id);
     if (existing) {
@@ -1335,7 +1476,7 @@ const AD_BOOKINGS = AD_BOOKING_SPECS.map((a) => ({
   console.log(
     `Recruitment demo data seeded: ${counts.jobFunctions} job functions, ${counts.jobRoles} job roles, ` +
     `${counts.skills} skills, ${counts.users} users (employers+candidates), ${counts.jobs} jobs, ` +
-    `${counts.applications} applications, ${counts.reviews} reviews, ${counts.adBookings} ad bookings.`
+    `${counts.applications} applications, ${counts.reviews} reviews, ${counts.blogs} career-guide blogs, ${counts.adBookings} ad bookings.`
   );
 })().catch((err) => {
   console.error("seed-recruitment-demo failed:", err);

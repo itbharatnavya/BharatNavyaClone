@@ -81,7 +81,7 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getReviews(sellerId)
+    getReviews(sellerId, "directory")
       .then((r) => {
         if (!cancelled) setReviews(r);
       })
@@ -160,6 +160,7 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
     try {
       const created = await postReview({
         sellerId,
+        context: "directory",
         rating,
         reviewText: reviewText.trim() || undefined,
       });

@@ -5,12 +5,14 @@
  * fan-out — a job has exactly one employer, unlike a broad RFQ).
  *
  * POST /             candidate applies to a job (authGuard — applying needs identity;
- *                    403 if recruitmentRole is "recruiter"; 400 if the candidate has no
- *                    resume on file, or hasn't answered all of the job's required
- *                    questions — Recruitment role-lock enhancement pass)
+ *                    403 if recruitmentRole is "recruiter"; 400 if the candidate's
+ *                    profile is incomplete (lib/recruitmentProfile.candidateProfileGaps
+ *                    — headline/summary/experience/skills/mobile/email/CV), or hasn't
+ *                    answered all of the job's required questions)
  * GET  /mine          candidate's own applications
- * GET  /               employer's received applications across their jobs (authGuard;
- *                      optional ?jobId=&status= filters)
+ * GET  /               employer's received applications across THEIR OWN jobs only
+ *                      (authGuard; always scoped to req.user.id as employer — an admin
+ *                      role does NOT widen this list; optional ?jobId=&status= filters)
  * GET  /:id             single application (candidate owner, job's employer, or admin)
  * POST /:id/status       employer updates status (authGuard; owner or admin)
  */
@@ -21,6 +23,7 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
+const { candidateProfileGaps } = require("../lib/recruitmentProfile");
 
 // Employer-settable statuses via POST /:id/status — "withdrawn" is deliberately NOT in
 // this set, since it's a candidate-only transition (see POST /:id/withdraw below), not
@@ -95,18 +98,20 @@ router.post("/", authGuard, async (req, res, next) => {
     const resumeUrl = (req.body && req.body.resumeUrl) || cp.resumeUrl || null;
     const coverNote = req.body && req.body.coverNote ? String(req.body.coverNote).trim().slice(0, 4000) : "";
 
-    // Mandatory-info gate (enhancement doc §6): name + mobile are already guaranteed
-    // non-empty by registration (ContactAuthModal requires both), so the CV is the only
-    // field that can actually be missing — `missing` lets the frontend render the exact
-    // doc-specified checklist instead of a generic error toast.
-    const missing = [];
-    if (!candidate.name || !candidate.name.trim()) missing.push("name");
-    if (!candidate.mobile || !candidate.mobile.trim()) missing.push("mobile");
-    if (!resumeUrl) missing.push("resume");
+    // Full candidate-profile gate: an incomplete profile can't apply at all. The same
+    // rules power the Apply modal's pre-check and the dashboard Candidate profile form
+    // (frontend/lib/recruitmentProfile.ts), so the applicant is turned away here only
+    // if they somehow bypassed the client gate. `missing` is [{ key, label }] — the
+    // frontend renders it as a checklist and links to ?tab=profile.
+    const missing = candidateProfileGaps({
+      ...candidate,
+      candidateProfile: { ...cp, resumeUrl: resumeUrl || cp.resumeUrl || null },
+    });
     if (missing.length) {
       return res.status(400).json({
         success: false,
         error: "Complete your candidate profile before applying.",
+        code: "candidate_profile_incomplete",
         missing,
       });
     }
@@ -222,9 +227,13 @@ router.get("/", authGuard, async (req, res, next) => {
       return res.status(400).json({ success: false, error: "invalid status filter" });
     }
 
-    const isAdmin = (req.user.roles || []).includes("admin");
+    // Always employer-scoped to the caller. This is the recruiter dashboard's own
+    // "applications for my jobs" feed — an admin role must NOT turn it into a
+    // cross-employer firehose (that leaked every employer's applications into the
+    // dashboard of any user who also held the admin role). Admin per-record access
+    // still exists on GET /:id and POST /:id/status.
     let applications = await store.findMany("applications.json", (a) => {
-      if (!isAdmin && a.employerId !== req.user.id) return false;
+      if (a.employerId !== req.user.id) return false;
       if (jobId && a.jobId !== jobId) return false;
       if (status && a.status !== status) return false;
       return true;

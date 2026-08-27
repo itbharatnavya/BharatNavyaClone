@@ -42,6 +42,8 @@ type SectionKey = "global" | "directory" | "recruitment";
 type TabKey =
   | "overview"
   | "users"
+  | "directoryUsers"
+  | "recruitmentUsers"
   | "sellers"
   | "reports"
   | "moderation"
@@ -88,6 +90,8 @@ const icon = (d: string) => (
 const ICONS: Record<TabKey, React.ReactNode> = {
   overview: icon("M3 13h8V3H3v10Zm10 8h8V3h-8v18ZM3 21h8v-6H3v6Z"),
   users: icon("M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"),
+  directoryUsers: icon("M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"),
+  recruitmentUsers: icon("M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"),
   sellers: icon("M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"),
   reports: icon("M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1v13ZM4 22v-7"),
   moderation: icon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"),
@@ -144,6 +148,7 @@ const SECTIONS: Section[] = [
     label: "Directory",
     defaultTab: "categories",
     tabs: [
+      nav("directoryUsers", "Users"),
       nav("categories", "Categories"),
       nav("collections", "Collections"),
       nav("plans", "Plans"),
@@ -160,8 +165,9 @@ const SECTIONS: Section[] = [
   {
     key: "recruitment",
     label: "Recruitment",
-    defaultTab: "employers",
+    defaultTab: "recruitmentUsers",
     tabs: [
+      nav("recruitmentUsers", "Users"),
       nav("employers", "Employers"),
       nav("jobsAdmin", "Jobs"),
       nav("taxonomy", "Taxonomy"),
@@ -187,6 +193,8 @@ function isTabKey(v: string): v is TabKey {
 const TITLES: Record<TabKey, string> = {
   overview: "Overview",
   users: "Users",
+  directoryUsers: "Users",
+  recruitmentUsers: "Users",
   sellers: "Sellers",
   reports: "Reports",
   moderation: "Content",
@@ -370,7 +378,9 @@ export default function AdminPage() {
           {tabInSection && (
             <>
               {tab === "overview" && <OverviewTab />}
-              {tab === "users" && <UsersTab />}
+              {tab === "users" && <UsersTab scope="global" />}
+              {tab === "directoryUsers" && <UsersTab scope="directory" />}
+              {tab === "recruitmentUsers" && <UsersTab scope="recruitment" />}
               {tab === "sellers" && <SellersTab />}
               {tab === "reports" && <ReportsTab />}
               {tab === "moderation" && <ModerationTab product="directory" />}

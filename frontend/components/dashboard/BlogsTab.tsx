@@ -11,6 +11,7 @@ import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./shared";
+import { validateBlog, type Errors } from "./validation";
 
 interface Props {
   user: User;
@@ -49,6 +50,9 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
   const [draft, setDraft] = useState<DraftState | null>(null);
   const [deleting, setDeleting] = useState<Blog | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tried, setTried] = useState(false);
+
+  const errors: Errors = tried && draft ? validateBlog(draft) : {};
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -67,9 +71,11 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
   }, [load]);
 
   function openNew() {
+    setTried(false);
     setDraft({ ...EMPTY });
   }
   function openEdit(b: Blog) {
+    setTried(false);
     setDraft({
       id: b.id,
       title: b.title,
@@ -83,6 +89,12 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
 
   async function save() {
     if (!draft) return;
+    setTried(true);
+    const errs = validateBlog(draft);
+    if (Object.keys(errs).length > 0) {
+      addToast(tr("dashboard.blogs.fixFields", "Please fix the highlighted fields."), "error");
+      return;
+    }
     setBusy(true);
     try {
       const body: Partial<Blog> = {
@@ -207,11 +219,13 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
               label={tr("dashboard.blogs.fieldTitle", "Title")}
               value={draft.title}
               onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              error={errors.title}
             />
             <Input
               label={tr("dashboard.blogs.fieldExcerpt", "Excerpt")}
               value={draft.excerpt}
               onChange={(e) => setDraft({ ...draft, excerpt: e.target.value })}
+              error={errors.excerpt}
               hint={tr("dashboard.blogs.excerptHint", "Short summary shown in listings.")}
             />
             <Textarea
@@ -221,12 +235,14 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
               rows={12}
               placeholder={"# Heading\n\nWrite your article in **Markdown**…"}
               style={{ fontFamily: "var(--font-mono, monospace)", minHeight: 220 }}
+              error={errors.body}
             />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <Input
                 label={tr("dashboard.blogs.fieldTags", "Tags")}
                 value={draft.tags}
                 onChange={(e) => setDraft({ ...draft, tags: e.target.value })}
+                error={errors.tags}
                 hint={tr("dashboard.blogs.tagsHint", "Comma separated")}
               />
               <Select
@@ -243,6 +259,7 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
               label={tr("dashboard.blogs.fieldCover", "Cover image URL")}
               value={draft.coverImage}
               onChange={(e) => setDraft({ ...draft, coverImage: e.target.value })}
+              error={errors.coverImage}
               placeholder="https://…"
             />
           </div>

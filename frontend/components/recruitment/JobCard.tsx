@@ -246,7 +246,8 @@ export default function JobCard({ job, href, className = "", layout = "row" }: J
       </div>
 
       <style jsx>{`
-        .jc-row { display: flex; align-items: flex-start; gap: 16px; padding: 18px; }
+        .jc-row { display: flex; align-items: flex-start; gap: 16px; padding: 18px; transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease; }
+        .jc-row:hover { border-color: var(--tricolor-green); box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
         .jc-row-logo { flex-shrink: 0; }
         .jc-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
         .jc-row-headline { display: flex; align-items: baseline; gap: 10px; }
@@ -260,6 +261,10 @@ export default function JobCard({ job, href, className = "", layout = "row" }: J
         @media (max-width: 640px) {
           .jc-row { flex-wrap: wrap; }
           .jc-row-side { flex-direction: row-reverse; align-items: center; width: 100%; justify-content: space-between; padding-top: 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .jc-row { transition: none; }
+          .jc-row:hover { transform: none; }
         }
       `}</style>
     </article>

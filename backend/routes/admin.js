@@ -24,10 +24,12 @@ const isSeller = (u) => u && u.sellerProfile;
 /* =============================================================== analytics == */
 router.get("/analytics", async (req, res, next) => {
   try {
-    const [users, listings, inquiries] = await Promise.all([
+    const [users, listings, inquiries, jobs, applications] = await Promise.all([
       store.all("users.json"),
       store.all("listings.json"),
       store.all("inquiries.json"),
+      store.all("jobs.json"),
+      store.all("applications.json"),
     ]);
 
     const sellers = users.filter(isSeller);
@@ -65,6 +67,36 @@ router.get("/analytics", async (req, res, next) => {
       monthlyInquiries.push({ month: MONTH_LABELS[month], year, count });
     }
 
+    /* ----------------------------------------------------- Recruitment ----- */
+    const employers = users.filter((u) => u.employerProfile);
+    const candidates = users.filter((u) => u.candidateProfile);
+    const pendingEmployers = employers.filter(
+      (u) => (u.employerProfile.status || "pending") === "pending"
+    ).length;
+    const activeJobs = jobs.filter((j) => j.status === "active").length;
+    const openings = jobs.reduce((sum, j) => sum + (Number(j.openings) || 0), 0);
+
+    const applicationsByStatus = {};
+    for (const a of applications) {
+      const st = a.status || "applied";
+      applicationsByStatus[st] = (applicationsByStatus[st] || 0) + 1;
+    }
+
+    // Last 6 months of application volume, same shape as monthlyInquiries.
+    const monthlyApplications = [];
+    for (let offset = 5; offset >= 0; offset--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      const year = d.getFullYear();
+      const month = d.getMonth();
+      const count = applications.filter((a) => {
+        const raw = a.appliedAt || a.createdAt;
+        if (typeof raw !== "string") return false;
+        const c = new Date(raw);
+        return c.getFullYear() === year && c.getMonth() === month;
+      }).length;
+      monthlyApplications.push({ month: MONTH_LABELS[month], year, count });
+    }
+
     return res.json({
       success: true,
       data: {
@@ -79,6 +111,20 @@ router.get("/analytics", async (req, res, next) => {
         sellersByTier,
         activePaidSellersByTier,
         monthlyInquiries,
+        recruitment: {
+          totals: {
+            employers: employers.length,
+            pendingEmployers,
+            candidates: candidates.length,
+            jobs: jobs.length,
+            activeJobs,
+            openings,
+            applications: applications.length,
+            hires: applicationsByStatus.hired || 0,
+          },
+          applicationsByStatus,
+          monthlyApplications,
+        },
       },
     });
   } catch (err) {
@@ -87,21 +133,64 @@ router.get("/analytics", async (req, res, next) => {
 });
 
 /* =================================================================== users == */
-// GET /users?type=all|user|seller&status=&planTier=&featured=&q=&page=&limit=
-// Unified, paginated user directory. `type` splits accounts into plain users
-// (no sellerProfile) vs sellers (sellerProfile present — a seller is still a
-// normal user underneath, just with the seller block attached). `status`,
-// `planTier` and `featured` (yes|no) all filter on sellerProfile fields and are
-// ignored for plain users, which have none of these. Sensitive fields
-// (passwordHash) are stripped.
-function sanitizeUser(u) {
-  const { passwordHash, ...rest } = u;
-  return { ...rest, accountType: isSeller(u) ? "seller" : "user" };
+// GET /users?scope=global|directory|recruitment&type=&status=&planTier=&featured=&q=&page=&limit=
+//
+// One paginated directory over every account. An account wears any mix of "hats"
+// (buyer, seller, employer, candidate, admin) at once — this endpoint is just a
+// filtered view of users.json, and GET /users/:id is the per-person cross-product
+// detail. `scope` narrows the base set to one product's people and picks which
+// approval-status field `status` filters on:
+//   - global      → everyone; `status` filters sellerProfile.status
+//   - directory   → sellers + plain buyers (no recruitment-only accounts); sellerProfile.status
+//   - recruitment → employers + candidates; employerProfile.status
+// `planTier` / `featured` are seller-only and ignored elsewhere. passwordHash is stripped.
+const isEmployer = (u) => u && u.employerProfile;
+const isCandidate = (u) => u && u.candidateProfile;
+const isAdminUser = (u) => ((u && u.roles) || []).includes("admin");
+const acctStatus = (u) => (u && u.status === "suspended" ? "suspended" : "active");
+
+function hatsOf(u) {
+  const hats = ["buyer"]; // every account can buy
+  if (isSeller(u)) hats.push("seller");
+  if (isEmployer(u)) hats.push("employer");
+  if (isCandidate(u)) hats.push("candidate");
+  if (isAdminUser(u)) hats.push("admin");
+  return hats;
 }
+
+// Row shape for the list — full sellerProfile (the list renders many of its fields),
+// but only a lightweight slice of employer/candidate (detail view has the rest).
+function adminUserRow(u) {
+  const { passwordHash, employerProfile, candidateProfile, ...rest } = u;
+  return {
+    ...rest,
+    accountType: isSeller(u) ? "seller" : "user", // back-compat with the old shape
+    accountStatus: acctStatus(u),
+    hats: hatsOf(u),
+    employerProfile: employerProfile
+      ? {
+          companyName: employerProfile.companyName || "",
+          slug: employerProfile.slug || null,
+          status: employerProfile.status || "pending",
+          isVerified: !!employerProfile.isVerified,
+        }
+      : null,
+    candidateProfile: candidateProfile
+      ? {
+          headline: candidateProfile.headline || "",
+          skills: candidateProfile.skills || [],
+          resumeUrl: candidateProfile.resumeUrl || null,
+        }
+      : null,
+  };
+}
+
+const USER_SCOPES = new Set(["global", "directory", "recruitment"]);
 
 router.get("/users", async (req, res, next) => {
   try {
-    const type = req.query.type;
+    const scope = USER_SCOPES.has(req.query.scope) ? req.query.scope : "global";
+    const type = req.query.type || "all";
     const status = req.query.status;
     const planTier = req.query.planTier;
     const featured = req.query.featured;
@@ -110,38 +199,61 @@ router.get("/users", async (req, res, next) => {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
     const all = await store.all("users.json");
+
+    // 1. Scope — the base population for this product.
+    let scoped = all;
+    if (scope === "directory") {
+      scoped = all.filter((u) => isSeller(u) || (!isEmployer(u) && !isCandidate(u)));
+    } else if (scope === "recruitment") {
+      scoped = all.filter((u) => isEmployer(u) || isCandidate(u));
+    }
+
+    // Counts are over the scoped set, before the type filter (so the tab badges
+    // stay stable as you switch tabs).
     const summary = {
-      total: all.length,
-      users: all.filter((u) => !isSeller(u)).length,
-      sellers: all.filter(isSeller).length,
+      total: scoped.length,
+      buyers: scoped.filter((u) => !isSeller(u) && !isEmployer(u) && !isCandidate(u)).length,
+      sellers: scoped.filter(isSeller).length,
+      employers: scoped.filter(isEmployer).length,
+      candidates: scoped.filter(isCandidate).length,
+      admins: scoped.filter(isAdminUser).length,
+      suspended: scoped.filter((u) => acctStatus(u) === "suspended").length,
     };
 
-    let list = all;
+    // 2. Type — one hat.
+    let list = scoped;
     if (type === "seller") list = list.filter(isSeller);
-    else if (type === "user") list = list.filter((u) => !isSeller(u));
+    else if (type === "employer") list = list.filter(isEmployer);
+    else if (type === "candidate") list = list.filter(isCandidate);
+    else if (type === "admin") list = list.filter(isAdminUser);
+    else if (type === "buyer" || type === "user")
+      list = list.filter((u) => !isSeller(u) && !isEmployer(u) && !isCandidate(u));
 
+    // 3. Approval status — sellerProfile.status, or employerProfile.status in
+    // recruitment scope. Candidates have no status, so this simply excludes them.
     if (status && status !== "all") {
-      list = list.filter((u) => isSeller(u) && u.sellerProfile.status === status);
+      const key = scope === "recruitment" ? "employerProfile" : "sellerProfile";
+      list = list.filter((u) => u[key] && u[key].status === status);
     }
 
     if (planTier && planTier !== "all") {
       list = list.filter((u) => isSeller(u) && (u.sellerProfile.planTier || "free") === planTier);
     }
-
     if (featured === "yes" || featured === "no") {
       const want = featured === "yes";
       list = list.filter((u) => isSeller(u) && !!u.sellerProfile.isFeaturedSeller === want);
     }
 
     if (q) {
-      list = list.filter((u) => {
-        return (
+      list = list.filter(
+        (u) =>
           (u.name || "").toLowerCase().includes(q) ||
           (u.email || "").toLowerCase().includes(q) ||
           (u.mobile || "").toLowerCase().includes(q) ||
-          (u.sellerProfile?.companyName || "").toLowerCase().includes(q)
-        );
-      });
+          (u.sellerProfile?.companyName || "").toLowerCase().includes(q) ||
+          (u.employerProfile?.companyName || "").toLowerCase().includes(q) ||
+          (u.candidateProfile?.headline || "").toLowerCase().includes(q)
+      );
     }
 
     list = list.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -149,13 +261,73 @@ router.get("/users", async (req, res, next) => {
     const total = list.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
-    const items = list.slice(start, start + limit).map(sanitizeUser);
+    const items = list.slice(start, start + limit).map(adminUserRow);
 
     return res.json({ success: true, data: { items, total, page, totalPages, summary } });
   } catch (err) {
     next(err);
   }
 });
+
+// GET /users/:id — one account, every hat, plus cross-product activity counts.
+router.get("/users/:id", async (req, res, next) => {
+  try {
+    const u = await store.getById("users.json", req.params.id);
+    if (!u) return res.status(404).json({ success: false, error: "User not found" });
+
+    const [listings, inquiriesSent, jobsPosted, appsSent, appsReceived, reviewsWritten, reviewsReceived] =
+      await Promise.all([
+        store.findMany("listings.json", (l) => l.sellerId === u.id),
+        store.findMany("inquiries.json", (q) => q.buyerId === u.id),
+        store.findMany("jobs.json", (j) => j.employerId === u.id),
+        store.findMany("applications.json", (a) => a.candidateId === u.id),
+        store.findMany("applications.json", (a) => a.employerId === u.id),
+        store.findMany("reviews.json", (r) => r.buyerId === u.id),
+        store.findMany("reviews.json", (r) => (r.targetUserId || r.sellerId) === u.id),
+      ]);
+
+    const { passwordHash, ...safe } = u;
+    return res.json({
+      success: true,
+      data: {
+        user: { ...safe, accountStatus: acctStatus(u), hats: hatsOf(u) },
+        stats: {
+          listings: listings.length,
+          inquiriesSent: inquiriesSent.length,
+          jobsPosted: jobsPosted.length,
+          applicationsSent: appsSent.length,
+          applicationsReceived: appsReceived.length,
+          reviewsWritten: reviewsWritten.length,
+          reviewsReceived: reviewsReceived.length,
+        },
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /users/:id/suspend | /users/:id/reactivate — account-level. Independent of
+// any product's approval status (a suspended seller-account can't log in at all).
+// Admin accounts and your own account are protected.
+async function setAccountStatus(req, res, next, status) {
+  try {
+    const u = await store.getById("users.json", req.params.id);
+    if (!u) return res.status(404).json({ success: false, error: "User not found" });
+    if (isAdminUser(u)) {
+      return res.status(400).json({ success: false, error: "Admin accounts cannot be suspended." });
+    }
+    if (req.user && req.user.id === u.id) {
+      return res.status(400).json({ success: false, error: "You cannot change your own account status." });
+    }
+    const updated = await store.update("users.json", u.id, { status });
+    return res.json({ success: true, data: { id: updated.id, status: acctStatus(updated) } });
+  } catch (err) {
+    next(err);
+  }
+}
+router.post("/users/:id/suspend", (req, res, next) => setAccountStatus(req, res, next, "suspended"));
+router.post("/users/:id/reactivate", (req, res, next) => setAccountStatus(req, res, next, "active"));
 
 /* ================================================================= sellers == */
 // GET /sellers?status=approved|pending|rejected|suspended
