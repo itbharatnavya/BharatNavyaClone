@@ -1,13 +1,13 @@
 # Bharat Navya Next.js capability matrix
 
-Updated: 31 August 2026 · Branch: `design`
+Updated: 1 September 2026 · Branch: `design`
 
 | Capability | Existing contract | Migration decision | Dependency / constraint |
 | --- | --- | --- | --- |
 | Public shell and auth | Next.js providers, `/login`, notifications | Preserve function, recompose UI | Public navigation limited to Home, Directory, Recruitment |
 | Universal search | Directory `/search`; Recruitment `/recruitment/jobs` | Add typed intent adapter and correction links | No shared backend search; ambiguous intent requires user choice |
-| Company discovery | Seller, category, search, review, inquiry APIs | Recompose as company/service-first Directory | Existing catalogue responses need a company-centric adapter |
-| Company identity | `sellerProfile` | Preserve API, restyle | Not synchronized with `employerProfile` |
+| Company discovery | Featured seller and seller-name search APIs | Company-first Directory and results implemented | Service-family/capability metadata is a frontend adapter pending backend fields; irrelevant seeded sellers are excluded |
+| Company identity | `sellerProfile` | Company profile implemented with identity, services, media and reviews | Not synchronized with `employerProfile`; product listings are filtered from the public presentation |
 | Recruitment | Jobs, employer, candidate and application APIs | Preserve function, restyle and recompose | Role-lock model remains until backend membership work |
 | Main public activity | Public recent reviews and seller media | Recompose | Never expose private candidate/application records |
 | Native promotion | Existing internal ad booking/placement API | Allow one late unit on landing | Render only an internal target URL; no third-party landing ads |
@@ -25,4 +25,6 @@ Updated: 31 August 2026 · Branch: `design`
 - Universal search with high/low confidence behavior: implemented.
 - Main landing using public seller, job, review/activity and ad APIs: implemented.
 - Directory and Recruitment correction links: implemented.
-- Responsive, accessibility, build and browser verification: pending final QA.
+- Frozen-reference source audit: completed for landing gateways, proof interaction, activity interaction, assistant styling and Directory scope.
+- TypeScript verification: completed after the parity correction.
+- Production build, route checks and exact-viewport browser verification: pending final QA for this change set.

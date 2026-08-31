@@ -184,6 +184,9 @@ The active design implementation now lives in `frontend/`; `Design/` is frozen r
 - Live API content needs loading, empty, error, missing-media, and long-content behavior. A UI action must not claim success until its backend request succeeds.
 - Main-landing paid media is limited to an internal Bharat Navya promotion and is rendered only when an eligible internal URL is returned. Third-party advertising is not allowed there.
 - New shared visual values belong in the token layers; feature pages must not create local color, type, radius, shadow, or spacing systems.
+- The approved parent-landing gateways are two equal neutral cards: 180×76px on desktop and two fluid columns at 68px minimum height on small screens. Icons stay in a fixed first column; labels center in the remaining column regardless of text length. Directory uses the trust-green icon treatment and Recruitment uses the primary-blue treatment.
+- The global assistant uses a 52px deep-navy circular trigger and a neutral white drawer header. The legacy blue-orange gradient and sparkle treatment are not part of the migrated Bharat Navya system.
+- `/directory`, `/search`, and `/seller/:slug` use `directory-design.css` as one shared composition layer. Directory means companies, services, capabilities, work evidence, reviews, and inquiry—not products, RFQs, quotations, or industrial category browsing.
 
 ## Hover / focus states
 

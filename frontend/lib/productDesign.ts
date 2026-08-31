@@ -21,6 +21,9 @@ export interface DirectoryCompany {
   rating: number | null;
   reviewCount: number;
   responseRate: number | null;
+  serviceFamily: string;
+  capabilities: string[];
+  media: string | null;
 }
 
 export interface RecruitmentJob {
@@ -54,6 +57,63 @@ export interface NativePromotion {
   body: string;
   href: string;
   sponsorName: string;
+}
+
+type DirectoryPresentation = Pick<DirectoryCompany, "serviceFamily" | "capabilities" | "media">;
+
+const directoryPresentations: Record<string, DirectoryPresentation> = {
+  "sharma-associates-chartered-accountants": {
+    serviceFamily: "Finance, Legal and Compliance",
+    capabilities: ["GST and tax filing", "Bookkeeping", "Statutory audit"],
+    media: "/demo/business-3.jpg",
+  },
+  "lexedge-legal-compliance": {
+    serviceFamily: "Finance, Legal and Compliance",
+    capabilities: ["Business registration", "Contracts", "Compliance support"],
+    media: "/demo/business-2.jpg",
+  },
+  "mehta-co-company-secretaries": {
+    serviceFamily: "Finance, Legal and Compliance",
+    capabilities: ["Company secretarial", "ROC filings", "Governance"],
+    media: "/demo/business-5.jpg",
+  },
+  "technova-it-solutions": {
+    serviceFamily: "Technology and Software",
+    capabilities: ["Website development", "Business software", "Technology support"],
+    media: "/demo/business-1.jpg",
+  },
+  "studio-aangan-architects": {
+    serviceFamily: "Professional Business Services",
+    capabilities: ["Workspace design", "Architecture", "Project planning"],
+    media: "/demo/business-4.jpg",
+  },
+  "vriddhi-business-advisors": {
+    serviceFamily: "Professional Business Services",
+    capabilities: ["Business strategy", "Marketing partner", "Growth advisory"],
+    media: "/demo/business-2.jpg",
+  },
+  "pixelforge-digital": {
+    serviceFamily: "Marketing and Creative",
+    capabilities: ["Brand systems", "Digital marketing", "Creative production"],
+    media: "/demo/business-5.jpg",
+  },
+  "swiftmove-packers-logistics": {
+    serviceFamily: "Logistics and Operations",
+    capabilities: ["Business relocation", "Logistics provider", "Operations support"],
+    media: "/demo/business-4.jpg",
+  },
+  "packright-industries": {
+    serviceFamily: "Manufacturing and Suppliers",
+    capabilities: ["Food-safe packaging", "Pilot production", "Business supply"],
+    media: "/demo/packaging-1.jpg",
+  },
+};
+
+export const alignedDirectorySlugs = new Set(Object.keys(directoryPresentations));
+
+export function isAlignedDirectoryCompany(raw: any): boolean {
+  const slug = raw?.slug || raw?.sellerSlug;
+  return Boolean(slug && alignedDirectorySlugs.has(slug));
 }
 
 const recruitmentSignals = [
@@ -122,6 +182,11 @@ export function mapDirectoryCompany(raw: any): DirectoryCompany | null {
     raw.about ||
     raw.description ||
     (Array.isArray(raw.categories) ? raw.categories.slice(0, 2).join(" · ") : "Business services and capabilities");
+  const presentation = directoryPresentations[slug] || {
+    serviceFamily: "Professional Business Services",
+    capabilities: ["Business services", "Specialist support"],
+    media: null,
+  };
   return {
     id: raw.id || raw.userId || slug,
     name,
@@ -133,6 +198,7 @@ export function mapDirectoryCompany(raw: any): DirectoryCompany | null {
     rating: Number.isFinite(Number(raw.rating)) ? Number(raw.rating) : null,
     reviewCount: Number(raw.reviewCount || 0),
     responseRate: Number.isFinite(Number(raw.responseRate)) ? Number(raw.responseRate) : null,
+    ...presentation,
   };
 }
 

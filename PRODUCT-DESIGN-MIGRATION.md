@@ -1,6 +1,6 @@
 # Bharat Navya product-design migration
 
-Updated: 31 August 2026  
+Updated: 1 September 2026  
 Active branch: `design`
 
 ## Source of truth
@@ -21,8 +21,8 @@ Consultations, Credit Card, and Mutual Fund remain in the repository but are hid
 | --- | --- | --- | --- |
 | Parent landing | `/` | Recompose | Approved Bharat Navya landing, connected to live public APIs |
 | Global shell | all routes | Recompose | Home, Directory, Recruitment; existing auth and dock providers retained |
-| Company discovery | `/directory`, `/search` | Recompose | Company/service-first; catalogue density removed in Directory phase |
-| Company profile | `/seller/:slug` | Recompose | Preserve API route; present company identity, proof, services, media, reviews |
+| Company discovery | `/directory`, `/search` | Recompose — implemented | Company/service-first guided showcase and company-only workbench; catalogue/RFQ presentation removed |
+| Company profile | `/seller/:slug` | Recompose — implemented | Real seller API adapted to company identity, services, proof, media, reviews and contact |
 | Company inquiry | existing seller/inquiry flows | Adjust | Structured need and privacy contract; RFQ semantics excluded from primary flow |
 | Recruitment home | `/recruitment` | Recompose | Jobs design mapped to Recruitment naming and existing APIs |
 | Job browse/detail | `/recruitment/jobs`, `/job/:id` | Restyle | Preserve filtering, profile gate, apply lifecycle, and real endpoints |
@@ -40,6 +40,8 @@ Consultations, Credit Card, and Mutual Fund remain in the repository but are hid
 - Saved jobs and a unified Saved collection are missing.
 - Directory AI search cannot be presented as a Recruitment search endpoint.
 - Missing backend actions may be designed, but the UI must not report success unless persistence actually completes.
+- Seller search currently matches company names only. Service-family, capability and media presentation is supplied by a typed frontend adapter for the aligned prototype records; these fields need canonical backend ownership before production.
+- A dedicated structured company-inquiry form is not yet exposed by the migrated profile. The page uses real published contact data or an authentication gate and does not pretend an inquiry was persisted.
 
 ## Delivery sequence
 
@@ -48,4 +50,3 @@ Consultations, Credit Card, and Mutual Fund remain in the repository but are hid
 3. Recruitment homepage, browse, job detail, apply, and employer presentation.
 4. Company and Recruitment workspaces, Updates, Saved, content, and promotions.
 5. Admin, moderation, platform-wide dark mode, and final system hardening.
-

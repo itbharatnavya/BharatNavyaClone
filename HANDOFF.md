@@ -1,6 +1,6 @@
 # Bharat Navya design migration handoff
 
-Updated: 31 August 2026  
+Updated: 1 September 2026  
 Branch: `design`  
 Remote: `origin` (`mahir-bharat/BharatNavya`)
 
@@ -13,7 +13,7 @@ Remote: `origin` (`mahir-bharat/BharatNavya`)
 - Recruitment preserves the developer's real job, application, employer and candidate contracts.
 - Work and pushes stay on `design`; do not alter other branches or unrelated backend modules without approval.
 
-## Completed pilot
+## Completed migration work
 
 - Added root guardrails and migration/capability documentation.
 - Added Manrope and a primitive → semantic → component Bharat Navya token layer while retaining legacy aliases for unmigrated routes.
@@ -24,6 +24,10 @@ Remote: `origin` (`mahir-bharat/BharatNavya`)
 - Added explicit loading, empty, error, missing-media and illustrative-process disclosure states.
 - Added Directory ↔ Recruitment search correction links.
 - Updated the assistant's public-facing language to Bharat Navya and removed RFQ/product prompts.
+- Audited the Next.js landing against the frozen `/Design` implementation and restored the compact equal-size Directory/Recruitment gateways, the selectable proof ledger, selectable activity media, restrained type scale, and navy assistant treatment.
+- Replaced the developer marketplace composition at `/directory` with the approved company-first guided showcase: search, trust vocabulary, six service families, aligned company records, decision journey, public evidence, late disclosed advertising, and participation CTA.
+- Rebuilt `/search` as a company-only results workbench and `/seller/:slug` as an evidence-led company profile. Product cards, industrial category grids, RFQ language, quotations, brands, and purchase behavior are absent from this core journey.
+- The legacy RFQ floating action is suppressed on `/directory`, `/search`, and `/seller/:slug`; its implementation remains untouched for legacy routes.
 
 ## Verification completed
 
@@ -37,4 +41,4 @@ Remote: `origin` (`mahir-bharat/BharatNavya`)
 
 Visual interaction QA at 375, 768, 1024, 1440 and 200% zoom remains the next approval checkpoint. The browser-control plugin failed locally because its installed client referenced a different unavailable plugin version; this is tooling-related, not a build failure. Inspect the actual Next.js pilot at `http://127.0.0.1:3001/`, not the Vite prototype on ports 5173/5174.
 
-After the landing and shell are visually approved, proceed to Phase 2 in this order: `/directory`, `/search`, `/seller/:slug`, inquiry/contact, then `/dashboard`.
+The landing, `/directory`, `/search`, and `/seller/:slug` now form the Phase 2 approval checkpoint. Browser-tool visual automation is still unavailable because of the installed plugin-version mismatch, so the exact open Next.js tab should be reviewed at the target breakpoints before moving to `/dashboard` or Recruitment migration.

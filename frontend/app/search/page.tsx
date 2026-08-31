@@ -1,150 +1,26 @@
 "use client";
 
-// Search — two views, switched on whether the visitor did a genuine
-// free-text search:
-//   - `?q=` present (and not `&view=all`): GlobalSearchResults, a unified
-//     Category + Company + Product/Service list — see that file for why.
-//   - Everything else (no typed query, filter/category browsing, or the
-//     explicit `&view=all` escape hatch): the plain faceted DiscoveryResults
-//     grid/list, backed by ONE API call (getListings) — unchanged, same as
-//     every other Directory browse surface (category pages, brand pages).
-// A grouped Companies/Products/Categories overview briefly existed here
-// before being reverted back to single-query-only (see git history); this
-// reintroduces the same idea deliberately scoped to genuine text search only,
-// with each source resolving independently rather than gating on all three.
-
-import React, { Suspense, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import DiscoveryResults from "@/components/discovery/DiscoveryResults";
-import GlobalSearchResults from "@/components/discovery/GlobalSearchResults";
-import { useTr, parseDiscoverySeed } from "@/components/discovery/hooks";
-import { useSearchDock } from "@/lib/searchDock";
-import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
-import { useCategories, flattenCategories } from "@/lib/catalog";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import Avatar from "@/components/Avatar";
 import SearchContextSwitch from "@/components/SearchContextSwitch";
+import { getFeaturedSellers, searchSellers } from "@/lib/api";
+import { isAlignedDirectoryCompany, mapDirectoryCompany, type DirectoryCompany } from "@/lib/productDesign";
 
-function num(v: string | null): number | undefined {
-  if (!v) return undefined;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : undefined;
+const familyOptions = ["All service families","Finance, Legal and Compliance","Manufacturing and Suppliers","Technology and Software","Marketing and Creative","Logistics and Operations","Professional Business Services"];
+function Arrow(){return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>}
+function SearchIcon(){return <svg aria-hidden viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>}
+
+function DirectorySearchResults(){
+  const params=useSearchParams(); const router=useRouter();
+  const initialQuery=params.get("q")||""; const initialCity=params.get("city")||""; const initialFamily=params.get("family")||"All service families";
+  const [query,setQuery]=useState(initialQuery); const [city,setCity]=useState(initialCity); const [family,setFamily]=useState(initialFamily);
+  const [companies,setCompanies]=useState<DirectoryCompany[]>([]); const [loading,setLoading]=useState(true); const [error,setError]=useState(false); const [verifiedOnly,setVerifiedOnly]=useState(false);
+  useEffect(()=>{setQuery(initialQuery);setCity(initialCity);setFamily(initialFamily)},[initialQuery,initialCity,initialFamily]);
+  useEffect(()=>{let live=true;setLoading(true);setError(false);Promise.all([getFeaturedSellers(),searchSellers({q:"",limit:50}).then(result=>result.sellers),initialQuery?searchSellers({q:initialQuery,limit:30}).then(result=>result.sellers):Promise.resolve([])]).then(([featured,all,matches])=>{if(!live)return;const bySlug=new Map([...featured,...all,...matches].filter(isAlignedDirectoryCompany).map(raw=>[raw.slug||raw.sellerSlug,raw]));setCompanies([...bySlug.values()].map(mapDirectoryCompany).filter((value):value is DirectoryCompany=>Boolean(value)));}).catch(()=>{if(live)setError(true)}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[initialQuery]);
+  const filtered=useMemo(()=>{const terms=initialQuery.trim().toLowerCase().split(/\s+/).filter(term=>term.length>2&&!['near','with','from'].includes(term));const score=(company:DirectoryCompany)=>{const searchable=[company.name,company.serviceFamily,...company.capabilities,company.descriptor].join(" ").toLowerCase();return terms.filter(term=>searchable.includes(term)).length*10+(company.verified?2:0)+(company.rating||0)};return companies.filter(company=>{const searchable=[company.name,company.serviceFamily,...company.capabilities,company.descriptor].join(" ").toLowerCase();return(terms.length===0||terms.some(term=>searchable.includes(term)))&&(!initialCity||company.location.toLowerCase().includes(initialCity.toLowerCase()))&&(initialFamily==="All service families"||company.serviceFamily===initialFamily)&&(!verifiedOnly||company.verified)}).sort((a,b)=>score(b)-score(a))},[companies,initialQuery,initialCity,initialFamily,verifiedOnly]);
+  function submit(event:React.FormEvent){event.preventDefault();const next=new URLSearchParams();if(query.trim())next.set("q",query.trim());if(city.trim())next.set("city",city.trim());if(family!=="All service families")next.set("family",family);router.push(`/search?${next}`)}
+  return <div className="directory-design directory-results"><section className="directory-results-head"><div className="directory-shell"><p className="directory-eyebrow">Directory results</p><h1>{initialQuery?<>Companies for “{initialQuery}”</>:"Browse credible companies"}</h1><p>Company and service records only—without products, RFQs, quotations or catalogue noise.</p><form className="directory-search" onSubmit={submit}><SearchIcon/><label><span className="sr-only">Company or need</span><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Company, service or business need"/></label><label><span className="sr-only">Location</span><input value={city} onChange={event=>setCity(event.target.value)} placeholder="City or remote"/></label><button type="submit">Update results <Arrow/></button></form></div></section><div className="directory-shell directory-results-layout"><aside aria-label="Filter companies"><h2>Refine companies</h2><label>Service family<select value={family} onChange={event=>setFamily(event.target.value)}>{familyOptions.map(option=><option key={option}>{option}</option>)}</select></label><label className="directory-check"><input type="checkbox" checked={verifiedOnly} onChange={event=>setVerifiedOnly(event.target.checked)}/><span>Identity verified only</span></label><button type="button" onClick={()=>{setFamily("All service families");setVerifiedOnly(false);setCity("");router.push(initialQuery?`/search?q=${encodeURIComponent(initialQuery)}`:"/search")}}>Clear filters</button></aside><section aria-label="Company results"><SearchContextSwitch destination="recruitment" query={initialQuery} city={initialCity}/><div className="directory-result-count"><strong aria-live="polite">{loading?"Finding companies…":`${filtered.length} company${filtered.length===1?"":"ies"}`}</strong><span>Ordered by relevance and available trust signals</span></div>{error&&<div className="directory-empty" role="status">Company results could not be loaded. Please try again.</div>}<div className="directory-result-list">{loading?[1,2,3].map(item=><div className="directory-result-row is-loading" key={item}/>):filtered.map(company=><Link href={`/seller/${company.slug}`} className="directory-result-row" key={company.id}><Avatar src={company.logo} name={company.name} size={56}/><div><span className="directory-result-status">{company.verified?"Identity verified":"Profile available"}</span><h2>{company.name}</h2><p>{company.location} · {company.serviceFamily}</p><ul>{company.capabilities.map(capability=><li key={capability}>{capability}</li>)}</ul></div><div className="directory-result-meta">{company.rating?<strong>{company.rating.toFixed(1)} / 5</strong>:<strong>New record</strong>}<span>{company.reviewCount} reviews</span><span>{company.responseRate?`${company.responseRate}% response rate`:"Response data unavailable"}</span><b>View company <Arrow/></b></div></Link>)}</div>{!loading&&!error&&filtered.length===0&&<div className="directory-empty"><strong>No aligned companies match these filters.</strong><p>Try a broader need, remove the location, or browse another service family.</p></div>}</section></div></div>
 }
-
-function SearchInner() {
-  const params = useSearchParams();
-  const t = useTr();
-  const {
-    query: dockedQuery,
-    setQuery: setDockedQuery,
-    city: dockedCity,
-    setCity: setDockedCity,
-    selectedCategory: dockedCategory,
-    setSelectedCategory: setDockedCategory,
-  } = useSearchDock();
-
-  // q + city + type + budget + verified + category become *removable* seeded
-  // filters; only minPrice (rare, no chip) stays a fixed base constraint.
-  const seed = parseDiscoverySeed(params);
-  const q = seed.query;
-  // A genuine free-text search shows the unified Category/Company/Product
-  // list by default; `&view=all` (from that view's own "View all N results"
-  // link) drops back into the plain filtered/paginated list for the same
-  // query. Deliberately keyed on `q` alone, not `initialFilters.category` or
-  // anything else — picking a suggestion never lands here with `?q=` set (it
-  // navigates straight to the specific category/listing instead), so this
-  // can't misfire for a plain category-filter-only browse.
-  const showUnified = !!q && params.get("view") !== "all";
-
-  const baseQuery = {
-    minPrice: num(params.get("minPrice")),
-  };
-
-  // The Navbar's search bar is the only one on this page (no embedded copy),
-  // so it needs to reflect this page's own URL on a direct link / refresh,
-  // when there's no prior client-navigation commit for it to already be
-  // showing. Only fills in when the dock is still empty, so it never
-  // clobbers a value DirectorySearchBar itself just committed a moment
-  // before pushing here.
-  useEffect(() => {
-    if (q && !dockedQuery) setDockedQuery(q);
-    if (seed.initialFilters.city && dockedCity === PAN_INDIA_LABEL) setDockedCity(seed.initialFilters.city);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Category chip in the docked search bar needs the flattened category list
-  // (for its display name), which loads asynchronously — sync the dock's
-  // chip once available, but don't clobber a chip that already matches (e.g.
-  // set by DirectorySearchBar's own commit just before it navigated here).
-  const { categories: catalogCategories, loading: categoriesLoading } = useCategories();
-  const allCategories = flattenCategories(catalogCategories);
-  const categoriesLoaded = !categoriesLoading;
-  const urlCategorySlug = seed.initialFilters.category;
-  useEffect(() => {
-    if (!urlCategorySlug || !categoriesLoaded) return;
-    if (dockedCategory?.slug === urlCategorySlug) return;
-    const match = allCategories.find((c) => c.slug === urlCategorySlug);
-    setDockedCategory({ slug: urlCategorySlug, name: match ? match.name : urlCategorySlug });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlCategorySlug, categoriesLoaded, allCategories]);
-
-  return (
-    <div className="container-bs section-pad-sm">
-      <div style={{ marginBottom: 28 }}>
-        <div className="eyebrow" style={{ marginBottom: 8 }}>
-          {t("search.eyebrow", "Search")}
-        </div>
-        <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
-          {q
-            ? `${t("search.resultsFor", "Results for")} "${q}"`
-            : t("search.title", "Browse the marketplace")}
-        </h1>
-      </div>
-
-      <SearchContextSwitch destination="recruitment" query={q} city={seed.initialFilters.city} />
-
-      {showUnified ? (
-        <GlobalSearchResults query={q} />
-      ) : (
-        <DiscoveryResults
-          baseQuery={baseQuery}
-          initialFilters={seed.initialFilters}
-          query={q}
-          syncUrl
-          enableCategoryFilter
-          adRail
-          defaultSort="relevance"
-          emptyTitle={t("search.empty.title", "No matches found")}
-          emptyMessage={t(
-            "search.empty.message",
-            "Try different keywords or remove a filter, or post a requirement and let sellers come to you."
-          )}
-        />
-      )}
-    </div>
-  );
-}
-
-function SearchFallback() {
-  return (
-    <div className="container-bs section-pad-sm">
-      <span className="skeleton" style={{ display: "block", height: 30, width: 280, marginBottom: 28 }} />
-      <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="card card-flat" style={{ overflow: "hidden" }}>
-            <div className="skeleton" style={{ aspectRatio: "4 / 3", borderRadius: 0 }} />
-            <div style={{ padding: 16 }}>
-              <span className="skeleton" style={{ display: "block", height: 14, width: "90%" }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default function SearchPage() {
-  return (
-    <Suspense fallback={<SearchFallback />}>
-      <SearchInner />
-    </Suspense>
-  );
-}
+export default function SearchPage(){return <Suspense fallback={<div className="directory-shell directory-section">Loading company results…</div>}><DirectorySearchResults/></Suspense>}

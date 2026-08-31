@@ -57,10 +57,12 @@
   --bn-container: 75rem;
 
   --bn-search-height: 4.5rem;
-  --bn-gateway-width: 18rem;
-  --bn-gateway-height: 8.5rem;
+  --bn-gateway-width: 11.25rem;
+  --bn-gateway-height: 4.75rem;
   --bn-record-density: 1.125rem;
   --bn-header-height: 4.5rem;
+  --bn-on-dark-secondary: #c8cfdd;
+  --bn-on-dark-border: #3a4050;
 
   /* canvas / surfaces */
   --canvas: #ffffff;

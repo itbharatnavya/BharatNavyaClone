@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import "./bharat-navya-home.css";
+import "./directory-design.css";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";
