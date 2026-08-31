@@ -55,7 +55,7 @@ main
      └─ feature/ui-<screen>   short-lived: port one screen from Design/ into real frontend/
 ```
 
-- **`Design/`** (merged 2026-08-31, commit `2c834c1`, from branch `design`) is a **self-contained Vite+React+TS redesign prototype** — its own `package.json` / `tsconfig` / `.gitignore`, zero overlap with `backend/`, `frontend/`, or root. It is a **read-only reference for porting**, never built or imported by the real app.
+- **`Design/`** (merged 2026-08-31, merge commit `883f0c9`, from branch `design`) is a **self-contained Vite+React+TS redesign prototype** — its own `package.json` / `tsconfig` / `.gitignore`, zero overlap with `backend/`, `frontend/`, or root. It is a **read-only reference for porting**, never built or imported by the real app.
 - **Pull design updates** whenever the UI dev pushes: `git fetch origin` → compare `git diff --name-only feature/backend-phase1...origin/design` (expect everything under `Design/`) → `git merge --no-ff origin/design` → `git push`. Anything in that diff **outside `Design/`** is a review point.
 - **Rules:** merge, never rebase this branch (it's published); flow is one-way (`design` → here, never back); watch root + `frontend/package-lock.json` on each merge (only realistic conflict source).
 - **Porting:** per screen, branch `feature/ui-<screen>` off here, rebuild in real `frontend/` components using `frontend/app/globals.css` tokens + CLAUDE.md §6 rules; PR back; delete that slice of `Design/` when done. When touching `frontend/lib/api.ts`, also land the deferred **429 handler** fix (Frontend Fix Register 1c/1d).
