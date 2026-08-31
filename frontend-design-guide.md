@@ -173,6 +173,18 @@ One primitive: **`Reveal`** (650ms `cubic-bezier(0.16, 1, 0.3, 1)`, fires once v
 - **Hover affordance implies clickability** — only `.card` (has an `href`) gets lift-on-hover.
 - `prefers-reduced-motion: reduce` handled once, globally.
 
+# Bharat Navya migration note (31 August 2026)
+
+The active design implementation now lives in `frontend/`; `Design/` is frozen reference material. For migrated surfaces, the current public product structure is Home, Directory, and Recruitment. The legacy suite-home guidance below is retained only to explain unmigrated UI-phase routes and is superseded by these contracts:
+
+- Migrated surfaces use Manrope and the `--bn-*` primitive, semantic, and component tokens defined in `frontend/app/globals.css`.
+- The global shell exposes only Home, Directory, and Recruitment. Authentication and notification behavior is preserved; unrelated suite modules and dark-mode controls are absent.
+- Directory is company/service-first. Catalogue, product-commerce, RFQ, brands, and collections must not define its primary journey.
+- Universal search uses deterministic intent classification and explicit user choice when confidence is low. Directory AI must never be represented as Recruitment search.
+- Live API content needs loading, empty, error, missing-media, and long-content behavior. A UI action must not claim success until its backend request succeeds.
+- Main-landing paid media is limited to an internal Bharat Navya promotion and is rendered only when an eligible internal URL is returned. Third-party advertising is not allowed there.
+- New shared visual values belong in the token layers; feature pages must not create local color, type, radius, shadow, or spacing systems.
+
 ## Hover / focus states
 
 - Buttons: color shift + 0.5px `translateY` on `:active`.

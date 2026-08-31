@@ -25,15 +25,15 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Hi! I'm the BharatSource assistant. Tell me what you're sourcing — a product, a service, a vendor in your city — or ask how to sell. I'll point you the right way.",
+    "Hi! I'm the Bharat Navya assistant. Tell me what kind of company, service, or role you need and I'll point you to Directory or Recruitment.",
 };
 
 // Client-side quick starters (fill + send). API suggestions come back as links.
 const QUICK_PROMPTS = [
-  "Find electronics suppliers",
-  "Services near me",
-  "How do I sell on BharatSource?",
-  "Post a requirement (RFQ)",
+  "Find a GST consultant",
+  "Technology companies near me",
+  "Show remote operations roles",
+  "How do I list my company?",
 ];
 
 function SparkleIcon({ size = 16 }: { size?: number }) {
@@ -159,7 +159,7 @@ export default function ChatAssistant() {
       {open && (
         <div
           role="dialog"
-          aria-label="BharatSource assistant"
+          aria-label="Bharat Navya assistant"
           className="fixed z-[120] flex flex-col overflow-hidden border border-border bg-surface shadow-pop
                      inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
                      sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:h-[560px] sm:max-h-[calc(100vh-2.5rem)]"

@@ -14,6 +14,7 @@ import JobResults from "@/components/recruitment/JobResults";
 import AdSlider from "@/components/AdSlider";
 import { getJobFunctions } from "@/lib/api";
 import type { JobFunction } from "@/lib/types";
+import SearchContextSwitch from "@/components/SearchContextSwitch";
 
 function JobsBrowseInner() {
   const searchParams = useSearchParams();
@@ -61,6 +62,8 @@ function JobsBrowseInner() {
           onCityChange={(c) => setFilters((prev) => ({ ...prev, city: c || undefined }))}
         />
       </div>
+
+      <SearchContextSwitch destination="directory" query={q} city={filters.city} />
 
       <div className="rj-layout">
         <aside className="rj-aside">

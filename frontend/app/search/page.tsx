@@ -21,6 +21,7 @@ import { useTr, parseDiscoverySeed } from "@/components/discovery/hooks";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useCategories, flattenCategories } from "@/lib/catalog";
+import SearchContextSwitch from "@/components/SearchContextSwitch";
 
 function num(v: string | null): number | undefined {
   if (!v) return undefined;
@@ -97,6 +98,8 @@ function SearchInner() {
             : t("search.title", "Browse the marketplace")}
         </h1>
       </div>
+
+      <SearchContextSwitch destination="recruitment" query={q} city={seed.initialFilters.city} />
 
       {showUnified ? (
         <GlobalSearchResults query={q} />

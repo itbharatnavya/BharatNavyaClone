@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import "./bharat-navya-home.css";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";
@@ -20,10 +21,16 @@ const inter = Inter({
   display: "swap",
 });
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "BharatSource — Source anything across India",
+  title: "Bharat Navya — Companies, work and opportunity connected",
   description:
-    "BharatSource is India's business suite, one account for sourcing verified suppliers on Directory and hiring vetted candidates on Recruitment.",
+    "Discover credible companies, useful services and transparent startup and SME roles across India.",
 };
 
 export default function RootLayout({
@@ -32,8 +39,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${manrope.variable}`}>
       <body>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <RouteProgress />
         <ConfigProvider>
           <CatalogProvider>
@@ -44,7 +52,7 @@ export default function RootLayout({
                     <SearchDockProvider>
                       <div className="flex min-h-screen flex-col">
                         <Navbar />
-                        <main className="flex-1">{children}</main>
+                        <main id="main-content" className="flex-1">{children}</main>
                         <Footer />
                       </div>
                       <ChatAssistant />

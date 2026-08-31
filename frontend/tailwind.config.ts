@@ -32,41 +32,41 @@ const config: Config = {
       },
       colors: {
         // ---- Canvas / surfaces ----
-        canvas: "#FFFFFF",
-        "bg-subtle": "#F7F8FA",
-        surface: "#FFFFFF",
+        canvas: "var(--canvas)",
+        "bg-subtle": "var(--bg-subtle)",
+        surface: "var(--surface)",
 
         // ---- Ink / text ----
-        ink: "#0F172A",
-        muted: "#475569",
-        faint: "#94A3B8",
+        ink: "var(--ink)",
+        muted: "var(--muted)",
+        faint: "var(--faint)",
 
         // ---- Borders (Tailwind's default border-color also resolves to gray-200 = #E5E7EB) ----
-        border: "#E5E7EB",
-        "border-strong": "#CBD5E1",
+        border: "var(--border)",
+        "border-strong": "var(--border-strong)",
 
         // ---- Trust accent (blue) ----
         brand: {
-          DEFAULT: "#2563EB",
-          hover: "#1D4ED8",
-          tint: "#EFF6FF",
+          DEFAULT: "var(--brand)",
+          hover: "var(--brand-hover)",
+          tint: "var(--brand-tint)",
         },
 
         // ---- Action accent (warm orange) ----
         action: {
-          DEFAULT: "#F97316",
-          hover: "#EA580C",
-          tint: "#FFF7ED",
+          DEFAULT: "var(--action)",
+          hover: "var(--action-hover)",
+          tint: "var(--action-tint)",
         },
 
         // ---- Status ----
-        success: "#16A34A",
-        warn: "#D97706",
-        error: "#DC2626",
+        success: "var(--success)",
+        warn: "var(--warn)",
+        error: "var(--error)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-manrope)", "var(--font-inter)", "system-ui", "sans-serif"],
         mono: [
           "ui-monospace",
           "SFMono-Regular",
