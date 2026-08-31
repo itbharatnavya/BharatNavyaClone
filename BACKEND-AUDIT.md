@@ -20,7 +20,7 @@ Every finding below was verified by reading the code at the cited line, not infe
 
 ## RESUME HERE — current state
 
-**Last worked: 2026-08-31 (IST). Branch: `feature/backend-phase1` (off `feature/ui-phase`).**
+**Last worked: 2026-08-31 (IST). Branch: `feature/backend-phase1` (off `feature/ui-phase`; `design` branch merged in — see [Branching & UI integration](#branching--ui-integration-multi-dev) below).**
 
 | Phase | State |
 |---|---|
@@ -42,6 +42,23 @@ Every finding below was verified by reading the code at the cited line, not infe
 **New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
 
 **New deps:** `helmet`, `express-rate-limit` (prod), `supertest` (dev).
+
+### Branching & UI integration (multi-dev)
+
+`feature/backend-phase1` is the **single integration branch** — "latest" for both backend work and the incoming redesign.
+
+```
+main
+ └─ feature/ui-phase          existing app UI baseline
+     └─ design                UI dev: only adds/updates the Design/ folder → pushed to origin
+ └─ feature/backend-phase1    INTEGRATION BRANCH: backend + design pulls + UI port work
+     └─ feature/ui-<screen>   short-lived: port one screen from Design/ into real frontend/
+```
+
+- **`Design/`** (merged 2026-08-31, commit `2c834c1`, from branch `design`) is a **self-contained Vite+React+TS redesign prototype** — its own `package.json` / `tsconfig` / `.gitignore`, zero overlap with `backend/`, `frontend/`, or root. It is a **read-only reference for porting**, never built or imported by the real app.
+- **Pull design updates** whenever the UI dev pushes: `git fetch origin` → compare `git diff --name-only feature/backend-phase1...origin/design` (expect everything under `Design/`) → `git merge --no-ff origin/design` → `git push`. Anything in that diff **outside `Design/`** is a review point.
+- **Rules:** merge, never rebase this branch (it's published); flow is one-way (`design` → here, never back); watch root + `frontend/package-lock.json` on each merge (only realistic conflict source).
+- **Porting:** per screen, branch `feature/ui-<screen>` off here, rebuild in real `frontend/` components using `frontend/app/globals.css` tokens + CLAUDE.md §6 rules; PR back; delete that slice of `Design/` when done. When touching `frontend/lib/api.ts`, also land the deferred **429 handler** fix (Frontend Fix Register 1c/1d).
 
 ---
 
