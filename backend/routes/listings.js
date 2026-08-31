@@ -891,8 +891,26 @@ router.put("/:id", authGuard, async (req, res, next) => {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
 
-    // Never allow the client to move ownership / rewrite identity via merge.
-    const { id, sellerId, createdAt, ...patch } = req.body || {};
+    // Allowlist, not blocklist (BACKEND-AUDIT.md S1). A blocklist here let a seller
+    // PUT isFeatured / rankBoostScore / isSponsored / manualPinRank (free paid
+    // placement), isVerifiedSeller (trust-badge forgery), rating / reviewCount
+    // (fake reviews) and verification.status (a 2-step moderation bypass). Those
+    // fields are only ever set by the dedicated admin / boost / verification
+    // endpoints — never by an owner edit. The set below is exactly what the
+    // create route and the frontend edit forms (/sell, dashboard ListingsTab,
+    // admin ListingVerificationTab) legitimately write.
+    const LISTING_EDITABLE = new Set([
+      "title", "slug", "description",
+      "category", "categoryId", "legacyCategory", "categoryPath",
+      "keywords", "media",
+      "location", "locationId", "panIndia", "serviceCities", "city", "state", "pincode",
+      "status", "product", "service",
+    ]);
+    const body = req.body || {};
+    const patch = {};
+    for (const key of Object.keys(body)) {
+      if (LISTING_EDITABLE.has(key)) patch[key] = body[key];
+    }
 
     // status may be set to active | inactive | sold (§12 reconciliation), or
     // pending | rejected (AI-verification flow, admin/system-set only below).

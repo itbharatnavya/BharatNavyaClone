@@ -198,6 +198,21 @@ router.post("/", authGuard, async (req, res, next) => {
         .status(400)
         .json({ success: false, error: "targetUserId is required" });
     }
+    // Can't review yourself (BACKEND-AUDIT.md S2) — this path runs
+    // recomputeSellerRating on the target, so self-review = self-inflated rating.
+    if (targetUserId === req.user.id) {
+      return res
+        .status(403)
+        .json({ success: false, error: "You can't review your own account." });
+    }
+    // The target must actually exist — a review pointing at a bogus id would
+    // otherwise be stored and skew nothing visibly, but pollutes the collection.
+    const target = await store.getById("users.json", targetUserId);
+    if (!target) {
+      return res
+        .status(404)
+        .json({ success: false, error: "That account no longer exists." });
+    }
     const rating = Number(b.rating);
     if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
       return res

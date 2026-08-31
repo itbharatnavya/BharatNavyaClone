@@ -130,20 +130,8 @@ function computeBrandsList(categorySlug, categories, listings) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
-// Memoized per categorySlug (the common case is the unfiltered "" call —
-// several components fetch it at once on page load) on store.js's version
-// counters, same pattern as routes/categories.js.
-const _brandsListCache = new Map(); // categorySlug -> { catVersion, listVersion, data }
 function getBrandsList(categorySlug, categories, listings) {
-  const catVersion = store.getVersion("categories.json");
-  const listVersion = store.getVersion("listings.json");
-  const cached = _brandsListCache.get(categorySlug);
-  if (cached && cached.catVersion === catVersion && cached.listVersion === listVersion) {
-    return cached.data;
-  }
-  const data = computeBrandsList(categorySlug, categories, listings);
-  _brandsListCache.set(categorySlug, { catVersion, listVersion, data });
-  return data;
+  return computeBrandsList(categorySlug, categories, listings);
 }
 
 // GET / — distinct brands aggregated from active branded listings.
@@ -184,18 +172,8 @@ function computeBrandDetail(wanted, listings, users) {
   };
 }
 
-// Memoized per wanted-slug on store.js's version counters.
-const _brandDetailCache = new Map(); // wanted -> { listVersion, userVersion, data }
 function getBrandDetail(wanted, listings, users) {
-  const listVersion = store.getVersion("listings.json");
-  const userVersion = store.getVersion("users.json");
-  const cached = _brandDetailCache.get(wanted);
-  if (cached && cached.listVersion === listVersion && cached.userVersion === userVersion) {
-    return cached.data;
-  }
-  const data = computeBrandDetail(wanted, listings, users);
-  _brandDetailCache.set(wanted, { listVersion, userVersion, data });
-  return data;
+  return computeBrandDetail(wanted, listings, users);
 }
 
 // GET /:slug — one brand (resolved by slugified name) plus its active listings.

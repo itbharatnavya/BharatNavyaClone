@@ -857,6 +857,12 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
   try {
     const message = (req.body && req.body.message ? String(req.body.message) : "").trim();
     if (!message) return res.status(400).json({ success: false, error: "message is required" });
+    if (message.length > config.AI_PROMPT_MAX) {
+      return res.status(400).json({
+        success: false,
+        error: `message must be ${config.AI_PROMPT_MAX} characters or fewer`,
+      });
+    }
 
     const statsSubject = detectStatsSubject(message);
     let nav;

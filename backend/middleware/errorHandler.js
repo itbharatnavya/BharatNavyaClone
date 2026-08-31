@@ -3,7 +3,10 @@
 
 module.exports = function errorHandler(err, req, res, next) {
   // eslint-disable-next-line no-console
-  console.error(`[BharatSource] ${req.method} ${req.originalUrl} —`, err.message);
+  console.error(
+    `[BharatSource] ${req.method} ${req.originalUrl} —`,
+    err.stack || err.message
+  );
 
   const status = err.status || 500;
   const message =

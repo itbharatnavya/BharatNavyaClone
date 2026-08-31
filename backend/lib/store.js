@@ -80,19 +80,11 @@ if (usePostgres) {
   // several components fetching categories the instant a page mounts) only
   // ever pays for one disk read + JSON.parse instead of N.
   const _cache = new Map();
-  const _versions = new Map();
 
   function shallowClone(data) {
     if (Array.isArray(data)) return data.slice();
     if (data && typeof data === "object") return { ...data };
     return data;
-  }
-
-  /** Monotonic counter bumped on every writeJson(name, ...) — lets a route
-   *  cheaply check "has this collection changed since I last computed
-   *  something from it" without re-reading anything. */
-  function getVersion(name) {
-    return _versions.get(name) || 0;
   }
 
   /** Read a JSON collection file; returns `fallback` (default []) if it doesn't exist. */
@@ -119,7 +111,6 @@ if (usePostgres) {
     await fsp.writeFile(tmp, JSON.stringify(data, null, 2), "utf-8");
     await fsp.rename(tmp, file); // atomic on POSIX
     _cache.set(name, data);
-    _versions.set(name, (_versions.get(name) || 0) + 1);
   }
   let _tmpCounter = 0;
 
@@ -262,9 +253,16 @@ if (usePostgres) {
     });
   }
 
+  // Parity with pg-store's health/shutdown hooks — the file-DB has no pool to probe
+  // or drain, so both are no-ops. Keeps index.js / GET /health backend-agnostic.
+  async function ping() {}
+  async function close() {}
+
   module.exports = {
     DB_DIR,
     dbPath,
+    ping,
+    close,
     withLock,
     readJson,
     writeJson,
@@ -279,6 +277,5 @@ if (usePostgres) {
     insert,
     update,
     remove,
-    getVersion,
   };
 }

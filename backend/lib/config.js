@@ -62,6 +62,24 @@ module.exports = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "30d",
   BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || "10", 10),
   OTP_TTL_MS: parseInt(process.env.OTP_TTL_MS || String(5 * 60 * 1000), 10),
+
+  // --- Rate limiting (lib/security.js, Phase 1 §1c/1d) ---
+  // Set RATE_LIMIT_ENABLED=false to disable all limiters (used by the test suite).
+  // The three maxes are per-window; windows are fixed in lib/security.js
+  // (global 15min, auth 15min, AI 1hr).
+  RATE_LIMIT_ENABLED: process.env.RATE_LIMIT_ENABLED !== "false",
+  RL_GLOBAL_MAX: parseInt(process.env.RL_GLOBAL_MAX || "1000", 10),
+  RL_AUTH_MAX: parseInt(process.env.RL_AUTH_MAX || "10", 10),
+  RL_AI_MAX: parseInt(process.env.RL_AI_MAX || "30", 10),
+  // Max characters accepted for a free-text AI prompt (need / query / message).
+  AI_PROMPT_MAX: parseInt(process.env.AI_PROMPT_MAX || "4000", 10),
+
+  // --- Postgres pool hardening (lib/pg-store.js, Phase 1 §1e) ---
+  PG_STATEMENT_TIMEOUT_MS: parseInt(process.env.PG_STATEMENT_TIMEOUT_MS || "10000", 10),
+  PG_CONNECT_TIMEOUT_MS: parseInt(process.env.PG_CONNECT_TIMEOUT_MS || "5000", 10),
+  PG_IDLE_TIMEOUT_MS: parseInt(process.env.PG_IDLE_TIMEOUT_MS || "30000", 10),
+  // Set PG_SSL=true for a managed Postgres that requires TLS (most cloud providers).
+  PG_SSL: process.env.PG_SSL === "true",
   // Present only once the AI phase is configured; guarded at point of use.
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || null,
   // When there's no API key, the AI paths fall back to the locally authenticated

@@ -15,8 +15,34 @@ const { createLeadsLedgerStore } = require("./db/leads-ledger");
 const { createSearchEventsStore } = require("./db/search-events");
 const { createSettingsStore } = require("./db/settings");
 
-const pool = new Pool({ connectionString: config.PG_URL, max: 10 });
+// Pool hardening (BACKEND-AUDIT.md Phase 1 §1e): a hung query can no longer pin a
+// connection forever, a dead DB fails fast instead of hanging the request, and idle
+// clients are recycled. `ssl` is opt-in for managed Postgres that requires TLS.
+const pool = new Pool({
+  connectionString: config.PG_URL,
+  max: 10,
+  statement_timeout: config.PG_STATEMENT_TIMEOUT_MS,
+  connectionTimeoutMillis: config.PG_CONNECT_TIMEOUT_MS,
+  idleTimeoutMillis: config.PG_IDLE_TIMEOUT_MS,
+  ssl: config.PG_SSL ? { rejectUnauthorized: false } : undefined,
+});
+// An error on an idle client (DB restart, network blip) would otherwise crash the
+// process — log it and let the pool replace the client.
+pool.on("error", (err) => {
+  // eslint-disable-next-line no-console
+  console.error("[pg pool] idle client error:", err.message);
+});
 const _locks = new Map();
+
+/** Liveness probe for GET /health — throws if Postgres is unreachable. */
+async function ping() {
+  await pool.query("SELECT 1");
+}
+
+/** Graceful shutdown — drain the pool so in-flight queries finish (index.js SIGTERM). */
+async function close() {
+  await pool.end();
+}
 
 /* ------------------------------------------------------------- id counters ---- */
 
@@ -153,17 +179,9 @@ async function updateLead(leadId, patch) {
   return leadsLedgerStore.update(leadId, patch);
 }
 
-// store.js's file-backed branch tracks a per-collection version counter for
-// route-level memoization (see routes/categories.js, brands.js, users.js).
-// Postgres has no equivalent in-process cache to invalidate, so this always
-// returns a changing value — any caller keying a memo on it just recomputes
-// every time, which is safe (never stale), it simply doesn't benefit from
-// the memoization under this backend.
-function getVersion() {
-  return Date.now();
-}
-
 module.exports = {
+  ping,
+  close,
   withLock,
   readJson,
   writeJson,
@@ -180,5 +198,4 @@ module.exports = {
   insert,
   update,
   remove,
-  getVersion,
 };

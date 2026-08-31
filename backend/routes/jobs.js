@@ -266,10 +266,19 @@ router.put("/:id", authGuard, async (req, res, next) => {
     }
 
     const b = req.body || {};
-    // Never movable via a merge patch — same immutability rule as listings.js.
-    const { id, employerId, postedAt, viewCount, applicationCount, ...rest } = b;
-
-    const patch = { ...rest };
+    // Allowlist, not blocklist (BACKEND-AUDIT.md S1) — same rule as listings.js.
+    // Exactly the fields the create route and the /post-job form write; anything
+    // else (id, employerId, postedAt, viewCount, applicationCount, and any future
+    // ranking/monetization field) can never be set through an owner edit.
+    const JOB_EDITABLE = new Set([
+      "title", "description", "jobFunction", "employmentType", "experienceLevel",
+      "location", "salaryRange", "skills", "responsibilities", "requirements",
+      "benefits", "questions", "openings", "status", "expiresAt", "qualification",
+    ]);
+    const patch = {};
+    for (const key of Object.keys(b)) {
+      if (JOB_EDITABLE.has(key)) patch[key] = b[key];
+    }
     if (patch.status !== undefined) {
       if (!VALID_JOB_STATUSES.has(patch.status)) {
         return res.status(400).json({ success: false, error: "invalid status" });

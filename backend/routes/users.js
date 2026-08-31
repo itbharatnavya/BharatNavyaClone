@@ -142,22 +142,14 @@ function publicSeller(user, includeContact) {
 // field-compatible with FeaturedSellers.tsx's mapSeller()), plus a text filter
 // and real pagination.
 // Active-listing counts per seller (single pass over listings) — shared by
-// /sellers and /sellers/featured, memoized on store.js's listings.json
-// version so a burst of concurrent requests to either endpoint shares one
-// scan instead of redoing it per request.
-let _activeCountsCache = null; // { listVersion, counts }
+// /sellers and /sellers/featured.
 function getActiveListingCounts(listings) {
-  const listVersion = store.getVersion("listings.json");
-  if (_activeCountsCache && _activeCountsCache.listVersion === listVersion) {
-    return _activeCountsCache.counts;
-  }
   const counts = new Map();
   for (const l of listings) {
     if (l && l.status === "active" && l.sellerId) {
       counts.set(l.sellerId, (counts.get(l.sellerId) || 0) + 1);
     }
   }
-  _activeCountsCache = { listVersion, counts };
   return counts;
 }
 
@@ -198,24 +190,8 @@ function computeApprovedSellerCards(users, listings) {
   });
 }
 
-// Memoized on (users.json, listings.json) versions — independent of the
-// q/limit/page query params, so every /sellers request (any query) shares
-// this same computed-and-sorted base list; filtering by q and paginating
-// stay per-request (cheap — operating on a few dozen already-sorted rows).
-let _approvedSellerCardsCache = null; // { userVersion, listVersion, cards }
 function getApprovedSellerCards(users, listings) {
-  const userVersion = store.getVersion("users.json");
-  const listVersion = store.getVersion("listings.json");
-  if (
-    _approvedSellerCardsCache &&
-    _approvedSellerCardsCache.userVersion === userVersion &&
-    _approvedSellerCardsCache.listVersion === listVersion
-  ) {
-    return _approvedSellerCardsCache.cards;
-  }
-  const cards = computeApprovedSellerCards(users, listings);
-  _approvedSellerCardsCache = { userVersion, listVersion, cards };
-  return cards;
+  return computeApprovedSellerCards(users, listings);
 }
 
 router.get("/sellers", async (req, res, next) => {
@@ -278,22 +254,8 @@ function computeFeaturedSellerCards(users, listings) {
   });
 }
 
-// Memoized on (users.json, listings.json) versions — /sellers/featured takes
-// no query params, so the whole response can be cached and reused as-is.
-let _featuredSellerCardsCache = null; // { userVersion, listVersion, data }
 function getFeaturedSellerCards(users, listings) {
-  const userVersion = store.getVersion("users.json");
-  const listVersion = store.getVersion("listings.json");
-  if (
-    _featuredSellerCardsCache &&
-    _featuredSellerCardsCache.userVersion === userVersion &&
-    _featuredSellerCardsCache.listVersion === listVersion
-  ) {
-    return _featuredSellerCardsCache.data;
-  }
-  const data = computeFeaturedSellerCards(users, listings);
-  _featuredSellerCardsCache = { userVersion, listVersion, data };
-  return data;
+  return computeFeaturedSellerCards(users, listings);
 }
 
 // GET /api/users/sellers/featured — PUBLIC list of up to 8 top sellers.

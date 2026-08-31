@@ -389,6 +389,12 @@ router.post("/search", optionalAuth, async (req, res, next) => {
   try {
     const query =
       req.body && typeof req.body.query === "string" ? req.body.query : "";
+    if (query.length > config.AI_PROMPT_MAX) {
+      return res.status(400).json({
+        success: false,
+        error: `query must be ${config.AI_PROMPT_MAX} characters or fewer`,
+      });
+    }
     const categories = await store.all("categories.json"); // [] if not seeded yet
     const parsed = parseQuery(query, categories);
 
@@ -813,10 +819,16 @@ async function rfqFromClaude({ need, parsed, categories }) {
 
 // POST /rfq — compose a structured requirement from free text. Public (draft
 // before login). Deterministic without a key (fallback:true); never crashes.
-router.post("/rfq", async (req, res, next) => {
+router.post("/rfq", optionalAuth, async (req, res, next) => {
   try {
     const need =
       req.body && typeof req.body.need === "string" ? req.body.need.trim() : "";
+    if (need.length > config.AI_PROMPT_MAX) {
+      return res.status(400).json({
+        success: false,
+        error: `need must be ${config.AI_PROMPT_MAX} characters or fewer`,
+      });
+    }
     const categories = await store.all("categories.json");
     const parsed = parseQuery(need, categories);
 

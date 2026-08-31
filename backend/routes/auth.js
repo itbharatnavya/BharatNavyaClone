@@ -113,7 +113,14 @@ router.post("/login", validate(schemas.passwordLogin), async (req, res, next) =>
   try {
     const { email, password } = req.body;
     const user = await store.findOne("users.json", (u) => u.email === email);
-    if (!user || !(await auth.verifyPassword(password, user.passwordHash))) {
+    // Always run one bcrypt compare — against the real hash, or a dummy when the
+    // account doesn't exist — so response time can't be used to enumerate emails
+    // (BACKEND-AUDIT.md C7).
+    const passwordOk = await auth.verifyPassword(
+      password,
+      (user && user.passwordHash) || auth.DUMMY_HASH
+    );
+    if (!user || !passwordOk) {
       return res.status(401).json({ success: false, error: "Invalid credentials" });
     }
     if (user.status === "suspended") {
