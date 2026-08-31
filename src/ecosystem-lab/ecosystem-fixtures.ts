@@ -1,0 +1,96 @@
+import type { BusinessContext, Opportunity, OpportunityFilterState } from './ecosystem-types';
+
+export const activeBusiness: BusinessContext = {
+  id: 'aroha-foods',
+  name: 'Aroha Foods',
+  initials: 'AF',
+  city: 'Ahmedabad, Gujarat',
+  gstin: '24AABCA1234A1Z5',
+  profileHealth: 75,
+};
+
+export const defaultFilters: OpportunityFilterState = {
+  service: true,
+  talent: true,
+  finance: true,
+  product: true,
+  update: true,
+  verifiedOnly: false,
+};
+
+export const routePrompts = [
+  { label: 'Find a specialist', kind: 'service' as const, prompt: 'Find an evidence-backed specialist for my business need' },
+  { label: 'Hire a team member', kind: 'talent' as const, prompt: 'Help me hire an operations manager for my business' },
+  { label: 'Explore finance options', kind: 'finance' as const, prompt: 'Explore working capital referrals for my business' },
+  { label: 'Source products', kind: 'product' as const, prompt: 'Source food-safe sustainable packaging for my startup' },
+  { label: 'Share a business update', kind: 'update' as const, prompt: 'Find relevant business updates and case studies' },
+];
+
+export const opportunities: Opportunity[] = [
+  {
+    id: 'greenpack',
+    kind: 'service',
+    title: 'GreenPack Solutions',
+    subtitle: 'Packaging supplier',
+    location: 'Ahmedabad, Gujarat',
+    initials: 'GP',
+    trust: 'verified',
+    detail: 'Specialises in compostable pouches, wraps, and corrugated boxes for food brands.',
+    evidence: ['FSSAI-compliant facility', 'ISO 9001:2015', '150+ food-business projects'],
+    facts: [{ label: 'Price guidance', value: '₹2.40–₹6.80 / unit' }, { label: 'Typical response', value: 'Within 2 hours' }],
+    primaryAction: 'View business',
+  },
+  {
+    id: 'rahul-desai',
+    kind: 'talent',
+    title: 'Rahul Desai',
+    subtitle: 'Operations manager',
+    location: 'Ahmedabad, Gujarat',
+    initials: 'RD',
+    trust: 'identity',
+    detail: 'Operations manager with 8+ years in FMCG and food manufacturing.',
+    evidence: ['Ex-ITC Foods', 'Ex-Bikaji Foods', 'B.Tech, NIT Surat'],
+    facts: [{ label: 'Available to join', value: '15 days' }, { label: 'Expected CTC', value: '₹12–₹15 LPA' }],
+    primaryAction: 'View candidate',
+  },
+  {
+    id: 'growthfund',
+    kind: 'finance',
+    title: 'GrowthFund Capital',
+    subtitle: 'Working capital referral',
+    location: 'Mumbai, Maharashtra',
+    initials: '₹',
+    trust: 'partner-referral',
+    detail: 'Working-capital referral for packaging and operations needs through regulated lending partners.',
+    evidence: ['NBFC-P2P registered', 'Terms & eligibility apply', 'Priority review available'],
+    facts: [{ label: 'Finance range', value: 'Up to ₹2,00,000' }, { label: 'Tenure', value: '6–24 months' }],
+    gap: 'Eligibility to confirm',
+    primaryAction: 'View referral',
+  },
+  {
+    id: 'compostable-boxes',
+    kind: 'product',
+    title: 'Compostable Food Boxes (Medium)',
+    subtitle: 'Sustainable packaging product',
+    location: 'Ahmedabad, Gujarat',
+    initials: 'CB',
+    trust: 'verified',
+    detail: 'Compostable kraft food box with PLA lining, supplied by EcoWrap India.',
+    evidence: ['MOQ: 1,000 pcs', 'GST 18% extra', 'Lead time: 7–10 days'],
+    facts: [{ label: 'Unit price', value: '₹5.40 / unit' }, { label: 'Stock', value: 'Made to order' }],
+    primaryAction: 'View product',
+  },
+  {
+    id: 'troofoods-story',
+    kind: 'update',
+    title: 'How TrooFoods scaled sustainably with the right partners',
+    subtitle: 'Business case study',
+    location: 'Ahmedabad, Gujarat',
+    initials: 'TF',
+    trust: 'identity',
+    detail: 'A local food startup reduced packaging cost and secured working capital within ten days.',
+    evidence: ['Sustainable packaging', 'Working capital', 'Vendor network'],
+    facts: [{ label: 'Published', value: '6 May 2024' }, { label: 'Source', value: 'TrooFoods' }],
+    primaryAction: 'Read story',
+  },
+];
