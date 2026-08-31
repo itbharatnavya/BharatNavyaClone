@@ -1,0 +1,565 @@
+[
+  {
+    "id": "sup_001",
+    "companyName": "Arvind Textiles Pvt Ltd",
+    "slug": "arvind-textiles-pvt-ltd",
+    "logo": null,
+    "coverImage": null,
+    "about": "Leading textile manufacturer based in Ahmedabad with 30+ years of expertise in cotton and synthetic fabrics. We supply woven and knitted fabrics to garment exporters across India and the Middle East.",
+    "gstNumber": "24AAAAA0000A1Z5",
+    "yearEstablished": 1991,
+    "employeeCount": "500-1000",
+    "location": {
+      "city": "Ahmedabad",
+      "state": "Gujarat",
+      "pincode": "380001"
+    },
+    "categories": [
+      "Textiles"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "OEKO-TEX Standard 100"
+    ],
+    "contactEmail": "sales@arvindtextiles.example.com",
+    "contactMobile": "9898989801",
+    "website": "https://arvindtextiles.example.com",
+    "status": "suspended",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.7,
+    "reviewCount": 84,
+    "productCount": 24,
+    "responseRate": 96,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "performance": {
+      "onTimeDelivery": 96,
+      "avgResponseTimeHours": 2,
+      "repeatBuyers": 46,
+      "orderCompletion": 94,
+      "performanceScore": 85
+    }
+  },
+  {
+    "id": "sup_002",
+    "companyName": "Mumbai Packaging Solutions",
+    "slug": "mumbai-packaging-solutions",
+    "logo": null,
+    "coverImage": null,
+    "about": "Full-service packaging company offering corrugated boxes, flexible films and custom printed cartons. Trusted by FMCG and e-commerce brands for reliable bulk supply and fast turnaround.",
+    "gstNumber": "27BBBBB1111B2Z6",
+    "yearEstablished": 2004,
+    "employeeCount": "200-500",
+    "location": {
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pincode": "400001"
+    },
+    "categories": [
+      "Packaging"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "FSC Certified"
+    ],
+    "contactEmail": "info@mumbaipackaging.example.com",
+    "contactMobile": "9898989802",
+    "website": "https://mumbaipackaging.example.com",
+    "status": "suspended",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.5,
+    "reviewCount": 61,
+    "productCount": 18,
+    "responseRate": 92,
+    "createdAt": "2024-02-02T09:15:00Z",
+    "performance": {
+      "onTimeDelivery": 92,
+      "avgResponseTimeHours": 2,
+      "repeatBuyers": 38,
+      "orderCompletion": 90,
+      "performanceScore": 81
+    }
+  },
+  {
+    "id": "sup_003",
+    "companyName": "Pune Auto Components",
+    "slug": "pune-auto-components",
+    "logo": null,
+    "coverImage": null,
+    "about": "Precision auto component manufacturer specialising in machined castings, bearings and transmission parts for OEM and aftermarket. Supplying tier-1 automakers since 1998.",
+    "gstNumber": "27CCCCC2222C3Z7",
+    "yearEstablished": 1998,
+    "employeeCount": "200-500",
+    "location": {
+      "city": "Pune",
+      "state": "Maharashtra",
+      "pincode": "411001"
+    },
+    "categories": [
+      "Automotive"
+    ],
+    "certifications": [
+      "IATF 16949",
+      "ISO 14001:2015"
+    ],
+    "contactEmail": "sales@puneauto.example.com",
+    "contactMobile": "9898989803",
+    "website": "https://puneauto.example.com",
+    "status": "approved",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.8,
+    "reviewCount": 112,
+    "productCount": 31,
+    "responseRate": 98,
+    "createdAt": "2023-11-20T14:45:00Z",
+    "performance": {
+      "onTimeDelivery": 98,
+      "avgResponseTimeHours": 1,
+      "repeatBuyers": 49,
+      "orderCompletion": 96,
+      "performanceScore": 87
+    }
+  },
+  {
+    "id": "sup_004",
+    "companyName": "Vadodara Chemicals Ltd",
+    "slug": "vadodara-chemicals-ltd",
+    "logo": null,
+    "coverImage": null,
+    "about": "Manufacturer of industrial solvents, intermediates and specialty chemicals for the pharmaceutical and dye industries. GMP-compliant facility with in-house quality laboratory.",
+    "gstNumber": "24DDDDD3333D4Z8",
+    "yearEstablished": 2010,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "Vadodara",
+      "state": "Gujarat",
+      "pincode": "390001"
+    },
+    "categories": [
+      "Chemicals"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "REACH Registered"
+    ],
+    "contactEmail": "contact@vadodarachem.example.com",
+    "contactMobile": "9898989804",
+    "website": "https://vadodarachem.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": true,
+    "rating": 4.3,
+    "reviewCount": 38,
+    "productCount": 12,
+    "responseRate": 85,
+    "createdAt": "2024-03-11T11:00:00Z",
+    "performance": {
+      "onTimeDelivery": 86,
+      "avgResponseTimeHours": 4,
+      "repeatBuyers": 30,
+      "orderCompletion": 83,
+      "performanceScore": 74
+    }
+  },
+  {
+    "id": "sup_005",
+    "companyName": "Delhi Electronics Hub",
+    "slug": "delhi-electronics-hub",
+    "logo": null,
+    "coverImage": null,
+    "about": "Distributor and assembler of electronic components, PCBs, sensors and connectors. One-stop sourcing partner for prototyping houses and volume electronics manufacturers.",
+    "gstNumber": "07EEEEE4444E5Z9",
+    "yearEstablished": 2008,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "Delhi",
+      "state": "Delhi",
+      "pincode": "110001"
+    },
+    "categories": [
+      "Electronics"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "RoHS Compliant"
+    ],
+    "contactEmail": "sales@delhielectronics.example.com",
+    "contactMobile": "9898989805",
+    "website": "https://delhielectronics.example.com",
+    "status": "approved",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.6,
+    "reviewCount": 73,
+    "productCount": 27,
+    "responseRate": 94,
+    "createdAt": "2023-12-05T08:30:00Z",
+    "performance": {
+      "onTimeDelivery": 94,
+      "avgResponseTimeHours": 2,
+      "repeatBuyers": 42,
+      "orderCompletion": 92,
+      "performanceScore": 83
+    }
+  },
+  {
+    "id": "sup_006",
+    "companyName": "Rajkot Agri Equipment",
+    "slug": "rajkot-agri-equipment",
+    "logo": null,
+    "coverImage": null,
+    "about": "Manufacturer of farm implements, irrigation pumps and threshers for small and medium farms. Affordable, rugged equipment built for Indian field conditions.",
+    "gstNumber": "24FFFFF5555F6Z0",
+    "yearEstablished": 2015,
+    "employeeCount": "50-100",
+    "location": {
+      "city": "Rajkot",
+      "state": "Gujarat",
+      "pincode": "360001"
+    },
+    "categories": [
+      "Agriculture"
+    ],
+    "certifications": [
+      "ISO 9001:2015"
+    ],
+    "contactEmail": "info@rajkotagri.example.com",
+    "contactMobile": "9898989806",
+    "website": "https://rajkotagri.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": false,
+    "rating": 4.1,
+    "reviewCount": 19,
+    "productCount": 9,
+    "responseRate": 78,
+    "createdAt": "2024-04-18T13:20:00Z",
+    "performance": {
+      "onTimeDelivery": 79,
+      "avgResponseTimeHours": 5,
+      "repeatBuyers": 23,
+      "orderCompletion": 76,
+      "performanceScore": 67
+    }
+  },
+  {
+    "id": "sup_007",
+    "companyName": "Chennai MedTech Supplies",
+    "slug": "chennai-medtech-supplies",
+    "logo": null,
+    "coverImage": null,
+    "about": "Supplier of surgical disposables, diagnostic kits and hospital consumables. CE and CDSCO compliant products serving hospitals and clinics across South India.",
+    "gstNumber": "33GGGGG6666G7Z1",
+    "yearEstablished": 2012,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "pincode": "600001"
+    },
+    "categories": [
+      "Medical Supplies"
+    ],
+    "certifications": [
+      "ISO 13485",
+      "CE Certified",
+      "CDSCO Approved"
+    ],
+    "contactEmail": "sales@chennaimedtech.example.com",
+    "contactMobile": "9898989807",
+    "website": "https://chennaimedtech.example.com",
+    "status": "approved",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.9,
+    "reviewCount": 128,
+    "productCount": 22,
+    "responseRate": 99,
+    "createdAt": "2023-10-09T10:10:00Z",
+    "performance": {
+      "onTimeDelivery": 99,
+      "avgResponseTimeHours": 1,
+      "repeatBuyers": 53,
+      "orderCompletion": 97,
+      "performanceScore": 89
+    }
+  },
+  {
+    "id": "sup_008",
+    "companyName": "Surat Synthetic Fabrics",
+    "slug": "surat-synthetic-fabrics",
+    "logo": null,
+    "coverImage": null,
+    "about": "Weaver and processor of polyester and synthetic dress materials. High-volume capacity for sarees, suiting and lining fabrics at competitive mill prices.",
+    "gstNumber": "24HHHHH7777H8Z2",
+    "yearEstablished": 2017,
+    "employeeCount": "200-500",
+    "location": {
+      "city": "Surat",
+      "state": "Gujarat",
+      "pincode": "395001"
+    },
+    "categories": [
+      "Textiles"
+    ],
+    "certifications": [
+      "ISO 9001:2015"
+    ],
+    "contactEmail": "info@suratsynthetic.example.com",
+    "contactMobile": "9898989808",
+    "website": "https://suratsynthetic.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": false,
+    "rating": 4,
+    "reviewCount": 24,
+    "productCount": 14,
+    "responseRate": 81,
+    "createdAt": "2024-05-02T15:40:00Z",
+    "performance": {
+      "onTimeDelivery": 82,
+      "avgResponseTimeHours": 4,
+      "repeatBuyers": 20,
+      "orderCompletion": 79,
+      "performanceScore": 69
+    }
+  },
+  {
+    "id": "sup_009",
+    "companyName": "Hyderabad Industrial Machines",
+    "slug": "hyderabad-industrial-machines",
+    "logo": null,
+    "coverImage": null,
+    "about": "Builder of CNC machines, hydraulic presses and custom automation lines. Turnkey machinery solutions with installation and after-sales support across India.",
+    "gstNumber": "36IIIII8888I9Z3",
+    "yearEstablished": 2006,
+    "employeeCount": "200-500",
+    "location": {
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "pincode": "500001"
+    },
+    "categories": [
+      "Industrial Machinery"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "CE Certified"
+    ],
+    "contactEmail": "sales@hydindustrial.example.com",
+    "contactMobile": "9898989809",
+    "website": "https://hydindustrial.example.com",
+    "status": "approved",
+    "plan": "premium",
+    "isVerified": true,
+    "rating": 4.7,
+    "reviewCount": 95,
+    "productCount": 19,
+    "responseRate": 95,
+    "createdAt": "2023-09-22T12:00:00Z",
+    "performance": {
+      "onTimeDelivery": 95,
+      "avgResponseTimeHours": 2,
+      "repeatBuyers": 46,
+      "orderCompletion": 93,
+      "performanceScore": 84
+    }
+  },
+  {
+    "id": "sup_010",
+    "companyName": "Kolkata Construction Materials",
+    "slug": "kolkata-construction-materials",
+    "logo": null,
+    "coverImage": null,
+    "about": "Supplier of TMT bars, cement, aggregates and construction hardware. Reliable bulk delivery for builders and contractors across Eastern India.",
+    "gstNumber": "19JJJJJ9999J1Z4",
+    "yearEstablished": 2009,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "pincode": "700001"
+    },
+    "categories": [
+      "Construction"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "BIS Certified"
+    ],
+    "contactEmail": "sales@kolkataconstruction.example.com",
+    "contactMobile": "9898989810",
+    "website": "https://kolkataconstruction.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": true,
+    "rating": 4.4,
+    "reviewCount": 47,
+    "productCount": 16,
+    "responseRate": 88,
+    "createdAt": "2024-01-30T09:50:00Z",
+    "performance": {
+      "onTimeDelivery": 89,
+      "avgResponseTimeHours": 3,
+      "repeatBuyers": 34,
+      "orderCompletion": 86,
+      "performanceScore": 77
+    }
+  },
+  {
+    "id": "sup_011",
+    "companyName": "Indore Polymer Industries",
+    "slug": "indore-polymer-industries",
+    "logo": null,
+    "coverImage": null,
+    "about": "Newly registered manufacturer of plastic granules and polymer compounds for injection moulding. Awaiting verification of business documents.",
+    "gstNumber": "23KKKKK1010K2Z5",
+    "yearEstablished": 2021,
+    "employeeCount": "50-100",
+    "location": {
+      "city": "Indore",
+      "state": "Madhya Pradesh",
+      "pincode": "452001"
+    },
+    "categories": [
+      "Chemicals"
+    ],
+    "certifications": [
+      "ISO 9001:2015"
+    ],
+    "contactEmail": "info@indorepolymer.example.com",
+    "contactMobile": "9898989811",
+    "website": "https://indorepolymer.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": true,
+    "rating": 0,
+    "reviewCount": 0,
+    "productCount": 0,
+    "responseRate": 0,
+    "createdAt": "2026-06-10T11:25:00Z",
+    "performance": {
+      "onTimeDelivery": 60,
+      "avgResponseTimeHours": 18,
+      "repeatBuyers": 20,
+      "orderCompletion": 60,
+      "performanceScore": 46
+    }
+  },
+  {
+    "id": "sup_012",
+    "companyName": "Jaipur Handloom Exports",
+    "slug": "jaipur-handloom-exports",
+    "logo": null,
+    "coverImage": null,
+    "about": "Handloom and block-print textile exporter seeking onboarding. Specialises in cotton furnishings and ethnic apparel fabrics.",
+    "gstNumber": "08LLLLL1111L3Z6",
+    "yearEstablished": 2019,
+    "employeeCount": "50-100",
+    "location": {
+      "city": "Jaipur",
+      "state": "Rajasthan",
+      "pincode": "302001"
+    },
+    "categories": [
+      "Textiles"
+    ],
+    "certifications": [
+      "GoTS Certified"
+    ],
+    "contactEmail": "exports@jaipurhandloom.example.com",
+    "contactMobile": "9898989812",
+    "website": "https://jaipurhandloom.example.com",
+    "status": "approved",
+    "plan": "free",
+    "isVerified": true,
+    "rating": 0,
+    "reviewCount": 0,
+    "productCount": 0,
+    "responseRate": 0,
+    "createdAt": "2026-06-12T16:05:00Z",
+    "performance": {
+      "onTimeDelivery": 0,
+      "avgResponseTimeHours": 0,
+      "repeatBuyers": 0,
+      "orderCompletion": 0,
+      "performanceScore": 0
+    }
+  },
+  {
+    "id": "sup_013",
+    "companyName": "Coimbatore Pump Works",
+    "slug": "coimbatore-pump-works",
+    "logo": null,
+    "coverImage": null,
+    "about": "Pump and motor manufacturer applying for marketplace listing. Produces submersible and monoblock pumps for agriculture and industry.",
+    "gstNumber": "33MMMMM1212M4Z7",
+    "yearEstablished": 2016,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "Coimbatore",
+      "state": "Tamil Nadu",
+      "pincode": "641001"
+    },
+    "categories": [
+      "Industrial Machinery"
+    ],
+    "certifications": [
+      "ISO 9001:2015",
+      "BIS Certified"
+    ],
+    "contactEmail": "sales@coimbatorepump.example.com",
+    "contactMobile": "9898989813",
+    "website": "https://coimbatorepump.example.com",
+    "status": "rejected",
+    "plan": "free",
+    "isVerified": false,
+    "rating": 0,
+    "reviewCount": 0,
+    "productCount": 0,
+    "responseRate": 0,
+    "createdAt": "2026-06-13T10:40:00Z",
+    "performance": {
+      "onTimeDelivery": 0,
+      "avgResponseTimeHours": 0,
+      "repeatBuyers": 0,
+      "orderCompletion": 0,
+      "performanceScore": 0
+    }
+  },
+  {
+    "id": "sup_1782211588306",
+    "companyName": "Test",
+    "slug": "test",
+    "logo": null,
+    "coverImage": null,
+    "about": "adasdasd",
+    "gstNumber": "123123123123213",
+    "yearEstablished": 2026,
+    "employeeCount": "100-200",
+    "location": {
+      "city": "ahm",
+      "state": "Maharashtra",
+      "pincode": ""
+    },
+    "categories": [
+      "Chemicals"
+    ],
+    "certifications": [
+      "dasdasd"
+    ],
+    "contactEmail": "adasd@adsas.cim",
+    "contactMobile": "12312321312",
+    "website": "www.google.com",
+    "status": "rejected",
+    "plan": "free",
+    "isVerified": false,
+    "rating": 0,
+    "reviewCount": 0,
+    "productCount": 0,
+    "responseRate": 0,
+    "createdAt": "2026-06-23T10:46:28.306Z"
+  }
+]

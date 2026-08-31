@@ -1,0 +1,116 @@
+/**
+ * config.js — central runtime configuration.
+ *
+ * Loads backend/.env (a tiny parser, so we don't need a dotenv dependency) into
+ * process.env, then exposes typed/defaulted settings. Fail fast in production if a
+ * required secret is missing; permissive dev defaults otherwise.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+(function loadEnv() {
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, "..", ".env"), "utf-8");
+    for (const line of raw.split("\n")) {
+      const t = line.trim();
+      if (!t || t.startsWith("#")) continue;
+      const eq = t.indexOf("=");
+      if (eq === -1) continue;
+      const key = t.slice(0, eq).trim();
+      let val = t.slice(eq + 1).trim();
+      // strip optional surrounding quotes
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (!(key in process.env)) process.env[key] = val;
+    }
+  } catch {
+    /* no .env file — rely on real process.env / defaults */
+  }
+})();
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+// Only these NODE_ENV values get dev conveniences (insecure JWT_SECRET default,
+// the "123456" OTP bypass, OTP echoed back in API responses — see lib/auth.js,
+// routes/auth.js). Anything else — "production", a typo, an unrecognized value
+// like "staging" — is treated as NOT dev, so a misconfigured deploy fails loud
+// instead of silently running with a well-known secret and a universal OTP.
+const RECOGNIZED_DEV_ENVS = ["development", "test"];
+const isDev = RECOGNIZED_DEV_ENVS.includes(NODE_ENV);
+
+const JWT_SECRET =
+  process.env.JWT_SECRET || (isDev ? "dev-insecure-secret-change-me" : null);
+if (!JWT_SECRET) {
+  throw new Error(
+    NODE_ENV === "production"
+      ? "JWT_SECRET must be set in production (see backend/.env)"
+      : `JWT_SECRET must be set explicitly when NODE_ENV="${NODE_ENV}" — only ` +
+        `NODE_ENV=development/test get the insecure dev default (see backend/.env)`
+  );
+}
+
+module.exports = {
+  NODE_ENV,
+  isDev,
+  PORT: parseInt(process.env.PORT || "4000", 10),
+  CORS_ORIGIN: process.env.CORS_ORIGIN || "http://localhost:3000",
+  JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "30d",
+  BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || "10", 10),
+  OTP_TTL_MS: parseInt(process.env.OTP_TTL_MS || String(5 * 60 * 1000), 10),
+  // Present only once the AI phase is configured; guarded at point of use.
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || null,
+  // When there's no API key, the AI paths fall back to the locally authenticated
+  // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
+  AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
+  PG_URL: process.env.PG_URL || process.env.DATABASE_URL || null,
+
+  // --- File uploads (backend/lib/uploadStorage.js) ---
+  // "local" (default, dev) writes into frontend/public/uploads/, served as a static
+  // asset. "s3" uploads to an S3 bucket instead — flip this one var on a production
+  // deploy, no code change. See HANDOVER.md "File storage" for the full switch-over
+  // checklist.
+  UPLOAD_STORAGE: (process.env.UPLOAD_STORAGE || "local").toLowerCase(),
+  AWS_REGION: process.env.AWS_REGION || null,
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || null,
+  // Optional — omit to use the AWS SDK's default credential chain (IAM role, shared
+  // config file, etc.), which is the recommended approach in production. Only set
+  // these for local testing against a real bucket.
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || null,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || null,
+  // Optional custom domain in front of the bucket (e.g. a CloudFront distribution) —
+  // when set, uploaded-file URLs use this instead of the raw *.s3.amazonaws.com host.
+  S3_PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || null,
+
+  // --- Recruitment go-live gate (RECRUITMENT.md §5) ---
+  // Unset (default) defers to the admin-editable featureFlags.recruitmentLive in
+  // settings.json (GET /api/config, edited via /admin). Set to "true"/"false" to force
+  // the value from the environment instead — the simplest production switch (flip the
+  // env var, restart, no admin-panel step, no redeploy). Env wins over the DB value
+  // whenever it's explicitly set; see routes/config.js.
+  RECRUITMENT_LIVE:
+    process.env.RECRUITMENT_LIVE === "true"
+      ? true
+      : process.env.RECRUITMENT_LIVE === "false"
+        ? false
+        : null,
+
+  // --- Consultations go-live gate (same mechanism as RECRUITMENT_LIVE above) ---
+  // Consultations isn't a promoted suite product this phase — unset (default)
+  // defers to the admin-editable featureFlags.consultationsLive in
+  // settings.json; set the env var to force it, env wins when explicitly set.
+  CONSULTATIONS_LIVE:
+    process.env.CONSULTATIONS_LIVE === "true"
+      ? true
+      : process.env.CONSULTATIONS_LIVE === "false"
+        ? false
+        : null,
+};
+
+if (module.exports.UPLOAD_STORAGE === "s3" && !isDev && !module.exports.AWS_S3_BUCKET) {
+  throw new Error("AWS_S3_BUCKET must be set when UPLOAD_STORAGE=s3 in production (see backend/.env)");
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ref_000001",
+    "userId": "usr_admin",
+    "code": "BSDMINA044",
+    "credits": 0,
+    "invitedUserIds": [],
+    "createdAt": "2026-07-31T06:37:45.263Z"
+  },
+  {
+    "id": "ref_000002",
+    "userId": "usr_000002",
+    "code": "BS0002EC1A",
+    "credits": 0,
+    "invitedUserIds": [],
+    "createdAt": "2026-07-31T07:09:45.387Z"
+  },
+  {
+    "id": "ref_000003",
+    "userId": "usr_s001",
+    "code": "BSS00166CE",
+    "credits": 0,
+    "invitedUserIds": [],
+    "createdAt": "2026-07-31T11:32:44.359Z"
+  }
+]

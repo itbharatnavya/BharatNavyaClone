@@ -1,0 +1,82 @@
+[
+  {
+    "id": "cat_machinery",
+    "name": "Industrial Machinery",
+    "slug": "industrial-machinery",
+    "description": "Heavy machines, CNC equipment, lathes, presses and automation systems for manufacturing plants.",
+    "productCount": 184320,
+    "icon": "M4 20h16M6 16h12M8 16V8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8M10 6V4M14 6V4"
+  },
+  {
+    "id": "cat_chemicals",
+    "name": "Chemicals",
+    "slug": "chemicals",
+    "description": "Industrial chemicals, solvents, dyes, polymers and laboratory reagents for bulk supply.",
+    "productCount": 142880,
+    "icon": "M9 3h6M10 3v5l-4 9a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-4-9V3M7 14h10"
+  },
+  {
+    "id": "cat_packaging",
+    "name": "Packaging",
+    "slug": "packaging",
+    "description": "Corrugated boxes, flexible films, pouches, labels and packaging machinery.",
+    "productCount": 98450,
+    "icon": "M3 8l9-5 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8"
+  },
+  {
+    "id": "cat_electronics",
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Components, PCBs, sensors, connectors and finished electronic assemblies.",
+    "productCount": 211090,
+    "icon": "M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3M6 6h12v12H6z M9 9h6v6H9z"
+  },
+  {
+    "id": "cat_textiles",
+    "name": "Textiles",
+    "slug": "textiles",
+    "description": "Cotton, synthetic and blended fabrics, yarn, garments and home textiles.",
+    "productCount": 176540,
+    "icon": "M4 4h16v4l-4 2 4 2v8H4v-8l4-2-4-2V4zM8 6l4 2 4-2M8 18l4-2 4 2"
+  },
+  {
+    "id": "cat_agriculture",
+    "name": "Agriculture",
+    "slug": "agriculture",
+    "description": "Farm equipment, seeds, fertilizers, irrigation systems and agro-processing machines.",
+    "productCount": 87320,
+    "icon": "M12 3v9M12 12c-4 0-7-2-7-6 4 0 7 2 7 6zM12 12c4 0 7-2 7-6-4 0-7 2-7 6zM7 21h10"
+  },
+  {
+    "id": "cat_construction",
+    "name": "Construction",
+    "slug": "construction",
+    "description": "Cement, steel, aggregates, fittings, tools and building materials in bulk.",
+    "productCount": 134770,
+    "icon": "M3 21h18M5 21V11l7-5 7 5v10M9 21v-6h6v6"
+  },
+  {
+    "id": "cat_automotive",
+    "name": "Automotive",
+    "slug": "automotive",
+    "description": "Auto components, spare parts, bearings, castings and vehicle accessories.",
+    "productCount": 159230,
+    "icon": "M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v5H3v-5zM3 13h18M7 18v2M17 18v2M7 13a1 1 0 1 0 0 .01M17 13a1 1 0 1 0 0 .01"
+  },
+  {
+    "id": "cat_food",
+    "name": "Food Products",
+    "slug": "food-products",
+    "description": "Grains, spices, processed foods, beverages and packaged food ingredients.",
+    "productCount": 103660,
+    "icon": "M6 3v7a3 3 0 0 0 6 0V3M9 3v18M16 3c-1 2-2 4-2 7h4c0-3-1-5-2-7zM16 10v11"
+  },
+  {
+    "id": "cat_medical",
+    "name": "Medical Supplies",
+    "slug": "medical-supplies",
+    "description": "Surgical instruments, disposables, diagnostic kits and hospital equipment.",
+    "productCount": 76410,
+    "icon": "M9 3h6v6h6v6h-6v6H9v-6H3V9h6V3z"
+  }
+]

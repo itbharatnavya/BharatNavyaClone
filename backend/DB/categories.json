@@ -1,0 +1,6557 @@
+[
+  {
+    "id": "cat_textiles-fabrics-yarn",
+    "name": "Textiles, Fabrics & Yarn",
+    "slug": "textiles-fabrics-yarn",
+    "parentId": null,
+    "path": [
+      "textiles-fabrics-yarn"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Textiles, Fabrics & Yarn from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_cotton-fabric",
+    "name": "Cotton Fabric",
+    "slug": "cotton-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cotton Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_silk-fabric",
+    "name": "Silk Fabric",
+    "slug": "silk-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "silk-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Silk Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_woolen-fabric",
+    "name": "Woolen Fabric",
+    "slug": "woolen-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "woolen-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Woolen Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_synthetic-fabric",
+    "name": "Synthetic Fabric",
+    "slug": "synthetic-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "synthetic-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Synthetic Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_yarn-thread",
+    "name": "Yarn & Thread",
+    "slug": "yarn-thread",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "yarn-thread"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Yarn & Thread from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_denim-fabric",
+    "name": "Denim Fabric",
+    "slug": "denim-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "denim-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Denim Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_knitted-fabric",
+    "name": "Knitted Fabric",
+    "slug": "knitted-fabric",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "knitted-fabric"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Knitted Fabric from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_technical-textiles",
+    "name": "Technical Textiles",
+    "slug": "technical-textiles",
+    "parentId": "cat_textiles-fabrics-yarn",
+    "path": [
+      "textiles-fabrics-yarn",
+      "technical-textiles"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Technical Textiles from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_apparel-clothing-garments",
+    "name": "Apparel, Clothing & Garments",
+    "slug": "apparel-clothing-garments",
+    "parentId": null,
+    "path": [
+      "apparel-clothing-garments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Apparel, Clothing & Garments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_men-s-clothing",
+    "name": "Men's Clothing",
+    "slug": "men-s-clothing",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Men's Clothing from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_women-s-clothing",
+    "name": "Women's Clothing",
+    "slug": "women-s-clothing",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "women-s-clothing"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Women's Clothing from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_kids-wear",
+    "name": "Kids' Wear",
+    "slug": "kids-wear",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "kids-wear"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Kids' Wear from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_ethnic-wear",
+    "name": "Ethnic Wear",
+    "slug": "ethnic-wear",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "ethnic-wear"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Ethnic Wear from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_sportswear",
+    "name": "Sportswear",
+    "slug": "sportswear",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "sportswear"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Sportswear from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_uniforms-workwear",
+    "name": "Uniforms & Workwear",
+    "slug": "uniforms-workwear",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "uniforms-workwear"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Uniforms & Workwear from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_winter-wear",
+    "name": "Winter Wear",
+    "slug": "winter-wear",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "winter-wear"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Winter Wear from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_innerwear-lingerie",
+    "name": "Innerwear & Lingerie",
+    "slug": "innerwear-lingerie",
+    "parentId": "cat_apparel-clothing-garments",
+    "path": [
+      "apparel-clothing-garments",
+      "innerwear-lingerie"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Innerwear & Lingerie from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_industrial-machinery-equipment",
+    "name": "Industrial Machinery & Equipment",
+    "slug": "industrial-machinery-equipment",
+    "parentId": null,
+    "path": [
+      "industrial-machinery-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Industrial Machinery & Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_cnc-machines",
+    "name": "CNC Machines",
+    "slug": "cnc-machines",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "cnc-machines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source CNC Machines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_packaging-machinery",
+    "name": "Packaging Machinery",
+    "slug": "packaging-machinery",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "packaging-machinery"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Packaging Machinery from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_textile-machinery",
+    "name": "Textile Machinery",
+    "slug": "textile-machinery",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "textile-machinery"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Textile Machinery from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_printing-machinery",
+    "name": "Printing Machinery",
+    "slug": "printing-machinery",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "printing-machinery"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Printing Machinery from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_material-handling-equipment",
+    "name": "Material Handling Equipment",
+    "slug": "material-handling-equipment",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "material-handling-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Material Handling Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_pumps-compressors",
+    "name": "Pumps & Compressors",
+    "slug": "pumps-compressors",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "pumps-compressors"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pumps & Compressors from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_welding-equipment",
+    "name": "Welding Equipment",
+    "slug": "welding-equipment",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "welding-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Welding Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_machine-tools",
+    "name": "Machine Tools",
+    "slug": "machine-tools",
+    "parentId": "cat_industrial-machinery-equipment",
+    "path": [
+      "industrial-machinery-equipment",
+      "machine-tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Machine Tools from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_chemicals-dyes-solvents",
+    "name": "Chemicals, Dyes & Solvents",
+    "slug": "chemicals-dyes-solvents",
+    "parentId": null,
+    "path": [
+      "chemicals-dyes-solvents"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Chemicals, Dyes & Solvents from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_industrial-chemicals",
+    "name": "Industrial Chemicals",
+    "slug": "industrial-chemicals",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "industrial-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Industrial Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_dyes-pigments",
+    "name": "Dyes & Pigments",
+    "slug": "dyes-pigments",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "dyes-pigments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dyes & Pigments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_solvents",
+    "name": "Solvents",
+    "slug": "solvents",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "solvents"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Solvents from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_adhesives-sealants",
+    "name": "Adhesives & Sealants",
+    "slug": "adhesives-sealants",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "adhesives-sealants"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Adhesives & Sealants from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_laboratory-chemicals",
+    "name": "Laboratory Chemicals",
+    "slug": "laboratory-chemicals",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "laboratory-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Laboratory Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_water-treatment-chemicals",
+    "name": "Water Treatment Chemicals",
+    "slug": "water-treatment-chemicals",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "water-treatment-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Water Treatment Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_agrochemicals",
+    "name": "Agrochemicals",
+    "slug": "agrochemicals",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "agrochemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Agrochemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_specialty-chemicals",
+    "name": "Specialty Chemicals",
+    "slug": "specialty-chemicals",
+    "parentId": "cat_chemicals-dyes-solvents",
+    "path": [
+      "chemicals-dyes-solvents",
+      "specialty-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Specialty Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_electronics-electrical",
+    "name": "Electronics & Electrical",
+    "slug": "electronics-electrical",
+    "parentId": null,
+    "path": [
+      "electronics-electrical"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Electronics & Electrical from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_pcb-components",
+    "name": "PCB & Components",
+    "slug": "pcb-components",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "pcb-components"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PCB & Components from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_sensors-modules",
+    "name": "Sensors & Modules",
+    "slug": "sensors-modules",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "sensors-modules"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Sensors & Modules from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_connectors-cables",
+    "name": "Connectors & Cables",
+    "slug": "connectors-cables",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "connectors-cables"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Connectors & Cables from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_batteries-power",
+    "name": "Batteries & Power",
+    "slug": "batteries-power",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "batteries-power"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Batteries & Power from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_led-lighting",
+    "name": "LED & Lighting",
+    "slug": "led-lighting",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "led-lighting"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source LED & Lighting from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_switchgear-panels",
+    "name": "Switchgear & Panels",
+    "slug": "switchgear-panels",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "switchgear-panels"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Switchgear & Panels from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_consumer-electronics",
+    "name": "Consumer Electronics",
+    "slug": "consumer-electronics",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "consumer-electronics"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Consumer Electronics from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_electronic-instruments",
+    "name": "Electronic Instruments",
+    "slug": "electronic-instruments",
+    "parentId": "cat_electronics-electrical",
+    "path": [
+      "electronics-electrical",
+      "electronic-instruments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Electronic Instruments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_packaging-printing",
+    "name": "Packaging & Printing",
+    "slug": "packaging-printing",
+    "parentId": null,
+    "path": [
+      "packaging-printing"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Packaging & Printing from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_corrugated-boxes",
+    "name": "Corrugated Boxes",
+    "slug": "corrugated-boxes",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "corrugated-boxes"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Corrugated Boxes from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_flexible-packaging",
+    "name": "Flexible Packaging",
+    "slug": "flexible-packaging",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "flexible-packaging"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Flexible Packaging from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_labels-stickers",
+    "name": "Labels & Stickers",
+    "slug": "labels-stickers",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "labels-stickers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Labels & Stickers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_bottles-containers",
+    "name": "Bottles & Containers",
+    "slug": "bottles-containers",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "bottles-containers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bottles & Containers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_tapes-films",
+    "name": "Tapes & Films",
+    "slug": "tapes-films",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "tapes-films"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tapes & Films from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_printing-services-packaging",
+    "name": "Printing Services (Packaging)",
+    "slug": "printing-services-packaging",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "printing-services-packaging"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Printing Services (Packaging) from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_paper-board",
+    "name": "Paper & Board",
+    "slug": "paper-board",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "paper-board"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Paper & Board from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_packaging-consumables",
+    "name": "Packaging Consumables",
+    "slug": "packaging-consumables",
+    "parentId": "cat_packaging-printing",
+    "path": [
+      "packaging-printing",
+      "packaging-consumables"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Packaging Consumables from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_building-construction",
+    "name": "Building & Construction",
+    "slug": "building-construction",
+    "parentId": null,
+    "path": [
+      "building-construction"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Building & Construction from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_tmt-bars-steel",
+    "name": "TMT Bars & Steel",
+    "slug": "tmt-bars-steel",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "tmt-bars-steel"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source TMT Bars & Steel from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_cement-concrete",
+    "name": "Cement & Concrete",
+    "slug": "cement-concrete",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "cement-concrete"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cement & Concrete from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_bricks-blocks",
+    "name": "Bricks & Blocks",
+    "slug": "bricks-blocks",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "bricks-blocks"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bricks & Blocks from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_tiles-flooring",
+    "name": "Tiles & Flooring",
+    "slug": "tiles-flooring",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "tiles-flooring"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tiles & Flooring from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_sanitaryware-fittings",
+    "name": "Sanitaryware & Fittings",
+    "slug": "sanitaryware-fittings",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "sanitaryware-fittings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Sanitaryware & Fittings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_paints-coatings",
+    "name": "Paints & Coatings",
+    "slug": "paints-coatings",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "paints-coatings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Paints & Coatings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_doors-windows",
+    "name": "Doors & Windows",
+    "slug": "doors-windows",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "doors-windows"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Doors & Windows from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_aggregates-sand",
+    "name": "Aggregates & Sand",
+    "slug": "aggregates-sand",
+    "parentId": "cat_building-construction",
+    "path": [
+      "building-construction",
+      "aggregates-sand"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Aggregates & Sand from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_automotive-parts-accessories",
+    "name": "Automotive Parts & Accessories",
+    "slug": "automotive-parts-accessories",
+    "parentId": null,
+    "path": [
+      "automotive-parts-accessories"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Automotive Parts & Accessories from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_engine-components",
+    "name": "Engine Components",
+    "slug": "engine-components",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "engine-components"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Engine Components from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_bearings-bushings",
+    "name": "Bearings & Bushings",
+    "slug": "bearings-bushings",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "bearings-bushings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bearings & Bushings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_transmission-parts",
+    "name": "Transmission Parts",
+    "slug": "transmission-parts",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "transmission-parts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Transmission Parts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_braking-systems",
+    "name": "Braking Systems",
+    "slug": "braking-systems",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "braking-systems"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Braking Systems from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_auto-electricals",
+    "name": "Auto Electricals",
+    "slug": "auto-electricals",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "auto-electricals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Auto Electricals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_tyres-tubes",
+    "name": "Tyres & Tubes",
+    "slug": "tyres-tubes",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "tyres-tubes"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tyres & Tubes from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_car-accessories",
+    "name": "Car Accessories",
+    "slug": "car-accessories",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "car-accessories"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Car Accessories from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_two-wheeler-parts",
+    "name": "Two-Wheeler Parts",
+    "slug": "two-wheeler-parts",
+    "parentId": "cat_automotive-parts-accessories",
+    "path": [
+      "automotive-parts-accessories",
+      "two-wheeler-parts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Two-Wheeler Parts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_agriculture-farming",
+    "name": "Agriculture & Farming",
+    "slug": "agriculture-farming",
+    "parentId": null,
+    "path": [
+      "agriculture-farming"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Agriculture & Farming from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 9
+  },
+  {
+    "id": "cat_tractor-implements",
+    "name": "Tractor Implements",
+    "slug": "tractor-implements",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "tractor-implements"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tractor Implements from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_irrigation-equipment",
+    "name": "Irrigation Equipment",
+    "slug": "irrigation-equipment",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "irrigation-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Irrigation Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_seeds-saplings",
+    "name": "Seeds & Saplings",
+    "slug": "seeds-saplings",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "seeds-saplings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Seeds & Saplings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_fertilizers",
+    "name": "Fertilizers",
+    "slug": "fertilizers",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "fertilizers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fertilizers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_farm-tools",
+    "name": "Farm Tools",
+    "slug": "farm-tools",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "farm-tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Farm Tools from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_greenhouse-polyhouse",
+    "name": "Greenhouse & Polyhouse",
+    "slug": "greenhouse-polyhouse",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "greenhouse-polyhouse"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Greenhouse & Polyhouse from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_agri-pumps",
+    "name": "Agri Pumps",
+    "slug": "agri-pumps",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "agri-pumps"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Agri Pumps from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_harvesting-equipment",
+    "name": "Harvesting Equipment",
+    "slug": "harvesting-equipment",
+    "parentId": "cat_agriculture-farming",
+    "path": [
+      "agriculture-farming",
+      "harvesting-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Harvesting Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_medical-healthcare-supplies",
+    "name": "Medical & Healthcare Supplies",
+    "slug": "medical-healthcare-supplies",
+    "parentId": null,
+    "path": [
+      "medical-healthcare-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Medical & Healthcare Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 10
+  },
+  {
+    "id": "cat_surgical-instruments",
+    "name": "Surgical Instruments",
+    "slug": "surgical-instruments",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "surgical-instruments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Surgical Instruments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_disposables-consumables",
+    "name": "Disposables & Consumables",
+    "slug": "disposables-consumables",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "disposables-consumables"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Disposables & Consumables from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_diagnostic-equipment",
+    "name": "Diagnostic Equipment",
+    "slug": "diagnostic-equipment",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "diagnostic-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Diagnostic Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_hospital-furniture",
+    "name": "Hospital Furniture",
+    "slug": "hospital-furniture",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "hospital-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Hospital Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_ppe-safety",
+    "name": "PPE & Safety",
+    "slug": "ppe-safety",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "ppe-safety"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PPE & Safety from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_orthopedic-supplies",
+    "name": "Orthopedic Supplies",
+    "slug": "orthopedic-supplies",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "orthopedic-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Orthopedic Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_dental-supplies",
+    "name": "Dental Supplies",
+    "slug": "dental-supplies",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "dental-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dental Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_medical-devices",
+    "name": "Medical Devices",
+    "slug": "medical-devices",
+    "parentId": "cat_medical-healthcare-supplies",
+    "path": [
+      "medical-healthcare-supplies",
+      "medical-devices"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Medical Devices from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_food",
+    "name": "Food & Beverages",
+    "slug": "food",
+    "parentId": null,
+    "path": [
+      "food"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Food & Beverages from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 11
+  },
+  {
+    "id": "cat_flour-grains-cereals",
+    "name": "Flour, Grains & Cereals",
+    "slug": "flour-grains-cereals",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "flour-grains-cereals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Flour, Grains & Cereals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_wheat-flour-atta",
+    "name": "Wheat Flour (Atta)",
+    "slug": "wheat-flour-atta",
+    "parentId": "cat_flour-grains-cereals",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "wheat-flour-atta"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Wheat Flour (Atta) from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_multigrain-atta",
+    "name": "Multigrain Atta",
+    "slug": "multigrain-atta",
+    "parentId": "cat_wheat-flour-atta",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "wheat-flour-atta",
+      "multigrain-atta"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Multigrain Atta from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_whole-wheat-atta",
+    "name": "Whole Wheat Atta",
+    "slug": "whole-wheat-atta",
+    "parentId": "cat_wheat-flour-atta",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "wheat-flour-atta",
+      "whole-wheat-atta"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Whole Wheat Atta from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_refined-wheat-flour-maida",
+    "name": "Refined Wheat Flour (Maida)",
+    "slug": "refined-wheat-flour-maida",
+    "parentId": "cat_wheat-flour-atta",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "wheat-flour-atta",
+      "refined-wheat-flour-maida"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Refined Wheat Flour (Maida) from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_semolina-sooji",
+    "name": "Semolina (Sooji)",
+    "slug": "semolina-sooji",
+    "parentId": "cat_wheat-flour-atta",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "wheat-flour-atta",
+      "semolina-sooji"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Semolina (Sooji) from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_rice",
+    "name": "Rice",
+    "slug": "rice",
+    "parentId": "cat_flour-grains-cereals",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "rice"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Rice from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_maize-corn",
+    "name": "Maize & Corn",
+    "slug": "maize-corn",
+    "parentId": "cat_flour-grains-cereals",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "maize-corn"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Maize & Corn from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_millets",
+    "name": "Millets",
+    "slug": "millets",
+    "parentId": "cat_flour-grains-cereals",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "millets"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Millets from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_besan-gram-flour",
+    "name": "Besan & Gram Flour",
+    "slug": "besan-gram-flour",
+    "parentId": "cat_flour-grains-cereals",
+    "path": [
+      "food",
+      "flour-grains-cereals",
+      "besan-gram-flour"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Besan & Gram Flour from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_spices-masala",
+    "name": "Spices & Masala",
+    "slug": "spices-masala",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "spices-masala"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Spices & Masala from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_edible-oils-ghee",
+    "name": "Edible Oils & Ghee",
+    "slug": "edible-oils-ghee",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "edible-oils-ghee"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Edible Oils & Ghee from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_pulses-lentils",
+    "name": "Pulses & Lentils",
+    "slug": "pulses-lentils",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "pulses-lentils"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pulses & Lentils from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_tea-coffee-beverages",
+    "name": "Tea, Coffee & Beverages",
+    "slug": "tea-coffee-beverages",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "tea-coffee-beverages"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tea, Coffee & Beverages from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_dairy-products",
+    "name": "Dairy Products",
+    "slug": "dairy-products",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "dairy-products"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dairy Products from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_snacks-packaged-food",
+    "name": "Snacks & Packaged Food",
+    "slug": "snacks-packaged-food",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "snacks-packaged-food"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Snacks & Packaged Food from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_dry-fruits-nuts",
+    "name": "Dry Fruits & Nuts",
+    "slug": "dry-fruits-nuts",
+    "parentId": "cat_food",
+    "path": [
+      "food",
+      "dry-fruits-nuts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dry Fruits & Nuts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_home-furniture-furnishings",
+    "name": "Home, Furniture & Furnishings",
+    "slug": "home-furniture-furnishings",
+    "parentId": null,
+    "path": [
+      "home-furniture-furnishings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Home, Furniture & Furnishings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 12
+  },
+  {
+    "id": "cat_furniture",
+    "name": "Furniture",
+    "slug": "furniture",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_home-decor",
+    "name": "Home Decor",
+    "slug": "home-decor",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "home-decor"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Home Decor from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_kitchenware",
+    "name": "Kitchenware",
+    "slug": "kitchenware",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "kitchenware"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Kitchenware from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_bedding-linen",
+    "name": "Bedding & Linen",
+    "slug": "bedding-linen",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "bedding-linen"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bedding & Linen from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_curtains-blinds",
+    "name": "Curtains & Blinds",
+    "slug": "curtains-blinds",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "curtains-blinds"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Curtains & Blinds from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_lighting-lamps",
+    "name": "Lighting & Lamps",
+    "slug": "lighting-lamps",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "lighting-lamps"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Lighting & Lamps from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_storage-organization",
+    "name": "Storage & Organization",
+    "slug": "storage-organization",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "storage-organization"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Storage & Organization from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_rugs-carpets",
+    "name": "Rugs & Carpets",
+    "slug": "rugs-carpets",
+    "parentId": "cat_home-furniture-furnishings",
+    "path": [
+      "home-furniture-furnishings",
+      "rugs-carpets"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Rugs & Carpets from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_tools",
+    "name": "Tools, Hardware & Cleaning",
+    "slug": "tools",
+    "parentId": null,
+    "path": [
+      "tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Tools, Hardware & Cleaning from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 13
+  },
+  {
+    "id": "cat_hand-tools",
+    "name": "Hand Tools",
+    "slug": "hand-tools",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "hand-tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Hand Tools from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_power-tools",
+    "name": "Power Tools",
+    "slug": "power-tools",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "power-tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Power Tools from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_hardware-fasteners",
+    "name": "Hardware & Fasteners",
+    "slug": "hardware-fasteners",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "hardware-fasteners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Hardware & Fasteners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_cutting-tools",
+    "name": "Cutting Tools",
+    "slug": "cutting-tools",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "cutting-tools"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cutting Tools from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_measuring-instruments",
+    "name": "Measuring Instruments",
+    "slug": "measuring-instruments",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "measuring-instruments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Measuring Instruments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_safety-equipment",
+    "name": "Safety Equipment",
+    "slug": "safety-equipment",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "safety-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Safety Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_abrasives",
+    "name": "Abrasives",
+    "slug": "abrasives",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "abrasives"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Abrasives from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_cleaning",
+    "name": "Cleaning",
+    "slug": "cleaning",
+    "parentId": "cat_tools",
+    "path": [
+      "tools",
+      "cleaning"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cleaning from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_cleaning-equipment",
+    "name": "Cleaning Equipment",
+    "slug": "cleaning-equipment",
+    "parentId": "cat_cleaning",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cleaning Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_vacuum-cleaners",
+    "name": "Vacuum Cleaners",
+    "slug": "vacuum-cleaners",
+    "parentId": "cat_cleaning-equipment",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "vacuum-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Vacuum Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_robotic-vacuum-cleaners",
+    "name": "Robotic Vacuum Cleaners",
+    "slug": "robotic-vacuum-cleaners",
+    "parentId": "cat_vacuum-cleaners",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "vacuum-cleaners",
+      "robotic-vacuum-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Robotic Vacuum Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_wet-dry-vacuum-cleaners",
+    "name": "Wet & Dry Vacuum Cleaners",
+    "slug": "wet-dry-vacuum-cleaners",
+    "parentId": "cat_vacuum-cleaners",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "vacuum-cleaners",
+      "wet-dry-vacuum-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Wet & Dry Vacuum Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_industrial-vacuum-cleaners",
+    "name": "Industrial Vacuum Cleaners",
+    "slug": "industrial-vacuum-cleaners",
+    "parentId": "cat_vacuum-cleaners",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "vacuum-cleaners",
+      "industrial-vacuum-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Industrial Vacuum Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_handheld-vacuum-cleaners",
+    "name": "Handheld Vacuum Cleaners",
+    "slug": "handheld-vacuum-cleaners",
+    "parentId": "cat_vacuum-cleaners",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "vacuum-cleaners",
+      "handheld-vacuum-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Handheld Vacuum Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_floor-scrubbers",
+    "name": "Floor Scrubbers",
+    "slug": "floor-scrubbers",
+    "parentId": "cat_cleaning-equipment",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "floor-scrubbers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Floor Scrubbers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_pressure-washers",
+    "name": "Pressure Washers",
+    "slug": "pressure-washers",
+    "parentId": "cat_cleaning-equipment",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "pressure-washers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pressure Washers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_steam-cleaners",
+    "name": "Steam Cleaners",
+    "slug": "steam-cleaners",
+    "parentId": "cat_cleaning-equipment",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-equipment",
+      "steam-cleaners"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Steam Cleaners from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_cleaning-chemicals",
+    "name": "Cleaning Chemicals",
+    "slug": "cleaning-chemicals",
+    "parentId": "cat_cleaning",
+    "path": [
+      "tools",
+      "cleaning",
+      "cleaning-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cleaning Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_brooms-mops",
+    "name": "Brooms & Mops",
+    "slug": "brooms-mops",
+    "parentId": "cat_cleaning",
+    "path": [
+      "tools",
+      "cleaning",
+      "brooms-mops"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Brooms & Mops from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_housekeeping-supplies",
+    "name": "Housekeeping Supplies",
+    "slug": "housekeeping-supplies",
+    "parentId": "cat_cleaning",
+    "path": [
+      "tools",
+      "cleaning",
+      "housekeeping-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Housekeeping Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_metals-steel-alloys",
+    "name": "Metals, Steel & Alloys",
+    "slug": "metals-steel-alloys",
+    "parentId": null,
+    "path": [
+      "metals-steel-alloys"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Metals, Steel & Alloys from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 14
+  },
+  {
+    "id": "cat_steel-iron",
+    "name": "Steel & Iron",
+    "slug": "steel-iron",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "steel-iron"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Steel & Iron from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_aluminium",
+    "name": "Aluminium",
+    "slug": "aluminium",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "aluminium"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Aluminium from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_copper-brass",
+    "name": "Copper & Brass",
+    "slug": "copper-brass",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "copper-brass"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Copper & Brass from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_stainless-steel",
+    "name": "Stainless Steel",
+    "slug": "stainless-steel",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "stainless-steel"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Stainless Steel from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_metal-sheets-coils",
+    "name": "Metal Sheets & Coils",
+    "slug": "metal-sheets-coils",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "metal-sheets-coils"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Metal Sheets & Coils from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_pipes-tubes",
+    "name": "Pipes & Tubes",
+    "slug": "pipes-tubes",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "pipes-tubes"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pipes & Tubes from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_metal-scrap",
+    "name": "Metal Scrap",
+    "slug": "metal-scrap",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "metal-scrap"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Metal Scrap from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_alloys",
+    "name": "Alloys",
+    "slug": "alloys",
+    "parentId": "cat_metals-steel-alloys",
+    "path": [
+      "metals-steel-alloys",
+      "alloys"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Alloys from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_plastics-polymers-rubber",
+    "name": "Plastics, Polymers & Rubber",
+    "slug": "plastics-polymers-rubber",
+    "parentId": null,
+    "path": [
+      "plastics-polymers-rubber"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Plastics, Polymers & Rubber from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 15
+  },
+  {
+    "id": "cat_plastic-granules",
+    "name": "Plastic Granules",
+    "slug": "plastic-granules",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "plastic-granules"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Plastic Granules from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_plastic-sheets-films",
+    "name": "Plastic Sheets & Films",
+    "slug": "plastic-sheets-films",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "plastic-sheets-films"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Plastic Sheets & Films from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_plastic-products",
+    "name": "Plastic Products",
+    "slug": "plastic-products",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "plastic-products"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Plastic Products from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_rubber-products",
+    "name": "Rubber Products",
+    "slug": "rubber-products",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "rubber-products"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Rubber Products from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_polymer-resins",
+    "name": "Polymer Resins",
+    "slug": "polymer-resins",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "polymer-resins"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Polymer Resins from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_moulded-components",
+    "name": "Moulded Components",
+    "slug": "moulded-components",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "moulded-components"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Moulded Components from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_pvc-pipes",
+    "name": "PVC & Pipes",
+    "slug": "pvc-pipes",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "pvc-pipes"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PVC & Pipes from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_recycled-plastics",
+    "name": "Recycled Plastics",
+    "slug": "recycled-plastics",
+    "parentId": "cat_plastics-polymers-rubber",
+    "path": [
+      "plastics-polymers-rubber",
+      "recycled-plastics"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Recycled Plastics from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_pharmaceuticals-lab-supplies",
+    "name": "Pharmaceuticals & Lab Supplies",
+    "slug": "pharmaceuticals-lab-supplies",
+    "parentId": null,
+    "path": [
+      "pharmaceuticals-lab-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pharmaceuticals & Lab Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 16
+  },
+  {
+    "id": "cat_active-pharmaceutical-ingredients",
+    "name": "Active Pharmaceutical Ingredients",
+    "slug": "active-pharmaceutical-ingredients",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "active-pharmaceutical-ingredients"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Active Pharmaceutical Ingredients from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_formulations-tablets",
+    "name": "Formulations & Tablets",
+    "slug": "formulations-tablets",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "formulations-tablets"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Formulations & Tablets from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_ayurvedic-herbal",
+    "name": "Ayurvedic & Herbal",
+    "slug": "ayurvedic-herbal",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "ayurvedic-herbal"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Ayurvedic & Herbal from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_nutraceuticals",
+    "name": "Nutraceuticals",
+    "slug": "nutraceuticals",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "nutraceuticals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Nutraceuticals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_lab-equipment",
+    "name": "Lab Equipment",
+    "slug": "lab-equipment",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "lab-equipment"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Lab Equipment from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_reagents-chemicals",
+    "name": "Reagents & Chemicals",
+    "slug": "reagents-chemicals",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "reagents-chemicals"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Reagents & Chemicals from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_veterinary-medicines",
+    "name": "Veterinary Medicines",
+    "slug": "veterinary-medicines",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "veterinary-medicines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Veterinary Medicines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_surgical-dressings",
+    "name": "Surgical Dressings",
+    "slug": "surgical-dressings",
+    "parentId": "cat_pharmaceuticals-lab-supplies",
+    "path": [
+      "pharmaceuticals-lab-supplies",
+      "surgical-dressings"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Surgical Dressings from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_office-stationery-supplies",
+    "name": "Office & Stationery Supplies",
+    "slug": "office-stationery-supplies",
+    "parentId": null,
+    "path": [
+      "office-stationery-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Office & Stationery Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 17
+  },
+  {
+    "id": "cat_paper-notebooks",
+    "name": "Paper & Notebooks",
+    "slug": "paper-notebooks",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "paper-notebooks"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Paper & Notebooks from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_writing-instruments",
+    "name": "Writing Instruments",
+    "slug": "writing-instruments",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "writing-instruments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Writing Instruments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_office-furniture",
+    "name": "Office Furniture",
+    "slug": "office-furniture",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "office-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Office Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_printers-cartridges",
+    "name": "Printers & Cartridges",
+    "slug": "printers-cartridges",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "printers-cartridges"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Printers & Cartridges from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_files-folders",
+    "name": "Files & Folders",
+    "slug": "files-folders",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "files-folders"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Files & Folders from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_office-electronics",
+    "name": "Office Electronics",
+    "slug": "office-electronics",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "office-electronics"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Office Electronics from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_housekeeping-office",
+    "name": "Housekeeping (Office)",
+    "slug": "housekeeping-office",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "housekeeping-office"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Housekeeping (Office) from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_pantry-supplies",
+    "name": "Pantry Supplies",
+    "slug": "pantry-supplies",
+    "parentId": "cat_office-stationery-supplies",
+    "path": [
+      "office-stationery-supplies",
+      "pantry-supplies"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Pantry Supplies from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_beauty-personal-care-wellness",
+    "name": "Beauty, Personal Care & Wellness",
+    "slug": "beauty-personal-care-wellness",
+    "parentId": null,
+    "path": [
+      "beauty-personal-care-wellness"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Beauty, Personal Care & Wellness products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 18
+  },
+  {
+    "id": "cat_skincare-products",
+    "name": "Skincare Products",
+    "slug": "skincare-products",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Skincare Products products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_haircare-products",
+    "name": "Haircare Products",
+    "slug": "haircare-products",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "haircare-products"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Haircare Products products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_cosmetics-makeup",
+    "name": "Cosmetics & Makeup",
+    "slug": "cosmetics-makeup",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "cosmetics-makeup"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Cosmetics & Makeup products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_salon-equipment",
+    "name": "Salon Equipment",
+    "slug": "salon-equipment",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "salon-equipment"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Salon Equipment products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_spa-wellness-services",
+    "name": "Spa & Wellness Services",
+    "slug": "spa-wellness-services",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "spa-wellness-services"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Spa & Wellness Services products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_fragrances",
+    "name": "Fragrances",
+    "slug": "fragrances",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "fragrances"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Fragrances products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_personal-hygiene",
+    "name": "Personal Hygiene",
+    "slug": "personal-hygiene",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "personal-hygiene"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Personal Hygiene products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_fitness-equipment",
+    "name": "Fitness Equipment",
+    "slug": "fitness-equipment",
+    "parentId": "cat_beauty-personal-care-wellness",
+    "path": [
+      "beauty-personal-care-wellness",
+      "fitness-equipment"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Explore Fitness Equipment products and services from suppliers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_gifts-crafts-sports",
+    "name": "Gifts, Crafts & Sports",
+    "slug": "gifts-crafts-sports",
+    "parentId": null,
+    "path": [
+      "gifts-crafts-sports"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Gifts, Crafts & Sports from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 19
+  },
+  {
+    "id": "cat_handicrafts",
+    "name": "Handicrafts",
+    "slug": "handicrafts",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "handicrafts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Handicrafts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_corporate-gifts",
+    "name": "Corporate Gifts",
+    "slug": "corporate-gifts",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "corporate-gifts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Corporate Gifts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_sports-goods",
+    "name": "Sports Goods",
+    "slug": "sports-goods",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "sports-goods"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Sports Goods from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_toys-games",
+    "name": "Toys & Games",
+    "slug": "toys-games",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "toys-games"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Toys & Games from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_festival-decorative",
+    "name": "Festival & Decorative",
+    "slug": "festival-decorative",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "festival-decorative"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Festival & Decorative from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_musical-instruments",
+    "name": "Musical Instruments",
+    "slug": "musical-instruments",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "musical-instruments"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Musical Instruments from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_fitness-outdoor",
+    "name": "Fitness & Outdoor",
+    "slug": "fitness-outdoor",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "fitness-outdoor"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fitness & Outdoor from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_stationery-gifts",
+    "name": "Stationery Gifts",
+    "slug": "stationery-gifts",
+    "parentId": "cat_gifts-crafts-sports",
+    "path": [
+      "gifts-crafts-sports",
+      "stationery-gifts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Stationery Gifts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_home-local-services",
+    "name": "Home & Local Services",
+    "slug": "home-local-services",
+    "parentId": null,
+    "path": [
+      "home-local-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Home & Local Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 20
+  },
+  {
+    "id": "cat_appliance-repair",
+    "name": "Appliance Repair",
+    "slug": "appliance-repair",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Appliance Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_ac-services",
+    "name": "AC Services",
+    "slug": "ac-services",
+    "parentId": "cat_appliance-repair",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified AC Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_split-ac-repair",
+    "name": "Split AC Repair",
+    "slug": "split-ac-repair",
+    "parentId": "cat_ac-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services",
+      "split-ac-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Split AC Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_window-ac-repair",
+    "name": "Window AC Repair",
+    "slug": "window-ac-repair",
+    "parentId": "cat_ac-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services",
+      "window-ac-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Window AC Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_ac-installation",
+    "name": "AC Installation",
+    "slug": "ac-installation",
+    "parentId": "cat_ac-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services",
+      "ac-installation"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified AC Installation providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_ac-gas-refilling",
+    "name": "AC Gas Refilling",
+    "slug": "ac-gas-refilling",
+    "parentId": "cat_ac-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services",
+      "ac-gas-refilling"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified AC Gas Refilling providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_ac-annual-maintenance",
+    "name": "AC Annual Maintenance",
+    "slug": "ac-annual-maintenance",
+    "parentId": "cat_ac-services",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "ac-services",
+      "ac-annual-maintenance"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified AC Annual Maintenance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_refrigerator-repair",
+    "name": "Refrigerator Repair",
+    "slug": "refrigerator-repair",
+    "parentId": "cat_appliance-repair",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "refrigerator-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Refrigerator Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_washing-machine-repair",
+    "name": "Washing Machine Repair",
+    "slug": "washing-machine-repair",
+    "parentId": "cat_appliance-repair",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "washing-machine-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Washing Machine Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_microwave-repair",
+    "name": "Microwave Repair",
+    "slug": "microwave-repair",
+    "parentId": "cat_appliance-repair",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "microwave-repair"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Microwave Repair providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_water-purifier-service",
+    "name": "Water Purifier Service",
+    "slug": "water-purifier-service",
+    "parentId": "cat_appliance-repair",
+    "path": [
+      "home-local-services",
+      "appliance-repair",
+      "water-purifier-service"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Water Purifier Service providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_home-cleaning",
+    "name": "Home Cleaning",
+    "slug": "home-cleaning",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "home-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Home Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_plumbing",
+    "name": "Plumbing",
+    "slug": "plumbing",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "plumbing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Plumbing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_electrician-services",
+    "name": "Electrician Services",
+    "slug": "electrician-services",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "electrician-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Electrician Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_pest-control",
+    "name": "Pest Control",
+    "slug": "pest-control",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "pest-control"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Pest Control providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_painting-services",
+    "name": "Painting Services",
+    "slug": "painting-services",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "painting-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Painting Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_carpentry",
+    "name": "Carpentry",
+    "slug": "carpentry",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "carpentry"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Carpentry providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_interior-design",
+    "name": "Interior Design",
+    "slug": "interior-design",
+    "parentId": "cat_home-local-services",
+    "path": [
+      "home-local-services",
+      "interior-design"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Interior Design providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_accounting",
+    "name": "Accounting, Tax & Compliance",
+    "slug": "accounting",
+    "parentId": null,
+    "path": [
+      "accounting"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Accounting, Tax & Compliance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 21
+  },
+  {
+    "id": "cat_taxation",
+    "name": "Taxation",
+    "slug": "taxation",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "taxation"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Taxation providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_gst-services",
+    "name": "GST Services",
+    "slug": "gst-services",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_gst-registration",
+    "name": "GST Registration",
+    "slug": "gst-registration",
+    "parentId": "cat_gst-services",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-services",
+      "gst-registration"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Registration providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_gst-return-filing",
+    "name": "GST Return Filing",
+    "slug": "gst-return-filing",
+    "parentId": "cat_gst-services",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-services",
+      "gst-return-filing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Return Filing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_gst-audit",
+    "name": "GST Audit",
+    "slug": "gst-audit",
+    "parentId": "cat_gst-services",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-services",
+      "gst-audit"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Audit providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_gst-advisory",
+    "name": "GST Advisory",
+    "slug": "gst-advisory",
+    "parentId": "cat_gst-services",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-services",
+      "gst-advisory"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Advisory providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_income-tax-services",
+    "name": "Income Tax Services",
+    "slug": "income-tax-services",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "income-tax-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Income Tax Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_tds-services",
+    "name": "TDS Services",
+    "slug": "tds-services",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "tds-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified TDS Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_international-taxation",
+    "name": "International Taxation",
+    "slug": "international-taxation",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "international-taxation"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified International Taxation providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_bookkeeping",
+    "name": "Bookkeeping",
+    "slug": "bookkeeping",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "bookkeeping"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Bookkeeping providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_auditing-assurance",
+    "name": "Auditing & Assurance",
+    "slug": "auditing-assurance",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "auditing-assurance"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Auditing & Assurance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_payroll-services",
+    "name": "Payroll Services",
+    "slug": "payroll-services",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "payroll-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Payroll Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_company-registration",
+    "name": "Company Registration",
+    "slug": "company-registration",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "company-registration"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Company Registration providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_financial-consulting",
+    "name": "Financial Consulting",
+    "slug": "financial-consulting",
+    "parentId": "cat_accounting",
+    "path": [
+      "accounting",
+      "financial-consulting"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Financial Consulting providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_professional-consulting-services",
+    "name": "Professional & Consulting Services",
+    "slug": "professional-consulting-services",
+    "parentId": null,
+    "path": [
+      "professional-consulting-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Professional & Consulting Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 22
+  },
+  {
+    "id": "cat_legal-services",
+    "name": "Legal Services",
+    "slug": "legal-services",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Legal Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_it-software-services",
+    "name": "IT & Software Services",
+    "slug": "it-software-services",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "it-software-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified IT & Software Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_digital-marketing",
+    "name": "Digital Marketing",
+    "slug": "digital-marketing",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "digital-marketing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Digital Marketing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_hr-recruitment",
+    "name": "HR & Recruitment",
+    "slug": "hr-recruitment",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "hr-recruitment"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified HR & Recruitment providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_business-consulting",
+    "name": "Business Consulting",
+    "slug": "business-consulting",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "business-consulting"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Business Consulting providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_architecture-design",
+    "name": "Architecture & Design",
+    "slug": "architecture-design",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "architecture-design"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Architecture & Design providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_translation-services",
+    "name": "Translation Services",
+    "slug": "translation-services",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "translation-services"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Translation Services providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_market-research",
+    "name": "Market Research",
+    "slug": "market-research",
+    "parentId": "cat_professional-consulting-services",
+    "path": [
+      "professional-consulting-services",
+      "market-research"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Market Research providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_logistics-transport-warehousing",
+    "name": "Logistics, Transport & Warehousing",
+    "slug": "logistics-transport-warehousing",
+    "parentId": null,
+    "path": [
+      "logistics-transport-warehousing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Logistics, Transport & Warehousing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 23
+  },
+  {
+    "id": "cat_freight-cargo",
+    "name": "Freight & Cargo",
+    "slug": "freight-cargo",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "freight-cargo"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Freight & Cargo providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_courier-parcel",
+    "name": "Courier & Parcel",
+    "slug": "courier-parcel",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "courier-parcel"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Courier & Parcel providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_warehousing",
+    "name": "Warehousing",
+    "slug": "warehousing",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "warehousing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Warehousing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_packers-movers",
+    "name": "Packers & Movers",
+    "slug": "packers-movers",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "packers-movers"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Packers & Movers providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_cold-chain-logistics",
+    "name": "Cold Chain Logistics",
+    "slug": "cold-chain-logistics",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "cold-chain-logistics"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Cold Chain Logistics providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_customs-clearance",
+    "name": "Customs Clearance",
+    "slug": "customs-clearance",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "customs-clearance"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Customs Clearance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_fleet-transport",
+    "name": "Fleet & Transport",
+    "slug": "fleet-transport",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "fleet-transport"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Fleet & Transport providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_last-mile-delivery",
+    "name": "Last-Mile Delivery",
+    "slug": "last-mile-delivery",
+    "parentId": "cat_logistics-transport-warehousing",
+    "path": [
+      "logistics-transport-warehousing",
+      "last-mile-delivery"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Last-Mile Delivery providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_education-training-events",
+    "name": "Education, Training & Events",
+    "slug": "education-training-events",
+    "parentId": null,
+    "path": [
+      "education-training-events"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Education, Training & Events providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 24
+  },
+  {
+    "id": "cat_coaching-tutoring",
+    "name": "Coaching & Tutoring",
+    "slug": "coaching-tutoring",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "coaching-tutoring"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Coaching & Tutoring providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_skill-development",
+    "name": "Skill Development",
+    "slug": "skill-development",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "skill-development"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Skill Development providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_corporate-training",
+    "name": "Corporate Training",
+    "slug": "corporate-training",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "corporate-training"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Corporate Training providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_online-courses",
+    "name": "Online Courses",
+    "slug": "online-courses",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "online-courses"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Online Courses providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 4
+  },
+  {
+    "id": "cat_event-management",
+    "name": "Event Management",
+    "slug": "event-management",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "event-management"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Event Management providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 5
+  },
+  {
+    "id": "cat_certification-programs",
+    "name": "Certification Programs",
+    "slug": "certification-programs",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "certification-programs"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Certification Programs providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 6
+  },
+  {
+    "id": "cat_language-classes",
+    "name": "Language Classes",
+    "slug": "language-classes",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "language-classes"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Language Classes providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 7
+  },
+  {
+    "id": "cat_career-counseling",
+    "name": "Career Counseling",
+    "slug": "career-counseling",
+    "parentId": "cat_education-training-events",
+    "path": [
+      "education-training-events",
+      "career-counseling"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Career Counseling providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 8
+  },
+  {
+    "id": "cat_combed-cotton",
+    "name": "Combed Cotton",
+    "slug": "combed-cotton",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "combed-cotton"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Combed Cotton from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_organic-cotton",
+    "name": "Organic Cotton",
+    "slug": "organic-cotton",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "organic-cotton"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Organic Cotton from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_cotton-canvas",
+    "name": "Cotton Canvas",
+    "slug": "cotton-canvas",
+    "parentId": "cat_cotton-fabric",
+    "path": [
+      "textiles-fabrics-yarn",
+      "cotton-fabric",
+      "cotton-canvas"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Cotton Canvas from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_formal-shirts",
+    "name": "Formal Shirts",
+    "slug": "formal-shirts",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "formal-shirts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Formal Shirts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_t-shirts",
+    "name": "T-Shirts",
+    "slug": "t-shirts",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "t-shirts"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source T-Shirts from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_trousers",
+    "name": "Trousers",
+    "slug": "trousers",
+    "parentId": "cat_men-s-clothing",
+    "path": [
+      "apparel-clothing-garments",
+      "men-s-clothing",
+      "trousers"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Trousers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_cnc-milling-machines",
+    "name": "CNC Milling Machines",
+    "slug": "cnc-milling-machines",
+    "parentId": "cat_cnc-machines",
+    "path": [
+      "industrial-machinery-equipment",
+      "cnc-machines",
+      "cnc-milling-machines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source CNC Milling Machines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_cnc-lathe-machines",
+    "name": "CNC Lathe Machines",
+    "slug": "cnc-lathe-machines",
+    "parentId": "cat_cnc-machines",
+    "path": [
+      "industrial-machinery-equipment",
+      "cnc-machines",
+      "cnc-lathe-machines"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source CNC Lathe Machines from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_pcb-connectors",
+    "name": "PCB Connectors",
+    "slug": "pcb-connectors",
+    "parentId": "cat_pcb-components",
+    "path": [
+      "electronics-electrical",
+      "pcb-components",
+      "pcb-connectors"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PCB Connectors from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_pcb-relays",
+    "name": "PCB Relays",
+    "slug": "pcb-relays",
+    "parentId": "cat_pcb-components",
+    "path": [
+      "electronics-electrical",
+      "pcb-components",
+      "pcb-relays"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source PCB Relays from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_fe-500-tmt-bars",
+    "name": "Fe 500 TMT Bars",
+    "slug": "fe-500-tmt-bars",
+    "parentId": "cat_tmt-bars-steel",
+    "path": [
+      "building-construction",
+      "tmt-bars-steel",
+      "fe-500-tmt-bars"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fe 500 TMT Bars from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_fe-550-tmt-bars",
+    "name": "Fe 550 TMT Bars",
+    "slug": "fe-550-tmt-bars",
+    "parentId": "cat_tmt-bars-steel",
+    "path": [
+      "building-construction",
+      "tmt-bars-steel",
+      "fe-550-tmt-bars"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Fe 550 TMT Bars from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_living-room-furniture",
+    "name": "Living Room Furniture",
+    "slug": "living-room-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "living-room-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Living Room Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_bedroom-furniture",
+    "name": "Bedroom Furniture",
+    "slug": "bedroom-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "bedroom-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Bedroom Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_dining-furniture",
+    "name": "Dining Furniture",
+    "slug": "dining-furniture",
+    "parentId": "cat_furniture",
+    "path": [
+      "home-furniture-furnishings",
+      "furniture",
+      "dining-furniture"
+    ],
+    "type": "product",
+    "icon": null,
+    "description": "Source Dining Furniture from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_income-tax-filing",
+    "name": "Income Tax Filing",
+    "slug": "income-tax-filing",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "income-tax-filing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Income Tax Filing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_gst-filing",
+    "name": "GST Filing",
+    "slug": "gst-filing",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "gst-filing"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified GST Filing providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_tds-compliance",
+    "name": "TDS Compliance",
+    "slug": "tds-compliance",
+    "parentId": "cat_taxation",
+    "path": [
+      "accounting",
+      "taxation",
+      "tds-compliance"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified TDS Compliance providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_contract-drafting",
+    "name": "Contract Drafting",
+    "slug": "contract-drafting",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "contract-drafting"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Contract Drafting providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_trademark-registration",
+    "name": "Trademark Registration",
+    "slug": "trademark-registration",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "trademark-registration"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Trademark Registration providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_corporate-legal-advisory",
+    "name": "Corporate Legal Advisory",
+    "slug": "corporate-legal-advisory",
+    "parentId": "cat_legal-services",
+    "path": [
+      "professional-consulting-services",
+      "legal-services",
+      "corporate-legal-advisory"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Corporate Legal Advisory providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_deep-cleaning",
+    "name": "Deep Cleaning",
+    "slug": "deep-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "deep-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Deep Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_sofa-cleaning",
+    "name": "Sofa Cleaning",
+    "slug": "sofa-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "sofa-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Sofa Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_bathroom-cleaning",
+    "name": "Bathroom Cleaning",
+    "slug": "bathroom-cleaning",
+    "parentId": "cat_home-cleaning",
+    "path": [
+      "home-local-services",
+      "home-cleaning",
+      "bathroom-cleaning"
+    ],
+    "type": "service",
+    "icon": null,
+    "description": "Find verified Bathroom Cleaning providers, compare quotes and enquire on BharatSource.",
+    "facets": [
+      "location",
+      "rate",
+      "experience",
+      "credentials",
+      "availability",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  },
+  {
+    "id": "cat_face-wash-and-cleansers",
+    "name": "Face Wash & Cleansers",
+    "slug": "face-wash-and-cleansers",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "face-wash-and-cleansers"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Face Wash & Cleansers from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 1
+  },
+  {
+    "id": "cat_moisturizers-and-creams",
+    "name": "Moisturizers & Creams",
+    "slug": "moisturizers-and-creams",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "moisturizers-and-creams"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Moisturizers & Creams from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 2
+  },
+  {
+    "id": "cat_sunscreen",
+    "name": "Sunscreen",
+    "slug": "sunscreen",
+    "parentId": "cat_skincare-products",
+    "path": [
+      "beauty-personal-care-wellness",
+      "skincare-products",
+      "sunscreen"
+    ],
+    "type": "both",
+    "icon": null,
+    "description": "Source Sunscreen from verified suppliers and manufacturers across India.",
+    "facets": [
+      "brand",
+      "priceRange",
+      "location",
+      "moq",
+      "availability",
+      "certifications",
+      "rate",
+      "experience",
+      "credentials",
+      "rating"
+    ],
+    "listingCount": 0,
+    "order": 3
+  }
+]

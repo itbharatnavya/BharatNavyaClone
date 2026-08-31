@@ -1,0 +1,107 @@
+[
+  {
+    "id": "buyer_001",
+    "name": "Rohan Mehta",
+    "mobile": "9811112201",
+    "email": "rohan.mehta@example.com",
+    "company": "Mehta Garments",
+    "city": "Ludhiana",
+    "createdAt": "2024-03-01T09:00:00Z",
+    "gstNumber": "27AABCB1000Q1Z0",
+    "website": null,
+    "verification": {
+      "gstVerified": true,
+      "websiteVerified": false,
+      "phoneVerified": true,
+      "emailVerified": false,
+      "linkedinPresence": false
+    },
+    "annualTurnover": "₹1-5 Cr",
+    "activeYears": 3,
+    "trustScore": 47
+  },
+  {
+    "id": "buyer_002",
+    "name": "Priya Nair",
+    "mobile": "9811112202",
+    "email": "priya.nair@example.com",
+    "company": "Nair Exports",
+    "city": "Kochi",
+    "createdAt": "2024-03-08T11:30:00Z",
+    "gstNumber": "28AABCB1001Q1Z1",
+    "website": "https://nairexports.example.com",
+    "verification": {
+      "gstVerified": true,
+      "websiteVerified": true,
+      "phoneVerified": true,
+      "emailVerified": true,
+      "linkedinPresence": true
+    },
+    "annualTurnover": "₹5-10 Cr",
+    "activeYears": 5,
+    "trustScore": 88
+  },
+  {
+    "id": "buyer_003",
+    "name": "Aman Verma",
+    "mobile": "9811112203",
+    "email": "aman.verma@example.com",
+    "company": "Verma Auto Works",
+    "city": "Gurugram",
+    "createdAt": "2024-04-02T14:15:00Z",
+    "gstNumber": "29AABCB1002Q1Z2",
+    "website": "https://vermaautoworks.example.com",
+    "verification": {
+      "gstVerified": true,
+      "websiteVerified": true,
+      "phoneVerified": true,
+      "emailVerified": true,
+      "linkedinPresence": true
+    },
+    "annualTurnover": "₹10-25 Cr",
+    "activeYears": 7,
+    "trustScore": 93
+  },
+  {
+    "id": "buyer_004",
+    "name": "Sneha Iyer",
+    "mobile": "9811112204",
+    "email": "sneha.iyer@example.com",
+    "company": "Iyer Healthcare",
+    "city": "Bengaluru",
+    "createdAt": "2024-04-19T10:45:00Z",
+    "gstNumber": "210AABCB1003Q1Z3",
+    "website": "https://iyerhealthcare.example.com",
+    "verification": {
+      "gstVerified": true,
+      "websiteVerified": true,
+      "phoneVerified": true,
+      "emailVerified": true,
+      "linkedinPresence": false
+    },
+    "annualTurnover": "₹25 Cr+",
+    "activeYears": 9,
+    "trustScore": 86
+  },
+  {
+    "id": "buyer_005",
+    "name": "Karan Singh",
+    "mobile": "9811112205",
+    "email": "karan.singh@example.com",
+    "company": "Singh Builders",
+    "city": "Lucknow",
+    "createdAt": "2024-05-12T16:20:00Z",
+    "gstNumber": "211AABCB1004Q1Z4",
+    "website": null,
+    "verification": {
+      "gstVerified": true,
+      "websiteVerified": false,
+      "phoneVerified": true,
+      "emailVerified": true,
+      "linkedinPresence": true
+    },
+    "annualTurnover": "₹1-5 Cr",
+    "activeYears": 4,
+    "trustScore": 73
+  }
+]

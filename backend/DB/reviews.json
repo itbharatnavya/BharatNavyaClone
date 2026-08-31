@@ -1,0 +1,14 @@
+[
+  {
+    "id": "rev_000002",
+    "targetUserId": "usr_s002",
+    "sellerId": "usr_s002",
+    "direction": "buyer_to_seller",
+    "buyerId": "usr_000002",
+    "buyerName": "9812340000",
+    "rating": 5,
+    "reviewText": "great",
+    "status": "approved",
+    "createdAt": "2026-07-31T07:09:45.380Z"
+  }
+]

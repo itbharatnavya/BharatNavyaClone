@@ -1,0 +1,568 @@
+[
+  {
+    "id": "unified-identity",
+    "name": "Unified Account (Buy & Sell)",
+    "group": "Accounts & Identity",
+    "description": "One account — any user can both buy and sell. No separate buyer/seller logins; the listing decides the role.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "otp-login",
+    "name": "Mobile OTP Login",
+    "group": "Accounts & Identity",
+    "description": "Sign up / log in with mobile + OTP. Real JWT sessions.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "user-profile",
+    "name": "User Profile",
+    "group": "Accounts & Identity",
+    "description": "Name, photo, city, category interests, and contact-visibility settings (public / on-request / hidden).",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "verification",
+    "name": "Verified & TrustSEAL Badges",
+    "group": "Accounts & Identity",
+    "description": "Admin-granted verification and trust badges to build buyer confidence.",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "gamified-badges",
+    "name": "Gamified Badges",
+    "group": "Accounts & Identity",
+    "description": "Auto-earned Top Rated (4.5+ star) and Fast Responder (≤2h) badges.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "post-listing",
+    "name": "Post a Listing",
+    "group": "Marketplace Listings",
+    "description": "List a product or a service with photos, price, description, category, and location.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "product-service",
+    "name": "Products & Services",
+    "group": "Marketplace Listings",
+    "description": "One catalog handles physical products (price/MOQ/specs) and services (rate-card/credentials/service-area).",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "edit-mark-sold",
+    "name": "Edit / Mark as Sold",
+    "group": "Marketplace Listings",
+    "description": "Sellers update, deactivate, or mark their listings Sold.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "condition",
+    "name": "Item Condition",
+    "group": "Marketplace Listings",
+    "description": "New / Used condition on product listings.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "ai-autofill",
+    "name": "AI Listing Auto-fill",
+    "group": "Marketplace Listings",
+    "description": "Auto-writes title, description, and category from an uploaded photo (Claude vision).",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "beta",
+    "phase": 2
+  },
+  {
+    "id": "browse-filters",
+    "name": "Browse & Faceted Search",
+    "group": "Discovery & Search",
+    "description": "Search with filters: category, price tiers, city, verified, condition, type.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "ai-concierge",
+    "name": "AI Search Concierge",
+    "group": "Discovery & Search",
+    "description": "Type a natural request (\"CA in Pune for GST filing\") — AI returns matches or routes to the right page.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "voice-search",
+    "name": "Voice Input for AI Search",
+    "group": "Discovery & Search",
+    "description": "Speak your query instead of typing (browser voice).",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "beta",
+    "phase": 2
+  },
+  {
+    "id": "near-me",
+    "name": "Near-Me / Distance",
+    "group": "Discovery & Search",
+    "description": "Distance-sorted results from your city + radius filter.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "map-view",
+    "name": "Map View",
+    "group": "Discovery & Search",
+    "description": "Toggle listings/businesses onto an interactive map (OpenStreetMap).",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "beta",
+    "phase": 2
+  },
+  {
+    "id": "category-pages",
+    "name": "Category Landing Pages",
+    "group": "Discovery & Search",
+    "description": "Dedicated page per category with nested sub-categories (250+ nodes, 5 levels deep).",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "city-pages",
+    "name": "City Pages & Trending",
+    "group": "Discovery & Search",
+    "description": "City-scoped pages showing trending listings/businesses.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "business-profile",
+    "name": "Business Profile Page",
+    "group": "Business Directory",
+    "description": "Name, category, services, hours, photos, map location, reviews, and trust badges.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "contact-buttons",
+    "name": "Call / WhatsApp / Chat",
+    "group": "Business Directory",
+    "description": "One-tap contact from any profile or listing.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "follow",
+    "name": "Follow Sellers & Businesses",
+    "group": "Business Directory",
+    "description": "Follow to get notified of new listings and stories.",
+    "audience": "buyer",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 2
+  },
+  {
+    "id": "stories",
+    "name": "24-Hour Stories",
+    "group": "Stories",
+    "description": "Post photo/video that disappears after 24h, linked to a listing/profile.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "story-views",
+    "name": "Story View Counts",
+    "group": "Stories",
+    "description": "Sellers see how many people viewed each story.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "story-highlights",
+    "name": "Story Highlights",
+    "group": "Stories",
+    "description": "Pin best stories permanently to a profile.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 2
+  },
+  {
+    "id": "chat",
+    "name": "In-App Chat",
+    "group": "Communication",
+    "description": "Secure buyer↔seller messaging; contact number not shared until agreed.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "notifications",
+    "name": "Notification Center",
+    "group": "Communication",
+    "description": "In-app alerts for messages, story views, new followers.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 2
+  },
+  {
+    "id": "share",
+    "name": "Share to WhatsApp",
+    "group": "Communication",
+    "description": "One-tap share of listings/stories via WhatsApp + copy-link.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 2
+  },
+  {
+    "id": "reviews",
+    "name": "Two-Way Ratings & Reviews",
+    "group": "Trust & Safety",
+    "description": "Buyers and sellers rate each other after an interaction.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "report",
+    "name": "Report Listing",
+    "group": "Trust & Safety",
+    "description": "Flag suspicious/fraudulent listings for admin review.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "moderation",
+    "name": "Moderation Queue",
+    "group": "Trust & Safety",
+    "description": "Admins review reports, resolve or dismiss.",
+    "audience": "admin",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "blogs",
+    "name": "Seller Blogs",
+    "group": "Reach & Content",
+    "description": "Sellers publish SEO articles/guides for organic reach.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "id": "multilang",
+    "name": "Multi-Language (EN / हिन्दी)",
+    "group": "Reach & Content",
+    "description": "Language toggle for wider tier-2/3 reach.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "beta",
+    "phase": 2
+  },
+  {
+    "id": "referral",
+    "name": "Referral Program",
+    "group": "Reach & Content",
+    "description": "Invite friends for listing-boost credits.",
+    "audience": "all",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "featured",
+    "name": "Featured / Boosted Listings",
+    "group": "Monetization",
+    "description": "Sellers pay to rank higher in category/city/search (labeled Sponsored).",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "subscriptions",
+    "name": "Business Subscription Plans",
+    "group": "Monetization",
+    "description": "Free / Silver / Gold tiers unlock listings, leads, badges, analytics.",
+    "audience": "seller",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "leads",
+    "name": "Lead-Gen (Pay per Inquiry)",
+    "group": "Monetization",
+    "description": "Businesses receive/pay for qualified inquiries.",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "ads",
+    "name": "In-App Ads",
+    "group": "Monetization",
+    "description": "Sponsored banner/slots on home, category, and city pages.",
+    "audience": "seller",
+    "plans": [
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "analytics",
+    "name": "Seller Analytics",
+    "group": "Monetization",
+    "description": "Performance dashboard for paid sellers.",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "admin-dashboard",
+    "name": "Admin Dashboard",
+    "group": "Admin & Ops",
+    "description": "Moderate listings/stories/reports, manage sellers, view analytics.",
+    "audience": "admin",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "admin-monetization",
+    "name": "Monetization Controls",
+    "group": "Admin & Ops",
+    "description": "Set featured/boost, assign plans, ad bookings, mark payments paid.",
+    "audience": "admin",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 3
+  },
+  {
+    "id": "features-catalog",
+    "name": "Features Catalog",
+    "group": "Admin & Ops",
+    "description": "This living list — so the sales team always knows what the platform sells.",
+    "audience": "admin",
+    "plans": [
+      "free",
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 1
+  },
+  {
+    "name": "Self-Serve Advertising",
+    "group": "Growth & Monetization",
+    "description": "Create and run your own ad campaigns from the dashboard.",
+    "audience": "seller",
+    "plans": [
+      "silver",
+      "gold"
+    ],
+    "status": "live",
+    "phase": 2,
+    "id": "feat_000001"
+  }
+]

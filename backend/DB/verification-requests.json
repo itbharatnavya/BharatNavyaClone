@@ -1,0 +1,22 @@
+[
+  {
+    "sellerId": "usr_s003",
+    "gstNumber": "27ABCDE1234F1Z5",
+    "panNumber": "ABCDE1234F",
+    "note": null,
+    "status": "pending",
+    "createdAt": "2026-07-31T15:54:31.605Z",
+    "id": "vr_000001"
+  },
+  {
+    "sellerId": "usr_s005",
+    "gstNumber": "07XYZAB5678K1Z2",
+    "panNumber": "XYZAB5678K",
+    "note": null,
+    "status": "approved",
+    "createdAt": "2026-07-31T15:55:05.665Z",
+    "id": "vr_000002",
+    "reviewedBy": "usr_admin",
+    "reviewedAt": "2026-07-31T15:55:05.706Z"
+  }
+]

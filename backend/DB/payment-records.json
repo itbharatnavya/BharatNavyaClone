@@ -1,0 +1,17 @@
+[
+  {
+    "sellerId": "usr_s004",
+    "relatedEntityType": "seller_boost",
+    "relatedEntityId": null,
+    "amount": 5000,
+    "paymentMethod": "bank_transfer",
+    "paymentStatus": "paid",
+    "validFrom": "2026-01-01",
+    "validTo": "2027-01-01",
+    "referenceNo": null,
+    "notes": null,
+    "markedPaidDate": "2026-07-31T07:09:45.403Z",
+    "createdAt": "2026-07-31T07:09:45.403Z",
+    "id": "pay_000001"
+  }
+]

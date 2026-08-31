@@ -1,0 +1,1065 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   BharatSource — Light Design System
+   White canvas · one trust accent (blue) · one action accent (orange)
+   Hairline borders · soft shadows only where they aid hierarchy.
+   Whitespace, restraint. NO dark theme.
+   ============================================================ */
+
+:root {
+  /* canvas / surfaces */
+  --canvas: #ffffff;
+  --bg-subtle: #f7f8fa;
+  --surface: #ffffff;
+
+  /* ink / text */
+  --ink: #0f172a;
+  --muted: #475569;
+  --faint: #94a3b8;
+
+  /* borders */
+  --border: #e5e7eb;
+  --border-strong: #cbd5e1;
+
+  /* trust accent (blue) — from the BharatNavya wordmark's lettering. Kept
+     unmistakably blue (not navy-black) so it reads as a real color shift. */
+  --brand: #1a4fae;
+  --brand-hover: #123a82;
+  --brand-tint: #eaf1fc;
+
+  /* action accent (saffron orange) — from the BharatNavya wordmark's arrow.
+     Bharat Agent's signature color. */
+  --action: #f5821f;
+  --action-hover: #dd6d0f;
+  --action-tint: #fff2e2;
+
+  /* third module accent (green) — from the BharatNavya wordmark's swoosh.
+     Recruitment's module color, plus the eyebrow flourish tick. This is a
+     real, visible third accent now (module identity), not just decoration —
+     see frontend-design-guide.md's color-to-module mapping. */
+  --tricolor-green: #1e9e52;
+  --tricolor-green-hover: #167d40;
+  --tricolor-green-tint: #e8f8ee;
+
+  /* deep navy — the BharatNavya wordmark's actual lettering color (v5.4,
+     picked from the logo directly). Deliberately kept OUT of interactive
+     use (buttons/links stay --brand, which was tuned lighter specifically
+     so it wouldn't read as "basically black" at UI scale — see Version
+     history v2). --navy is for bold decorative surfaces only: gradient
+     hero/CTA panel backgrounds, not text or controls. */
+  --navy: #16305c;
+  --navy-deep: #0b1a35;
+  --navy-mid: #1e3f7a;
+  --navy-tint: #eaeef5;
+
+  /* rich violet — the Bharat Agent card inside AgentHeroCard only (v7.1:
+     the v7 pale-lavender wash read as washed-out, so this went dark+
+     saturated instead; v7.2: scoped to just that inner card, not its white
+     frame, after the two blended together at matching darkness). Same
+     "decorative surface only" rule as --navy: never for buttons, links or
+     body text. See frontend-design-guide.md. */
+  --violet: #6d28d9;
+  --violet-deep: #3b0764;
+  --violet-darker: #1e0442;
+
+  /* status */
+  --success: #16a34a;
+  --warn: #d97706;
+  --error: #dc2626;
+
+  /* shape */
+  --radius: 10px;
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+  --shadow-card-hover: 0 4px 12px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16, 24, 40, 0.06);
+  --shadow-pop: 0 8px 24px rgba(16, 24, 40, 0.12);
+}
+
+/* ---- Reset bits ---- */
+* {
+  box-sizing: border-box;
+}
+/* Let flex/grid children shrink below their content size instead of forcing the
+   track wider — the standard fix for horizontal overflow (long text, tables,
+   pre/code, etc.). Elements with an explicit/inline fixed width still win, so
+   this is safe. */
+*,
+*::before,
+*::after {
+  min-width: 0;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+  /* Mobile safety: never let a stray element push the page sideways.
+     overflow-x: hidden (not `overflow` / `overflow-y`) keeps the sticky
+     navbar working while clipping any horizontal spill. */
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+}
+img,
+svg,
+video,
+canvas {
+  display: block;
+}
+/* Media never overflows its column. An svg with an explicit width is excluded
+   so inline icons keep their intrinsic size; unsized/decorative svg still scales
+   down to fit. */
+img,
+video,
+canvas,
+svg:not([width]) {
+  max-width: 100%;
+}
+/* Media keeps its intrinsic aspect ratio. */
+img,
+video {
+  height: auto;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: var(--brand-tint);
+  color: var(--brand-hover);
+}
+
+/* ---- Scrollbar (subtle) ---- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #dbe0e6;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+  background-clip: padding-box;
+}
+
+/* ---- Global focus ring ---- */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Navbar — v5.4: swapped the plain grey border-bottom for a slim
+   tri-color gradient hairline (navy → orange → green, straight off the
+   BharatNavya wordmark) so the header carries a touch of brand color
+   everywhere, not just on the homepage. Site-wide (Navbar.tsx), not
+   homepage-scoped — see frontend-design-guide.md.
+
+   No `position` set here deliberately — the header already carries
+   Tailwind's `sticky` utility class. `position: sticky` is itself a
+   positioned element (a valid containing block for this ::after), so
+   redeclaring `position: relative` here is not just redundant, it's a
+   cascade trap: this rule and `.sticky` have equal specificity, and
+   whichever is later in the compiled stylesheet wins — which silently
+   demoted the header to `position: relative` and broke its stickiness
+   entirely. Learned the hard way while wiring up the sticky CategoryStrip.
+   ============================================================ */
+.nav-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy) 0%, var(--action) 50%, var(--tricolor-green) 100%);
+}
+
+/* Footer (components/Footer.tsx) — the same tricolor thread as .nav-header::after,
+   echoed as a top border so the page frame is bookended top and bottom. */
+.footer-tricolor {
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--navy) 0%, var(--action) 50%, var(--tricolor-green) 100%) 1;
+}
+
+/* ============================================================
+   Directory — CategoryStrip (components/directory/CategoryStrip.tsx): the
+   second nav row, directly under the header, Directory
+   pages only. Dark navy so it reads as a distinct "browse" layer beneath
+   the neutral header, and so the "All Categories" trigger + inline links
+   need light text instead of the header's --muted-on-white convention.
+   Sticky right under the header (top: 64px = header's h-16) so both stay
+   pinned together on scroll — not just the header. Desktop only (>=900px,
+   the strip is hidden below that and the header's own mobile docked-search
+   row doesn't grow past 64px) — see frontend-design-guide.md.
+   ============================================================ */
+.category-strip {
+  position: sticky;
+  top: 64px;
+  z-index: 45;
+  background: var(--navy);
+}
+.category-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  height: 44px;
+  /* No overflow-x here on purpose. The CSS Overflow spec forces the used
+     value of overflow-y to `auto` any time overflow-x computes to
+     non-visible on the SAME box — there's no way to declare "scroll
+     horizontally, never clip vertically" on one element (an earlier
+     `overflow-x:auto; overflow-y:visible` attempt here looked right in the
+     stylesheet but the browser silently overrides overflow-y regardless,
+     which clipped the "All Categories" flyout to this row's 44px height).
+     Fix: only .category-strip-links below (which never hosts a flyout)
+     gets overflow-x:auto; this row stays overflow:visible throughout. */
+}
+/* CategoryMegaMenu's own root div (generic .relative, reused all over the
+   app) needs flex-shrink:0 so it keeps its natural width instead of being
+   compressed. Scoped here, not on .relative globally. */
+.category-strip-row > .relative {
+  flex-shrink: 0;
+}
+.category-strip-trigger {
+  flex-shrink: 0;
+  color: #ffffff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.category-strip-trigger:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* CategoryMegaMenu's right panel — each sub-category (+ its own children)
+   sits in its own bordered, tinted tile instead of a bare text list, so the
+   grid reads as a real grid (visible rows/columns) rather than loose links
+   floating on white. See components/CategoryMegaMenu.tsx. */
+.megamenu-cell {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.megamenu-cell:hover {
+  background: var(--brand-tint);
+  border-color: #d3e2f7;
+}
+
+/* ============================================================
+   DirectorySearchBar / AISearchBar — optional city selector (showCity prop).
+   A native <select> (per CLAUDE.md's "prefer native <select>" rule) styled
+   as a pill segment glued to the left of the search input, divided by a
+   hairline. See components/DirectorySearchBar.tsx / components/AISearchBar.tsx.
+   ============================================================ */
+.search-city-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: var(--bg-subtle);
+}
+.search-city-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  height: 100%;
+  max-width: 132px;
+  padding: 0 24px 0 28px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-city-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brand);
+  display: inline-flex;
+  pointer-events: none;
+}
+.search-city-chevron {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--faint);
+  display: inline-flex;
+  pointer-events: none;
+}
+.search-city-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 26px;
+  background: var(--border);
+}
+
+/* ============================================================
+   Layout helpers
+   ============================================================ */
+.container-bs {
+  /* Fluid cap: stays exactly 1200px on anything under ~1300px viewport (no
+     change to mobile/tablet), then grows with the viewport up to 1600px on
+     wide desktop monitors instead of floating as a fixed narrow column. */
+  max-width: clamp(1200px, 92vw, 1600px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .container-bs {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.section-pad {
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+.section-pad-sm {
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+@media (max-width: 768px) {
+  .section-pad {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+  .section-pad-sm {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+}
+
+/* Eyebrow — small uppercase label */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease,
+    color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* primary = ACTION orange */
+.btn-primary {
+  background: var(--action);
+  color: #ffffff;
+  border-color: var(--action);
+  box-shadow: 0 1px 2px rgba(234, 88, 12, 0.25);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--action-hover);
+  border-color: var(--action-hover);
+}
+
+/* brand = TRUST blue */
+.btn-brand {
+  background: var(--brand);
+  color: #ffffff;
+  border-color: var(--brand);
+  box-shadow: 0 1px 2px rgba(26, 79, 174, 0.25);
+}
+.btn-brand:hover:not(:disabled) {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+}
+
+/* green = Recruitment's module color (frontend-design-guide.md's color-to-module
+   mapping) — first real button use of --tricolor-green now that Recruitment has live
+   pages; every value is the existing token, no new hue. Mirrors .btn-brand's structure
+   exactly so it's a first-class variant, not a one-off style. */
+.btn-green {
+  background: var(--tricolor-green);
+  color: #ffffff;
+  border-color: var(--tricolor-green);
+  box-shadow: 0 1px 2px rgba(30, 158, 82, 0.25);
+}
+.btn-green:hover:not(:disabled) {
+  background: var(--tricolor-green-hover);
+  border-color: var(--tricolor-green-hover);
+}
+
+/* secondary = white + border */
+.btn-secondary {
+  background: #ffffff;
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  border-color: var(--faint);
+}
+
+/* ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  color: var(--ink);
+}
+
+/* danger */
+.btn-danger {
+  background: #ffffff;
+  color: var(--error);
+  border-color: #fca5a5;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: var(--error);
+}
+
+.btn-sm {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  gap: 6px;
+}
+.btn-lg {
+  padding: 13px 22px;
+  font-size: 15px;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* Gradient CTA — opt-in enhancement layered on .btn-primary (orange), used by
+   the Directory listing row's "Contact" action (ListingCard layout="row").
+   Token-driven (--action/--action-hover only, no new hue) with a hover shine
+   sweep; reduced-motion users still get the gradient, just no sweep. */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--action) 0%, var(--action-hover) 100%);
+  border-color: var(--action-hover);
+  position: relative;
+  overflow: hidden;
+}
+.btn-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 42%,
+    transparent 64%
+  );
+  transform: translateX(-120%);
+  transition: transform 550ms ease;
+}
+.btn-gradient:hover:not(:disabled)::after {
+  transform: translateX(120%);
+}
+.btn-gradient:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--action-hover) 0%, var(--action) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gradient::after {
+    transition: none;
+    display: none;
+  }
+}
+
+/* ============================================================
+   Cards
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 160ms ease, transform 160ms ease,
+    border-color 160ms ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+/* opt out of hover lift for static panels */
+.card-flat {
+  transition: none;
+}
+.card-flat:hover {
+  box-shadow: var(--shadow-card);
+  transform: none;
+  border-color: var(--border);
+}
+.card-pad {
+  padding: 20px;
+}
+
+/* Story rail cards — rectangular thumbnail previews (see StoryRail.tsx).
+   Lift + soften on hover; respects reduced-motion via the global media query below. */
+.story-card {
+  display: block;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.story-card:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ============================================================
+   Badges
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.badge-verified {
+  background: var(--brand-tint);
+  color: var(--brand-hover);
+  border-color: #bfdbfe;
+}
+.badge-sponsored {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+.badge-premium {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border-color: #ddd6fe;
+}
+.badge-new {
+  background: #ecfdf5;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+.badge-neutral {
+  background: var(--bg-subtle);
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+/* ============================================================
+   Form fields
+   ============================================================ */
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.field-hint {
+  font-size: 12px;
+  color: var(--faint);
+  margin-top: 6px;
+}
+.field-error {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 6px;
+}
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--faint);
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-ring, 0 0 0 3px rgba(26, 79, 174, 0.15));
+}
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  background: var(--bg-subtle);
+  color: var(--faint);
+  cursor: not-allowed;
+}
+.input-error {
+  border-color: var(--error);
+}
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+.textarea {
+  resize: vertical;
+  min-height: 104px;
+  line-height: 1.6;
+}
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%2394A3B8' stroke-width='1.5'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Filter chip
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: #ffffff;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease,
+    color 140ms ease;
+  white-space: nowrap;
+}
+.chip:hover {
+  border-color: var(--faint);
+  color: var(--ink);
+  background: var(--bg-subtle);
+}
+.chip-active,
+.chip[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #ffffff;
+}
+.chip-active:hover,
+.chip[aria-pressed="true"]:hover {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  color: #ffffff;
+}
+
+/* ============================================================
+   Spinner (icon-only loading states, e.g. AISearchBar's submit button)
+   ============================================================ */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   Skeleton shimmer
+   ============================================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -320px 0;
+  }
+  100% {
+    background-position: 320px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #eef1f4 0%,
+    #f7f8fa 50%,
+    #eef1f4 100%
+  );
+  background-size: 640px 100%;
+  border-radius: 8px;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* ============================================================
+   Toast animations (ToastProvider)
+   ============================================================ */
+@keyframes toastIn {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes toastOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+}
+.toast-enter {
+  animation: toastIn 200ms ease forwards;
+}
+.toast-exit {
+  animation: toastOut 200ms ease forwards;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+.divider {
+  height: 1px;
+  background: var(--border);
+  border: none;
+  width: 100%;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+/* ============================================================
+   Motion — one entrance primitive (Reveal) used everywhere.
+   Scroll/mount-triggered fade+rise; descendant rules let specific
+   moments (chat bubbles, typing dots) key off the same visibility
+   class instead of running their own observer.
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Directional variants — "cards move," not just fade. Pick one axis per
+   moment; visible state always resolves to no transform regardless of axis. */
+.reveal.reveal-left {
+  transform: translateX(-28px);
+}
+.reveal.reveal-right {
+  transform: translateX(28px);
+}
+.reveal.reveal-scale {
+  transform: scale(0.94);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.chat-bubble {
+  opacity: 0;
+}
+.reveal.is-visible .chat-bubble {
+  animation: bubbleIn 550ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pulseDot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.typing-dot {
+  opacity: 0.3;
+}
+.reveal.is-visible .typing-dot {
+  animation: pulseDot 1.3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.is-visible .chat-bubble {
+    animation: none;
+    opacity: 1;
+  }
+  .reveal.is-visible .typing-dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* ============================================================
+   Home — the three modules in one row (Bharat Agent, Directory,
+   Recruitment), equal-weight ModuleCard tiles distinguished by their own
+   accent color rather than by an asymmetric bento layout. Currently unused
+   on the homepage (superseded by the AgentHeroCard below, v5) but left in
+   place as a reference pattern — see frontend-design-guide.md.
+   ============================================================ */
+.home-modules-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.4vw, 24px);
+}
+@media (max-width: 860px) {
+  .home-modules-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Home — Bharat Agent hero card (AgentHeroCard.tsx, v7.2): Bharat Agent and
+   Directory/Recruitment all read as the same family of cards — Bharat
+   Agent as a bigger `.agent-hero-main` card on the left (`card card-flat`:
+   no hover-lift, it has no live destination yet), Directory + Recruitment
+   as a compact stacked column of real `card` links on the right. v7.1 made
+   BOTH the outer frame and the Bharat Agent card dark violet, which read as
+   one matching color rather than a card floating on a frame — v7.2 splits
+   them: `.agent-hero-card` (the frame) is back to a plain white/canvas
+   surface with a faint orange/green corner wash (echoing the intro
+   section's radial tint, restrained), and `.agent-hero-main` alone carries
+   the dark violet gradient that used to be on the frame — so Bharat Agent
+   is now unambiguously the one colored, flagship element sitting on a
+   neutral white base, with Directory/Recruitment as plain white cards
+   beside it. The body grid keeps v7's fluid `1fr` main column so the card
+   hugs its content at any width. See frontend-design-guide.md.
+   ============================================================ */
+.agent-hero-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: radial-gradient(52% 52% at 100% 0%, rgba(245, 130, 31, 0.14) 0%, rgba(245, 130, 31, 0) 65%),
+    radial-gradient(48% 48% at 0% 100%, rgba(30, 158, 82, 0.12) 0%, rgba(30, 158, 82, 0) 65%),
+    var(--canvas);
+}
+.agent-hero-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: clamp(16px, 2.4vw, 24px);
+  align-items: stretch;
+  padding: clamp(18px, 2.6vw, 24px) clamp(20px, 3vw, 32px);
+}
+@media (max-width: 760px) {
+  .agent-hero-body {
+    grid-template-columns: 1fr;
+  }
+}
+.agent-hero-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: clamp(16px, 2.2vw, 20px);
+  background: linear-gradient(135deg, var(--violet) 0%, var(--violet-deep) 60%, var(--violet-darker) 100%);
+  border-color: var(--violet-darker);
+}
+/* .card-flat:hover resets border-color to the neutral --border — override
+   back to violet so a stray mouse-over doesn't flash the border grey. */
+.agent-hero-main:hover {
+  border-color: var(--violet-darker);
+}
+.agent-hero-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.agent-hero-side-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  /* v7.2: sits directly on .agent-hero-card, which is white again — back to
+     the standard faint-grey label convention used on white surfaces. */
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.agent-hero-product {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  min-width: 0;
+  background: #ffffff;
+}
+
+/* Kept for BharatAgentPanel.tsx, which is currently unused on the homepage
+   (superseded by AgentHeroCard above) but left in place as a reference
+   pattern — see frontend-design-guide.md. */
+.agent-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: clamp(24px, 4vw, 40px);
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .agent-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Home-scoped flourish eyebrow: a short orange line + label + a green tick,
+   echoing the tagline device in the BharatNavya wordmark. Opt-in class, not
+   a change to the shared .eyebrow used across the rest of the app. */
+.home-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.home-eyebrow::before {
+  content: "";
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--action);
+  flex-shrink: 0;
+}
+.home-eyebrow::after {
+  content: "";
+  width: 10px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tricolor-green);
+  flex-shrink: 0;
+}
+
+/* Advertise/brand-narrative section: real photo one side, copy the other. */
+.home-advertise-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 56px);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .home-advertise-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Client feedback cards: local industry photo strip + quote. */
+.home-feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(16px, 2.4vw, 24px);
+}

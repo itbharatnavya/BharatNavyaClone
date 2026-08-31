@@ -1,0 +1,59 @@
+[
+  {
+    "id": "plan_free",
+    "name": "Free",
+    "tier": "free",
+    "billingCycle": "monthly",
+    "listingLimit": 10,
+    "leadQuotaPerCycle": 5,
+    "featuredCreditsPerCycle": 0,
+    "rankBoostBaseline": 0,
+    "verifiedBadgeIncluded": false,
+    "analyticsEnabled": false,
+    "perLeadPrice": 0,
+    "priceInfo": {
+      "monthly": 0,
+      "currency": "INR",
+      "label": "Free"
+    },
+    "tierRank": 0
+  },
+  {
+    "id": "plan_silver",
+    "name": "Silver",
+    "tier": "silver",
+    "billingCycle": "monthly",
+    "listingLimit": 50,
+    "leadQuotaPerCycle": 50,
+    "featuredCreditsPerCycle": 5,
+    "rankBoostBaseline": 10,
+    "verifiedBadgeIncluded": true,
+    "analyticsEnabled": true,
+    "perLeadPrice": 20,
+    "priceInfo": {
+      "monthly": 2999,
+      "currency": "INR",
+      "label": "₹2,999 / mo"
+    },
+    "tierRank": 1
+  },
+  {
+    "id": "plan_gold",
+    "name": "Gold",
+    "tier": "gold",
+    "billingCycle": "monthly",
+    "listingLimit": null,
+    "leadQuotaPerCycle": 200,
+    "featuredCreditsPerCycle": 20,
+    "rankBoostBaseline": 25,
+    "verifiedBadgeIncluded": true,
+    "analyticsEnabled": true,
+    "perLeadPrice": 10,
+    "priceInfo": {
+      "monthly": 7999,
+      "currency": "INR",
+      "label": "₹7,999 / mo"
+    },
+    "tierRank": 2
+  }
+]

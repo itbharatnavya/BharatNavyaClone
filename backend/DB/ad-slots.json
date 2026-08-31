@@ -1,0 +1,58 @@
+[
+  {
+    "id": "homepage_banner",
+    "name": "Homepage Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x300",
+    "isActive": true
+  },
+  {
+    "id": "category_top",
+    "name": "Category Top Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x150",
+    "isActive": true
+  },
+  {
+    "id": "search_sponsored_row",
+    "name": "Search Sponsored Row",
+    "placementType": "sponsored_row",
+    "defaultSize": "responsive",
+    "isActive": true
+  },
+  {
+    "id": "listing_sidebar",
+    "name": "Listing Sidebar",
+    "placementType": "sidebar",
+    "defaultSize": "300x250",
+    "isActive": true
+  },
+  {
+    "id": "home_hero",
+    "name": "Directory Home Hero",
+    "placementType": "banner",
+    "defaultSize": "1200x300",
+    "isActive": true
+  },
+  {
+    "id": "search_top",
+    "name": "Search Top Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x150",
+    "isActive": true
+  },
+  {
+    "id": "recruitment_home",
+    "name": "Recruitment Home Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x300",
+    "isActive": true
+  },
+  {
+    "id": "recruitment_search_top",
+    "name": "Recruitment Job Search Top Banner",
+    "placementType": "banner",
+    "defaultSize": "1200x150",
+    "isActive": true
+  }
+]
