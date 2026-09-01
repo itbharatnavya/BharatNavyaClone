@@ -23,55 +23,17 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
-const { candidateProfileGaps } = require("../modules/recruitment");
-
-// Employer-settable statuses via POST /:id/status — "withdrawn" is deliberately NOT in
-// this set, since it's a candidate-only transition (see POST /:id/withdraw below), not
-// something an employer can set on a candidate's behalf.
-const VALID_STATUSES = ["applied", "viewed", "shortlisted", "interview", "rejected", "hired"];
-const VALID_STATUS_SET = new Set(VALID_STATUSES);
-// Every status an application can actually hold, used only to validate the GET /
-// ?status= filter (an employer should be able to filter on withdrawn applications too).
-const ALL_STATUSES_SET = new Set([...VALID_STATUSES, "withdrawn"]);
-
-/* ------------------------------------------------------------- helpers ----- */
-
-function candidateMiniOf(user) {
-  if (!user) return null;
-  const cp = user.candidateProfile || {};
-  return {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl || null,
-    headline: cp.headline || null,
-    experienceYears: cp.experienceYears ?? null,
-    currentRole: cp.currentRole || null,
-    currentCompany: cp.currentCompany || null,
-    skills: cp.skills || [],
-    resumeUrl: cp.resumeUrl || null,
-    // The candidate initiated this relationship by applying, so — unlike the public
-    // candidate-directory gating on GET /api/candidates/:id — contact fields are
-    // included here unconditionally, the same way a Directory lead carries the buyer's
-    // contact info once delivered (routes/inquiries.js's Lead rows).
-    contactPhone: cp.contactPhone || null,
-    contactEmail: cp.contactEmail || user.email || null,
-  };
-}
-
-function jobMiniOf(job) {
-  if (!job) return null;
-  // questions included so the candidate's My Applications view can show each answer
-  // next to its actual question text (build plan Phase 3) — this is the same
-  // job.questions array already shown to the candidate during apply, not new exposure.
-  return { id: job.id, title: job.title, jobFunction: job.jobFunction, status: job.status, questions: job.questions || [] };
-}
-
-function canViewApplication(user, application, job) {
-  if (!user) return false;
-  if ((user.roles || []).includes("admin")) return true;
-  if (application.candidateId === user.id) return true;
-  return !!job && job.employerId === user.id;
-}
+const {
+  candidateProfileGaps,
+  // application.service.js (Phase 4b extraction)
+  VALID_STATUSES,
+  VALID_STATUS_SET,
+  ALL_STATUSES_SET,
+  candidateMiniOf,
+  jobMiniOf,
+  // policy.js
+  canViewApplication,
+} = require("../modules/recruitment");
 
 /* --------------------------------------------------------- POST / ---------- */
 
@@ -368,5 +330,3 @@ router.post("/:id/withdraw", authGuard, async (req, res, next) => {
 });
 
 module.exports = router;
-// Exported for unit testing (test/applications.unit.test.js).
-module.exports._internal = { candidateMiniOf, jobMiniOf, canViewApplication, VALID_STATUSES };
