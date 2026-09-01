@@ -10,6 +10,7 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const auth = require("../lib/auth");
 const config = require("../lib/config");
 const { validate, schemas } = require("../lib/validate");
@@ -45,7 +46,7 @@ router.post("/register", validate(schemas.register), async (req, res, next) => {
   try {
     const { name, mobile, email, password, city, state } = req.body;
 
-    const existing = await store.findOne("users.json", (u) => u.mobile === mobile);
+    const existing = await identity.getUserByMobile(mobile);
     if (existing) {
       return res
         .status(409)
@@ -86,7 +87,7 @@ router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) =
       return res.status(401).json({ success: false, error: "Invalid or expired OTP" });
     }
 
-    let user = await store.findOne("users.json", (u) => u.mobile === mobile);
+    let user = await identity.getUserByMobile(mobile);
     if (!user) {
       user = await buildUser({ name: mobile, mobile });
       await store.insert("users.json", user);
@@ -112,7 +113,7 @@ router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) =
 router.post("/login", validate(schemas.passwordLogin), async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await store.findOne("users.json", (u) => u.email === email);
+    const user = await identity.getUserByEmail(email);
     // Always run one bcrypt compare — against the real hash, or a dummy when the
     // account doesn't exist — so response time can't be used to enumerate emails
     // (BACKEND-AUDIT.md C7).

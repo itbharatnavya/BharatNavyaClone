@@ -453,6 +453,31 @@ async function getEmployerBySlug(slug) {
   return doc || null;
 }
 
+/* --------------------------------------------- auth-path user lookups ------- */
+// routes/auth.js's register / verify-otp / login did
+// `store.findOne("users.json", u => u.mobile|email === x)` — a full composite
+// hydrate of EVERY user then `.find`. `users.mobile` / `users.email` are both
+// indexed; `ORDER BY id ASC LIMIT 1` reproduces `store.findOne`'s first-match-in-
+// id-order, then one single-row composite hydrate. (BACKEND-AUDIT.md Phase 6c.)
+
+async function getUserByMobile(mobile) {
+  if (!mobile) return null;
+  const { rows } = await pool.query(
+    `SELECT id FROM users WHERE mobile = $1 ORDER BY id ASC LIMIT 1`,
+    [mobile]
+  );
+  return rows[0] ? usersStore.getById(rows[0].id) : null;
+}
+
+async function getUserByEmail(email) {
+  if (!email) return null;
+  const { rows } = await pool.query(
+    `SELECT id FROM users WHERE email = $1 ORDER BY id ASC LIMIT 1`,
+    [email]
+  );
+  return rows[0] ? usersStore.getById(rows[0].id) : null;
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -481,5 +506,6 @@ module.exports = {
   getReviewFeedParties,
   hydrateUsersByIds, adminUserPage,
   getSellerBySlug, getEmployerBySlug,
+  getUserByMobile, getUserByEmail,
   setEmployerApproval,
 };
