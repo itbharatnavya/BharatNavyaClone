@@ -9,9 +9,11 @@
  */
 
 const { listingCountsByCategory } = require("./repository/listingStats.repository");
+const { bumpListingViews } = require("./repository/listing.repository");
 const reviewsRepo = require("./repository/review.repository");
 
 module.exports = {
   listingCountsByCategory,
+  bumpListingViews,
   reviewsRepo,
 };

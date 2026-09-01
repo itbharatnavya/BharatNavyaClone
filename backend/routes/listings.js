@@ -15,11 +15,12 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 const { authGuard } = require("../middleware/authGuard");
 const { searchListings, computeFacets, slugify } = require("../lib/search");
 const { rankListings } = require("../lib/ranking");
 const { coordsForCity, distanceKm } = require("../lib/geo");
-const { resolveSellerLocations } = require("./users");
+const { resolveSellerLocations } = require("../lib/sellerLocations");
 const { verifyListing } = require("../lib/listingVerification");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
@@ -402,10 +403,10 @@ router.get("/:id", async (req, res, next) => {
     }
 
     // Light view tracking (SELLER ANALYTICS): best-effort increment of listing.views.
-    // Fire-and-forget — never awaited, never fatal, and never blocks the response.
-    store
-      .update("listings.json", listing.id, { views: (Number(listing.views) || 0) + 1 })
-      .catch(() => {});
+    // Fire-and-forget. Phase 5d: an ATOMIC single-column UPDATE — the old
+    // store.update() read-modify-write was a lost-update race (finding C2) and
+    // re-upserted every child table for a display metric.
+    directory.bumpListingViews(listing.id).catch(() => {});
 
     let seller = null;
     const user = await store.getById("users.json", listing.sellerId);

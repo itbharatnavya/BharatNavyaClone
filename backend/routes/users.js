@@ -46,29 +46,10 @@ async function uniqueSlug(base) {
   return slug;
 }
 
-/**
- * Resolve a seller's branch locations. Returns sellerProfile.locations when it is a
- * non-empty array; otherwise derives a single-element array from the legacy
- * sellerProfile.location so every seller always has at least one location to assign
- * listings to (no migration needed — this is derived at read time).
- */
-function resolveSellerLocations(sellerProfile) {
-  const sp = sellerProfile || {};
-  if (Array.isArray(sp.locations) && sp.locations.length > 0) {
-    return sp.locations;
-  }
-  const loc = sp.location || {};
-  return [
-    {
-      id: "loc_primary",
-      label: "Head Office",
-      city: loc.city || "",
-      state: loc.state || "",
-      pincode: loc.pincode || "",
-      address: "",
-    },
-  ];
-}
+// resolveSellerLocations moved to lib/sellerLocations.js in Phase 5d (it's a pure
+// helper and routes/listings.js needed it — a route importing a route). Re-exported
+// at the bottom of this file for any existing `require("./users").resolveSellerLocations`.
+const { resolveSellerLocations } = require("../lib/sellerLocations");
 
 /**
  * Normalize a client-supplied locations array: keep only objects that have at least a
