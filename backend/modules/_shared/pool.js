@@ -14,6 +14,7 @@
 
 const { Pool } = require("pg");
 const config = require("../../lib/config");
+const logger = require("../../lib/logger");
 
 const pool = new Pool({
   connectionString: config.PG_URL,
@@ -27,8 +28,7 @@ const pool = new Pool({
 // An error on an idle client (DB restart, network blip) would otherwise crash the
 // process — log it and let the pool replace the client.
 pool.on("error", (err) => {
-  // eslint-disable-next-line no-console
-  console.error("[pg pool] idle client error:", err.message);
+  logger.error({ err }, "pg pool: idle client error");
 });
 
 /** Liveness probe for GET /health — throws if Postgres is unreachable. */

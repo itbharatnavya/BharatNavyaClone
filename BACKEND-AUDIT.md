@@ -31,18 +31,18 @@ Every finding below was verified by reading the code at the cited line, not infe
 
 **Still open** (all deferred deliberately — none is an open security hole):
 - **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; multi-process durability not yet in play).
-- **1e-pino** — structured logger + `req.id` + access log. Kernel is in place now; do next.
+- ~~**1e-pino**~~ — **done 2026-09-01.** `lib/logger.js` (pino — JSON in prod, pretty in dev, silent under `NODE_ENV=test`; `LOG_LEVEL` override), `middleware/requestLog.js` (`req.id` from inbound `X-Request-Id` or fresh uuid, echoed back as a response header, one access-log line per request on `finish`). `errorHandler.js` logs the same `req.id`; every runtime `console.*` (`index.js`, `lib/leads.js`, `modules/_shared/pool.js`) now goes through the logger.
 - ~~**1f (wiring)**~~ — **done 2026-09-01.** `routes/jobs.js` + `routes/adminJobs.js` now call `_shared/pagination.paginationOf`; `GET /api/listings` capped at `MAX_LIMIT = 1000` (above every real caller — admin AdsTab 500, CollectionsTab 200 — so it only rejects abuse-sized `limit`; C9 closed).
 - **2 (tidy)** — physically move `buildFlatConfigs` out of `lib/db/flat.js` into `_shared/mappings/flat.mappings.js` (today it re-exports); expand `differential.test.js` as collections graduate.
 - **1a-admin** — `routes/admin.js` raw-spread writes → allowlist (admin-gated; fold into Phase 6).
 - **1b-CHECK** — DB `CHECK (buyer_id <> target_user_id)` on reviews (needs a migration; Phase 5).
 - **1i** — **OWNER ACTION:** rotate every credential in `backend/DB/users.json` (38 bcrypt hashes + admin), then `git rm --cached backend/DB/users.json` + `.gitignore` it.
 
-**To resume:** `cd backend && npm run test:setup` (rebuilds `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs no open connections to the dev DB), then `npm test` (expect **85 pass**), and `cd frontend && npx tsc --noEmit` (clean — no frontend change yet). Then start **Phase 3 — Identity read-port** (`modules/identity/index.js` publishing `getAuthUser` / `get*Card(s)` / `setEmployerApproval`; `getAuthUser` must first return the FULL hydrated user doc — see the [Phase 3](#phase-3--identity-read-port-only) trap), or do the **1f wiring** + **1e-pino** as small standalone commits on the kernel first.
+**To resume:** `cd backend && npm run test:setup` (rebuilds `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs no open connections to the dev DB), then `npm test` (expect **85 pass**), and `cd frontend && npx tsc --noEmit` (clean — no frontend change yet). Then start **Phase 3 — Identity read-port** (`modules/identity/index.js` publishing `getAuthUser` / `get*Card(s)` / `setEmployerApproval`; `getAuthUser` must first return the FULL hydrated user doc, byte-identical to `store.getById("users.json", id)` — see the [Phase 3](#phase-3--identity-read-port-only) trap).
 
 **New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `PG_URL_TEST` (dedicated `npm test` database; unset → tests fall back to `PG_URL` as before). Earlier Phase 1 pass added: `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
 
-**New deps:** `helmet`, `express-rate-limit` (prod), `supertest` (dev).
+**New deps:** `helmet`, `express-rate-limit`, `pino` (prod), `supertest`, `pino-pretty` (dev).
 
 ### Branching & UI integration (multi-dev)
 
@@ -257,7 +257,7 @@ Modified:
 | Item | Why deferred | Follow-up |
 |---|---|---|
 | **1d** — OTP store + AI-budget limiter into Postgres tables (C3) | Needs a numbered schema migration + a store surface for both; multi-process durability isn't yet in play (single `node index.js`). The security-relevant parts (CSPRNG, sweep, `/rfq` auth, prompt cap, rate limit) are done. | Add `otp_codes` + `ai_budget` tables when a second process / horizontal scale is on the table. |
-| **1e** — pino structured logger + `req.id` + access log | Observability, not a hole. Larger diff (touches every `console.*` path). The load-bearing part of 1e (pool timeouts, graceful shutdown, `/health`) is done. | Do alongside Phase 2's `_shared` kernel. |
+| **1e** — pino structured logger + `req.id` + access log | ~~Deferred~~ — **done 2026-09-01** (`lib/logger.js` + `middleware/requestLog.js`; standalone commit on the Phase 2 kernel). | — |
 | **1f** — shared `pagination.js` + `/api/listings` limit cap | This is really a Phase 2 kernel artifact; near-zero security value. `GET /api/listings` still has no cap. | Ship in Phase 2 (`modules/_shared/pagination.js`); pick the cap after grepping `getListings` call sites. |
 | **1i** — `git rm --cached backend/DB/users.json` + `.gitignore` + **credential rotation** | The mechanical part is trivial, but the important half — rotating the 38 bcrypt-hashed accounts + the admin credential — is an owner action, and un-tracking a file that the file-DB fallback still reads deserves an explicit owner call. | Owner: rotate creds, then `git rm --cached`, `.gitignore backend/DB/users.json`. History rewrite is a separate decision. |
 | **1a** — `routes/admin.js` raw-spread writes (`:412/421/440/449/616/690`) | Admin-gated (lower risk than the seller-reachable listings/jobs PUT, which are fixed). | Fold into Phase 6 (identity/admin module) or a standalone admin-hardening commit. |
@@ -341,7 +341,11 @@ Live smoke (`node index.js`, curl):
 - `_shared/crudRouter.js` shipped but unused. (`_shared/pagination.js` is now wired — jobs / adminJobs / listings-cap, 2026-09-01.)
 - `buildFlatConfigs` still physically in `lib/db/flat.js` (re-exported).
 - Still to add (Phase 2 "keeping new code off the old interface"): `lib/store.js` deprecation header, CLAUDE.md §5 "closed to new collections" line, dev-mode `store.findOne/findMany` call-site burn-down logging.
-- **1e-pino** (structured logger + `req.id` + access log) — kernel is ready; do next.
+
+### After the kernel — small standalone commits (2026-09-01)
+
+- **1f wiring** — `routes/jobs.js` + `routes/adminJobs.js` now use `_shared/pagination.paginationOf`; `GET /api/listings` capped at 1000 (C9). 85 pass, goldens unchanged.
+- **1e-pino** — `lib/logger.js` (pino) + `middleware/requestLog.js` (`req.id`, `X-Request-Id` header, one access line per request); `errorHandler.js` + `index.js` + `lib/leads.js` + `modules/_shared/pool.js` moved off `console.*`. Silent under `NODE_ENV=test`. 85 pass, goldens unchanged (bodies/status untouched; the new header isn't asserted).
 
 ---
 
@@ -572,7 +576,7 @@ Effort is stated in relative size, not calendar time — the work is done by an 
 |---|---|---|---|---|
 | 0 Safety net | small | none | prerequisite | ✅ — **landed 2026-09-01** (golden harness · pagination edge tests · architecture test · `PG_URL_TEST` DB; 76 pass. Follow-ups: pinned seed, authed-recruitment goldens — see Phase 0 Implementation log) |
 | 1 Security + cross-cutting | **small** | low | **highest** | 🔧 3 fixes — **partially landed 2026-08-31** (1a/1b/1c/1e-core/1g/1h + 1d-partial done & tested; 1d-full/1e-pino/1f/1i/1a-admin deferred — see Phase 1 Implementation log) |
-| 2 Shared kernel | small | low | prerequisite | ✅ — **landed 2026-09-01** (`modules/_shared/` + `differential.test.js`; 85 pass; no route touched. Follow-ups: 1f wiring, 1e-pino, `store.js` deprecation notice — see Phase 2 Implementation log) |
+| 2 Shared kernel | small | low | prerequisite | ✅ — **landed 2026-09-01** (`modules/_shared/` + `differential.test.js`; 85 pass; no route touched). Plus standalone follow-ups: **1f wiring** + **1e-pino** done. Remaining: `store.js` deprecation notice. See Phase 2 Implementation log. |
 | 3 Identity read-port | medium | medium (auth path) | high | ✅ |
 | 4 Recruitment | large | low (gated off) | template | ✅ |
 | 5 Directory | very large | high (live traffic) | highest perf | ✅ |

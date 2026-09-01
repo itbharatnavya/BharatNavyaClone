@@ -8,6 +8,7 @@
 
 const store = require("./store");
 const notify = require("./notify");
+const logger = require("./logger");
 
 /**
  * Flat seller "mini" resolved from a users.json record — the same shape
@@ -68,7 +69,7 @@ async function notifySellerOfLead(sellerId, inquiry) {
     });
   } catch (err) {
     // Notifications are non-critical: log and move on, never fail the caller.
-    console.error("notifySellerOfLead failed:", err && err.message);
+    logger.error({ err }, "notifySellerOfLead failed");
   }
 }
 

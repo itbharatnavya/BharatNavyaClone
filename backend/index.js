@@ -10,6 +10,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const config = require("./lib/config");
 const store = require("./lib/store");
+const logger = require("./lib/logger");
 const app = require("./app");
 
 const server = http.createServer(app);
@@ -17,8 +18,7 @@ const io = new Server(server, { cors: { origin: config.CORS_ORIGIN, credentials:
 require("./realtime/chat").attachChat(io);
 
 server.listen(config.PORT, () =>
-  // eslint-disable-next-line no-console
-  console.log(`BharatSource API v2 running on port ${config.PORT} (REST + Socket.IO)`)
+  logger.info({ port: config.PORT }, "BharatSource API v2 running (REST + Socket.IO)")
 );
 
 // --- Graceful shutdown: stop accepting connections, close sockets, drain the DB pool.
@@ -26,8 +26,7 @@ let shuttingDown = false;
 function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;
-  // eslint-disable-next-line no-console
-  console.log(`[BharatSource] ${signal} received — draining in-flight requests`);
+  logger.info({ signal }, "shutdown signal received — draining in-flight requests");
   server.close(async () => {
     try {
       io.close();

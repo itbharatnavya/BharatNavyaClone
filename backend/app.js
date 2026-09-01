@@ -25,6 +25,9 @@ app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: "8mb" }));
 app.use(cookieParser());
 
+// Per-request id + access log (before the limiters so a 429 is still logged).
+app.use(require("./middleware/requestLog"));
+
 // --- Rate limiters (before the routers so a throttled request never reaches them) ---
 app.use("/api", globalLimiter);
 app.use("/api/auth", authLimiter);
