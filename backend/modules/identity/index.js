@@ -29,10 +29,25 @@ const usersStore = createUsersStore(pool, () => {
   throw new Error("identity does not create users");
 });
 
-/** Full hydrated user document — the shape middleware/authGuard.js puts on req.user. */
+/**
+ * The hydrated user document middleware/authGuard.js puts on `req.user`.
+ *
+ * Phase 6d: `passwordHash` is stripped here so it never rides on `req.user` into
+ * any authed handler — no route reads `req.user.passwordHash` (verified by a
+ * codebase-wide grep), and `GET /api/auth/me` already `sanitizeUser`s it out, so
+ * this is defence-in-depth: a future `res.json(req.user)` slip can't leak the
+ * hash. Everything else stays — routes read `sellerProfile` / `employerProfile` /
+ * `candidateProfile` / `roles` / `recruitmentRole*` / `name` / `mobile` / `email`
+ * / `city` / `state` off `req.user`, and `/me` echoes the rest of the sanitized
+ * doc, so deeper projection-narrowing has no consumer and is deliberately not done.
+ * The password-verification paths (login) use `getUserByEmail`, which keeps the
+ * hash — this narrowing is scoped to `req.user` only.
+ */
 async function getAuthUser(id) {
   if (!id) return null;
-  return usersStore.getById(id);
+  const user = await usersStore.getById(id);
+  if (user && "passwordHash" in user) delete user.passwordHash;
+  return user;
 }
 
 /* --------------------------------------------------------------- cards ------ */

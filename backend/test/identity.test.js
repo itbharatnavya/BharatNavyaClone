@@ -1,9 +1,10 @@
 /**
  * identity.test.js — Phase 3 read-port guarantees (BACKEND-AUDIT.md).
  *
- * The load-bearing assertion: identity.getAuthUser(id) is byte-identical to
- * store.getById("users.json", id) — middleware/authGuard.js now loads req.user
- * through it, so any drift here changes every authenticated request.
+ * The load-bearing assertion: identity.getAuthUser(id) equals
+ * store.getById("users.json", id) EXCEPT for `passwordHash`, which Phase 6d
+ * strips so it never rides on req.user — middleware/authGuard.js loads req.user
+ * through it, so any other drift here changes every authenticated request.
  *
  * Runs against the frozen PG_URL_TEST DB (`npm run test:setup`).
  */
@@ -22,11 +23,14 @@ test("identity read-port", async (t) => {
     await pool.end().catch(() => {});
   });
 
-  await t.test("getAuthUser is byte-identical to store.getById", async () => {
+  await t.test("getAuthUser equals store.getById minus passwordHash (Phase 6d)", async () => {
     for (const id of SEED_IDS) {
       const viaStore = await store.getById("users.json", id);
       assert.ok(viaStore, `seed user ${id} missing — run \`npm run test:setup\``);
-      assert.deepEqual(await identity.getAuthUser(id), viaStore, `getAuthUser(${id})`);
+      const viaPort = await identity.getAuthUser(id);
+      assert.ok(!("passwordHash" in viaPort), `getAuthUser(${id}) must not carry passwordHash`);
+      const { passwordHash, ...storeNoHash } = viaStore;
+      assert.deepEqual(viaPort, storeNoHash, `getAuthUser(${id})`);
     }
   });
 
