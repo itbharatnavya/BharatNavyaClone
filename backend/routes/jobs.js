@@ -19,8 +19,9 @@
  *
  * Phase 4d: the CRUD paths (/mine, /:id, POST, PUT, DELETE) run through
  * modules/recruitment `jobsRepo` (criteria-grammar repository over the `jobs` table),
- * not the predicate store. The public browse (GET /) still goes through
- * lib/jobSearch.js's in-JS match+sort — its predicate→SQL rewrite is Phase 4e.
+ * not the predicate store. Phase 4e: the public browse (GET /) now runs through
+ * modules/recruitment `searchJobs` — one indexed SQL query joining jobs to the
+ * identity_employer_cards view, not an in-JS match+sort over every row.
  */
 
 const express = require("express");
@@ -56,9 +57,9 @@ router.get("/", async (req, res, next) => {
     const { page, limit } = jobsPaginationOf(req.query);
     const q = req.query.q ? String(req.query.q).trim() : "";
 
-    // Filtering/gating logic lives in lib/jobSearch.js (shared with the chat
-    // assistant's job-search intent, routes/assistant.js) — pagination stays
-    // route-local since the shared helper is a plain match+sort, no paging.
+    // Filtering/gating logic lives in modules/recruitment jobSearch (shared with
+    // the chat assistant's job-search intent, routes/assistant.js) — pagination
+    // stays route-local since the shared helper returns the full match set + total.
     const { jobs: allMatches, total } = await searchJobs({
       q,
       filters: {

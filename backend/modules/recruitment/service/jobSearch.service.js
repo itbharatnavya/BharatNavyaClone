@@ -1,11 +1,15 @@
 /**
- * jobSearch.js — shared Recruitment job matching (mirrors lib/search.js's role
- * for Directory listings). Used by routes/jobs.js's public browse AND the chat
- * assistant's job-search intent (routes/assistant.js), so both stay in sync
- * instead of duplicating the "active job, approved employer" gating logic.
+ * jobSearch.service.js — shared Recruitment job matching (mirrors lib/search.js's
+ * role for Directory listings). Used by routes/jobs.js's public browse AND the chat
+ * assistant's job-search intent (routes/assistant.js), so both stay in sync instead
+ * of duplicating the "active job, approved employer" gating logic.
+ *
+ * Phase 4e: the match + sort moved off the JS-predicate store into a single indexed
+ * SQL query — repository/jobSearch.repository.js owns that statement. This file is
+ * now just query-token extraction + filter normalization + calling the repo.
  */
 
-const store = require("../lib/store");
+const { browseActiveJobs } = require("../repository/jobSearch.repository");
 
 // Query-matching stopwords: ordinary English stopwords plus job-search filler
 // words that carry no discriminating signal on their own ("job"/"role"/"apply"
@@ -34,8 +38,10 @@ function significantTokens(q) {
   return [...new Set(words.filter((w) => w.length >= 2 && !QUERY_STOPWORDS.has(w)))];
 }
 
-/** Public job-card employer info — never includes contact fields (those are
- *  only ever served from GET /api/employers/:slug). Mirrors routes/jobs.js. */
+/** Public job-card employer info — never includes contact fields (those are only
+ *  ever served from GET /api/employers/:slug). Kept for back-compat with the
+ *  modules/recruitment barrel; the browse path now builds this shape in the
+ *  repository straight from the identity_employer_cards columns. */
 function employerMiniOf(user) {
   if (!user) return null;
   const ep = user.employerProfile || {};
@@ -63,9 +69,6 @@ function employerMiniOf(user) {
  */
 async function searchJobs({ q, filters = {}, limit } = {}) {
   const f = filters || {};
-  // Content words only (see significantTokens()) — matched with OR semantics
-  // against title/description/jobFunction, since a real chat sentence mixes
-  // many filler words with just one or two actual criteria.
   const queryTokens = significantTokens(q);
   const company = f.company ? String(f.company).trim().toLowerCase() : "";
   const city = f.city ? String(f.city).trim().toLowerCase() : "";
@@ -74,40 +77,19 @@ async function searchJobs({ q, filters = {}, limit } = {}) {
   const minSalary = f.minSalary != null && f.minSalary !== "" ? Number(f.minSalary) : null;
   const maxSalary = f.maxSalary != null && f.maxSalary !== "" ? Number(f.maxSalary) : null;
 
-  const users = await store.all("users.json");
-  const employerById = new Map(users.filter((u) => u.employerProfile).map((u) => [u.id, u]));
-
-  let jobs = await store.findMany("jobs.json", (j) => {
-    if (j.status !== "active") return false;
-    const employer = employerById.get(j.employerId);
-    if (!employer || employer.employerProfile.status !== "approved") return false;
-    if (f.jobFunction && j.jobFunction !== f.jobFunction) return false;
-    if (f.employmentType && j.employmentType !== f.employmentType) return false;
-    if (f.experienceLevel && j.experienceLevel !== f.experienceLevel) return false;
-    const loc = j.location || {};
-    if (city && String(loc.city || "").toLowerCase() !== city) return false;
-    if (state && String(loc.state || "").toLowerCase() !== state) return false;
-    if (remoteOnly && !loc.remote) return false;
-    const sr = j.salaryRange || {};
-    if (minSalary !== null && (sr.max === null || sr.max === undefined || sr.max < minSalary)) return false;
-    if (maxSalary !== null && (sr.min === null || sr.min === undefined || sr.min > maxSalary)) return false;
-    if (queryTokens.length) {
-      const hay = `${j.title || ""} ${j.description || ""} ${j.jobFunction || ""}`.toLowerCase();
-      if (!queryTokens.some((t) => hay.includes(t))) return false;
-    }
-    if (company) {
-      const companyName = (employer.employerProfile.companyName || "").toLowerCase();
-      if (!companyName.includes(company)) return false;
-    }
-    return true;
+  return browseActiveJobs({
+    tokens: queryTokens,
+    company,
+    jobFunction: f.jobFunction || "",
+    employmentType: f.employmentType || "",
+    experienceLevel: f.experienceLevel || "",
+    city,
+    state,
+    remoteOnly,
+    minSalary,
+    maxSalary,
+    limit,
   });
-
-  jobs = jobs.slice().sort((a, b) => (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0));
-  const total = jobs.length;
-  if (typeof limit === "number" && limit >= 0) jobs = jobs.slice(0, limit);
-
-  const withEmployer = jobs.map((j) => ({ ...j, employer: employerMiniOf(employerById.get(j.employerId)) }));
-  return { jobs: withEmployer, total };
 }
 
-module.exports = { searchJobs, employerMiniOf };
+module.exports = { searchJobs, employerMiniOf, significantTokens };

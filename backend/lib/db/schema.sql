@@ -738,6 +738,24 @@ CREATE TABLE IF NOT EXISTS employer_profiles (
 CREATE INDEX IF NOT EXISTS employer_profiles_slug_idx ON employer_profiles(slug);
 CREATE INDEX IF NOT EXISTS employer_profiles_status_idx ON employer_profiles(status);
 
+-- Identity read-port view (0013_add_identity_employer_cards.sql). The named seam
+-- modules/recruitment JOINs against for the "active job from an APPROVED employer"
+-- gate instead of hydrating every user. Columns match identity.employerCardOf().
+CREATE OR REPLACE VIEW identity_employer_cards AS
+  SELECT
+    u.id             AS user_id,
+    ep.company_name  AS company_name,
+    ep.slug          AS slug,
+    ep.status        AS status,
+    ep.is_verified   AS is_verified,
+    ep.logo          AS logo,
+    ep.location_city AS location_city,
+    ep.location_state AS location_state,
+    u.name           AS name,
+    u.avatar_url     AS avatar_url
+  FROM users u
+  JOIN employer_profiles ep ON ep.user_id = u.id;
+
 -- 1:1, present only when the user has a candidate profile (no approval gate — see
 -- RECRUITMENT.md §2). skills/preferredLocations/preferredJobTypes are simple string
 -- lists (text[], GIN-indexed on skills so a future "search candidates by skill" query

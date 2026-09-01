@@ -6,11 +6,12 @@
  *
  * Phase 4a moved the profile-gap helpers here; 4b adds the job + application
  * normalizers (service/*.service.js) and the who-may-do-what predicates
- * (policy.js). `searchJobs` / `employerMiniOf` are still re-exported from
- * lib/jobSearch.js and physically move in 4d (when they flip off the predicate store).
+ * (policy.js). Phase 4e moved `searchJobs` off lib/jobSearch.js (deleted) into
+ * service/jobSearch.service.js + repository/jobSearch.repository.js — one indexed
+ * SQL query instead of 11.
  */
 
-const { searchJobs, employerMiniOf } = require("../../lib/jobSearch"); // moves in 4e
+const { searchJobs, employerMiniOf } = require("./service/jobSearch.service");
 const {
   candidateProfileGaps,
   employerProfileGaps,
