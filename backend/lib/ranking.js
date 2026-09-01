@@ -88,16 +88,24 @@ function isEligible(listing, { query, categorySlug }) {
  * with `isSponsored` (true for the top boosted results, capped) and attaches a
  * `_finalScore`. Input listings may carry `_relevance` (normalized BM25 from search).
  */
-async function rankListings(listings, { query, categorySlug } = {}) {
+async function rankListings(listings, { query, categorySlug, tierBySeller } = {}) {
   const items = Array.isArray(listings) ? listings.slice() : [];
   if (items.length === 0) return items;
 
   const weights = await loadWeights();
   const now = Date.now();
 
-  // Seller lookup for priorityTier.
-  const users = await store.all("users.json");
-  const sellerById = new Map(users.map((u) => [u.id, u]));
+  // Seller priorityTier lookup. The route passes a Map<sellerId, tier> built from
+  // one indexed query (BACKEND-AUDIT.md Phase 5c); only fall back to a full user
+  // load if a caller didn't supply it.
+  const tierMap =
+    tierBySeller ||
+    new Map(
+      (await store.all("users.json")).map((u) => [
+        u.id,
+        (u.sellerProfile && u.sellerProfile.priorityTier) || "none",
+      ])
+    );
 
   // Normalization bases across the candidate set.
   const times = items.map((l) => Date.parse(l.createdAt) || 0);
@@ -121,8 +129,7 @@ async function rankListings(listings, { query, categorySlug } = {}) {
       : (rating + recency + verified) / 3;
 
     // ---- paid boost ----
-    const seller = sellerById.get(l.sellerId);
-    const tier = (seller && seller.sellerProfile && seller.sellerProfile.priorityTier) || "none";
+    const tier = tierMap.get(l.sellerId) || "none";
     const normBoost = Math.min(1, Math.max(0, (l.rankBoostScore || 0) / RANK_BOOST_CAP));
     const tierBaseline = TIER_BASELINE[tier] || 0;
     const featuredBonus = featuredActive(l, now) ? FEATURED_BONUS : 0;

@@ -14,6 +14,7 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 const { searchListings, computeFacets, slugify } = require("../lib/search");
 const { rankListings } = require("../lib/ranking");
@@ -306,11 +307,10 @@ router.get("/", async (req, res, next) => {
       near && rawRadius !== undefined && rawRadius !== null && rawRadius !== "";
     const radiusKm = hasRadius ? Number(rawRadius) : null;
 
-    // Public browse: restrict to listings owned by APPROVED sellers.
-    const users = await store.all("users.json");
-    const approvedSellerIds = users
-      .filter((u) => u.sellerProfile && u.sellerProfile.status === "approved")
-      .map((u) => u.id);
+    // Public browse: restrict to listings owned by APPROVED sellers. Phase 5c:
+    // one indexed query instead of `store.all("users.json")` (a full composite
+    // hydrate of every user just to read sellerProfile.status).
+    const approvedSellerIds = await identity.getApprovedSellerIds();
 
     const filters = {
       type: req.query.type ? String(req.query.type) : undefined,
@@ -353,7 +353,10 @@ router.get("/", async (req, res, next) => {
       listings = deterministicSort(listings, sort);
     } else {
       // relevance (default) → blend organic relevance with paid boost (sponsored labeled).
-      listings = await rankListings(listings, { query: q, categorySlug: category });
+      // Phase 5c: hand ranking a { sellerId -> priorityTier } map from one query
+      // instead of letting it `store.all("users.json")`.
+      const tierBySeller = await identity.getSellerPriorityTiers(listings.map((l) => l.sellerId));
+      listings = await rankListings(listings, { query: q, categorySlug: category, tierBySeller });
     }
 
     // 3. Facets over the full filtered set (pre-pagination).
@@ -363,29 +366,13 @@ router.get("/", async (req, res, next) => {
     const total = listings.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
-    // Flat seller mini-object for cards (company name + slug link + trust).
-    const userById = new Map(users.map((u) => [u.id, u]));
-    const sellerMini = (sellerId) => {
-      const u = userById.get(sellerId);
-      if (!u) return null;
-      const sp = u.sellerProfile || {};
-      return {
-        id: u.id,
-        name: u.name,
-        companyName: sp.companyName || u.name || null,
-        slug: sp.slug || null,
-        city: (sp.location && sp.location.city) || null,
-        state: (sp.location && sp.location.state) || null,
-        logo: sp.logo || u.avatarUrl || null,
-        isVerified: !!sp.isVerified,
-        rating: sp.rating ?? 0,
-        reviewCount: sp.reviewCount ?? 0,
-        responseRate: sp.responseRate ?? 0,
-      };
-    };
-    const pageItems = listings.slice(start, start + limit).map((l) => {
+    // Flat seller mini-object for cards (company name + slug link + trust) — one
+    // JOIN over just the page's seller ids (Phase 5c), not a hydrate of every user.
+    const pageSlice = listings.slice(start, start + limit);
+    const sellerById = await identity.getSellerBrowseCards(pageSlice.map((l) => l.sellerId));
+    const pageItems = pageSlice.map((l) => {
       const c = clean(l);
-      c.seller = sellerMini(l.sellerId);
+      c.seller = sellerById.get(l.sellerId) || null;
       // When `near` is queried, surface the distance (km, 1 decimal; null if unknown).
       if (near) {
         c.distanceKm =

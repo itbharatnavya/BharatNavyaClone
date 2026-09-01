@@ -98,6 +98,72 @@ const getSellerCards = mapCards(sellerCardOf);
 const getCandidateCard = mapCard(candidateCardOf);
 const getCandidateCards = mapCards(candidateCardOf);
 
+/* ------------------------------------------------- directory browse reads --- */
+// Targeted reads for routes/listings.js's public browse (BACKEND-AUDIT.md Phase
+// 5c) — they replace a `store.all("users.json")` full composite hydrate of every
+// user (9 child tables) done just to (a) get the approved-seller allow-list and
+// (b) build a seller mini-card for the ~12 listings on the page.
+
+/** ids of every seller whose sellerProfile.status === "approved". */
+async function getApprovedSellerIds() {
+  const { rows } = await pool.query(
+    `SELECT user_id FROM seller_profiles WHERE status = 'approved'`
+  );
+  return rows.map((r) => r.user_id);
+}
+
+/**
+ * Map<sellerId, card> for the given ids — the exact flat shape routes/listings.js
+ * stamped onto each browse card:
+ *   { id, name, companyName, slug, city, state, logo, isVerified,
+ *     rating, reviewCount, responseRate }
+ * INNER JOIN: every browse-page listing belongs to an approved seller, so a
+ * seller_profiles row is guaranteed.
+ */
+async function getSellerBrowseCards(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT u.id, u.name, u.avatar_url,
+            sp.company_name, sp.slug, sp.logo, sp.location_city, sp.location_state,
+            sp.is_verified, sp.rating, sp.review_count, sp.response_rate
+       FROM users u
+       JOIN seller_profiles sp ON sp.user_id = u.id
+      WHERE u.id = ANY($1)`,
+    [uniq]
+  );
+  const m = new Map();
+  for (const r of rows) {
+    m.set(r.id, {
+      id: r.id,
+      name: r.name,
+      companyName: r.company_name || r.name || null,
+      slug: r.slug || null,
+      city: r.location_city || null,
+      state: r.location_state || null,
+      logo: r.logo || r.avatar_url || null,
+      isVerified: !!r.is_verified,
+      rating: r.rating == null ? 0 : Number(r.rating),
+      reviewCount: r.review_count == null ? 0 : Number(r.review_count),
+      responseRate: r.response_rate == null ? 0 : Number(r.response_rate),
+    });
+  }
+  return m;
+}
+
+/** Map<sellerId, priorityTier> for lib/ranking.js's paid-boost blend — replaces
+ *  another `store.all("users.json")` done for one string per seller. Missing /
+ *  NULL / "" tier normalizes to "none" (same as the old code). */
+async function getSellerPriorityTiers(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT user_id, priority_tier FROM seller_profiles WHERE user_id = ANY($1)`,
+    [uniq]
+  );
+  return new Map(rows.map((r) => [r.user_id, r.priority_tier || "none"]));
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -120,5 +186,6 @@ module.exports = {
   getEmployerCard, getEmployerCards,
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
+  getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
   setEmployerApproval,
 };
