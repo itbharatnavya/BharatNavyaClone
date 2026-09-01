@@ -146,6 +146,37 @@ async function employerSlugTaken(slug) {
   return rows.length > 0;
 }
 
+/* ------------------------------------------------ recruitment-admin reads --- */
+
+/** user_ids of every employer (optionally filtered by employerProfile.status),
+ *  user_id-ASC — for routes/adminEmployers.js's list/pending, which was a
+ *  `store.findMany("users.json", u => !!u.employerProfile)` full composite scan.
+ *  The caller hydrates these via hydrateUsersByIds and keeps its own row-map/sort. */
+async function getEmployerUserIds(status) {
+  const rows = status
+    ? (await pool.query(
+        `SELECT user_id FROM employer_profiles WHERE status = $1 ORDER BY user_id ASC`,
+        [status]
+      )).rows
+    : (await pool.query(
+        `SELECT user_id FROM employer_profiles ORDER BY user_id ASC`
+      )).rows;
+  return rows.map((r) => r.user_id);
+}
+
+/** Map<userId, { companyName, status }> from the identity_employer_cards view —
+ *  for routes/adminJobs.js's per-row `employerCompany`/`employerStatus` and its
+ *  company-name `q` filter (was `store.all("users.json")` + a JS employer map). */
+async function getEmployerStatusCards(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT user_id, company_name, status FROM identity_employer_cards WHERE user_id = ANY($1)`,
+    [uniq]
+  );
+  return new Map(rows.map((r) => [r.user_id, { companyName: r.company_name || null, status: r.status || null }]));
+}
+
 /**
  * Map<sellerId, card> for the given ids — the exact flat shape routes/listings.js
  * stamped onto each browse card:
@@ -522,5 +553,6 @@ module.exports = {
   hydrateUsersByIds, adminUserPage,
   getSellerBySlug, getEmployerBySlug,
   getUserByMobile, getUserByEmail,
+  getEmployerUserIds, getEmployerStatusCards,
   setEmployerApproval,
 };

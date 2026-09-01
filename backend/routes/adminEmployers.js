@@ -17,18 +17,21 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 router.use(authGuard, requireRole("admin"));
 
+// Phase 7: the list/pending reads are indexed employer_profiles probes + a
+// by-id composite hydrate (was `store.findMany("users.json", u => !!u.employerProfile)`
+// — a full composite scan of every user); the approve/suspend write goes through
+// `identity.setEmployerApproval`, the port's one exposed write.
 router.get("/", async (req, res, next) => {
   try {
     const status = req.query.status;
-    let employers = await store.findMany("users.json", (u) => !!u.employerProfile);
-    if (status && status !== "all") {
-      employers = employers.filter((u) => u.employerProfile.status === status);
-    }
+    const wantStatus = status && status !== "all" ? status : undefined;
+    const ids = await identity.getEmployerUserIds(wantStatus);
+    const employers = await identity.hydrateUsersByIds(ids);
     const data = employers
       .map((u) => ({
         id: u.id,
@@ -47,9 +50,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/pending", async (req, res, next) => {
   try {
-    const users = await store.findMany(
-      "users.json",
-      (u) => u.employerProfile && u.employerProfile.status === "pending"
+    const users = await identity.hydrateUsersByIds(
+      await identity.getEmployerUserIds("pending")
     );
     const data = users.map((u) => ({
       id: u.id,
@@ -68,12 +70,10 @@ router.get("/pending", async (req, res, next) => {
 
 async function setStatus(req, res, next, status) {
   try {
-    const user = await store.getById("users.json", req.params.userId);
-    if (!user || !user.employerProfile) {
+    const updated = await identity.setEmployerApproval(req.params.userId, status, req.user.id);
+    if (!updated) {
       return res.status(404).json({ success: false, error: "Employer not found" });
     }
-    const employerProfile = { ...user.employerProfile, status };
-    const updated = await store.update("users.json", user.id, { employerProfile });
     return res.json({ success: true, data: { id: updated.id, status: updated.employerProfile.status } });
   } catch (err) {
     next(err);

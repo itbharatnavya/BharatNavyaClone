@@ -16,7 +16,8 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const identity = require("../modules/identity");
+const recruitment = require("../modules/recruitment");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 const { paginationOf } = require("../modules/_shared/pagination");
 
@@ -32,16 +33,20 @@ router.get("/", async (req, res, next) => {
     const employerId = req.query.employerId;
     const q = req.query.q ? String(req.query.q).trim().toLowerCase() : "";
 
-    const [allJobs, users] = await Promise.all([store.all("jobs.json"), store.all("users.json")]);
-    const employerById = new Map(users.filter((u) => u.employerProfile).map((u) => [u.id, u]));
+    // Phase 7: status/employerId filter pushed to jobsRepo criteria (SQL); the
+    // employer company-name/status come from identity's view-backed card map for
+    // just the employerIds present — was a full store.all of the jobs + users
+    // collections (the latter a composite hydrate of every user).
+    const where = {};
+    if (status && status !== "all") where.status = status;
+    if (employerId) where.employerId = employerId;
+    const jobs0 = await recruitment.jobsRepo.findMany({ where });
+    const employerById = await identity.getEmployerStatusCards(jobs0.map((j) => j.employerId));
 
-    let jobs = allJobs;
-    if (status && status !== "all") jobs = jobs.filter((j) => j.status === status);
-    if (employerId) jobs = jobs.filter((j) => j.employerId === employerId);
+    let jobs = jobs0;
     if (q) {
       jobs = jobs.filter((j) => {
-        const employer = employerById.get(j.employerId);
-        const company = (employer?.employerProfile?.companyName || "").toLowerCase();
+        const company = (employerById.get(j.employerId)?.companyName || "").toLowerCase();
         const hay = `${j.title || ""} ${company}`.toLowerCase();
         return hay.includes(q);
       });
@@ -53,7 +58,7 @@ router.get("/", async (req, res, next) => {
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
     const items = jobs.slice(start, start + limit).map((j) => {
-      const employer = employerById.get(j.employerId);
+      const emp = employerById.get(j.employerId);
       return {
         id: j.id,
         title: j.title,
@@ -64,8 +69,8 @@ router.get("/", async (req, res, next) => {
         postedAt: j.postedAt,
         applicationCount: j.applicationCount || 0,
         employerId: j.employerId,
-        employerCompany: employer?.employerProfile?.companyName || "Unknown",
-        employerStatus: employer?.employerProfile?.status || null,
+        employerCompany: emp?.companyName || "Unknown",
+        employerStatus: emp?.status || null,
       };
     });
 
