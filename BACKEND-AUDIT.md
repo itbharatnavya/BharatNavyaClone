@@ -28,7 +28,8 @@ Every finding below was verified by reading the code at the cited line, not infe
 | **1 — Security + cross-cutting** | **Landed & committed:** 1a (mass-assign allowlists), 1b (self-review 403/404), 1c (helmet + rate limiting → 429), 1d-partial (CSPRNG OTP, sweep, `/ai/rfq` auth, prompt cap), 1e-core (PG pool timeouts, graceful shutdown, `/health`), 1g (dead memoization deleted), 1h (login timing fix). See [Phase 1 — Implementation log](#phase-1--implementation-log) for the full table + test results. |
 | **2 — Shared kernel** | **Landed (2026-09-01).** `backend/modules/_shared/`: `pool.js` (THE pool, moved from `pg-store.js` — one pool now), `repository.js` (`createRepository` — the criteria-grammar seam replacing JS predicates; `findById/findOne/findMany/count/page/insert/updateById/updateWhere/incrementById/deleteById/withTx`), `queryBuilder.js` (`eq ne in notIn gt gte lt lte ilike contains isNull` + `_or`; `orderBy` with `NULLS LAST` + `id` tiebreak), `mappings/flat.mappings.js` (one mapping source), `pagination.js` (deferred **1f** helper — not yet wired), `envelope.js`, `errors.js` (+ `errorHandler` passthrough), `crudRouter.js` (factory, not yet wired), `index.js`. `test/differential.test.js` = the Phase 2 gate (repo `deepEqual` legacy store across 6 flat collections + a key→column rename + `page()` + atomic `incrementById`). **No route touched.** See [Phase 2 — Implementation log](#phase-2--implementation-log). |
 | **3 — Identity read-port** | **Landed (2026-09-01).** `modules/identity/index.js`: `getAuthUser(id)` (full hydrated user doc, byte-identical to `store.getById` — proven by `test/identity.test.js`), `get{Employer,Seller,Candidate}Card(s)` (narrow, contact-free, batched), `setEmployerApproval` (defined, not wired). `middleware/authGuard.js` loads `req.user` through it — no longer imports `lib/store`. Circular-dep (`authGuard→identity→_shared barrel→crudRouter→authGuard`) fixed: identity imports `_shared/pool` leaf directly; arch test exempts `_shared` from the deep-import rule (it's the kernel). **`routes/users.js` untouched.** See [Phase 3 — Implementation log](#phase-3--implementation-log). |
-| **4–7** | Not started. |
+| **4 — Recruitment module** | **In progress.** 4a (pure move) landed 2026-09-01: `modules/recruitment/` skeleton + `index.js` port; `lib/recruitmentProfile.js` → `service/employerProfile.service.js` (verbatim); `routes/jobs.js` / `routes/applications.js` / `routes/assistant.js` import from `modules/recruitment`. `searchJobs`/`employerMiniOf` still re-exported from `lib/jobSearch.js` (physical move + store→repo flip in 4d). 91 pass, goldens unchanged. **Next: 4b** (extract `routes/jobs.js` / `applications.js` helpers → `service/` + `policy.js`, thin the routers, retire `_internal`). See [Phase 4 — Implementation log](#phase-4--implementation-log). |
+| **5–7** | Not started. |
 
 **Still open** (all deferred deliberately — none is an open security hole):
 - **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; multi-process durability not yet in play).
@@ -381,6 +382,21 @@ First boot after wiring logged `Warning: Accessing non-existent property 'requir
 - `identity_employer_cards` / `identity_candidate_cards` / `identity_seller_cards` SQL views + migration — 4e is the first consumer needing the JOIN-based "approved employer" gate; until then the batch card readers fan out per id (fine at N≈12).
 - `lib/jobSearch.js` `employerMiniOf` still lives in recruitment — becomes a thin call to `identity.getEmployerCard` in Phase 4 (identity's card already matches its shape).
 - `setEmployerApproval` not wired; `getAuthUser` projection still full (Phase 6 narrows, with its own `req.user.*` audit).
+
+---
+
+## Phase 4 — Implementation log
+
+**Status: in progress (started 2026-09-01, IST). Each sub-phase = its own commit + golden run; goldens must stay byte-identical throughout.**
+
+| Sub-phase | State |
+|---|---|
+| **4a — pure move** | ✅ **2026-09-01.** `modules/recruitment/index.js` (public port) + `service/employerProfile.service.js` (verbatim `lib/recruitmentProfile.js`, now deleted). `routes/jobs.js` / `routes/applications.js` / `routes/assistant.js` import `{ searchJobs, employerMiniOf, candidateProfileGaps, employerProfileGaps }` from `modules/recruitment`. `searchJobs`/`employerMiniOf` are re-exported from `lib/jobSearch.js` for now (it still uses the predicate store — physically moves in 4d). 91 pass; goldens unchanged; recruitment unit tests (`_internal`) unaffected. |
+| **4b — extract services** | Not started. `routes/jobs.js` helpers (`buildLocation`, `buildSalaryRange`, `normalizeStringList`, `isOwnerOrAdmin`, the local `paginationOf` wrapper) + `routes/applications.js` helpers (`VALID_STATUSES`, `candidateMiniOf`, `jobMiniOf`, `canViewApplication`) → `service/*.service.js` + `policy.js`; routers go thin; retire the `module.exports._internal` test hooks (move the unit tests onto the new module paths). Still on `store.js`. |
+| **4c — zod schemas** | Not started. Every recruitment endpoint gets a `.strict()` schema wired through the existing `validate(schema, source)` — the schema replaces 1a's hand-written allowlists. |
+| **4d — repositories** | Not started. Flip services off `store.js` one collection at a time: `jobs` → `applications` → taxonomy (`job-functions`/`job-roles`/`skills`). `lib/jobSearch.js` physically moves into `service/jobSearch.service.js` here. Separate commit + golden run per collection. |
+| **4e — searchPublic rewrite** | Not started. `GET /api/jobs`: 11 queries + 2 table scans → 1 query via the dead indexes + `count(*) OVER()`. Needs the `identity_*_cards` view migration (deferred from Phase 3). Mind the 3 traps: ILIKE `%`/`_` escaping, deterministic `, id DESC` tiebreak, `NULLS LAST`. `routes/jobs.js` view counter → `repo.incrementById` (kills C2 for jobs). |
+| **4f — mounts** | Not started. Recruitment's route mounts move into `modules/recruitment/mount.js`; `index.js` mount ordering becomes explicit `{path, router, phase}` (admin-sub before `/api/admin` before public), with a non-admin-token 403 test on `/api/admin/jobs`. |
 
 ---
 

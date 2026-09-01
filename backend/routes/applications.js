@@ -6,7 +6,7 @@
  *
  * POST /             candidate applies to a job (authGuard — applying needs identity;
  *                    403 if recruitmentRole is "recruiter"; 400 if the candidate's
- *                    profile is incomplete (lib/recruitmentProfile.candidateProfileGaps
+ *                    profile is incomplete (recruitment.candidateProfileGaps
  *                    — headline/summary/experience/skills/mobile/email/CV), or hasn't
  *                    answered all of the job's required questions)
  * GET  /mine          candidate's own applications
@@ -23,7 +23,7 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
-const { candidateProfileGaps } = require("../lib/recruitmentProfile");
+const { candidateProfileGaps } = require("../modules/recruitment");
 
 // Employer-settable statuses via POST /:id/status — "withdrawn" is deliberately NOT in
 // this set, since it's a candidate-only transition (see POST /:id/withdraw below), not

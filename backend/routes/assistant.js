@@ -21,7 +21,7 @@ const store = require("../lib/store");
 const config = require("../lib/config");
 const { parseQuery, selectRelevantCategories } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
-const { searchJobs } = require("../lib/jobSearch");
+const { searchJobs } = require("../modules/recruitment");
 const { optionalAuth } = require("../middleware/authGuard");
 
 const WINDOW_MS = 60 * 60 * 1000;

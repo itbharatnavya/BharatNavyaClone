@@ -1,11 +1,12 @@
 /**
- * lib/recruitmentProfile.js — one source of truth for "is this Recruitment profile
+ * employerProfile.service.js — one source of truth for "is this Recruitment profile
  * complete enough to act?" A candidate with an incomplete profile cannot apply to a
  * job; a recruiter with an incomplete company profile cannot post one.
  *
- * Consumers:
- *   - routes/applications.js  POST /        (candidateProfileGaps — 400 with `missing`)
- *   - routes/jobs.js          POST /        (employerProfileGaps  — 403 with `missing`)
+ * Moved verbatim from lib/recruitmentProfile.js in Phase 4a (pure move — no logic
+ * change). Consumed via modules/recruitment (the public port):
+ *   - routes/applications.js  POST /   (candidateProfileGaps — 400 with `missing`)
+ *   - routes/jobs.js          POST /   (employerProfileGaps  — 403 with `missing`)
  *
  * The frontend mirrors these exact rules in frontend/lib/recruitmentProfile.ts so the
  * Apply modal / Post-a-job page / dashboard profile forms can preview the same gaps

@@ -27,9 +27,8 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
-const { searchJobs, employerMiniOf } = require("../lib/jobSearch");
+const { searchJobs, employerMiniOf, employerProfileGaps } = require("../modules/recruitment");
 const { paginationOf: sharedPaginationOf } = require("../modules/_shared/pagination");
-const { employerProfileGaps } = require("../lib/recruitmentProfile");
 
 const DEFAULT_LIMIT = 12;
 // Hard cap regardless of what a client asks for — an unbounded ?limit= could force a
