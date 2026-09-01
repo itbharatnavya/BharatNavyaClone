@@ -28,6 +28,7 @@
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 const { verifyListing } = require("../lib/listingVerification");
 
@@ -38,20 +39,6 @@ router.use(authGuard, requireRole("admin"));
 // to keep one bulk request from running for minutes.
 const BULK_MAX = 200;
 const BULK_AI_MAX = 25;
-
-/** Build a sellerId → { company, name } lookup from users.json. */
-async function sellerLookup() {
-  const users = await store.all("users.json");
-  const byId = new Map();
-  for (const u of users) {
-    const sp = u && u.sellerProfile;
-    byId.set(u.id, {
-      company: (sp && sp.companyName) || u.name || null,
-      name: u.name || null,
-    });
-  }
-  return byId;
-}
 
 function summarize(listing, byId) {
   const who = byId.get(listing.sellerId);
@@ -132,7 +119,7 @@ router.get("/", async (req, res, next) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    const [listings, byId] = await Promise.all([store.all("listings.json"), sellerLookup()]);
+    const listings = await store.all("listings.json");
 
     let rows = listings;
     if (statusFilter && statusFilter !== "all") {
@@ -156,6 +143,10 @@ router.get("/", async (req, res, next) => {
       const toMs = Date.parse(dateTo) + (/^\d{4}-\d{2}-\d{2}$/.test(dateTo) ? 24 * 60 * 60 * 1000 - 1 : 0);
       if (!Number.isNaN(toMs)) rows = rows.filter((l) => Date.parse(l.createdAt || "") <= toMs);
     }
+
+    // Company names only for the filtered rows' sellers (one indexed query) —
+    // not a `store.all("users.json")` hydrate of every user (Phase 5e).
+    const byId = await identity.getSellerCompanyNames(rows.map((l) => l.sellerId));
 
     let data = rows
       .map((l) => summarize(l, byId))
@@ -183,7 +174,7 @@ router.get("/:id", async (req, res, next) => {
   try {
     const listing = await store.getById("listings.json", req.params.id);
     if (!listing) return res.status(404).json({ success: false, error: "Listing not found" });
-    const byId = await sellerLookup();
+    const byId = await identity.getSellerCompanyNames([listing.sellerId]);
     const who = byId.get(listing.sellerId);
     return res.json({
       success: true,

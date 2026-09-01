@@ -28,6 +28,7 @@
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 // Auth + admin role for every endpoint below.
@@ -49,25 +50,6 @@ function snippet(text, len = 140) {
     .replace(/\s+/g, " ")
     .trim();
   return s.length > len ? `${s.slice(0, len)}…` : s;
-}
-
-/** Build a userId → { company, name, type } lookup from users.json. Falls back to
- *  employerProfile when sellerProfile is absent — a Recruitment employer's blog/story
- *  used to resolve to nothing here (blogs.js's own attachAuthors() already handles
- *  both; only this admin-side lookup had the gap — see ADMIN-CONSOLE.md §3). */
-async function authorLookup() {
-  const users = await store.all("users.json");
-  const byId = new Map();
-  for (const u of users) {
-    const sp = u && u.sellerProfile;
-    const ep = u && u.employerProfile;
-    byId.set(u.id, {
-      company: (sp && sp.companyName) || (ep && ep.companyName) || u.name || null,
-      name: u.name || null,
-      type: sp ? "seller" : ep ? "employer" : null,
-    });
-  }
-  return byId;
 }
 
 /** Normalize one row of the given type into a uniform moderation item. */
@@ -117,7 +99,10 @@ router.get("/content", async (req, res, next) => {
         .json({ success: false, error: "type must be blog | story" });
     }
     const authorType = req.query.authorType;
-    const [rows, byId] = await Promise.all([store.all(meta.file), authorLookup()]);
+    const rows = await store.all(meta.file);
+    // Author company/type only for the ids actually present (Phase 5e) — not a
+    // `store.all("users.json")` hydrate of every user.
+    const byId = await identity.getAccountCards(rows.map((r) => r.sellerId));
     let items = rows
       .map((r) => toItem(type, r, byId))
       .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
@@ -138,10 +123,8 @@ router.get("/content", async (req, res, next) => {
 router.get("/verifications", async (req, res, next) => {
   try {
     const status = req.query.status;
-    const [rows, byId] = await Promise.all([
-      store.all(VERIFICATIONS),
-      authorLookup(),
-    ]);
+    const rows = await store.all(VERIFICATIONS);
+    const byId = await identity.getAccountCards(rows.map((r) => r.sellerId));
     let list = rows;
     if (status && status !== "all") list = list.filter((r) => r.status === status);
     const data = list

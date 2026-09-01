@@ -151,6 +151,59 @@ async function getSellerBrowseCards(ids = []) {
   return m;
 }
 
+/** Map<userId, { company, name }> — seller company-name lookup for the admin
+ *  listing queue (routes/adminListings.js). Replaces a `store.all("users.json")`
+ *  full composite hydrate done for one string per seller. LEFT JOIN so a listing
+ *  owner without a seller_profiles row still resolves (company falls back to name),
+ *  matching the old `(sp && sp.companyName) || u.name || null`. */
+async function getSellerCompanyNames(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT u.id, u.name, sp.company_name
+       FROM users u
+       LEFT JOIN seller_profiles sp ON sp.user_id = u.id
+      WHERE u.id = ANY($1)`,
+    [uniq]
+  );
+  const m = new Map();
+  for (const r of rows) {
+    m.set(r.id, { company: r.company_name || r.name || null, name: r.name || null });
+  }
+  return m;
+}
+
+/** Map<userId, { company, name, type }> — company + account-type lookup for the
+ *  moderation queue (routes/moderation.js), which resolves a blog/story/verification
+ *  author who may be a seller OR a Recruitment employer. Matches the old
+ *  authorLookup(): company = sellerCompany ?? employerCompany ?? name; type =
+ *  "seller" if a seller_profiles row exists, else "employer", else null. */
+async function getAccountCards(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT u.id, u.name,
+            sp.company_name AS seller_company,
+            ep.company_name AS employer_company,
+            (sp.user_id IS NOT NULL) AS is_seller,
+            (ep.user_id IS NOT NULL) AS is_employer
+       FROM users u
+       LEFT JOIN seller_profiles sp ON sp.user_id = u.id
+       LEFT JOIN employer_profiles ep ON ep.user_id = u.id
+      WHERE u.id = ANY($1)`,
+    [uniq]
+  );
+  const m = new Map();
+  for (const r of rows) {
+    m.set(r.id, {
+      company: r.seller_company || r.employer_company || r.name || null,
+      name: r.name || null,
+      type: r.is_seller ? "seller" : r.is_employer ? "employer" : null,
+    });
+  }
+  return m;
+}
+
 /** Map<sellerId, priorityTier> for lib/ranking.js's paid-boost blend — replaces
  *  another `store.all("users.json")` done for one string per seller. Missing /
  *  NULL / "" tier normalizes to "none" (same as the old code). */
@@ -187,5 +240,6 @@ module.exports = {
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
   getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
+  getSellerCompanyNames, getAccountCards,
   setEmployerApproval,
 };
