@@ -15,8 +15,15 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
+const directory = require("../modules/directory");
 const { authGuard } = require("../middleware/authGuard");
 const { recomputeSellerRating } = require("../lib/sellerRating");
+
+// Phase 5b: reviews.json writes (POST /) + the per-user lookups go through
+// modules/directory `reviewsRepo` (criteria grammar → SQL), not the predicate
+// store. The homepage aggregation reads (/recent, /recruitment-recent) still join
+// users/listings via `store` — reads may straddle until those collections graduate.
+const reviewsRepo = directory.reviewsRepo;
 
 // Recognized review directions; anything else defaults to buyer_to_seller.
 const REVIEW_DIRECTIONS = new Set([
@@ -170,14 +177,15 @@ router.get("/", async (req, res, next) => {
     // Directory seller page passes "directory", the Recruitment company page
     // passes "recruitment", so the two never see each other's reviews.
     const context = REVIEW_CONTEXTS.has(req.query.context) ? req.query.context : null;
-    const matchesTarget = (r) =>
-      !target || r.targetUserId === target || r.sellerId === target;
-    const matchesContext = (r) => !context || contextOf(r) === context;
-
-    const all = await store.all("reviews.json");
-    const reviews = all.filter((r) => matchesTarget(r) && matchesContext(r));
-    reviews.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
-    return res.json({ success: true, data: reviews });
+    // targetUserId | sellerId match compiles to an _or; the NULL-context-means-
+    // "directory" rule can't be expressed in the grammar, so it stays a JS filter
+    // over the (small) per-target result set.
+    const reviews = target
+      ? await reviewsRepo.findMany({ where: { _or: [{ targetUserId: target }, { sellerId: target }] } })
+      : await reviewsRepo.findMany({});
+    const filtered = context ? reviews.filter((r) => contextOf(r) === context) : reviews;
+    filtered.sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+    return res.json({ success: true, data: filtered });
   } catch (err) {
     next(err);
   }
@@ -223,17 +231,16 @@ router.post("/", authGuard, async (req, res, next) => {
 
     // One review per (buyer, target, context) — a user can leave one Directory
     // review and one Recruitment review for the same person, but not two of either.
-    const existing = await store.findOne(
-      "reviews.json",
-      (r) =>
-        r.buyerId === req.user.id &&
-        (r.targetUserId === targetUserId || r.sellerId === targetUserId) &&
-        contextOf(r) === context
-    );
+    // Fetch this buyer's reviews for the target (tiny set), then apply the
+    // NULL-context-means-"directory" rule in JS (not expressible in the grammar).
+    const mineForTarget = await reviewsRepo.findMany({
+      where: { buyerId: req.user.id, _or: [{ targetUserId }, { sellerId: targetUserId }] },
+    });
+    const existing = mineForTarget.find((r) => contextOf(r) === context) || null;
 
     let review;
     if (existing) {
-      review = await store.update("reviews.json", existing.id, {
+      review = await reviewsRepo.updateById(existing.id, {
         rating,
         reviewText: b.reviewText || "",
         status: "approved",
@@ -249,20 +256,21 @@ router.post("/", authGuard, async (req, res, next) => {
         context === "directory" &&
         (direction === "buyer_to_seller" || direction === "seller_to_seller");
 
-      review = {
-        id: await store.nextId("rev"),
-        targetUserId,
-        sellerId: targetIsSeller ? targetUserId : null,
-        direction,
-        context,
-        buyerId: req.user.id,
-        buyerName: req.user.name,
-        rating,
-        reviewText: b.reviewText || "",
-        status: "approved",
-        createdAt: new Date().toISOString(),
-      };
-      await store.insert("reviews.json", review);
+      review = await reviewsRepo.insert(
+        {
+          targetUserId,
+          sellerId: targetIsSeller ? targetUserId : null,
+          direction,
+          context,
+          buyerId: req.user.id,
+          buyerName: req.user.name,
+          rating,
+          reviewText: b.reviewText || "",
+          status: "approved",
+          createdAt: new Date().toISOString(),
+        },
+        "rev"
+      );
     }
     await recomputeSellerRating(review.targetUserId || review.sellerId);
 

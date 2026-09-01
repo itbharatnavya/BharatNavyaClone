@@ -560,7 +560,11 @@ CREATE TABLE IF NOT EXISTS reviews (
   rating          NUMERIC(3,2),
   review_text     TEXT,
   status          TEXT,
-  created_at      TIMESTAMPTZ
+  created_at      TIMESTAMPTZ,
+  -- BACKEND-AUDIT.md S2 — a user can never review their own account
+  -- (0014_add_review_self_check.sql for existing databases).
+  CONSTRAINT reviews_no_self_review
+    CHECK (buyer_id IS NULL OR target_user_id IS NULL OR buyer_id <> target_user_id)
 );
 
 CREATE TABLE IF NOT EXISTS shortlist (

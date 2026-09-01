@@ -9,7 +9,9 @@
  */
 
 const { listingCountsByCategory } = require("./repository/listingStats.repository");
+const reviewsRepo = require("./repository/review.repository");
 
 module.exports = {
   listingCountsByCategory,
+  reviewsRepo,
 };

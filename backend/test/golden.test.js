@@ -35,6 +35,7 @@ const FIX = {
   jobId: "job_000011",       // active, job_function = "engineering"
   jobFunction: "engineering",
   qFragment: "textile",
+  reviewTarget: "usr_s002",  // seed seller with 2 directory reviews
 };
 
 const tokens = {};
@@ -65,6 +66,7 @@ test("golden fixtures", async (t) => {
   await golden(t, "listing-detail", (r) => r.get(`/api/listings/${FIX.listingId}`));
   await golden(t, "sellers-featured", (r) => r.get("/api/sellers/featured"));
   await golden(t, "seller-detail", (r) => r.get(`/api/sellers/${FIX.sellerSlug}`));
+  await golden(t, "reviews-for-seller", (r) => r.get(`/api/reviews?targetUserId=${FIX.reviewTarget}&context=directory`));
 
   /* --------------------------------------------- public Recruitment reads -- */
   await golden(t, "job-functions", (r) => r.get("/api/job-functions"));
