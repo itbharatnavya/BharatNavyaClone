@@ -45,6 +45,8 @@ const {
   // policy.js
   isJobOwnerOrAdmin,
 } = require("../modules/recruitment");
+const { validateBody } = require("../modules/recruitment/http/validateBody");
+const { updateJob: updateJobSchema } = require("../modules/recruitment/schema/job.schema");
 
 /* --------------------------------------------------- GET / (browse) -------- */
 
@@ -184,7 +186,7 @@ router.post("/", authGuard, async (req, res, next) => {
 
 /* --------------------------------------------------------- PUT /:id -------- */
 
-router.put("/:id", authGuard, async (req, res, next) => {
+router.put("/:id", authGuard, validateBody(updateJobSchema), async (req, res, next) => {
   try {
     const job = await store.getById("jobs.json", req.params.id);
     if (!job) {
@@ -194,20 +196,10 @@ router.put("/:id", authGuard, async (req, res, next) => {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
 
-    const b = req.body || {};
-    // Allowlist, not blocklist (BACKEND-AUDIT.md S1) — same rule as listings.js.
-    // Exactly the fields the create route and the /post-job form write; anything
-    // else (id, employerId, postedAt, viewCount, applicationCount, and any future
-    // ranking/monetization field) can never be set through an owner edit.
-    const JOB_EDITABLE = new Set([
-      "title", "description", "jobFunction", "employmentType", "experienceLevel",
-      "location", "salaryRange", "skills", "responsibilities", "requirements",
-      "benefits", "questions", "openings", "status", "expiresAt", "qualification",
-    ]);
-    const patch = {};
-    for (const key of Object.keys(b)) {
-      if (JOB_EDITABLE.has(key)) patch[key] = b[key];
-    }
+    // The write allowlist is the zod schema (modules/recruitment/schema/job.schema.js,
+    // `.strip()`) — validateBody has already dropped every non-editable key
+    // (id / employerId / postedAt / viewCount / applicationCount / ranking fields).
+    const patch = { ...req.body };
     if (patch.status !== undefined) {
       if (!VALID_JOB_STATUSES.has(patch.status)) {
         return res.status(400).json({ success: false, error: "invalid status" });
