@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 const config = require("./lib/config");
 const store = require("./lib/store");
 const { helmetMw, globalLimiter, authLimiter, aiLimiter } = require("./lib/security");
+const { mountRecruitment } = require("./modules/recruitment/mount");
 
 const app = express();
 
@@ -65,16 +66,12 @@ app.use("/api/collections", require("./routes/collections")); // PUBLIC curated 
 app.use("/api/listings", require("./routes/listings"));
 app.use("/api/reviews", require("./routes/reviews"));
 app.use("/api/inquiries", require("./routes/inquiries"));
-app.use("/api/admin/job-functions", require("./routes/adminJobFunctions")); // admin taxonomy CRUD (guarded inside; before /api/admin)
-app.use("/api/admin/job-roles", require("./routes/adminJobRoles")); // admin taxonomy CRUD (guarded inside; before /api/admin)
-app.use("/api/admin/skills", require("./routes/adminSkills")); // admin taxonomy CRUD (guarded inside; before /api/admin)
-app.use("/api/job-functions", require("./routes/jobFunctions")); // Recruitment: flat job taxonomy (public read)
-app.use("/api/job-roles", require("./routes/jobRoles")); // Recruitment: predefined job-title picklist (public read)
-app.use("/api/skills", require("./routes/skills")); // Recruitment: predefined skills picklist (public read)
-app.use("/api/jobs", require("./routes/jobs")); // Recruitment: job postings (RECRUITMENT.md)
-app.use("/api/applications", require("./routes/applications")); // Recruitment: candidate applications
-app.use("/api/admin/employers", require("./routes/adminEmployers")); // Recruitment: employer approval (guarded inside; before /api/admin)
-app.use("/api/admin/jobs", require("./routes/adminJobs")); // Recruitment: admin job visibility across all statuses (guarded inside; before /api/admin)
+// Recruitment routes (modules/recruitment/mount.js) — EXPLICIT phase ordering
+// (BACKEND-AUDIT.md Phase 4f): every admin-sub router (each self-guarded with its
+// own authGuard + requireRole) first, so the blanket /api/admin catch-all below
+// can't shadow — or worse, open — them; then the public routers.
+mountRecruitment(app, "admin-sub");
+mountRecruitment(app, "public");
 app.use("/api/admin/boosts", require("./routes/boosts")); // self-serve boosts admin (guarded inside; before /api/admin)
 app.use("/api/boosts", require("./routes/boosts")); // seller self-serve boost requests
 app.use("/api/admin/moderation", require("./routes/moderation")); // content moderation + verification queue (guarded inside; before /api/admin)
