@@ -7,7 +7,7 @@
  */
 
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const identity = require("../modules/identity");
 
 function extractToken(req) {
   const h = req.headers.authorization || "";
@@ -18,7 +18,9 @@ function extractToken(req) {
 
 async function loadUser(payload) {
   if (!payload || !payload.sub) return null;
-  return store.getById("users.json", payload.sub);
+  // Phase 3 read-port — identity.getAuthUser returns the full hydrated user doc,
+  // byte-identical to store.getById("users.json", id). Narrowing is a Phase 6 step.
+  return identity.getAuthUser(payload.sub);
 }
 
 /** Hard gate: 401 unless a valid token resolves to a real user. */

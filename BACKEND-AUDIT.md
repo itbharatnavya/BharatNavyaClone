@@ -27,7 +27,8 @@ Every finding below was verified by reading the code at the cited line, not infe
 | **0 — Safety net** | **Landed (2026-09-01).** `app.js` split (done earlier). `PG_URL_TEST` wiring + `scripts/setup-test-db.js` (`npm run test:setup` — clones the dev DB into a frozen `bharatsource_test`). `test/architecture.test.js` (5 boundary assertions, load-bearing from the first `modules/` commit). `test/golden.test.js` + `test/golden/` (37 fixtures: public Directory reads, public Recruitment reads, `GET /api/admin/users` × 17 branches). `test/pagination.test.js` (page 0 / past-last / limit 0 / limit 9999 / page-disjointness across `/api/jobs`, `/api/listings`, `/api/admin/users`). Suite is now serial (`--test-concurrency=1`) for determinism. **Follow-ups (not blockers):** version-controlled pinned seed (today it clones dev); golden coverage of authed recruitment endpoints (`/api/applications*`, `/api/admin/jobs`, `/api/admin/employers`). See [Phase 0 — Implementation log](#phase-0--implementation-log). |
 | **1 — Security + cross-cutting** | **Landed & committed:** 1a (mass-assign allowlists), 1b (self-review 403/404), 1c (helmet + rate limiting → 429), 1d-partial (CSPRNG OTP, sweep, `/ai/rfq` auth, prompt cap), 1e-core (PG pool timeouts, graceful shutdown, `/health`), 1g (dead memoization deleted), 1h (login timing fix). See [Phase 1 — Implementation log](#phase-1--implementation-log) for the full table + test results. |
 | **2 — Shared kernel** | **Landed (2026-09-01).** `backend/modules/_shared/`: `pool.js` (THE pool, moved from `pg-store.js` — one pool now), `repository.js` (`createRepository` — the criteria-grammar seam replacing JS predicates; `findById/findOne/findMany/count/page/insert/updateById/updateWhere/incrementById/deleteById/withTx`), `queryBuilder.js` (`eq ne in notIn gt gte lt lte ilike contains isNull` + `_or`; `orderBy` with `NULLS LAST` + `id` tiebreak), `mappings/flat.mappings.js` (one mapping source), `pagination.js` (deferred **1f** helper — not yet wired), `envelope.js`, `errors.js` (+ `errorHandler` passthrough), `crudRouter.js` (factory, not yet wired), `index.js`. `test/differential.test.js` = the Phase 2 gate (repo `deepEqual` legacy store across 6 flat collections + a key→column rename + `page()` + atomic `incrementById`). **No route touched.** See [Phase 2 — Implementation log](#phase-2--implementation-log). |
-| **3–7** | Not started. |
+| **3 — Identity read-port** | **Landed (2026-09-01).** `modules/identity/index.js`: `getAuthUser(id)` (full hydrated user doc, byte-identical to `store.getById` — proven by `test/identity.test.js`), `get{Employer,Seller,Candidate}Card(s)` (narrow, contact-free, batched), `setEmployerApproval` (defined, not wired). `middleware/authGuard.js` loads `req.user` through it — no longer imports `lib/store`. Circular-dep (`authGuard→identity→_shared barrel→crudRouter→authGuard`) fixed: identity imports `_shared/pool` leaf directly; arch test exempts `_shared` from the deep-import rule (it's the kernel). **`routes/users.js` untouched.** See [Phase 3 — Implementation log](#phase-3--implementation-log). |
+| **4–7** | Not started. |
 
 **Still open** (all deferred deliberately — none is an open security hole):
 - **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; multi-process durability not yet in play).
@@ -38,7 +39,7 @@ Every finding below was verified by reading the code at the cited line, not infe
 - **1b-CHECK** — DB `CHECK (buyer_id <> target_user_id)` on reviews (needs a migration; Phase 5).
 - **1i** — **OWNER ACTION:** rotate every credential in `backend/DB/users.json` (38 bcrypt hashes + admin), then `git rm --cached backend/DB/users.json` + `.gitignore` it.
 
-**To resume:** `cd backend && npm run test:setup` (rebuilds `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs no open connections to the dev DB), then `npm test` (expect **85 pass**), and `cd frontend && npx tsc --noEmit` (clean — no frontend change yet). Then start **Phase 3 — Identity read-port** (`modules/identity/index.js` publishing `getAuthUser` / `get*Card(s)` / `setEmployerApproval`; `getAuthUser` must first return the FULL hydrated user doc, byte-identical to `store.getById("users.json", id)` — see the [Phase 3](#phase-3--identity-read-port-only) trap).
+**To resume:** `cd backend && npm run test:setup` (rebuilds `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs no open connections to the dev DB), then `npm test` (expect **91 pass**), and `cd frontend && npx tsc --noEmit` (clean — no frontend change yet). Then start **Phase 4 — Recruitment module** (the template — `modules/recruitment/{index,mount,http,service,repository,schema,policy}`; sub-phases 4a→4f, each its own commit + golden run). Recruitment is gated off in prod (`RECRUITMENT_LIVE=false`), so first-slice regressions are invisible to real users. Pair with: physically move `buildFlatConfigs` into `_shared/mappings/`, add the `identity_*_cards` views migration (4e needs the JOIN), and swap `lib/jobSearch.js` `employerMiniOf` → `identity.getEmployerCard`.
 
 **New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `PG_URL_TEST` (dedicated `npm test` database; unset → tests fall back to `PG_URL` as before). Earlier Phase 1 pass added: `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
 
@@ -349,6 +350,40 @@ Live smoke (`node index.js`, curl):
 
 ---
 
+## Phase 3 — Implementation log
+
+**Status: landed 2026-09-01 (IST). Contract impact: none — only `middleware/authGuard.js`'s user load changed, and it returns the identical document. 91 pass; goldens byte-identical.**
+
+### New files
+
+| File | What it is |
+|---|---|
+| `backend/modules/identity/index.js` | The read-port onto `users` — the one named seam every other module uses instead of touching `users` / `*_profiles`. **`getAuthUser(id)`** → the FULL hydrated user doc via `createUsersStore(pool).getById` (same composite hydrate `pg-store` runs); byte-identical to `store.getById("users.json", id)`. **`getEmployerCard(id)` / `getEmployerCards(ids)`**, `getSellerCard(s)`, `getCandidateCard(s)` — narrow, contact-free projections; batched variants dedupe and (for now) fan out per id. **`setEmployerApproval(userId, status, actorId)`** — the only write this port will expose; defined, **not yet wired** (`routes/adminEmployers.js` still patches `employerProfile.status` directly until Phase 4). Imports `_shared/pool` + `lib/db/users` only — never `lib/store`. |
+| `backend/test/identity.test.js` | The load-bearing gate: `getAuthUser(id)` `deepEqual` `store.getById("users.json", id)` for admin / seller / employer / candidate seed users. Plus: missing/null id → null (no throw); employer-card key set is exactly `{id,companyName,slug,logo,city,state,isVerified}` with no `contact*`/`phone`/`email`; batch readers equal N single reads and dedupe. |
+
+### Modified
+
+| File | Change | Contract |
+|---|---|---|
+| `backend/middleware/authGuard.js` | `require("../lib/store")` → `require("../modules/identity")`; `loadUser` calls `identity.getAuthUser(payload.sub)` instead of `store.getById("users.json", …)`. Used by both `authGuard` and `optionalAuth`. | ✅ none — same document on `req.user`. |
+| `backend/test/architecture.test.js` | Cross-module deep-import check now skips `target === "_shared"` — the kernel is a shared layer, not a domain module, so importing `_shared/pool` (etc.) at any depth is allowed. | test-only |
+
+### The circular dependency (caught + fixed)
+
+First boot after wiring logged `Warning: Accessing non-existent property 'requireRole' … inside circular dependency`: `authGuard → modules/identity → modules/_shared (barrel) → crudRouter → middleware/authGuard`. Fixed by importing the leaf — `require("../_shared/pool")` — in `identity/index.js` instead of the barrel, so identity no longer transitively pulls `crudRouter`. Boot is now clean.
+
+### Test results — 2026-09-01 (IST)
+
+`npm test` → **91 pass, 0 fail** (85 + 6 identity). `node -e "require('./app')"` → clean, no circular-dep warning. All 37 goldens byte-identical (auth path returns the same `req.user`). `routes/users.js` unchanged and still on `store.js`.
+
+### Deferred to Phase 4+
+
+- `identity_employer_cards` / `identity_candidate_cards` / `identity_seller_cards` SQL views + migration — 4e is the first consumer needing the JOIN-based "approved employer" gate; until then the batch card readers fan out per id (fine at N≈12).
+- `lib/jobSearch.js` `employerMiniOf` still lives in recruitment — becomes a thin call to `identity.getEmployerCard` in Phase 4 (identity's card already matches its shape).
+- `setEmployerApproval` not wired; `getAuthUser` projection still full (Phase 6 narrows, with its own `req.user.*` audit).
+
+---
+
 ### Phase 2 — Shared kernel  ✅ LANDED 2026-09-01
 **Small · Contract impact: ✅ none — no route touched** · full detail: [Phase 2 — Implementation log](#phase-2--implementation-log)
 
@@ -393,12 +428,12 @@ createRepository({ pool, mapping }) → {
 **Gate:** goldens green. **The differential test** (per collection: `repo.findMany({where:{}})` `deepEqual` `store.all(coll)`; `repo.findMany({where:X})` `deepEqual` `store.findMany(coll, predicateFor(X))`; `repo.findById(id)` `deepEqual` `store.getById(coll,id)`). This is the single most important assertion in the migration — it makes divergence structurally impossible rather than merely discouraged. It is the last test you delete, when `store.js` dies. — **Landed as `backend/test/differential.test.js`**; 85 pass total.
 **Rollback:** additive plus two import redirections (`pg-store.js` → `_shared/pool`, `flat.mappings.js` → `lib/db/flat`).
 
-**Not done in this pass** (deliberately): repository is wired into **no route** yet (that begins Phase 3+ — "reads may straddle, only writes graduate"); `_shared/pagination.js` + `crudRouter.js` shipped but unused; `buildFlatConfigs` still physically in `lib/db/flat.js`; the `store.js` deprecation header + CLAUDE.md §5 "closed to new collections" line + dev-mode call-site burn-down logging still to add; 1e-pino still open.
+**Not done in this pass** (deliberately): the `createRepository` seam is wired into **no route** yet (that begins Phase 3+ — "reads may straddle, only writes graduate"); `_shared/crudRouter.js` shipped but unused; `buildFlatConfigs` still physically in `lib/db/flat.js`; the `store.js` deprecation header + CLAUDE.md §5 "closed to new collections" line + dev-mode call-site burn-down logging still to add. (`_shared/pagination.js` and 1e-pino were done right after, as standalone commits — see above.)
 
 ---
 
-### Phase 3 — Identity read-port only
-**Medium · Contract impact: ✅ none — `routes/users.js` is not touched**
+### Phase 3 — Identity read-port only  ✅ LANDED 2026-09-01
+**Medium · Contract impact: ✅ none — `routes/users.js` is not touched** · full detail: [Phase 3 — Implementation log](#phase-3--implementation-log)
 
 `modules/identity/index.js` publishes narrow, purpose-named readers — never the raw user document:
 
@@ -412,14 +447,14 @@ setEmployerApproval(userId, status, actorId)            // the ONLY write path
 
 `employerMiniOf` (`lib/jobSearch.js:39-51`) is already exactly this shape — it *becomes* `identity.getEmployerCard` and is deleted from recruitment.
 
-Plus a schema migration creating **identity-owned views** — `identity_employer_cards`, `identity_candidate_cards`, `identity_seller_cards`. Other modules may join these views; they may never join `users` or `*_profiles` directly. Needed because the "approved employer" gate must be a `JOIN`, not a post-filter, or you are back to loading every user. The coupling is real but named, greppable, and single-point — and the architecture test asserts it.
+Plus a schema migration creating **identity-owned views** — `identity_employer_cards`, `identity_candidate_cards`, `identity_seller_cards`. Other modules may join these views; they may never join `users` or `*_profiles` directly. Needed because the "approved employer" gate must be a `JOIN`, not a post-filter, or you are back to loading every user. The coupling is real but named, greppable, and single-point — and the architecture test asserts it. — **DEFERRED to Phase 4** (4e is the first consumer that needs the JOIN; the Phase 3 `get*Cards` batch readers currently fan out per-id, which is fine at N≈12 for the job-results page).
 
-Then repoint `middleware/authGuard.js:21` at `identity.getAuthUser(id)`.
+Then repoint `middleware/authGuard.js:21` at `identity.getAuthUser(id)`. — **Done.** `loadUser` now calls `identity.getAuthUser`; `authGuard.js` no longer requires `lib/store`.
 
-> **⚠️ The trap.** Routes read arbitrary fields off `req.user` — `employerProfile` (`routes/jobs.js:212`), `sellerProfile`, `recruitmentRole` (`jobs.js:205`), `roles`, `status`. So `getAuthUser` must **initially return the full hydrated document**, byte-identical to `store.getById("users.json", id)`. Narrowing its projection is a separate, later step with its own audit. Slimming it here breaks a scattered subset of routes silently.
+> **⚠️ The trap.** Routes read arbitrary fields off `req.user` — `employerProfile` (`routes/jobs.js:212`), `sellerProfile`, `recruitmentRole` (`jobs.js:205`), `roles`, `status`. So `getAuthUser` must **initially return the full hydrated document**, byte-identical to `store.getById("users.json", id)`. Narrowing its projection is a separate, later step with its own audit. Slimming it here breaks a scattered subset of routes silently. — **Honoured:** `getAuthUser` delegates to `createUsersStore(pool).getById(id)` (the same composite hydrate `pg-store` runs); `test/identity.test.js` asserts `deepEqual` against `store.getById` for admin/seller/employer/candidate. Projection-narrowing stays in Phase 6.
 
-**Gate:** goldens unchanged; `routes/users.js` still on `store.js` and untouched; auth-path latency measured before/after.
-**Rollback:** revert one import line in `authGuard.js`.
+**Gate:** goldens unchanged ✅; `routes/users.js` still on `store.js` and untouched ✅; `npm test` 91 pass.
+**Rollback:** revert the one import + `loadUser` body in `authGuard.js`.
 
 ---
 
@@ -577,7 +612,7 @@ Effort is stated in relative size, not calendar time — the work is done by an 
 | 0 Safety net | small | none | prerequisite | ✅ — **landed 2026-09-01** (golden harness · pagination edge tests · architecture test · `PG_URL_TEST` DB; 76 pass. Follow-ups: pinned seed, authed-recruitment goldens — see Phase 0 Implementation log) |
 | 1 Security + cross-cutting | **small** | low | **highest** | 🔧 3 fixes — **partially landed 2026-08-31** (1a/1b/1c/1e-core/1g/1h + 1d-partial done & tested; 1d-full/1e-pino/1f/1i/1a-admin deferred — see Phase 1 Implementation log) |
 | 2 Shared kernel | small | low | prerequisite | ✅ — **landed 2026-09-01** (`modules/_shared/` + `differential.test.js`; 85 pass; no route touched). Plus standalone follow-ups: **1f wiring** + **1e-pino** done. Remaining: `store.js` deprecation notice. See Phase 2 Implementation log. |
-| 3 Identity read-port | medium | medium (auth path) | high | ✅ |
+| 3 Identity read-port | medium | medium (auth path) | high | ✅ — **landed 2026-09-01** (`modules/identity/` + `identity.test.js`; `authGuard` repointed; 91 pass; goldens unchanged. Deferred to P4: `identity_*_cards` views, `employerMiniOf` move — see Phase 3 Implementation log) |
 | 4 Recruitment | large | low (gated off) | template | ✅ |
 | 5 Directory | very large | high (live traffic) | highest perf | ✅ |
 | 6 Identity module | large | high | high | 🔧 1 cleanup |

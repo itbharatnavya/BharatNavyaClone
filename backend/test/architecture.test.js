@@ -15,6 +15,8 @@
  *      interface being migrated away from). New code uses a module repository.
  *   2. No cross-module DEEP import: modules/a/* may import "modules/b" or
  *      "modules/b/index.js" (the public port) — never "modules/b/service/..." etc.
+ *      Exception: `_shared` is the kernel, not a domain module — its leaves
+ *      (`_shared/pool`, `_shared/repository`, …) are importable at any depth.
  *   3. A graduated collection's *.json name never appears in routes/ again (once a
  *      collection is owned by a module, route code must go through that module).
  *   4. No file under modules/a/ references another module's physical tables
@@ -99,6 +101,7 @@ test("modules/ has no cross-module deep imports (only the public port is importa
       if (!abs.startsWith(MODULES_DIR + path.sep)) continue;
       const target = path.relative(MODULES_DIR, abs).split(path.sep)[0];
       if (target === self) continue; // same module: any depth is fine
+      if (target === "_shared") continue; // the kernel is importable at any depth
       const rest = path.relative(path.join(MODULES_DIR, target), abs);
       const isPublicPort = rest === "" || rest === "index" || rest === "index.js";
       if (!isPublicPort) {
