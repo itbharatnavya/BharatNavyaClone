@@ -287,6 +287,126 @@ async function getReviewFeedParties(ids = []) {
   return m;
 }
 
+/* ------------------------------------------------ admin user directory ------ */
+// GET /api/admin/users (routes/admin.js) did `store.all("users.json")` — a full
+// composite hydrate of EVERY user with all 9 child tables — then ran scope / type /
+// status / planTier / featured / q filtering, the 7 summary counts, the createdAt
+// sort and the page slice in JS. `adminUserPage` pushes all of that into two
+// indexed SQL statements (scope+summary; filtered page ids + filtered total); the
+// route then hydrates ONLY the <=100 page ids via `hydrateUsersByIds` and maps
+// them through its own `adminUserRow` (presentation stays in the route).
+// (BACKEND-AUDIT.md Phase 6a — golden-guarded by the 17 admin-users fixtures.)
+
+/** Batch-hydrate the given user ids to full composite docs, in the given order. */
+async function hydrateUsersByIds(ids = []) {
+  return usersStore.hydrateManyByIds(ids);
+}
+
+// LEFT JOINs shared by both statements; every hat test is `<child>.user_id IS [NOT] NULL`.
+const ADMIN_USERS_FROM = `
+  FROM users u
+  LEFT JOIN seller_profiles sp    ON sp.user_id = u.id
+  LEFT JOIN employer_profiles ep  ON ep.user_id = u.id
+  LEFT JOIN candidate_profiles cp ON cp.user_id = u.id`;
+
+function adminScopeSql(scope) {
+  if (scope === "directory") {
+    // isSeller(u) || (!isEmployer(u) && !isCandidate(u))
+    return `(sp.user_id IS NOT NULL OR (ep.user_id IS NULL AND cp.user_id IS NULL))`;
+  }
+  if (scope === "recruitment") {
+    return `(ep.user_id IS NOT NULL OR cp.user_id IS NOT NULL)`;
+  }
+  return `TRUE`; // global
+}
+
+/**
+ * @param {{scope:string,type:string,status?:string,planTier?:string,
+ *          featured?:string,q?:string,page:number,limit:number}} p
+ * @returns {Promise<{pageIds:string[], total:number, summary:object}>}
+ *   `total` is the FILTERED count (for paging); `summary` counts are over the
+ *   SCOPED set before type/status/etc, exactly like the old route.
+ */
+async function adminUserPage(p) {
+  const scopeSql = adminScopeSql(p.scope);
+
+  // --- summary + scoped total (one pass over the scoped population) ----------
+  const summaryRes = await pool.query(
+    `SELECT
+       count(*)::int AS total,
+       count(*) FILTER (WHERE sp.user_id IS NULL AND ep.user_id IS NULL AND cp.user_id IS NULL)::int AS buyers,
+       count(*) FILTER (WHERE sp.user_id IS NOT NULL)::int AS sellers,
+       count(*) FILTER (WHERE ep.user_id IS NOT NULL)::int AS employers,
+       count(*) FILTER (WHERE cp.user_id IS NOT NULL)::int AS candidates,
+       count(*) FILTER (WHERE 'admin' = ANY(u.roles))::int AS admins,
+       count(*) FILTER (WHERE u.status = 'suspended')::int AS suspended
+     ${ADMIN_USERS_FROM}
+     WHERE ${scopeSql}`
+  );
+  const s = summaryRes.rows[0];
+  const summary = {
+    total: s.total,
+    buyers: s.buyers,
+    sellers: s.sellers,
+    employers: s.employers,
+    candidates: s.candidates,
+    admins: s.admins,
+    suspended: s.suspended,
+  };
+
+  // --- filtered page ids + filtered total -----------------------------------
+  const where = [scopeSql];
+  const args = [];
+  const add = (v) => args.push(v) && `$${args.length}`;
+
+  const type = p.type || "all";
+  if (type === "seller") where.push(`sp.user_id IS NOT NULL`);
+  else if (type === "employer") where.push(`ep.user_id IS NOT NULL`);
+  else if (type === "candidate") where.push(`cp.user_id IS NOT NULL`);
+  else if (type === "admin") where.push(`'admin' = ANY(u.roles)`);
+  else if (type === "buyer" || type === "user")
+    where.push(`sp.user_id IS NULL AND ep.user_id IS NULL AND cp.user_id IS NULL`);
+
+  if (p.status && p.status !== "all") {
+    const col = p.scope === "recruitment" ? "ep.status" : "sp.status";
+    where.push(`${col} = ${add(p.status)}`);
+  }
+  if (p.planTier && p.planTier !== "all") {
+    where.push(`sp.user_id IS NOT NULL AND COALESCE(NULLIF(sp.plan_tier, ''), 'free') = ${add(p.planTier)}`);
+  }
+  if (p.featured === "yes" || p.featured === "no") {
+    where.push(`sp.user_id IS NOT NULL AND COALESCE(sp.is_featured_seller, false) = ${add(p.featured === "yes")}`);
+  }
+  if (p.q) {
+    const esc = String(p.q).replace(/[\\%_]/g, "\\$&");
+    const like = add(`%${esc}%`);
+    where.push(
+      `(u.name ILIKE ${like} ESCAPE '\\' OR u.email ILIKE ${like} ESCAPE '\\' OR ` +
+        `u.mobile ILIKE ${like} ESCAPE '\\' OR sp.company_name ILIKE ${like} ESCAPE '\\' OR ` +
+        `ep.company_name ILIKE ${like} ESCAPE '\\' OR cp.headline ILIKE ${like} ESCAPE '\\')`
+    );
+  }
+
+  const limit = add(p.limit);
+  const offset = add((p.page - 1) * p.limit);
+  const pageRes = await pool.query(
+    `WITH filtered AS (
+       SELECT u.id, u.created_at
+       ${ADMIN_USERS_FROM}
+       WHERE ${where.join(" AND ")}
+     )
+     SELECT
+       (SELECT count(*)::int FROM filtered) AS total,
+       (SELECT array_agg(id ORDER BY created_at DESC NULLS LAST, id ASC)
+          FROM (SELECT id, created_at FROM filtered
+                ORDER BY created_at DESC NULLS LAST, id ASC
+                LIMIT ${limit} OFFSET ${offset}) pg) AS page_ids`,
+    args
+  );
+  const row = pageRes.rows[0];
+  return { pageIds: row.page_ids || [], total: row.total, summary };
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -312,5 +432,6 @@ module.exports = {
   getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,
+  hydrateUsersByIds, adminUserPage,
   setEmployerApproval,
 };

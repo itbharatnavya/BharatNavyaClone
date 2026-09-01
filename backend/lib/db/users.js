@@ -383,6 +383,46 @@ function createUsersStore(pool, nextId) {
 
       return rows.map((row) => hydrateFromMaps(row, maps));
     },
+    /**
+     * Batch-hydrate a known set of ids in the SAME 10 queries as all() (1 users +
+     * 9 child = ANY($1)), and return the docs in the ORDER the ids were given —
+     * so a caller that has already filtered/sorted/paged in SQL keeps its order.
+     * Unknown ids are skipped. This is all()'s hydrate half without the full-table
+     * scan; used by the admin user directory (BACKEND-AUDIT.md Phase 6a).
+     */
+    async hydrateManyByIds(ids = []) {
+      const uniq = [...new Set(ids)].filter(Boolean);
+      if (!uniq.length) return [];
+      const res = await pool.query(`SELECT * FROM users WHERE id = ANY($1)`, [uniq]);
+      if (res.rows.length === 0) return [];
+
+      const [sellerRes, locRes, expertRes, csRes, legacyRes, employerRes, candidateRes, eduRes, workRes] = await Promise.all([
+        pool.query(`SELECT * FROM seller_profiles WHERE user_id = ANY($1)`, [uniq]),
+        pool.query(`SELECT * FROM seller_locations WHERE seller_id = ANY($1) ORDER BY seller_id, position ASC`, [uniq]),
+        pool.query(`SELECT * FROM expert_profiles WHERE user_id = ANY($1)`, [uniq]),
+        pool.query(`SELECT * FROM expert_case_studies WHERE expert_id = ANY($1) ORDER BY expert_id, position ASC`, [uniq]),
+        pool.query(`SELECT * FROM user_legacy WHERE user_id = ANY($1)`, [uniq]),
+        pool.query(`SELECT * FROM employer_profiles WHERE user_id = ANY($1)`, [uniq]),
+        pool.query(`SELECT * FROM candidate_profiles WHERE user_id = ANY($1)`, [uniq]),
+        pool.query(`SELECT * FROM candidate_education WHERE candidate_id = ANY($1) ORDER BY candidate_id, position ASC`, [uniq]),
+        pool.query(`SELECT * FROM candidate_work_history WHERE candidate_id = ANY($1) ORDER BY candidate_id, position ASC`, [uniq]),
+      ]);
+
+      const maps = {
+        sellerByUser: new Map(sellerRes.rows.map((r) => [r.user_id, r])),
+        locationsBySeller: groupBy(locRes.rows, "seller_id"),
+        expertByUser: new Map(expertRes.rows.map((r) => [r.user_id, r])),
+        caseStudiesByExpert: groupBy(csRes.rows, "expert_id"),
+        legacyByUser: new Map(legacyRes.rows.map((r) => [r.user_id, r])),
+        employerByUser: new Map(employerRes.rows.map((r) => [r.user_id, r])),
+        candidateByUser: new Map(candidateRes.rows.map((r) => [r.user_id, r])),
+        educationByCandidate: groupBy(eduRes.rows, "candidate_id"),
+        workHistoryByCandidate: groupBy(workRes.rows, "candidate_id"),
+      };
+
+      const byId = new Map(res.rows.map((row) => [row.id, hydrateFromMaps(row, maps)]));
+      return uniq.map((id) => byId.get(id)).filter(Boolean);
+    },
     async findOne(predicate) {
       const rows = await this.all();
       return rows.find(predicate) || null;

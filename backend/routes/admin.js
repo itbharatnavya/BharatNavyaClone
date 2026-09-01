@@ -12,6 +12,7 @@
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 // Auth + admin role for every endpoint below.
@@ -198,70 +199,22 @@ router.get("/users", async (req, res, next) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    const all = await store.all("users.json");
-
-    // 1. Scope — the base population for this product.
-    let scoped = all;
-    if (scope === "directory") {
-      scoped = all.filter((u) => isSeller(u) || (!isEmployer(u) && !isCandidate(u)));
-    } else if (scope === "recruitment") {
-      scoped = all.filter((u) => isEmployer(u) || isCandidate(u));
-    }
-
-    // Counts are over the scoped set, before the type filter (so the tab badges
-    // stay stable as you switch tabs).
-    const summary = {
-      total: scoped.length,
-      buyers: scoped.filter((u) => !isSeller(u) && !isEmployer(u) && !isCandidate(u)).length,
-      sellers: scoped.filter(isSeller).length,
-      employers: scoped.filter(isEmployer).length,
-      candidates: scoped.filter(isCandidate).length,
-      admins: scoped.filter(isAdminUser).length,
-      suspended: scoped.filter((u) => acctStatus(u) === "suspended").length,
-    };
-
-    // 2. Type — one hat.
-    let list = scoped;
-    if (type === "seller") list = list.filter(isSeller);
-    else if (type === "employer") list = list.filter(isEmployer);
-    else if (type === "candidate") list = list.filter(isCandidate);
-    else if (type === "admin") list = list.filter(isAdminUser);
-    else if (type === "buyer" || type === "user")
-      list = list.filter((u) => !isSeller(u) && !isEmployer(u) && !isCandidate(u));
-
-    // 3. Approval status — sellerProfile.status, or employerProfile.status in
-    // recruitment scope. Candidates have no status, so this simply excludes them.
-    if (status && status !== "all") {
-      const key = scope === "recruitment" ? "employerProfile" : "sellerProfile";
-      list = list.filter((u) => u[key] && u[key].status === status);
-    }
-
-    if (planTier && planTier !== "all") {
-      list = list.filter((u) => isSeller(u) && (u.sellerProfile.planTier || "free") === planTier);
-    }
-    if (featured === "yes" || featured === "no") {
-      const want = featured === "yes";
-      list = list.filter((u) => isSeller(u) && !!u.sellerProfile.isFeaturedSeller === want);
-    }
-
-    if (q) {
-      list = list.filter(
-        (u) =>
-          (u.name || "").toLowerCase().includes(q) ||
-          (u.email || "").toLowerCase().includes(q) ||
-          (u.mobile || "").toLowerCase().includes(q) ||
-          (u.sellerProfile?.companyName || "").toLowerCase().includes(q) ||
-          (u.employerProfile?.companyName || "").toLowerCase().includes(q) ||
-          (u.candidateProfile?.headline || "").toLowerCase().includes(q)
-      );
-    }
-
-    list = list.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-
-    const total = list.length;
+    // Phase 6a: scope / type / status / planTier / featured / q filtering, the 7
+    // summary counts, the createdAt sort and the page slice all run as indexed SQL
+    // in identity.adminUserPage (was a full composite hydrate of every user + a JS
+    // pipeline). Only the <=100 page ids are then hydrated + mapped to rows here.
+    const { pageIds, total, summary } = await identity.adminUserPage({
+      scope,
+      type,
+      status,
+      planTier,
+      featured,
+      q,
+      page,
+      limit,
+    });
     const totalPages = Math.max(1, Math.ceil(total / limit));
-    const start = (page - 1) * limit;
-    const items = list.slice(start, start + limit).map(adminUserRow);
+    const items = (await identity.hydrateUsersByIds(pageIds)).map(adminUserRow);
 
     return res.json({ success: true, data: { items, total, page, totalPages, summary } });
   } catch (err) {
