@@ -407,6 +407,33 @@ async function adminUserPage(p) {
   return { pageIds: row.page_ids || [], total: row.total, summary };
 }
 
+/* ---------------------------------------------- public profile by slug ------ */
+// routes/users.js's GET /api/sellers/:slug and GET /api/employers/:slug did
+// `store.findOne("users.json", u => u.<profile>.slug === slug)` — a full composite
+// hydrate of EVERY user just to find one by a slug that lives on the profile
+// child table. `<profile>_profiles.slug` is `UNIQUE NOT NULL` and indexed, so this
+// is one index probe + a single-id composite hydrate. (BACKEND-AUDIT.md Phase 6b.)
+
+async function getSellerBySlug(slug) {
+  const { rows } = await pool.query(
+    `SELECT user_id FROM seller_profiles WHERE slug = $1`,
+    [slug]
+  );
+  if (!rows[0]) return null;
+  const [doc] = await usersStore.hydrateManyByIds([rows[0].user_id]);
+  return doc || null;
+}
+
+async function getEmployerBySlug(slug) {
+  const { rows } = await pool.query(
+    `SELECT user_id FROM employer_profiles WHERE slug = $1`,
+    [slug]
+  );
+  if (!rows[0]) return null;
+  const [doc] = await usersStore.hydrateManyByIds([rows[0].user_id]);
+  return doc || null;
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -433,5 +460,6 @@ module.exports = {
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,
   hydrateUsersByIds, adminUserPage,
+  getSellerBySlug, getEmployerBySlug,
   setEmployerApproval,
 };

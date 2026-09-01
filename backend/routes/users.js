@@ -10,6 +10,7 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { coordsForCity } = require("../lib/geo");
 const { deriveBadges } = require("../lib/badges");
@@ -263,10 +264,9 @@ router.get("/sellers/featured", async (req, res, next) => {
 router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const user = await store.findOne(
-      "users.json",
-      (u) => u.sellerProfile && u.sellerProfile.slug === slug
-    );
+    // Phase 6b: indexed seller_profiles.slug probe + single-id hydrate, was a
+    // store.findOne full composite scan of every user.
+    const user = await identity.getSellerBySlug(slug);
     if (!user || !user.sellerProfile) {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
@@ -860,10 +860,8 @@ router.put("/me/candidate", authGuard, async (req, res, next) => {
 // server-side gating shape as GET /sellers/:slug (never client-side-only, CLAUDE.md §2).
 router.get("/employers/:slug", optionalAuth, async (req, res, next) => {
   try {
-    const user = await store.findOne(
-      "users.json",
-      (u) => u.employerProfile && u.employerProfile.slug === req.params.slug
-    );
+    // Phase 6b: indexed employer_profiles.slug probe + single-id hydrate.
+    const user = await identity.getEmployerBySlug(req.params.slug);
     if (!user || !user.employerProfile) {
       return res.status(404).json({ success: false, error: "Employer not found" });
     }
