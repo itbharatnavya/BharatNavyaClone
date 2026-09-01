@@ -351,6 +351,30 @@ router.put("/sellers/:id/monetization", async (req, res, next) => {
   }
 });
 
+/* ------------------------------------------------------------------------- *
+ * Admin write allowlists (BACKEND-AUDIT.md S1 / 1a-admin). These handlers used
+ * to `{...req.body}` straight into store.insert/update — a mass-assignment
+ * surface: a caller could set `id`, `createdAt`, or any other mapped column the
+ * admin form never means to touch. `pick` keeps only the named fields; every
+ * list below is exactly (mapped columns − id − timestamps).
+ * ------------------------------------------------------------------------- */
+const pick = (body, keys) => {
+  const out = {};
+  for (const k of keys) if (body && body[k] !== undefined) out[k] = body[k];
+  return out;
+};
+
+const PLAN_FIELDS = [
+  "name", "tier", "billingCycle", "listingLimit", "leadQuotaPerCycle",
+  "featuredCreditsPerCycle", "rankBoostBaseline", "verifiedBadgeIncluded",
+  "analyticsEnabled", "perLeadPrice", "tierRank",
+];
+const AD_SLOT_FIELDS = ["name", "placementType", "defaultSize", "isActive"];
+const PAYMENT_FIELDS = [
+  "sellerId", "relatedEntityType", "relatedEntityId", "amount", "paymentMethod",
+  "paymentStatus", "validFrom", "validTo", "referenceNo", "notes", "markedPaidDate",
+];
+
 /* =================================================== subscription plans ===== */
 router.get("/plans", async (req, res, next) => {
   try {
@@ -362,7 +386,11 @@ router.get("/plans", async (req, res, next) => {
 
 router.post("/plans", async (req, res, next) => {
   try {
-    const created = await store.insert("subscription-plans.json", { billingCycle: "monthly", ...(req.body || {}) }, "plan");
+    const created = await store.insert(
+      "subscription-plans.json",
+      { billingCycle: "monthly", ...pick(req.body || {}, PLAN_FIELDS) },
+      "plan"
+    );
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -371,7 +399,7 @@ router.post("/plans", async (req, res, next) => {
 
 router.put("/plans/:id", async (req, res, next) => {
   try {
-    const updated = await store.update("subscription-plans.json", req.params.id, req.body || {});
+    const updated = await store.update("subscription-plans.json", req.params.id, pick(req.body || {}, PLAN_FIELDS));
     if (!updated) return res.status(404).json({ success: false, error: "Plan not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -390,7 +418,11 @@ router.get("/ad-slots", async (req, res, next) => {
 
 router.post("/ad-slots", async (req, res, next) => {
   try {
-    const created = await store.insert("ad-slots.json", { isActive: true, ...(req.body || {}) }, "slot");
+    const created = await store.insert(
+      "ad-slots.json",
+      { isActive: true, ...pick(req.body || {}, AD_SLOT_FIELDS) },
+      "slot"
+    );
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -399,7 +431,7 @@ router.post("/ad-slots", async (req, res, next) => {
 
 router.put("/ad-slots/:id", async (req, res, next) => {
   try {
-    const updated = await store.update("ad-slots.json", req.params.id, req.body || {});
+    const updated = await store.update("ad-slots.json", req.params.id, pick(req.body || {}, AD_SLOT_FIELDS));
     if (!updated) return res.status(404).json({ success: false, error: "Ad slot not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -566,7 +598,7 @@ router.post("/payments", async (req, res, next) => {
 // PUT /payments/:id — mark paid/waived (or edit). Stamps markedPaidDate on settle.
 router.put("/payments/:id", async (req, res, next) => {
   try {
-    const patch = { ...(req.body || {}) };
+    const patch = pick(req.body || {}, PAYMENT_FIELDS);
     if ((patch.paymentStatus === "paid" || patch.paymentStatus === "waived") && !patch.markedPaidDate) {
       patch.markedPaidDate = new Date().toISOString();
     }
