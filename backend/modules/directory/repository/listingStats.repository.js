@@ -3,10 +3,13 @@
  * Directory taxonomy pages (BACKEND-AUDIT.md Phase 5a).
  *
  * `listings` is the composite collection (lib/db/listings.js) and does NOT graduate
- * here — this is a READ, and reads may straddle (BACKEND-AUDIT.md "Collection-level
- * atomic graduation"). It replaces routes/categories.js's `store.all("listings.json")`
- * + JS computeListingCounts() — a full composite-table scan plus a JS pass on every
- * request to /api/categories (a homepage-hot endpoint) — with one GROUP BY.
+ * here — these are READS, and reads may straddle (BACKEND-AUDIT.md "Collection-level
+ * atomic graduation"). `listingCountsByCategory` replaces routes/categories.js's
+ * `store.all("listings.json")` + JS computeListingCounts() — a full composite-table
+ * scan plus a JS pass on every request to /api/categories (a homepage-hot endpoint)
+ * — with one GROUP BY. `firstListingImageBySeller` replaces routes/reviews.js's
+ * `store.all("listings.json")` (whole composite hydrate of every listing) done just
+ * to pick one representative photo per seller for the homepage "Recent Activity" feed.
  */
 
 const { pool } = require("../../_shared/pool");
@@ -39,4 +42,27 @@ async function listingCountsByCategory() {
   return new Map(rows.map((r) => [r.cat_id, r.n]));
 }
 
-module.exports = { listingCountsByCategory };
+/**
+ * firstListingImageBySeller(sellerIds) -> Promise<Map<sellerId, url|null>>
+ *
+ * The representative photo for a seller: the FIRST media url (lowest `position`) of
+ * that seller's LOWEST-id listing that has any media — regardless of listing status,
+ * matching the old JS `listings.find(l => l.sellerId === id && l.media && l.media[0])`
+ * over the id-ASC `store.all("listings.json")`. Sellers with no media-bearing listing
+ * are simply absent from the map (caller falls back to coverImage/logo).
+ */
+async function firstListingImageBySeller(sellerIds = []) {
+  const uniq = [...new Set(sellerIds)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT DISTINCT ON (l.seller_id) l.seller_id, m.url
+       FROM listings l
+       JOIN listing_media m ON m.listing_id = l.id
+      WHERE l.seller_id = ANY($1)
+      ORDER BY l.seller_id, l.id ASC, m.position ASC`,
+    [uniq]
+  );
+  return new Map(rows.map((r) => [r.seller_id, r.url || null]));
+}
+
+module.exports = { listingCountsByCategory, firstListingImageBySeller };

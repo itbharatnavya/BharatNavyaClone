@@ -217,6 +217,76 @@ async function getSellerPriorityTiers(ids = []) {
   return new Map(rows.map((r) => [r.user_id, r.priority_tier || "none"]));
 }
 
+/* ------------------------------------------------ homepage review feeds ----- */
+// Targeted read for routes/reviews.js's GET /recent + GET /recruitment-recent
+// (BACKEND-AUDIT.md Phase 5 loose end). Those feeds did `store.all("users.json")`
+// — a full composite hydrate of EVERY user (9 child tables) — to look up, per
+// review, the reviewed seller's / employer's public business fields plus the
+// reviewer's name/avatar. One `WHERE id = ANY($1)` over just the ids the feed
+// touches, returning only the columns those two handlers read.
+
+/**
+ * Map<userId, party> for the ids given. `party` carries:
+ *   { id, name, avatarUrl, mobile, city,
+ *     sellerProfile: { companyName, slug, logo, coverImage, contactMobile,
+ *                      location:{ city } } | null,
+ *     employerProfile: { companyName, slug, logo } | null }
+ * LEFT JOINs — a user with neither profile still resolves (both null), matching
+ * the old `usersById.get(id)` + `seller.sellerProfile` / `employer.employerProfile`
+ * truthiness gate.
+ */
+async function getReviewFeedParties(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT u.id, u.name, u.avatar_url, u.mobile, u.city,
+            sp.user_id        AS sp_uid,
+            sp.company_name    AS sp_company,
+            sp.slug            AS sp_slug,
+            sp.logo            AS sp_logo,
+            sp.cover_image     AS sp_cover,
+            sp.contact_mobile  AS sp_contact_mobile,
+            sp.location_city   AS sp_city,
+            ep.user_id        AS ep_uid,
+            ep.company_name    AS ep_company,
+            ep.slug            AS ep_slug,
+            ep.logo            AS ep_logo
+       FROM users u
+       LEFT JOIN seller_profiles sp ON sp.user_id = u.id
+       LEFT JOIN employer_profiles ep ON ep.user_id = u.id
+      WHERE u.id = ANY($1)`,
+    [uniq]
+  );
+  const m = new Map();
+  for (const r of rows) {
+    m.set(r.id, {
+      id: r.id,
+      name: r.name || null,
+      avatarUrl: r.avatar_url || null,
+      mobile: r.mobile || null,
+      city: r.city || null,
+      sellerProfile: r.sp_uid
+        ? {
+            companyName: r.sp_company || null,
+            slug: r.sp_slug || null,
+            logo: r.sp_logo || null,
+            coverImage: r.sp_cover || null,
+            contactMobile: r.sp_contact_mobile || null,
+            location: { city: r.sp_city || null },
+          }
+        : null,
+      employerProfile: r.ep_uid
+        ? {
+            companyName: r.ep_company || null,
+            slug: r.ep_slug || null,
+            logo: r.ep_logo || null,
+          }
+        : null,
+    });
+  }
+  return m;
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -241,5 +311,6 @@ module.exports = {
   getCandidateCard, getCandidateCards,
   getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
   getSellerCompanyNames, getAccountCards,
+  getReviewFeedParties,
   setEmployerApproval,
 };

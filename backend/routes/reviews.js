@@ -16,13 +16,16 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const directory = require("../modules/directory");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 const { recomputeSellerRating } = require("../lib/sellerRating");
 
-// Phase 5b: reviews.json writes (POST /) + the per-user lookups go through
-// modules/directory `reviewsRepo` (criteria grammar → SQL), not the predicate
-// store. The homepage aggregation reads (/recent, /recruitment-recent) still join
-// users/listings via `store` — reads may straddle until those collections graduate.
+// Phase 5b: reviews.json reads/writes go through modules/directory `reviewsRepo`
+// (criteria grammar → SQL), not the predicate store. Phase 5 loose end: the two
+// homepage feeds (/recent, /recruitment-recent) no longer `store.all("users.json")`
+// / `store.all("listings.json")` either — the reviewed party's public fields come
+// from `identity.getReviewFeedParties` and the representative photo from
+// `directory.firstListingImageBySeller`, both keyed on just the ids the feed touches.
 const reviewsRepo = directory.reviewsRepo;
 
 // Recognized review directions; anything else defaults to buyer_to_seller.
@@ -53,31 +56,37 @@ router.get("/recent", async (req, res, next) => {
     const limit = Math.max(1, Math.min(20, parseInt(req.query.limit, 10) || 6));
     const city = req.query.city ? String(req.query.city).trim().toLowerCase() : null;
 
-    const [reviews, users, listings] = await Promise.all([
-      store.all("reviews.json"),
-      store.all("users.json"),
-      store.all("listings.json"),
-    ]);
-    const usersById = new Map(users.map((u) => [u.id, u]));
-
+    const reviews = await reviewsRepo.findMany({ where: { status: "approved" } });
     const approved = reviews
-      .filter((r) => r.status === "approved" && contextOf(r) === "directory")
+      .filter((r) => contextOf(r) === "directory")
       .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+
+    // Only the parties these reviews reference, not every user.
+    const partyById = await identity.getReviewFeedParties(
+      approved.flatMap((r) => [r.targetUserId, r.buyerId])
+    );
+    // One representative photo per seller that actually has a business profile.
+    const imageBySeller = await directory.firstListingImageBySeller(
+      approved
+        .map((r) => r.targetUserId)
+        .filter((id) => {
+          const p = partyById.get(id);
+          return p && p.sellerProfile;
+        })
+    );
 
     const out = [];
     for (const r of approved) {
       if (out.length >= limit) break;
-      const seller = usersById.get(r.targetUserId);
+      const seller = partyById.get(r.targetUserId);
       const sp = seller && seller.sellerProfile;
       if (!sp) continue; // only show reviews of real sellers with a business profile
 
       const sellerCity = (sp.location && sp.location.city) || seller.city || "";
       if (city && !sellerCity.toLowerCase().includes(city)) continue;
 
-      const buyer = usersById.get(r.buyerId);
-      const sellerListing = listings.find((l) => l.sellerId === seller.id && l.media && l.media[0]);
-      const image =
-        (sellerListing && sellerListing.media[0].url) || sp.coverImage || sp.logo || null;
+      const buyer = partyById.get(r.buyerId);
+      const image = imageBySeller.get(seller.id) || sp.coverImage || sp.logo || null;
 
       out.push({
         reviewId: r.id,
@@ -112,21 +121,19 @@ router.get("/recruitment-recent", async (req, res, next) => {
   try {
     const limit = Math.max(1, Math.min(12, parseInt(req.query.limit, 10) || 6));
 
-    const [reviews, users] = await Promise.all([
-      store.all("reviews.json"),
-      store.all("users.json"),
-    ]);
-    const usersById = new Map(users.map((u) => [u.id, u]));
-
+    const reviews = await reviewsRepo.findMany({ where: { status: "approved" } });
     const approved = reviews
       .filter(
         (r) =>
-          r.status === "approved" &&
           contextOf(r) === "recruitment" &&
           typeof r.reviewText === "string" &&
           r.reviewText.trim()
       )
       .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+
+    const partyById = await identity.getReviewFeedParties(
+      approved.flatMap((r) => [r.targetUserId, r.buyerId])
+    );
 
     const out = [];
     const seenCompanies = new Set();
@@ -134,12 +141,12 @@ router.get("/recruitment-recent", async (req, res, next) => {
       if (out.length >= limit) break;
       const companyId = r.targetUserId;
       if (!companyId || seenCompanies.has(companyId)) continue;
-      const employer = usersById.get(companyId);
+      const employer = partyById.get(companyId);
       const ep = employer && employer.employerProfile;
       if (!ep) continue; // only reviews of real employers with a company profile
 
       seenCompanies.add(companyId);
-      const buyer = usersById.get(r.buyerId);
+      const buyer = partyById.get(r.buyerId);
       out.push({
         reviewId: r.id,
         rating: r.rating,

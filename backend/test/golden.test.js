@@ -69,6 +69,8 @@ test("golden fixtures", async (t) => {
   await golden(t, "sellers-featured", (r) => r.get("/api/sellers/featured"));
   await golden(t, "seller-detail", (r) => r.get(`/api/sellers/${FIX.sellerSlug}`));
   await golden(t, "reviews-for-seller", (r) => r.get(`/api/reviews?targetUserId=${FIX.reviewTarget}&context=directory`));
+  await golden(t, "reviews-recent", (r) => r.get("/api/reviews/recent"));
+  await golden(t, "reviews-recruitment-recent", (r) => r.get("/api/reviews/recruitment-recent"));
 
   /* --------------------------------------------- public Recruitment reads -- */
   await golden(t, "job-functions", (r) => r.get("/api/job-functions"));

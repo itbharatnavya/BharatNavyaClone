@@ -8,13 +8,17 @@
  * layers fill in as categories -> reviews/inquiries -> listings graduate.
  */
 
-const { listingCountsByCategory } = require("./repository/listingStats.repository");
+const {
+  listingCountsByCategory,
+  firstListingImageBySeller,
+} = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
 const reviewsRepo = require("./repository/review.repository");
 
 module.exports = {
   listingCountsByCategory,
+  firstListingImageBySeller,
   bumpListingViews,
   activeBrandedListingsLean,
   reviewsRepo,
