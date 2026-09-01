@@ -33,6 +33,8 @@ const {
   jobMiniOf,
   // policy.js
   canViewApplication,
+  // repository (Phase 4d) — jobs writer must use the repo (atomic graduation)
+  jobsRepo,
 } = require("../modules/recruitment");
 
 /* --------------------------------------------------------- POST / ---------- */
@@ -141,10 +143,10 @@ router.post("/", authGuard, async (req, res, next) => {
       throw err;
     }
 
-    // Fire-and-forget: bump the job's applicationCount and notify the employer. Neither
-    // failure should fail the application itself — mirrors notifySellerOfLead's
-    // best-effort shape in routes/inquiries.js.
-    store.update("jobs.json", jobId, { applicationCount: (job.applicationCount || 0) + 1 }).catch(() => {});
+    // Fire-and-forget: bump the job's applicationCount (Phase 4d — atomic increment,
+    // closes the C2 lost-update race) and notify the employer. Neither failure should
+    // fail the application itself — mirrors notifySellerOfLead's best-effort shape.
+    jobsRepo.incrementById(jobId, "applicationCount", 1).catch(() => {});
     createNotification(job.employerId, "new_application", {
       jobId,
       jobTitle: job.title,

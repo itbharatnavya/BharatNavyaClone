@@ -10,7 +10,7 @@
  * lib/jobSearch.js and physically move in 4d (when they flip off the predicate store).
  */
 
-const { searchJobs, employerMiniOf } = require("../../lib/jobSearch"); // moves in 4d
+const { searchJobs, employerMiniOf } = require("../../lib/jobSearch"); // moves in 4e
 const {
   candidateProfileGaps,
   employerProfileGaps,
@@ -18,12 +18,14 @@ const {
 const jobService = require("./service/job.service");
 const applicationService = require("./service/application.service");
 const policy = require("./policy");
+const jobsRepo = require("./repository/job.repository");
 
 module.exports = {
   searchJobs,
   employerMiniOf,
   candidateProfileGaps,
   employerProfileGaps,
+  jobsRepo,
   ...jobService,
   ...applicationService,
   ...policy,

@@ -15,22 +15,23 @@
  * other route file (CLAUDE.md §5).
  *
  * Deliberately separate from routes/listings.js — see RECRUITMENT.md §1 ("separate
- * collections, not listings.json reuse"). Query pattern (fetch via store.findMany,
- * filter/paginate in JS) matches Directory's own current approach; SQL-level
- * WHERE-pushdown is deferred the same way it is for Directory (POSTGRES-MIGRATION.md) —
- * the schema ships fully indexed (schema-migrations/0002_add_recruitment_tables.sql) so
- * that pass is cheap whenever it happens.
+ * collections, not listings.json reuse").
+ *
+ * Phase 4d: the CRUD paths (/mine, /:id, POST, PUT, DELETE) run through
+ * modules/recruitment `jobsRepo` (criteria-grammar repository over the `jobs` table),
+ * not the predicate store. The public browse (GET /) still goes through
+ * lib/jobSearch.js's in-JS match+sort — its predicate→SQL rewrite is Phase 4e.
  */
 
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
+const identity = require("../modules/identity");
 const {
   searchJobs,
-  employerMiniOf,
   employerProfileGaps,
+  jobsRepo,
   // job.service.js — validation/normalization (Phase 4b extraction)
   VALID_JOB_STATUSES,
   VALID_EMPLOYMENT_TYPES,
@@ -87,8 +88,11 @@ router.get("/", async (req, res, next) => {
 
 router.get("/mine", authGuard, async (req, res, next) => {
   try {
-    const jobs = await store.findMany("jobs.json", (j) => j.employerId === req.user.id);
-    jobs.sort((a, b) => (Date.parse(b.postedAt) || 0) - (Date.parse(a.postedAt) || 0));
+    // Phase 4d: repository criteria + ORDER BY replace store.findMany(predicate) + a
+    // JS sort. `-postedAt` compiles to `posted_at DESC NULLS LAST, id ASC` — proven
+    // row-identical to the old `Date.parse(b.postedAt)||0 - …` sort in
+    // test/differential.test.js.
+    const jobs = await jobsRepo.findMany({ where: { employerId: req.user.id }, orderBy: "-postedAt" });
     return res.json({ success: true, data: { jobs } });
   } catch (err) {
     next(err);
@@ -99,18 +103,20 @@ router.get("/mine", authGuard, async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const job = await store.getById("jobs.json", req.params.id);
+    const job = await jobsRepo.findById(req.params.id);
     if (!job) {
       return res.status(404).json({ success: false, error: "Job not found" });
     }
-    // Fire-and-forget view-count increment — same non-atomic-merge tradeoff Directory's
-    // listing view-count increment already has under Postgres (no SELECT..FOR UPDATE);
-    // acceptable here for the same reason it's acceptable there (view counts are a
-    // display metric, not a billing input). See CLAUDE.md §5.
-    store.update("jobs.json", job.id, { viewCount: (job.viewCount || 0) + 1 }).catch(() => {});
+    // Fire-and-forget view-count bump — now an ATOMIC increment (Phase 4d), which
+    // closes the lost-update race (finding C2) that the old read-modify-write
+    // `{ viewCount: (job.viewCount||0)+1 }` had. Still fire-and-forget: view counts
+    // are a display metric, not a billing input (CLAUDE.md §5).
+    jobsRepo.incrementById(job.id, "viewCount", 1).catch(() => {});
 
-    const employer = await store.getById("users.json", job.employerId);
-    return res.json({ success: true, data: { ...job, employer: employerMiniOf(employer) } });
+    // Employer mini-info via the identity port (Phase 3) — same shape as the old
+    // employerMiniOf(store.getById("users.json", …)).
+    const employer = await identity.getEmployerCard(job.employerId);
+    return res.json({ success: true, data: { ...job, employer } });
   } catch (err) {
     next(err);
   }
@@ -177,7 +183,7 @@ router.post("/", authGuard, async (req, res, next) => {
       qualification: b.qualification ? String(b.qualification).trim() : null,
     };
 
-    const inserted = await store.insert("jobs.json", job, "job");
+    const inserted = await jobsRepo.insert(job, "job");
     return res.status(201).json({ success: true, data: inserted });
   } catch (err) {
     next(err);
@@ -188,7 +194,7 @@ router.post("/", authGuard, async (req, res, next) => {
 
 router.put("/:id", authGuard, validateBody(updateJobSchema), async (req, res, next) => {
   try {
-    const job = await store.getById("jobs.json", req.params.id);
+    const job = await jobsRepo.findById(req.params.id);
     if (!job) {
       return res.status(404).json({ success: false, error: "Job not found" });
     }
@@ -219,7 +225,7 @@ router.put("/:id", authGuard, validateBody(updateJobSchema), async (req, res, ne
     if (patch.benefits !== undefined) patch.benefits = normalizeStringList(patch.benefits, 30);
     if (patch.questions !== undefined) patch.questions = normalizeQuestions(patch.questions);
 
-    const updated = await store.update("jobs.json", req.params.id, patch);
+    const updated = await jobsRepo.updateById(req.params.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -230,14 +236,14 @@ router.put("/:id", authGuard, validateBody(updateJobSchema), async (req, res, ne
 
 router.delete("/:id", authGuard, async (req, res, next) => {
   try {
-    const job = await store.getById("jobs.json", req.params.id);
+    const job = await jobsRepo.findById(req.params.id);
     if (!job) {
       return res.status(404).json({ success: false, error: "Job not found" });
     }
     if (!isJobOwnerOrAdmin(req.user, job)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    await store.remove("jobs.json", req.params.id);
+    await jobsRepo.deleteById(req.params.id);
     return res.json({ success: true, data: { id: req.params.id } });
   } catch (err) {
     next(err);
