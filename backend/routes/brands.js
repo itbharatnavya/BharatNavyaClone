@@ -15,6 +15,8 @@
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 
 // Same slug rules as the taxonomy (see routes/adminCategories.js): lowercase,
 // & → "and", any run of non-alphanumerics → single dash, trimmed.
@@ -56,25 +58,6 @@ function topSlugOf(listing, catById, catBySlug) {
     return listing.categoryPath[0];
   }
   return null;
-}
-
-/** Flat seller mini-object for cards (mirrors routes/listings.js). */
-function sellerMini(user) {
-  if (!user) return null;
-  const sp = user.sellerProfile || {};
-  return {
-    id: user.id,
-    name: user.name,
-    companyName: sp.companyName || user.name || null,
-    slug: sp.slug || null,
-    city: (sp.location && sp.location.city) || null,
-    state: (sp.location && sp.location.state) || null,
-    logo: sp.logo || user.avatarUrl || null,
-    isVerified: !!sp.isVerified,
-    rating: sp.rating ?? 0,
-    reviewCount: sp.reviewCount ?? 0,
-    responseRate: sp.responseRate ?? 0,
-  };
 }
 
 /**
@@ -139,8 +122,10 @@ router.get("/", async (req, res, next) => {
   try {
     const categorySlug = req.query.category ? String(req.query.category) : "";
 
+    // Phase 5f: LEAN active-branded-listing rows (one indexed JOIN) instead of
+    // store.all("listings.json") (the full composite hydrate of every listing).
     const [listings, categories] = await Promise.all([
-      store.all("listings.json"),
+      directory.activeBrandedListingsLean(),
       store.all("categories.json"),
     ]);
 
@@ -152,46 +137,42 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-function computeBrandDetail(wanted, listings, users) {
-  const matches = listings.filter(
-    (l) => l && l.status === "active" && brandOf(l) && slugify(brandOf(l)) === wanted
-  );
-  if (matches.length === 0) return null;
-
-  // Canonical display name = the actual brand string on the listings.
-  const name = brandOf(matches[0]);
-  const userById = new Map(users.map((u) => [u.id, u]));
-
-  const enriched = matches
-    .map((l) => ({ ...l, seller: sellerMini(userById.get(l.sellerId)) }))
-    .sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0));
-
-  return {
-    brand: { name, slug: slugify(name), count: enriched.length },
-    listings: enriched,
-  };
-}
-
-function getBrandDetail(wanted, listings, users) {
-  return computeBrandDetail(wanted, listings, users);
-}
-
 // GET /:slug — one brand (resolved by slugified name) plus its active listings.
 router.get("/:slug", async (req, res, next) => {
   try {
     const wanted = String(req.params.slug);
 
-    const [listings, users] = await Promise.all([
-      store.all("listings.json"),
-      store.all("users.json"),
-    ]);
-
-    const data = getBrandDetail(wanted, listings, users);
-    if (!data) {
+    // Phase 5f: lean-scan active branded listings to find this brand's ids (slugify
+    // is JS, not SQL-expressible), then hydrate only the matches. sellerMini is
+    // identity.getSellerBrowseCards — the same 11-key shape (proven in 5c-1).
+    const leanRows = await directory.activeBrandedListingsLean();
+    const matchedLean = leanRows.filter((l) => brandOf(l) && slugify(brandOf(l)) === wanted);
+    if (matchedLean.length === 0) {
       return res.status(404).json({ success: false, error: "Brand not found" });
     }
 
-    return res.json({ success: true, data });
+    const full = [];
+    for (const lr of matchedLean) {
+      const doc = await store.getById("listings.json", lr.id); // id-ASC order preserved
+      if (doc) full.push(doc);
+    }
+    if (full.length === 0) {
+      return res.status(404).json({ success: false, error: "Brand not found" });
+    }
+
+    const name = brandOf(full[0]);
+    const sellerById = await identity.getSellerBrowseCards(full.map((l) => l.sellerId));
+    const enriched = full
+      .map((l) => ({ ...l, seller: sellerById.get(l.sellerId) || null }))
+      .sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0));
+
+    return res.json({
+      success: true,
+      data: {
+        brand: { name, slug: slugify(name), count: enriched.length },
+        listings: enriched,
+      },
+    });
   } catch (err) {
     next(err);
   }

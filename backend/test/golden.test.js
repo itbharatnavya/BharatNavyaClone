@@ -36,6 +36,7 @@ const FIX = {
   jobFunction: "engineering",
   qFragment: "textile",
   reviewTarget: "usr_s002",  // seed seller with 2 directory reviews
+  brandSlug: "bosch",        // seed brand (15 active listings)
 };
 
 const tokens = {};
@@ -60,6 +61,7 @@ test("golden fixtures", async (t) => {
   await golden(t, "categories", (r) => r.get("/api/categories"));
   await golden(t, "category-detail", (r) => r.get(`/api/categories/${FIX.categorySlug}`));
   await golden(t, "brands", (r) => r.get("/api/brands"));
+  await golden(t, "brand-detail", (r) => r.get(`/api/brands/${FIX.brandSlug}`));
   await golden(t, "collections", (r) => r.get("/api/collections"));
   await golden(t, "listings-browse", (r) => r.get("/api/listings?limit=12"));
   await golden(t, "listings-page2", (r) => r.get("/api/listings?limit=12&page=2"));

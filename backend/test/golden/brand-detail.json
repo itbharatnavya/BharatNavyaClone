@@ -1,0 +1,1377 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "brand": {
+        "count": 15,
+        "name": "Bosch",
+        "slug": "bosch"
+      },
+      "listings": [
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_wet-dry-vacuum-cleaners",
+          "categoryPath": [
+            "tools",
+            "cleaning",
+            "cleaning-equipment",
+            "vacuum-cleaners",
+            "wet-dry-vacuum-cleaners"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Wet & Dry Vacuum Cleaners – Industrial Grade sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00323",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "wet",
+            "dry",
+            "vacuum",
+            "cleaners",
+            "industrial",
+            "grade"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 50,
+            "price": 3275,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-WET-DR-31332",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-wet-dry-vacuum-cleaners",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-wet-dry-vacuum-cleaners-industrial-grade-323",
+          "status": "active",
+          "title": "Bosch Wet & Dry Vacuum Cleaners – Industrial Grade",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_safety-equipment",
+          "categoryPath": [
+            "tools",
+            "safety-equipment"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Safety Equipment – Premium sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00317",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "safety",
+            "equipment",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 8705,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-SAFETY-86041",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-safety-equipment",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-safety-equipment-premium-317",
+          "status": "active",
+          "title": "Bosch Safety Equipment – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_pressure-washers",
+          "categoryPath": [
+            "tools",
+            "cleaning",
+            "cleaning-equipment",
+            "pressure-washers"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Pressure Washers sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00311",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "pressure",
+            "washers"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-1.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-2.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 5,
+            "price": 7260,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-PRESSU-72000",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-pressure-washers",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-pressure-washers-311",
+          "status": "active",
+          "title": "Bosch Pressure Washers",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_power-tools",
+          "categoryPath": [
+            "tools",
+            "power-tools"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Power Tools – Premium sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00310",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "power",
+            "tools",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 5625,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-POWER--55241",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-power-tools",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-power-tools-premium-310",
+          "status": "active",
+          "title": "Bosch Power Tools – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_measuring-instruments",
+          "categoryPath": [
+            "tools",
+            "measuring-instruments"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Measuring Instruments – Industrial Grade sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00308",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "measuring",
+            "instruments",
+            "industrial",
+            "grade"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 7185,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-MEASUR-70432",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-measuring-instruments",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-measuring-instruments-industrial-grade-308",
+          "status": "active",
+          "title": "Bosch Measuring Instruments – Industrial Grade",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_industrial-vacuum-cleaners",
+          "categoryPath": [
+            "tools",
+            "cleaning",
+            "cleaning-equipment",
+            "vacuum-cleaners",
+            "industrial-vacuum-cleaners"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Industrial Vacuum Cleaners – Premium sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00305",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "industrial",
+            "vacuum",
+            "cleaners",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 50,
+            "price": 415,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-INDUST-3141",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-industrial-vacuum-cleaners",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-industrial-vacuum-cleaners-premium-305",
+          "status": "active",
+          "title": "Bosch Industrial Vacuum Cleaners – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_housekeeping-supplies",
+          "categoryPath": [
+            "tools",
+            "cleaning",
+            "housekeeping-supplies"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Housekeeping Supplies sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00302",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "housekeeping",
+            "supplies"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 25,
+            "price": 3730,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-HOUSEK-36700",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-housekeeping-supplies",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-housekeeping-supplies-302",
+          "status": "active",
+          "title": "Bosch Housekeeping Supplies",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_handheld-vacuum-cleaners",
+          "categoryPath": [
+            "tools",
+            "cleaning",
+            "cleaning-equipment",
+            "vacuum-cleaners",
+            "handheld-vacuum-cleaners"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Handheld Vacuum Cleaners – Premium sourced from Meerut Tools & Hardware Depot, Meerut. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00297",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "handheld",
+            "vacuum",
+            "cleaners",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Meerut",
+            "pincode": "",
+            "state": "Uttar Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/industry-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/industry-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 25,
+            "price": 4570,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-HANDHE-44691",
+            "specifications": {
+              "Grade": "Standard",
+              "Packaging": "Export Pack",
+              "Warranty": "2 years"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-handheld-vacuum-cleaners",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Meerut",
+            "companyName": "Meerut Tools & Hardware Depot",
+            "id": "usr_cat_tools",
+            "isVerified": true,
+            "logo": null,
+            "name": "Meerut Tools & Hardware Depot",
+            "rating": 5,
+            "responseRate": 90,
+            "reviewCount": 1,
+            "slug": "meerut-tools-hardware-depot",
+            "state": "Uttar Pradesh"
+          },
+          "sellerId": "usr_cat_tools",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-handheld-vacuum-cleaners-premium-297",
+          "status": "active",
+          "title": "Bosch Handheld Vacuum Cleaners – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_two-wheeler-parts",
+          "categoryPath": [
+            "automotive-parts-accessories",
+            "two-wheeler-parts"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Two-Wheeler Parts – Industrial Grade sourced from Ludhiana AutoParts Traders, Ludhiana. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00173",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "two",
+            "wheeler",
+            "parts",
+            "industrial",
+            "grade"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Ludhiana",
+            "pincode": "",
+            "state": "Punjab"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 1141,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-TWO-WH-9392",
+            "specifications": {
+              "Grade": "Premium",
+              "Packaging": "Carton Pack",
+              "Warranty": "As per brand policy"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-two-wheeler-parts",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Ludhiana",
+            "companyName": "Ludhiana AutoParts Traders",
+            "id": "usr_cat_automotivepartsacces",
+            "isVerified": true,
+            "logo": null,
+            "name": "Ludhiana AutoParts Traders",
+            "rating": 0,
+            "responseRate": 91,
+            "reviewCount": 0,
+            "slug": "ludhiana-autoparts-traders",
+            "state": "Punjab"
+          },
+          "sellerId": "usr_cat_automotivepartsacces",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-two-wheeler-parts-industrial-grade-173",
+          "status": "active",
+          "title": "Bosch Two-Wheeler Parts – Industrial Grade",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_transmission-parts",
+          "categoryPath": [
+            "automotive-parts-accessories",
+            "transmission-parts"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Transmission Parts – Premium sourced from Ludhiana AutoParts Traders, Ludhiana. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00170",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "transmission",
+            "parts",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Ludhiana",
+            "pincode": "",
+            "state": "Punjab"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 6161,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-TRANSM-60001",
+            "specifications": {
+              "Grade": "Premium",
+              "Packaging": "Carton Pack",
+              "Warranty": "As per brand policy"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-transmission-parts",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Ludhiana",
+            "companyName": "Ludhiana AutoParts Traders",
+            "id": "usr_cat_automotivepartsacces",
+            "isVerified": true,
+            "logo": null,
+            "name": "Ludhiana AutoParts Traders",
+            "rating": 0,
+            "responseRate": 91,
+            "reviewCount": 0,
+            "slug": "ludhiana-autoparts-traders",
+            "state": "Punjab"
+          },
+          "sellerId": "usr_cat_automotivepartsacces",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-transmission-parts-premium-170",
+          "status": "active",
+          "title": "Bosch Transmission Parts – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_engine-components",
+          "categoryPath": [
+            "automotive-parts-accessories",
+            "engine-components"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Engine Components – Premium sourced from Ludhiana AutoParts Traders, Ludhiana. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00168",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "engine",
+            "components",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Ludhiana",
+            "pincode": "",
+            "state": "Punjab"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 50,
+            "price": 2231,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-ENGINE-84501",
+            "specifications": {
+              "Grade": "Premium",
+              "Packaging": "Carton Pack",
+              "Warranty": "As per brand policy"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-engine-components",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Ludhiana",
+            "companyName": "Ludhiana AutoParts Traders",
+            "id": "usr_cat_automotivepartsacces",
+            "isVerified": true,
+            "logo": null,
+            "name": "Ludhiana AutoParts Traders",
+            "rating": 0,
+            "responseRate": 91,
+            "reviewCount": 0,
+            "slug": "ludhiana-autoparts-traders",
+            "state": "Punjab"
+          },
+          "sellerId": "usr_cat_automotivepartsacces",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-engine-components-premium-168",
+          "status": "active",
+          "title": "Bosch Engine Components – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_car-accessories",
+          "categoryPath": [
+            "automotive-parts-accessories",
+            "car-accessories"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Car Accessories – Premium sourced from Ludhiana AutoParts Traders, Ludhiana. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00166",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "car",
+            "accessories",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Ludhiana",
+            "pincode": "",
+            "state": "Punjab"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 3681,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-CAR-AC-35201",
+            "specifications": {
+              "Grade": "Premium",
+              "Packaging": "Carton Pack",
+              "Warranty": "As per brand policy"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-car-accessories",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Ludhiana",
+            "companyName": "Ludhiana AutoParts Traders",
+            "id": "usr_cat_automotivepartsacces",
+            "isVerified": true,
+            "logo": null,
+            "name": "Ludhiana AutoParts Traders",
+            "rating": 0,
+            "responseRate": 91,
+            "reviewCount": 0,
+            "slug": "ludhiana-autoparts-traders",
+            "state": "Punjab"
+          },
+          "sellerId": "usr_cat_automotivepartsacces",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-car-accessories-premium-166",
+          "status": "active",
+          "title": "Bosch Car Accessories – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_auto-electricals",
+          "categoryPath": [
+            "automotive-parts-accessories",
+            "auto-electricals"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bosch Auto Electricals sourced from Ludhiana AutoParts Traders, Ludhiana. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00159",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "auto",
+            "electricals"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Ludhiana",
+            "pincode": "",
+            "state": "Punjab"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 25,
+            "price": 1926,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-AUTO-E-18060",
+            "specifications": {
+              "Grade": "Premium",
+              "Packaging": "Carton Pack",
+              "Warranty": "As per brand policy"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "bosch-auto-electricals",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Ludhiana",
+            "companyName": "Ludhiana AutoParts Traders",
+            "id": "usr_cat_automotivepartsacces",
+            "isVerified": true,
+            "logo": null,
+            "name": "Ludhiana AutoParts Traders",
+            "rating": 0,
+            "responseRate": 91,
+            "reviewCount": 0,
+            "slug": "ludhiana-autoparts-traders",
+            "state": "Punjab"
+          },
+          "sellerId": "usr_cat_automotivepartsacces",
+          "service": null,
+          "serviceCities": [],
+          "slug": "bosch-auto-electricals-159",
+          "status": "active",
+          "title": "Bosch Auto Electricals",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_tools",
+          "categoryPath": [
+            "tools"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Cordless Drill Machine 20V. Quality-checked stock available for bulk orders. (demo seed)",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_000017",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "cordless",
+            "drill",
+            "machine",
+            "20v"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Delhi",
+            "state": "Delhi"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/machinery-1.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/machinery-2.jpg"
+            }
+          ],
+          "panIndia": false,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [],
+            "condition": null,
+            "currency": "INR",
+            "leadTime": null,
+            "moq": 5,
+            "price": 3200,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": null,
+            "specifications": {},
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Delhi",
+            "companyName": "Delhi Electronics Hub",
+            "id": "usr_s005",
+            "isVerified": true,
+            "logo": null,
+            "name": "Delhi Electronics Hub",
+            "rating": 4,
+            "responseRate": 94,
+            "reviewCount": 1,
+            "slug": "delhi-electronics-hub",
+            "state": "Delhi"
+          },
+          "sellerId": "usr_s005",
+          "service": null,
+          "serviceCities": [],
+          "slug": "cordless-drill-machine-20v-1300",
+          "status": "active",
+          "title": "Cordless Drill Machine 20V",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_automotive-parts-accessories",
+          "categoryPath": [
+            "automotive-parts-accessories"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Brake Pad Set (Front) — Bosch brand, quality-assured, bulk supply with pan-India delivery.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "usr_pv5c",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bosch",
+            "brake",
+            "pad",
+            "set",
+            "(front)"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Chennai",
+            "pincode": "",
+            "state": "Tamil Nadu"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/automotive-1.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/automotive-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Bosch",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 1250,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-_PV5C",
+            "specifications": {
+              "Material": "Ceramic",
+              "Position": "Front"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "set",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Chennai",
+            "companyName": "AutoZone Parts Hub",
+            "id": "usr_pv5",
+            "isVerified": true,
+            "logo": null,
+            "name": "AutoZone Parts Hub",
+            "rating": 0,
+            "responseRate": 93,
+            "reviewCount": 0,
+            "slug": "autozone-parts-hub",
+            "state": "Tamil Nadu"
+          },
+          "sellerId": "usr_pv5",
+          "service": null,
+          "serviceCities": [],
+          "slug": "brake-pad-set-front-v5c",
+          "status": "active",
+          "title": "Brake Pad Set (Front)",
+          "type": "product",
+          "verification": null,
+          "views": null
+        }
+      ]
+    },
+    "success": true
+  }
+}
