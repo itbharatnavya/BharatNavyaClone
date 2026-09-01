@@ -18,6 +18,7 @@ const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+const { paginationOf } = require("../modules/_shared/pagination");
 
 router.use(authGuard, requireRole("admin"));
 
@@ -26,8 +27,7 @@ const MAX_LIMIT = 100;
 
 router.get("/", async (req, res, next) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT));
+    const { page, limit } = paginationOf(req.query, { defaultLimit: DEFAULT_LIMIT, maxLimit: MAX_LIMIT });
     const status = req.query.status;
     const employerId = req.query.employerId;
     const q = req.query.q ? String(req.query.q).trim().toLowerCase() : "";

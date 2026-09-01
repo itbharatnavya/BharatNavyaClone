@@ -32,7 +32,7 @@ Every finding below was verified by reading the code at the cited line, not infe
 **Still open** (all deferred deliberately — none is an open security hole):
 - **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; multi-process durability not yet in play).
 - **1e-pino** — structured logger + `req.id` + access log. Kernel is in place now; do next.
-- **1f (wiring)** — `_shared/pagination.js` **shipped**; still to do: repoint `routes/jobs.js` + `routes/adminJobs.js` at it and give `GET /api/listings` its first `limit` cap (⚠️ check `getListings` call sites for large `limit` first — C9).
+- ~~**1f (wiring)**~~ — **done 2026-09-01.** `routes/jobs.js` + `routes/adminJobs.js` now call `_shared/pagination.paginationOf`; `GET /api/listings` capped at `MAX_LIMIT = 1000` (above every real caller — admin AdsTab 500, CollectionsTab 200 — so it only rejects abuse-sized `limit`; C9 closed).
 - **2 (tidy)** — physically move `buildFlatConfigs` out of `lib/db/flat.js` into `_shared/mappings/flat.mappings.js` (today it re-exports); expand `differential.test.js` as collections graduate.
 - **1a-admin** — `routes/admin.js` raw-spread writes → allowlist (admin-gated; fold into Phase 6).
 - **1b-CHECK** — DB `CHECK (buyer_id <> target_user_id)` on reviews (needs a migration; Phase 5).
@@ -338,7 +338,7 @@ Live smoke (`node index.js`, curl):
 ### Not done / follow-ups
 
 - Repository wired into **zero routes** — deliberate (graduation starts Phase 3+; reads may straddle, only writes graduate atomically per collection).
-- `_shared/pagination.js` + `_shared/crudRouter.js` shipped but unused.
+- `_shared/crudRouter.js` shipped but unused. (`_shared/pagination.js` is now wired — jobs / adminJobs / listings-cap, 2026-09-01.)
 - `buildFlatConfigs` still physically in `lib/db/flat.js` (re-exported).
 - Still to add (Phase 2 "keeping new code off the old interface"): `lib/store.js` deprecation header, CLAUDE.md §5 "closed to new collections" line, dev-mode `store.findOne/findMany` call-site burn-down logging.
 - **1e-pino** (structured logger + `req.id` + access log) — kernel is ready; do next.

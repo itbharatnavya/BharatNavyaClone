@@ -28,6 +28,7 @@ const router = express.Router();
 const store = require("../lib/store");
 const { authGuard } = require("../middleware/authGuard");
 const { searchJobs, employerMiniOf } = require("../lib/jobSearch");
+const { paginationOf: sharedPaginationOf } = require("../modules/_shared/pagination");
 const { employerProfileGaps } = require("../lib/recruitmentProfile");
 
 const DEFAULT_LIMIT = 12;
@@ -77,10 +78,9 @@ function toBool(v) {
   return v === true || v === "true";
 }
 
-/** Cap + floor a client-supplied page/limit pair. */
+/** Cap + floor a client-supplied page/limit pair (shared helper, modules/_shared). */
 function paginationOf(query) {
-  const page = Math.max(1, parseInt(query.page, 10) || 1);
-  const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(query.limit, 10) || DEFAULT_LIMIT));
+  const { page, limit } = sharedPaginationOf(query, { defaultLimit: DEFAULT_LIMIT, maxLimit: MAX_LIMIT });
   return { page, limit };
 }
 

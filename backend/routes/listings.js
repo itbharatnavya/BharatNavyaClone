@@ -23,6 +23,11 @@ const { verifyListing } = require("../lib/listingVerification");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
 const DEFAULT_LIMIT = 12;
+// First upper bound for GET /api/listings (finding C9 — it was the only paginated
+// route with no cap). Set well above every real caller (admin AdsTab asks for 500,
+// CollectionsTab 200) so this only ever rejects an abuse-sized `limit`, not a
+// legitimate one. Tighten per-route later if a caller is narrowed.
+const MAX_LIMIT = 1000;
 
 // Cap one bulk-catalog upload so a single request can't rewrite listings.json forever.
 const BULK_MAX_ROWS = 200;
@@ -291,7 +296,7 @@ router.get("/", async (req, res, next) => {
     const q = req.query.q ? String(req.query.q) : "";
     const sort = req.query.sort ? String(req.query.sort) : "relevance";
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT);
+    const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_LIMIT));
     const category = req.query.category ? String(req.query.category) : undefined;
 
     // Geo "near me": distance from each listing's city to `near`, optional radius filter.

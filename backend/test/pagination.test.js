@@ -7,9 +7,8 @@
  *   - page 0 / negative        -> clamped to page 1, not an empty result or a crash
  *   - page past the last       -> empty item list, envelope still well-formed
  *   - limit 0                  -> clamped to a sane default, not a 500 / everything
- *   - limit 9999               -> capped (jobs 50, admin 100); listings is the known
- *                                 uncapped case (C9) — asserted as-is so a future cap
- *                                 is a deliberate golden change, not a silent one
+ *   - limit 9999               -> capped (jobs 50, admin 100, listings 1000 — C9 fixed
+ *                                 in the 1f wiring pass)
  *   - DISJOINTNESS: page 1 and page 2 share no ids  <- the assertion that actually
  *     catches a nondeterministic ORDER BY after the SQL migration
  */
@@ -24,7 +23,7 @@ const store = require("../lib/store");
 
 const ENDPOINTS = [
   { name: "GET /api/jobs", base: "/api/jobs", itemsKey: "jobs", limitCap: 50, auth: null },
-  { name: "GET /api/listings", base: "/api/listings", itemsKey: "listings", limitCap: null, auth: null },
+  { name: "GET /api/listings", base: "/api/listings", itemsKey: "listings", limitCap: 1000, auth: null },
   { name: "GET /api/admin/users", base: "/api/admin/users", itemsKey: "items", limitCap: 100, auth: "usr_admin" },
 ];
 
