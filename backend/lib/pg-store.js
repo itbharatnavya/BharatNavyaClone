@@ -5,8 +5,7 @@
  * so most of this file is just routing; see lib/db/schema.sql for the actual tables.
  */
 
-const { Pool } = require("pg");
-const config = require("./config");
+const { pool, ping, close } = require("../modules/_shared/pool");
 const { FlatCollectionStore, buildFlatConfigs } = require("./db/flat");
 const { createUsersStore } = require("./db/users");
 const { createListingsStore } = require("./db/listings");
@@ -15,34 +14,10 @@ const { createLeadsLedgerStore } = require("./db/leads-ledger");
 const { createSearchEventsStore } = require("./db/search-events");
 const { createSettingsStore } = require("./db/settings");
 
-// Pool hardening (BACKEND-AUDIT.md Phase 1 §1e): a hung query can no longer pin a
-// connection forever, a dead DB fails fast instead of hanging the request, and idle
-// clients are recycled. `ssl` is opt-in for managed Postgres that requires TLS.
-const pool = new Pool({
-  connectionString: config.PG_URL,
-  max: 10,
-  statement_timeout: config.PG_STATEMENT_TIMEOUT_MS,
-  connectionTimeoutMillis: config.PG_CONNECT_TIMEOUT_MS,
-  idleTimeoutMillis: config.PG_IDLE_TIMEOUT_MS,
-  ssl: config.PG_SSL ? { rejectUnauthorized: false } : undefined,
-});
-// An error on an idle client (DB restart, network blip) would otherwise crash the
-// process — log it and let the pool replace the client.
-pool.on("error", (err) => {
-  // eslint-disable-next-line no-console
-  console.error("[pg pool] idle client error:", err.message);
-});
+// The pool, its hardening (Phase 1 §1e), and ping()/close() now live in
+// modules/_shared/pool.js — one pool shared by this legacy store and every module
+// repository (Phase 2). Re-exported below so store.js consumers are unaffected.
 const _locks = new Map();
-
-/** Liveness probe for GET /health — throws if Postgres is unreachable. */
-async function ping() {
-  await pool.query("SELECT 1");
-}
-
-/** Graceful shutdown — drain the pool so in-flight queries finish (index.js SIGTERM). */
-async function close() {
-  await pool.end();
-}
 
 /* ------------------------------------------------------------- id counters ---- */
 

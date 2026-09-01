@@ -26,18 +26,19 @@ Every finding below was verified by reading the code at the cited line, not infe
 |---|---|
 | **0 — Safety net** | **Landed (2026-09-01).** `app.js` split (done earlier). `PG_URL_TEST` wiring + `scripts/setup-test-db.js` (`npm run test:setup` — clones the dev DB into a frozen `bharatsource_test`). `test/architecture.test.js` (5 boundary assertions, load-bearing from the first `modules/` commit). `test/golden.test.js` + `test/golden/` (37 fixtures: public Directory reads, public Recruitment reads, `GET /api/admin/users` × 17 branches). `test/pagination.test.js` (page 0 / past-last / limit 0 / limit 9999 / page-disjointness across `/api/jobs`, `/api/listings`, `/api/admin/users`). Suite is now serial (`--test-concurrency=1`) for determinism. **Follow-ups (not blockers):** version-controlled pinned seed (today it clones dev); golden coverage of authed recruitment endpoints (`/api/applications*`, `/api/admin/jobs`, `/api/admin/employers`). See [Phase 0 — Implementation log](#phase-0--implementation-log). |
 | **1 — Security + cross-cutting** | **Landed & committed:** 1a (mass-assign allowlists), 1b (self-review 403/404), 1c (helmet + rate limiting → 429), 1d-partial (CSPRNG OTP, sweep, `/ai/rfq` auth, prompt cap), 1e-core (PG pool timeouts, graceful shutdown, `/health`), 1g (dead memoization deleted), 1h (login timing fix). See [Phase 1 — Implementation log](#phase-1--implementation-log) for the full table + test results. |
-| **2 — Shared kernel** | Not started. |
+| **2 — Shared kernel** | **Landed (2026-09-01).** `backend/modules/_shared/`: `pool.js` (THE pool, moved from `pg-store.js` — one pool now), `repository.js` (`createRepository` — the criteria-grammar seam replacing JS predicates; `findById/findOne/findMany/count/page/insert/updateById/updateWhere/incrementById/deleteById/withTx`), `queryBuilder.js` (`eq ne in notIn gt gte lt lte ilike contains isNull` + `_or`; `orderBy` with `NULLS LAST` + `id` tiebreak), `mappings/flat.mappings.js` (one mapping source), `pagination.js` (deferred **1f** helper — not yet wired), `envelope.js`, `errors.js` (+ `errorHandler` passthrough), `crudRouter.js` (factory, not yet wired), `index.js`. `test/differential.test.js` = the Phase 2 gate (repo `deepEqual` legacy store across 6 flat collections + a key→column rename + `page()` + atomic `incrementById`). **No route touched.** See [Phase 2 — Implementation log](#phase-2--implementation-log). |
 | **3–7** | Not started. |
 
-**Still open from Phase 1** (all deferred deliberately — none is an open security hole):
-- **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; do in Phase 2).
-- **1e-pino** — structured logger + `req.id` + access log (do with the Phase 2 kernel).
-- **1f** — shared `pagination.js` + `/api/listings` limit cap (it's a Phase 2 `_shared/` file).
+**Still open** (all deferred deliberately — none is an open security hole):
+- **1d-full** — OTP + AI-budget → Postgres tables (needs a numbered migration; multi-process durability not yet in play).
+- **1e-pino** — structured logger + `req.id` + access log. Kernel is in place now; do next.
+- **1f (wiring)** — `_shared/pagination.js` **shipped**; still to do: repoint `routes/jobs.js` + `routes/adminJobs.js` at it and give `GET /api/listings` its first `limit` cap (⚠️ check `getListings` call sites for large `limit` first — C9).
+- **2 (tidy)** — physically move `buildFlatConfigs` out of `lib/db/flat.js` into `_shared/mappings/flat.mappings.js` (today it re-exports); expand `differential.test.js` as collections graduate.
 - **1a-admin** — `routes/admin.js` raw-spread writes → allowlist (admin-gated; fold into Phase 6).
 - **1b-CHECK** — DB `CHECK (buyer_id <> target_user_id)` on reviews (needs a migration; Phase 5).
 - **1i** — **OWNER ACTION:** rotate every credential in `backend/DB/users.json` (38 bcrypt hashes + admin), then `git rm --cached backend/DB/users.json` + `.gitignore` it.
 
-**To resume:** `cd backend && npm run test:setup` (builds/refreshes `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs the dev DB to have no open connections), then `npm test` (expect **76 pass**), and `cd frontend && npx tsc --noEmit` (clean). Then start **Phase 2 — Shared kernel** (`backend/modules/_shared/`: `pool.js`, `repository.js`, `queryBuilder.js`, `pagination.js`, `envelope.js`, `errors.js`, `crudRouter.js`, `mappings/flat.mappings.js`) per the [Phase 2](#phase-2--shared-kernel) spec — the Phase 2 gate ("goldens byte-identical" + the differential repository test) now has a harness to run against. Fold deferred **1f** (`_shared/pagination.js` + `/api/listings` limit cap) and **1e-pino** into that pass.
+**To resume:** `cd backend && npm run test:setup` (rebuilds `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs no open connections to the dev DB), then `npm test` (expect **85 pass**), and `cd frontend && npx tsc --noEmit` (clean — no frontend change yet). Then start **Phase 3 — Identity read-port** (`modules/identity/index.js` publishing `getAuthUser` / `get*Card(s)` / `setEmployerApproval`; `getAuthUser` must first return the FULL hydrated user doc — see the [Phase 3](#phase-3--identity-read-port-only) trap), or do the **1f wiring** + **1e-pino** as small standalone commits on the kernel first.
 
 **New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `PG_URL_TEST` (dedicated `npm test` database; unset → tests fall back to `PG_URL` as before). Earlier Phase 1 pass added: `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
 
@@ -299,24 +300,65 @@ Live smoke (`node index.js`, curl):
 
 ### Known limitations of this pass
 
-- Tests run against whatever `PG_URL` points at (no dedicated `PG_URL_TEST` yet — Phase 0 item). New rows are best-effort cleaned in `test.after`, but the users created by `register()` accumulate. Stand up `PG_URL_TEST` with a pinned seed before this suite grows.
+- ~~Tests run against whatever `PG_URL` points at (no dedicated `PG_URL_TEST` yet)~~ — **resolved in Phase 0** (`PG_URL_TEST` + `npm run test:setup`). `register()`-created users still accumulate in the test DB between `test:setup` runs; a re-`test:setup` clears them.
 - The listing-create test path invokes the local `claude` CLI for verification (~8s per run). Acceptable now; consider stubbing `verifyListing` in test mode if the suite slows further.
 
 ---
 
-### Phase 2 — Shared kernel
-**Small · Contract impact: ✅ none — no route touched**
+## Phase 2 — Implementation log
+
+**Status: landed 2026-09-01 (IST). Contract impact: none — no route touched; goldens byte-identical; 85 pass.**
+
+### New files (`backend/modules/_shared/`)
+
+| File | What it is |
+|---|---|
+| `pool.js` | The single `pg` `Pool` for the whole backend — moved verbatim from `lib/pg-store.js` (same Phase 1 §1e hardening: `statement_timeout`, `connectionTimeoutMillis`, `idleTimeoutMillis`, opt-in `ssl`, `pool.on("error")`). Exports `pool`, `ping()`, `close()`. **Anti-divergence mechanism #3 (one pool).** |
+| `repository.js` | `createRepository({ pool, mapping })` where `mapping` is one entry from `buildFlatConfigs()`. Methods: `findById` `findOne` `findMany` (`{where,orderBy,limit,offset}`) · `count` · `page` (items + total in one round trip via `count(*) OVER()`) · `insert` `updateById` `updateWhere` (bulk scalar patch) · **`incrementById`** (`SET col = COALESCE(col,0)+n` — the atomic fix for **C2**) · `deleteById` · `withTx`. Row↔doc translation delegates to `FlatCollectionStore`'s own `_toRow`/`_fromRow` — the **same** code the legacy store runs (**mechanism #2**). No cache (**#4**). |
+| `queryBuilder.js` | Criteria → parameterized SQL. `where` ops: `eq ne in notIn gt gte lt lte ilike contains isNull` + `_or`; multi-key = AND. `contains` escapes `% _ \` (trap #1). `buildOrderBy` accepts `"createdAt"` / `"-createdAt"` / `[["k","DESC"],…]`, appends `NULLS LAST` to every term (trap #3) and a trailing `"id" ASC` tiebreak unless `id` is already sorted (trap #2). Never interpolates a value. |
+| `mappings/flat.mappings.js` | `module.exports = require("../../../lib/db/flat")` — **mechanism #1 (one mapping source)**. Physical move of `buildFlatConfigs` is a later tidy; callers already import from here. |
+| `pagination.js` | `paginationOf(query,{defaultLimit,maxLimit}) → {page,limit,offset}` + `totalPagesFor`. Closes deferred **1f** (the helper). Not yet imported by `routes/jobs.js` / `routes/adminJobs.js` / `routes/listings.js`. |
+| `envelope.js` | `ok(res,data,status?)`, `okPaged(res,{items,total,page,totalPages,...extra})` — `extra` is spread so `facets` / `summary` keys survive. |
+| `errors.js` | `AppError` (+ `BadRequest` 400 / `Unauthorized` 401 / `Forbidden` 403 / `NotFound` 404 / `Conflict` 409). Set `err.status` — the name `errorHandler.js` already keys off. |
+| `crudRouter.js` | `crudRouter(repo,{role,writeSchema,listOrderBy})` → REST router for the ~10 thin admin-taxonomy routers. Shipped, not yet wired. |
+| `index.js` | Barrel — `require("../_shared")`. |
+| `backend/test/differential.test.js` | The Phase 2 gate. Per collection (`categories`, `job-functions`, `jobs`, `reviews`, `collections`, `features`): `repo.findMany({})` `deepEqual` `store.all`; `repo.findById(mid)` `deepEqual` `store.getById`; `repo.findMany({where:X})` `deepEqual` `store.findMany(predicateFor(X))` — including a JS-key→column rename (`jobFunction`→`job_function`). Plus `page()` shape and `incrementById` (+5 then −5, nets to zero). |
+
+### Modified
+
+| File | Change | Contract |
+|---|---|---|
+| `backend/lib/pg-store.js` | Deleted the local `new Pool(...)` + `pool.on` + `ping`/`close`; now `const { pool, ping, close } = require("../modules/_shared/pool")`. Dead `require("./config")` removed. `module.exports` unchanged (still re-exports `ping`/`close`). **Import redirection #1.** | ✅ none — same pool config, same behaviour. |
+| `backend/middleware/errorHandler.js` | `status` now also reads `err.statusCode`; when a typed error carries `err.code` and status ≠ 500, the code is included in the body (same shape as the existing `rate_limited` / `account_suspended` responses). | ✅ additive — a key only ever *appears*, and only for typed kernel errors that opt in. |
+
+### Test results — 2026-09-01 (IST)
+
+`npm test` → **85 pass, 0 fail** (76 Phase 0 baseline + 9 differential). `node -e "require('./lib/store'); require('./app')"` → boots clean. All 37 golden fixtures **byte-identical** (the pool redirection + errorHandler change touched no response). Re-run back-to-back → stable.
+
+### Not done / follow-ups
+
+- Repository wired into **zero routes** — deliberate (graduation starts Phase 3+; reads may straddle, only writes graduate atomically per collection).
+- `_shared/pagination.js` + `_shared/crudRouter.js` shipped but unused.
+- `buildFlatConfigs` still physically in `lib/db/flat.js` (re-exported).
+- Still to add (Phase 2 "keeping new code off the old interface"): `lib/store.js` deprecation header, CLAUDE.md §5 "closed to new collections" line, dev-mode `store.findOne/findMany` call-site burn-down logging.
+- **1e-pino** (structured logger + `req.id` + access log) — kernel is ready; do next.
+
+---
+
+### Phase 2 — Shared kernel  ✅ LANDED 2026-09-01
+**Small · Contract impact: ✅ none — no route touched** · full detail: [Phase 2 — Implementation log](#phase-2--implementation-log)
 
 ```
 backend/modules/_shared/
-  pool.js            # THE pg Pool, moved out of lib/pg-store.js:18
-  repository.js      # createRepository({pool, mapping})
-  queryBuilder.js    # criteria object -> SQL WHERE/ORDER/LIMIT
-  pagination.js      # (already shipped in 1f)
-  envelope.js        # ok(res,data) / okPaged(res,{items,total,page,totalPages})
-  errors.js          # AppError/NotFound/Forbidden/Conflict -> errorHandler
-  crudRouter.js      # factory for thin admin-taxonomy routers
-  mappings/flat.mappings.js   # buildFlatConfigs moved from lib/db/flat.js:105-415
+  pool.js            # ✅ THE pg Pool, moved from lib/pg-store.js; pg-store now imports it
+  repository.js      # ✅ createRepository({pool, mapping})
+  queryBuilder.js    # ✅ criteria object -> SQL WHERE/ORDER/LIMIT
+  pagination.js      # ✅ shipped (deferred 1f) — helper only, not yet wired into routes
+  envelope.js        # ✅ ok(res,data) / okPaged(res,{items,total,page,totalPages,...extra})
+  errors.js          # ✅ AppError/BadRequest/Unauthorized/Forbidden/NotFound/Conflict -> errorHandler
+  crudRouter.js      # ✅ factory for thin admin-taxonomy routers — not yet wired
+  mappings/flat.mappings.js   # ✅ re-exports buildFlatConfigs from lib/db/flat.js (physical move = later tidy)
+  index.js           # ✅ barrel: require("../_shared")
 ```
 
 **The repository interface** — replaces the predicate with a *closed criteria grammar*. Criteria are data, so they compile to SQL; predicates are code, so they can't:
@@ -344,8 +386,10 @@ createRepository({ pool, mapping }) → {
 
 **Keeping new code off the old interface** (all four, cheapest first): the architecture test from Phase 0; a deprecation header on `lib/store.js` + one line in CLAUDE.md §5 ("`store.js` is legacy and closed to new collections"); dev-mode call-site logging in `store.findOne/findMany` giving a live burn-down inventory; and `getVersion` already deleted in 1g.
 
-**Gate:** goldens green. **The differential test** (per collection: `repo.findMany({where:{}})` `deepEqual` `store.all(coll)`; `repo.findMany({where:X})` `deepEqual` `store.findMany(coll, predicateFor(X))`; `repo.findById(id)` `deepEqual` `store.getById(coll,id)`). This is the single most important assertion in the migration — it makes divergence structurally impossible rather than merely discouraged. It is the last test you delete, when `store.js` dies.
-**Rollback:** additive plus two import redirections.
+**Gate:** goldens green. **The differential test** (per collection: `repo.findMany({where:{}})` `deepEqual` `store.all(coll)`; `repo.findMany({where:X})` `deepEqual` `store.findMany(coll, predicateFor(X))`; `repo.findById(id)` `deepEqual` `store.getById(coll,id)`). This is the single most important assertion in the migration — it makes divergence structurally impossible rather than merely discouraged. It is the last test you delete, when `store.js` dies. — **Landed as `backend/test/differential.test.js`**; 85 pass total.
+**Rollback:** additive plus two import redirections (`pg-store.js` → `_shared/pool`, `flat.mappings.js` → `lib/db/flat`).
+
+**Not done in this pass** (deliberately): repository is wired into **no route** yet (that begins Phase 3+ — "reads may straddle, only writes graduate"); `_shared/pagination.js` + `crudRouter.js` shipped but unused; `buildFlatConfigs` still physically in `lib/db/flat.js`; the `store.js` deprecation header + CLAUDE.md §5 "closed to new collections" line + dev-mode call-site burn-down logging still to add; 1e-pino still open.
 
 ---
 
@@ -528,7 +572,7 @@ Effort is stated in relative size, not calendar time — the work is done by an 
 |---|---|---|---|---|
 | 0 Safety net | small | none | prerequisite | ✅ — **landed 2026-09-01** (golden harness · pagination edge tests · architecture test · `PG_URL_TEST` DB; 76 pass. Follow-ups: pinned seed, authed-recruitment goldens — see Phase 0 Implementation log) |
 | 1 Security + cross-cutting | **small** | low | **highest** | 🔧 3 fixes — **partially landed 2026-08-31** (1a/1b/1c/1e-core/1g/1h + 1d-partial done & tested; 1d-full/1e-pino/1f/1i/1a-admin deferred — see Phase 1 Implementation log) |
-| 2 Shared kernel | small | low | prerequisite | ✅ |
+| 2 Shared kernel | small | low | prerequisite | ✅ — **landed 2026-09-01** (`modules/_shared/` + `differential.test.js`; 85 pass; no route touched. Follow-ups: 1f wiring, 1e-pino, `store.js` deprecation notice — see Phase 2 Implementation log) |
 | 3 Identity read-port | medium | medium (auth path) | high | ✅ |
 | 4 Recruitment | large | low (gated off) | template | ✅ |
 | 5 Directory | very large | high (live traffic) | highest perf | ✅ |

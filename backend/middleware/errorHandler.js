@@ -8,9 +8,14 @@ module.exports = function errorHandler(err, req, res, next) {
     err.stack || err.message
   );
 
-  const status = err.status || 500;
+  const status = err.status || err.statusCode || 500;
   const message =
     status === 500 ? "Something went wrong on the server" : err.message;
 
-  res.status(status).json({ success: false, error: message });
+  const body = { success: false, error: message };
+  // Typed kernel errors (modules/_shared/errors.js) may carry a machine-readable
+  // code — pass it through, same as the rate-limit / account-suspended responses.
+  if (err.code && status !== 500) body.code = err.code;
+
+  res.status(status).json(body);
 };
