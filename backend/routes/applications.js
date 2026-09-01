@@ -33,8 +33,9 @@ const {
   jobMiniOf,
   // policy.js
   canViewApplication,
-  // repository (Phase 4d) — jobs writer must use the repo (atomic graduation)
+  // repositories (Phase 4d)
   jobsRepo,
+  appsRepo,
 } = require("../modules/recruitment");
 
 /* --------------------------------------------------------- POST / ---------- */
@@ -45,7 +46,7 @@ router.post("/", authGuard, async (req, res, next) => {
     if (!jobId) {
       return res.status(400).json({ success: false, error: "jobId is required" });
     }
-    const job = await store.getById("jobs.json", jobId);
+    const job = await jobsRepo.findById(jobId);
     if (!job) {
       return res.status(404).json({ success: false, error: "Job not found" });
     }
@@ -101,42 +102,35 @@ router.post("/", authGuard, async (req, res, next) => {
       });
     }
 
-    // Duplicate-application guard + insert run inside one lock so a rapid double-submit
-    // can't race past the findOne check in file-DB mode (single-process assumption,
-    // same as the rest of the codebase — DIRECTORY.md §"Multi-process safety"). Under
-    // Postgres, the applications(job_id, candidate_id) UNIQUE index (see
-    // schema-migrations/0002_add_recruitment_tables.sql) is the real, multi-process-safe
-    // backstop — caught below if this lock-based check is ever bypassed.
+    // Duplicate-application guard: the fast-path check (already applied → friendly
+    // 409) plus the real backstop — the applications(job_id, candidate_id) UNIQUE
+    // index (schema-migrations/0002_add_recruitment_tables.sql), which is
+    // multi-process-safe and caught as `23505` below. Phase 4d dropped the file-DB
+    // `store.withLock` wrapper — under Postgres the index, not a single-process
+    // mutex, is what actually serializes a rapid double-submit.
     let application;
     try {
-      application = await store.withLock("applications.json", async () => {
-        const existing = await store.findOne(
-          "applications.json",
-          (a) => a.jobId === jobId && a.candidateId === candidate.id
-        );
-        if (existing) {
-          const err = new Error("You have already applied to this job");
-          err.status = 409;
-          throw err;
-        }
-        const now = new Date().toISOString();
-        const doc = {
-          jobId,
-          employerId: job.employerId,
-          candidateId: candidate.id,
-          resumeUrl,
-          coverNote,
-          answers,
-          status: "applied",
-          statusHistory: [{ status: "applied", note: null, changedAt: now }],
-          appliedAt: now,
-          updatedAt: now,
-        };
-        return store.insert("applications.json", doc, "app");
-      });
+      const existing = await appsRepo.findOne({ where: { jobId, candidateId: candidate.id } });
+      if (existing) {
+        const err = new Error("You have already applied to this job");
+        err.status = 409;
+        throw err;
+      }
+      const now = new Date().toISOString();
+      const doc = {
+        jobId,
+        employerId: job.employerId,
+        candidateId: candidate.id,
+        resumeUrl,
+        coverNote,
+        answers,
+        status: "applied",
+        statusHistory: [{ status: "applied", note: null, changedAt: now }],
+        appliedAt: now,
+        updatedAt: now,
+      };
+      application = await appsRepo.insert(doc, "app");
     } catch (err) {
-      // Postgres unique_violation — belt-and-suspenders if the lock above was somehow
-      // bypassed (e.g. a future multi-process deploy). Same friendly 409 either way.
       if (err.code === "23505") {
         return res.status(409).json({ success: false, error: "You have already applied to this job" });
       }
@@ -167,12 +161,16 @@ router.post("/", authGuard, async (req, res, next) => {
 
 router.get("/mine", authGuard, async (req, res, next) => {
   try {
-    const applications = await store.findMany("applications.json", (a) => a.candidateId === req.user.id);
-    applications.sort((a, b) => (Date.parse(b.appliedAt) || 0) - (Date.parse(a.appliedAt) || 0));
+    // Phase 4d: repo criteria + ORDER BY replace store.findMany(predicate) + JS sort
+    // (row-identical — test/differential.test.js "GET /applications/mine equivalent").
+    const applications = await appsRepo.findMany({
+      where: { candidateId: req.user.id },
+      orderBy: "-appliedAt",
+    });
 
-    // Batch-fetch every referenced job in one query (no N+1) instead of getById per row.
+    // Batch-fetch every referenced job in one query (no N+1).
     const jobIds = [...new Set(applications.map((a) => a.jobId))];
-    const jobs = await store.findMany("jobs.json", (j) => jobIds.includes(j.id));
+    const jobs = jobIds.length ? await jobsRepo.findMany({ where: { id: { in: jobIds } } }) : [];
     const jobById = new Map(jobs.map((j) => [j.id, j]));
 
     const data = applications.map((a) => ({ ...a, job: jobMiniOf(jobById.get(a.jobId)) }));
@@ -196,19 +194,20 @@ router.get("/", authGuard, async (req, res, next) => {
     // cross-employer firehose (that leaked every employer's applications into the
     // dashboard of any user who also held the admin role). Admin per-record access
     // still exists on GET /:id and POST /:id/status.
-    let applications = await store.findMany("applications.json", (a) => {
-      if (a.employerId !== req.user.id) return false;
-      if (jobId && a.jobId !== jobId) return false;
-      if (status && a.status !== status) return false;
-      return true;
-    });
-    applications.sort((a, b) => (Date.parse(b.appliedAt) || 0) - (Date.parse(a.appliedAt) || 0));
+    // Phase 4d: employer-scoped feed via repo criteria + ORDER BY (was a full
+    // store.findMany scan + JS sort). Always scoped to req.user.id as employer — an
+    // admin role never widens this list.
+    const where = { employerId: req.user.id };
+    if (jobId) where.jobId = String(jobId);
+    if (status) where.status = String(status);
+    const applications = await appsRepo.findMany({ where, orderBy: "-appliedAt" });
 
-    // Batch-fetch referenced jobs + candidates in two extra queries total (no N+1).
+    // Batch-fetch referenced jobs + candidates (no N+1). Candidates stay on the
+    // legacy store until the users collection graduates (Phase 6).
     const jobIds = [...new Set(applications.map((a) => a.jobId))];
     const candidateIds = [...new Set(applications.map((a) => a.candidateId))];
     const [jobs, candidates] = await Promise.all([
-      store.findMany("jobs.json", (j) => jobIds.includes(j.id)),
+      jobIds.length ? jobsRepo.findMany({ where: { id: { in: jobIds } } }) : [],
       store.findMany("users.json", (u) => candidateIds.includes(u.id)),
     ]);
     const jobById = new Map(jobs.map((j) => [j.id, j]));
@@ -229,11 +228,11 @@ router.get("/", authGuard, async (req, res, next) => {
 
 router.get("/:id", authGuard, async (req, res, next) => {
   try {
-    const application = await store.getById("applications.json", req.params.id);
+    const application = await appsRepo.findById(req.params.id);
     if (!application) {
       return res.status(404).json({ success: false, error: "Application not found" });
     }
-    const job = await store.getById("jobs.json", application.jobId);
+    const job = await jobsRepo.findById(application.jobId);
     if (!canViewApplication(req.user, application, job)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
@@ -255,7 +254,7 @@ router.post("/:id/status", authGuard, async (req, res, next) => {
     if (!VALID_STATUS_SET.has(status)) {
       return res.status(400).json({ success: false, error: `status must be one of: ${VALID_STATUSES.join(", ")}` });
     }
-    const application = await store.getById("applications.json", req.params.id);
+    const application = await appsRepo.findById(req.params.id);
     if (!application) {
       return res.status(404).json({ success: false, error: "Application not found" });
     }
@@ -268,13 +267,13 @@ router.post("/:id/status", authGuard, async (req, res, next) => {
     const now = new Date().toISOString();
     const statusHistory = [...(application.statusHistory || []), { status, note, changedAt: now }];
 
-    const updated = await store.update("applications.json", req.params.id, {
+    const updated = await appsRepo.updateById(req.params.id, {
       status,
       statusHistory,
       updatedAt: now,
     });
 
-    const job = await store.getById("jobs.json", application.jobId);
+    const job = await jobsRepo.findById(application.jobId);
     createNotification(application.candidateId, "application_status", {
       jobId: application.jobId,
       jobTitle: job ? job.title : null,
@@ -295,7 +294,7 @@ router.post("/:id/status", authGuard, async (req, res, next) => {
 // initiate it, mirroring the applied-by-candidate-only shape of POST / above.
 router.post("/:id/withdraw", authGuard, async (req, res, next) => {
   try {
-    const application = await store.getById("applications.json", req.params.id);
+    const application = await appsRepo.findById(req.params.id);
     if (!application) {
       return res.status(404).json({ success: false, error: "Application not found" });
     }
@@ -311,13 +310,13 @@ router.post("/:id/withdraw", authGuard, async (req, res, next) => {
 
     const now = new Date().toISOString();
     const statusHistory = [...(application.statusHistory || []), { status: "withdrawn", note: null, changedAt: now }];
-    const updated = await store.update("applications.json", req.params.id, {
+    const updated = await appsRepo.updateById(req.params.id, {
       status: "withdrawn",
       statusHistory,
       updatedAt: now,
     });
 
-    const job = await store.getById("jobs.json", application.jobId);
+    const job = await jobsRepo.findById(application.jobId);
     createNotification(application.employerId, "application_withdrawn", {
       jobId: application.jobId,
       jobTitle: job ? job.title : null,

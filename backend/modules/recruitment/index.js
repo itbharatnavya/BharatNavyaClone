@@ -19,6 +19,7 @@ const jobService = require("./service/job.service");
 const applicationService = require("./service/application.service");
 const policy = require("./policy");
 const jobsRepo = require("./repository/job.repository");
+const appsRepo = require("./repository/application.repository");
 
 module.exports = {
   searchJobs,
@@ -26,6 +27,7 @@ module.exports = {
   candidateProfileGaps,
   employerProfileGaps,
   jobsRepo,
+  appsRepo,
   ...jobService,
   ...applicationService,
   ...policy,
