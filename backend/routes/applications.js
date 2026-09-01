@@ -20,7 +20,7 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
 const {
@@ -202,13 +202,13 @@ router.get("/", authGuard, async (req, res, next) => {
     if (status) where.status = String(status);
     const applications = await appsRepo.findMany({ where, orderBy: "-appliedAt" });
 
-    // Batch-fetch referenced jobs + candidates (no N+1). Candidates stay on the
-    // legacy store until the users collection graduates (Phase 6).
+    // Batch-fetch referenced jobs + candidates (no N+1). Candidates via the
+    // identity port's by-id hydrate (Phase 7; was a store.findMany full scan).
     const jobIds = [...new Set(applications.map((a) => a.jobId))];
     const candidateIds = [...new Set(applications.map((a) => a.candidateId))];
     const [jobs, candidates] = await Promise.all([
       jobIds.length ? jobsRepo.findMany({ where: { id: { in: jobIds } } }) : [],
-      store.findMany("users.json", (u) => candidateIds.includes(u.id)),
+      identity.hydrateUsersByIds(candidateIds),
     ]);
     const jobById = new Map(jobs.map((j) => [j.id, j]));
     const candidateById = new Map(candidates.map((u) => [u.id, u]));
@@ -236,7 +236,7 @@ router.get("/:id", authGuard, async (req, res, next) => {
     if (!canViewApplication(req.user, application, job)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    const candidate = await store.getById("users.json", application.candidateId);
+    const candidate = await identity.getAuthUser(application.candidateId);
     return res.json({
       success: true,
       data: { ...application, job: jobMiniOf(job), candidate: candidateMiniOf(candidate) },

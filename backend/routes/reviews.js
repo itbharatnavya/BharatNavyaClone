@@ -14,7 +14,6 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
 const directory = require("../modules/directory");
 const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
@@ -222,7 +221,8 @@ router.post("/", authGuard, async (req, res, next) => {
     }
     // The target must actually exist — a review pointing at a bogus id would
     // otherwise be stored and skew nothing visibly, but pollutes the collection.
-    const target = await store.getById("users.json", targetUserId);
+    // Phase 7: existence check via the identity port (was store.getById).
+    const target = await identity.getAuthUser(targetUserId);
     if (!target) {
       return res
         .status(404)

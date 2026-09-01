@@ -7,7 +7,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+
+// Phase 7: ad-bookings.json is a flat collection — this public read graduates onto
+// the repo. (routes/admin.js still writes it, so it isn't fully graduated yet.)
+const adBookingsRepo = repoForCollection("ad-bookings.json");
 
 function active(b, now) {
   if (b.status && !["active", "scheduled"].includes(b.status)) return false;
@@ -20,7 +24,7 @@ router.get("/", async (req, res, next) => {
   try {
     const { placement, category } = req.query;
     const now = Date.now();
-    let bookings = await store.all("ad-bookings.json");
+    let bookings = await adBookingsRepo.findMany({});
     bookings = bookings.filter((b) => active(b, now));
     if (placement) bookings = bookings.filter((b) => b.placementType === placement);
     if (category) {
