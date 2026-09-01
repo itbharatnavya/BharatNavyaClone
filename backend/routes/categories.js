@@ -6,58 +6,26 @@
  *
  *   GET /api/categories        → flat array of every category doc
  *   GET /api/categories/:slug  → { category, children, ancestors, facets }
+ *
+ * Phase 5a: per-category live listing counts come from
+ * modules/directory `listingCountsByCategory()` — one GROUP BY over the `listings`
+ * table — instead of `store.all("listings.json")` + a JS pass on every request.
+ * `categories.json` itself still reads through `store` (not graduated — many routes
+ * still touch it; reads may straddle).
  */
 
 const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
-
-/**
- * Live per-category listing counts. An ACTIVE listing counts toward a category when
- * its `categoryId` equals that category's id OR the category's `slug` appears in the
- * listing's `categoryPath` (so a parent aggregates all its descendants' listings).
- *
- * Single pass over listings; each listing is counted at most once per category (the id
- * and path-slug matches are unioned per listing so a leaf isn't double-tallied).
- * Returns a Map of category.id -> count.
- */
-function computeListingCounts(categories, listings) {
-  const catBySlug = new Map(categories.map((c) => [c.slug, c]));
-  const counts = new Map();
-
-  for (const l of listings) {
-    if (!l || l.status !== "active") continue;
-
-    // Distinct categories this one listing contributes to.
-    const matched = new Set();
-    if (l.categoryId) matched.add(l.categoryId);
-    if (Array.isArray(l.categoryPath)) {
-      for (const slug of l.categoryPath) {
-        const c = catBySlug.get(slug);
-        if (c) matched.add(c.id);
-      }
-    }
-
-    for (const id of matched) {
-      counts.set(id, (counts.get(id) || 0) + 1);
-    }
-  }
-
-  return counts;
-}
-
-function getListingCounts(categories, listings) {
-  return computeListingCounts(categories, listings);
-}
+const directory = require("../modules/directory");
 
 // GET / — full taxonomy as a flat array (frontend nests via parentId).
 router.get("/", async (req, res, next) => {
   try {
-    const [categories, listings] = await Promise.all([
+    const [categories, counts] = await Promise.all([
       store.all("categories.json"),
-      store.all("listings.json"),
+      directory.listingCountsByCategory(),
     ]);
-    const counts = getListingCounts(categories, listings);
     const data = categories.map((c) => ({
       ...c,
       listingCount: counts.get(c.id) || 0,
@@ -72,9 +40,9 @@ router.get("/", async (req, res, next) => {
 router.get("/:slug", async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const [categories, listings] = await Promise.all([
+    const [categories, counts] = await Promise.all([
       store.all("categories.json"),
-      store.all("listings.json"),
+      directory.listingCountsByCategory(),
     ]);
     const found = categories.find((c) => c.slug === slug) || null;
     if (!found) {
@@ -82,7 +50,6 @@ router.get("/:slug", async (req, res, next) => {
     }
 
     // Live counts stamped onto the returned node + its children.
-    const counts = getListingCounts(categories, listings);
     const withCount = (c) => ({ ...c, listingCount: counts.get(c.id) || 0 });
 
     const category = withCount(found);
