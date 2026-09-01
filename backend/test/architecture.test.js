@@ -38,7 +38,12 @@ const ROUTES_DIR = path.join(BACKEND, "routes");
  * Phase 5 appends the directory collections; etc. Keep in sync as each collection
  * graduates (BACKEND-AUDIT.md "Collection-level atomic graduation").
  */
-const GRADUATED_COLLECTIONS = [];
+const GRADUATED_COLLECTIONS = [
+  // Phase 4d — recruitment master data, fully owned by modules/recruitment now.
+  "job-functions.json",
+  "job-roles.json",
+  "skills.json",
+];
 
 /* ------------------------------------------------------------------ helpers -- */
 

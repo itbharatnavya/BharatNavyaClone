@@ -7,12 +7,12 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { jobRolesRepo } = require("../modules/recruitment");
 
 router.get("/", async (req, res, next) => {
   try {
     const jobFunction = req.query.jobFunction ? String(req.query.jobFunction).trim() : undefined;
-    const all = await store.all("job-roles.json");
+    const all = await jobRolesRepo.findMany({});
     const active = all
       .filter((r) => r.isActive !== false)
       .filter((r) => !jobFunction || r.jobFunction === jobFunction)

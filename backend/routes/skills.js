@@ -7,12 +7,12 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { skillsRepo } = require("../modules/recruitment");
 
 router.get("/", async (req, res, next) => {
   try {
     const jobFunction = req.query.jobFunction ? String(req.query.jobFunction).trim() : undefined;
-    const all = await store.all("skills.json");
+    const all = await skillsRepo.findMany({});
     const active = all
       .filter((s) => s.isActive !== false)
       .filter((s) => !jobFunction || s.jobFunction === jobFunction)

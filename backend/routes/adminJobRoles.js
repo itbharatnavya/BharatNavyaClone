@@ -8,12 +8,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { jobRolesRepo } = require("../modules/recruitment");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 router.use(authGuard, requireRole("admin"));
 
-const COLLECTION = "job-roles.json";
 
 const slugify = (s) =>
   String(s)
@@ -27,7 +26,7 @@ const slugify = (s) =>
 // this is the only way the admin UI can see/reactivate a soft-deleted row).
 router.get("/", async (req, res, next) => {
   try {
-    const all = await store.all(COLLECTION);
+    const all = await jobRolesRepo.findMany({});
     all.sort((a, b) => (a.order || 0) - (b.order || 0));
     res.json({ success: true, data: all });
   } catch (err) {
@@ -39,12 +38,12 @@ router.post("/", async (req, res, next) => {
   try {
     const b = req.body || {};
     if (!b.title) return res.status(400).json({ success: false, error: "title is required" });
-    const all = await store.all(COLLECTION);
+    const all = await jobRolesRepo.findMany({});
     const slug = b.slug ? slugify(b.slug) : slugify(b.title);
     if (all.some((r) => r.slug === slug)) {
       return res.status(409).json({ success: false, error: "slug already exists" });
     }
-    const created = await store.insert(COLLECTION, {
+    const created = await jobRolesRepo.insert({
       id: "jr_" + slug,
       title: b.title,
       slug,
@@ -63,7 +62,7 @@ router.put("/:id", async (req, res, next) => {
     const allowed = ["title", "jobFunction", "order", "isActive"];
     const patch = {};
     for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-    const updated = await store.update(COLLECTION, req.params.id, patch);
+    const updated = await jobRolesRepo.updateById(req.params.id, patch);
     if (!updated) return res.status(404).json({ success: false, error: "Job role not found" });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -73,7 +72,7 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const ok = await store.remove(COLLECTION, req.params.id);
+    const ok = await jobRolesRepo.deleteById(req.params.id);
     if (!ok) return res.status(404).json({ success: false, error: "Job role not found" });
     res.json({ success: true, data: { deleted: true } });
   } catch (err) {

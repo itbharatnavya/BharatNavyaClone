@@ -20,6 +20,7 @@ const applicationService = require("./service/application.service");
 const policy = require("./policy");
 const jobsRepo = require("./repository/job.repository");
 const appsRepo = require("./repository/application.repository");
+const { jobFunctionsRepo, jobRolesRepo, skillsRepo } = require("./repository/taxonomy.repository");
 
 module.exports = {
   searchJobs,
@@ -28,6 +29,9 @@ module.exports = {
   employerProfileGaps,
   jobsRepo,
   appsRepo,
+  jobFunctionsRepo,
+  jobRolesRepo,
+  skillsRepo,
   ...jobService,
   ...applicationService,
   ...policy,

@@ -7,11 +7,11 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { jobFunctionsRepo } = require("../modules/recruitment");
 
 router.get("/", async (req, res, next) => {
   try {
-    const all = await store.all("job-functions.json");
+    const all = await jobFunctionsRepo.findMany({});
     const active = all
       .filter((jf) => jf.isActive !== false)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
