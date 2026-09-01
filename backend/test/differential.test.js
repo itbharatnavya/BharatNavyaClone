@@ -83,6 +83,49 @@ test("repository vs legacy store — differential", async (t) => {
     });
   }
 
+  // Ordered reads — mirror the EXACT comparators the recruitment routes use before
+  // Phase 4d flips them onto the repository. A stable JS sort on the id-ascending
+  // store.all() result must equal `ORDER BY <col> DESC NULLS LAST, id ASC`.
+  const byDesc = (key) => (a, b) => (Date.parse(b[key]) || 0) - (Date.parse(a[key]) || 0);
+
+  await t.test("jobs.json — ordered by -postedAt matches the route's JS sort", async () => {
+    const repo = repoFor("jobs.json");
+    const all = await store.all("jobs.json");
+    assert.deepEqual(
+      await repo.findMany({ orderBy: "-postedAt" }),
+      all.slice().sort(byDesc("postedAt")),
+      "findMany({orderBy:'-postedAt'}) must equal store.all().sort(byPostedAtDesc)"
+    );
+    // GET /api/jobs/mine shape: where employerId + same sort.
+    const anyJob = all.find((j) => j.employerId);
+    if (anyJob) {
+      const emp = anyJob.employerId;
+      assert.deepEqual(
+        await repo.findMany({ where: { employerId: emp }, orderBy: "-postedAt" }),
+        (await store.findMany("jobs.json", (j) => j.employerId === emp)).sort(byDesc("postedAt")),
+        "GET /mine equivalent"
+      );
+    }
+  });
+
+  await t.test("applications.json — ordered by -appliedAt matches the route's JS sort", async () => {
+    const repo = repoFor("applications.json");
+    const all = await store.all("applications.json");
+    assert.deepEqual(
+      await repo.findMany({ orderBy: "-appliedAt" }),
+      all.slice().sort(byDesc("appliedAt"))
+    );
+    const anyApp = all.find((a) => a.candidateId);
+    if (anyApp) {
+      const cand = anyApp.candidateId;
+      assert.deepEqual(
+        await repo.findMany({ where: { candidateId: cand }, orderBy: "-appliedAt" }),
+        (await store.findMany("applications.json", (a) => a.candidateId === cand)).sort(byDesc("appliedAt")),
+        "GET /applications/mine equivalent"
+      );
+    }
+  });
+
   await t.test("page() returns items + total in the paged shape", async () => {
     const repo = repoFor("jobs.json");
     const all = await store.all("jobs.json");

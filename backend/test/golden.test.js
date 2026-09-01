@@ -76,6 +76,11 @@ test("golden fixtures", async (t) => {
   await golden(t, "job-detail", (r) => r.get(`/api/jobs/${FIX.jobId}`));
   await golden(t, "employer-detail", (r) => r.get(`/api/employers/${FIX.employerSlug}`));
 
+  /* ------- authed Recruitment reads — the Phase 4d net (store -> repository) -- */
+  await golden(t, "jobs-mine", (r) => bearer(r.get("/api/jobs/mine"), "employer"));
+  await golden(t, "applications-received", (r) => bearer(r.get("/api/applications"), "employer"));
+  await golden(t, "applications-mine", (r) => bearer(r.get("/api/applications/mine"), "candidate"));
+
   /* --------------------- GET /api/admin/users — branch matrix (Phase 6 net) -- */
   const AU = "/api/admin/users";
   const au = (name, qs) => golden(t, `admin-users-${name}`, (r) => bearer(r.get(qs ? `${AU}?${qs}` : AU), "admin"));

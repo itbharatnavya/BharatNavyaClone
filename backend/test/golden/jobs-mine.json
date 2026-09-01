@@ -1,0 +1,140 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "jobs": [
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Travel allowance"
+          ],
+          "description": "Sell fabric rolls and finished garments to domestic wholesale buyers.",
+          "employerId": "usr_emp4",
+          "employmentType": "full-time",
+          "experienceLevel": "entry",
+          "expiresAt": null,
+          "id": "job_demo10",
+          "jobFunction": "sales",
+          "location": {
+            "city": "Surat",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "1+ years textile/apparel sales preferred"
+          ],
+          "responsibilities": [
+            "Visit wholesale markets and onboard new buyers",
+            "Follow up on repeat orders"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 450000,
+            "min": 300000
+          },
+          "skills": [
+            "B2B Sales",
+            "Negotiation"
+          ],
+          "status": "active",
+          "title": "Sales Executive",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Manage day-to-day accounting and GST filings for the Surat unit.",
+          "employerId": "usr_emp4",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo11",
+          "jobFunction": "finance",
+          "location": {
+            "city": "Surat",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years accounting experience",
+            "Working knowledge of GST"
+          ],
+          "responsibilities": [
+            "Maintain books in Tally",
+            "File monthly GST returns"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 600000,
+            "min": 400000
+          },
+          "skills": [
+            "Tally",
+            "GST Compliance",
+            "Excel"
+          ],
+          "status": "active",
+          "title": "Accountant",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Performance bonus"
+          ],
+          "description": "Oversee production planning and raw-material procurement across two units.",
+          "employerId": "usr_emp4",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": null,
+          "id": "job_demo12",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Surat",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "7+ years textile manufacturing operations experience"
+          ],
+          "responsibilities": [
+            "Plan production schedules against order book",
+            "Manage yarn and dye vendors"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1400000,
+            "min": 900000
+          },
+          "skills": [
+            "Supply Chain Management",
+            "Vendor Management",
+            "ERP Software"
+          ],
+          "status": "active",
+          "title": "Operations Manager",
+          "viewCount": 0
+        }
+      ]
+    },
+    "success": true
+  }
+}

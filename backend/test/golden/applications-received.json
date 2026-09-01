@@ -1,0 +1,64 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "applications": [
+        {
+          "answers": [],
+          "appliedAt": "<timestamp>",
+          "candidate": {
+            "avatarUrl": null,
+            "contactEmail": "rahul.deshmukh.demo@example.com",
+            "contactPhone": "9876504010",
+            "currentCompany": "Ashoka Industrial Products",
+            "currentRole": "Operations Manager",
+            "experienceYears": 9,
+            "headline": "Operations Manager — Manufacturing & Logistics",
+            "id": "usr_cand10",
+            "name": "Rahul Deshmukh",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Supply Chain Management",
+              "Six Sigma",
+              "Vendor Management",
+              "ERP Software"
+            ]
+          },
+          "candidateId": "usr_cand10",
+          "coverNote": "9 years running plant operations, keen to move into textiles.",
+          "employerId": "usr_emp4",
+          "id": "app_demo13",
+          "job": {
+            "id": "job_demo12",
+            "jobFunction": "operations",
+            "questions": [],
+            "status": "active",
+            "title": "Operations Manager"
+          },
+          "jobId": "job_demo12",
+          "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+          "status": "shortlisted",
+          "statusHistory": [
+            {
+              "changedAt": "<timestamp>",
+              "note": null,
+              "status": "applied"
+            },
+            {
+              "changedAt": "<timestamp>",
+              "note": null,
+              "status": "viewed"
+            },
+            {
+              "changedAt": "<timestamp>",
+              "note": null,
+              "status": "shortlisted"
+            }
+          ],
+          "updatedAt": "<volatile>"
+        }
+      ]
+    },
+    "success": true
+  }
+}
