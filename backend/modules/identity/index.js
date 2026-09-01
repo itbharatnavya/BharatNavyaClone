@@ -104,12 +104,31 @@ const getCandidateCards = mapCards(candidateCardOf);
 // user (9 child tables) done just to (a) get the approved-seller allow-list and
 // (b) build a seller mini-card for the ~12 listings on the page.
 
-/** ids of every seller whose sellerProfile.status === "approved". */
+/** ids of every seller whose sellerProfile.status === "approved", user_id-ASC —
+ *  the same order `store.all("users.json")` (id-ASC) then a JS approved-filter
+ *  yielded, so a caller's later stable JS sort breaks ties identically. */
 async function getApprovedSellerIds() {
   const { rows } = await pool.query(
-    `SELECT user_id FROM seller_profiles WHERE status = 'approved'`
+    `SELECT user_id FROM seller_profiles WHERE status = 'approved' ORDER BY user_id ASC`
   );
   return rows.map((r) => r.user_id);
+}
+
+/** Is this slug already used by a seller / employer profile? (uniqueSlug helpers
+ *  in routes/users.js — replaces a `store.all("users.json")` slug-set build.) */
+async function sellerSlugTaken(slug) {
+  const { rows } = await pool.query(
+    `SELECT 1 FROM seller_profiles WHERE slug = $1 LIMIT 1`,
+    [slug]
+  );
+  return rows.length > 0;
+}
+async function employerSlugTaken(slug) {
+  const { rows } = await pool.query(
+    `SELECT 1 FROM employer_profiles WHERE slug = $1 LIMIT 1`,
+    [slug]
+  );
+  return rows.length > 0;
 }
 
 /**
@@ -457,6 +476,7 @@ module.exports = {
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
   getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
+  sellerSlugTaken, employerSlugTaken,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,
   hydrateUsersByIds, adminUserPage,

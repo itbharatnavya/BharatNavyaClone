@@ -11,6 +11,8 @@ const router = express.Router();
 
 const store = require("../lib/store");
 const identity = require("../modules/identity");
+const directory = require("../modules/directory");
+const recruitment = require("../modules/recruitment");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { coordsForCity } = require("../lib/geo");
 const { deriveBadges } = require("../lib/badges");
@@ -32,15 +34,12 @@ function slugify(str) {
     .replace(/^-+|-+$/g, "");
 }
 
-/** Ensure a seller slug is unique across all users (append -2, -3, ... on collision). */
+/** Ensure a seller slug is unique (append -2, -3, ... on collision). Phase 6b:
+ *  indexed `seller_profiles.slug` probes, was a `store.all("users.json")` slug-set. */
 async function uniqueSlug(base) {
-  const users = await store.all("users.json");
-  const taken = new Set(
-    users.map((u) => u.sellerProfile && u.sellerProfile.slug).filter(Boolean)
-  );
   let slug = base || "seller";
   let n = 1;
-  while (taken.has(slug)) {
+  while (await identity.sellerSlugTaken(slug)) {
     n += 1;
     slug = `${base}-${n}`;
   }
@@ -123,20 +122,11 @@ function publicSeller(user, includeContact) {
 // (frontend /search page) — same shaping as /sellers/featured just below (kept
 // field-compatible with FeaturedSellers.tsx's mapSeller()), plus a text filter
 // and real pagination.
-// Active-listing counts per seller (single pass over listings) — shared by
-// /sellers and /sellers/featured.
-function getActiveListingCounts(listings) {
-  const counts = new Map();
-  for (const l of listings) {
-    if (l && l.status === "active" && l.sellerId) {
-      counts.set(l.sellerId, (counts.get(l.sellerId) || 0) + 1);
-    }
-  }
-  return counts;
-}
-
-function computeApprovedSellerCards(users, listings) {
-  const activeCounts = getActiveListingCounts(listings);
+// Phase 6b: `users` is now exactly the approved sellers (identity.getApprovedSellerIds
+// + hydrateUsersByIds), and `activeCounts` is directory.activeListingCountsBySeller()
+// (one GROUP BY) — was store.all("users.json") + store.all("listings.json") +
+// getActiveListingCounts(). Shared by /sellers and /sellers/featured.
+function computeApprovedSellerCards(users, activeCounts) {
   const approved = users.filter(
     (u) => u.sellerProfile && u.sellerProfile.status === "approved"
   );
@@ -172,8 +162,17 @@ function computeApprovedSellerCards(users, listings) {
   });
 }
 
-function getApprovedSellerCards(users, listings) {
-  return computeApprovedSellerCards(users, listings);
+function getApprovedSellerCards(users, activeCounts) {
+  return computeApprovedSellerCards(users, activeCounts);
+}
+
+async function approvedSellersAndCounts() {
+  const ids = await identity.getApprovedSellerIds();
+  const [users, activeCounts] = await Promise.all([
+    identity.hydrateUsersByIds(ids),
+    directory.activeListingCountsBySeller(),
+  ]);
+  return { users, activeCounts };
 }
 
 router.get("/sellers", async (req, res, next) => {
@@ -182,12 +181,8 @@ router.get("/sellers", async (req, res, next) => {
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 12, 1), 50);
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
 
-    const [users, listings] = await Promise.all([
-      store.all("users.json"),
-      store.all("listings.json"),
-    ]);
-
-    const allCards = getApprovedSellerCards(users, listings);
+    const { users, activeCounts } = await approvedSellersAndCounts();
+    const allCards = getApprovedSellerCards(users, activeCounts);
     const filtered = q ? allCards.filter((c) => c._companyNameLc.includes(q)) : allCards;
 
     const total = filtered.length;
@@ -201,8 +196,7 @@ router.get("/sellers", async (req, res, next) => {
   }
 });
 
-function computeFeaturedSellerCards(users, listings) {
-  const activeCounts = getActiveListingCounts(listings);
+function computeFeaturedSellerCards(users, activeCounts) {
   const approved = users.filter(
     (u) => u.sellerProfile && u.sellerProfile.status === "approved"
   );
@@ -236,20 +230,16 @@ function computeFeaturedSellerCards(users, listings) {
   });
 }
 
-function getFeaturedSellerCards(users, listings) {
-  return computeFeaturedSellerCards(users, listings);
+function getFeaturedSellerCards(users, activeCounts) {
+  return computeFeaturedSellerCards(users, activeCounts);
 }
 
 // GET /api/users/sellers/featured — PUBLIC list of up to 8 top sellers.
 // MUST be declared BEFORE "/sellers/:slug" so "featured" isn't captured as a :slug.
 router.get("/sellers/featured", async (req, res, next) => {
   try {
-    const [users, listings] = await Promise.all([
-      store.all("users.json"),
-      store.all("listings.json"),
-    ]);
-
-    const data = getFeaturedSellerCards(users, listings);
+    const { users, activeCounts } = await approvedSellersAndCounts();
+    const data = getFeaturedSellerCards(users, activeCounts);
 
     return res.json({ success: true, data });
   } catch (err) {
@@ -271,10 +261,14 @@ router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
 
-    const listings = await store.findMany(
-      "listings.json",
-      (l) => l.sellerId === user.id && l.status === "active"
-    );
+    // Phase 6b: indexed active-listing-ids probe + per-id composite hydrate (the
+    // document read stays on store by design), was a store.findMany full scan.
+    const listingIds = await directory.activeListingIdsForSeller(user.id);
+    const listings = [];
+    for (const lid of listingIds) {
+      const doc = await store.getById("listings.json", lid);
+      if (doc) listings.push(doc);
+    }
 
     // Gamified trust badges (derived on read) + geo coords stamped from the city.
     const seller = publicSeller(user, !!req.user);
@@ -654,13 +648,9 @@ router.get("/me/analytics", authGuard, async (req, res, next) => {
 /** Ensure an employer slug is unique across all users — its own namespace from
  *  seller slugs (different URL prefix, /employer/:slug vs /seller/:slug). */
 async function uniqueEmployerSlug(base) {
-  const users = await store.all("users.json");
-  const taken = new Set(
-    users.map((u) => u.employerProfile && u.employerProfile.slug).filter(Boolean)
-  );
   let slug = base || "employer";
   let n = 1;
-  while (taken.has(slug)) {
+  while (await identity.employerSlugTaken(slug)) {
     n += 1;
     slug = `${base}-${n}`;
   }
@@ -865,10 +855,12 @@ router.get("/employers/:slug", optionalAuth, async (req, res, next) => {
     if (!user || !user.employerProfile) {
       return res.status(404).json({ success: false, error: "Employer not found" });
     }
-    const jobs = await store.findMany(
-      "jobs.json",
-      (j) => j.employerId === user.id && j.status === "active"
-    );
+    // Phase 6b: jobs.json graduated in Phase 4d — read it through the recruitment
+    // port's repo (criteria → SQL), not a store.findMany predicate scan. No
+    // orderBy → queryBuilder appends "id" ASC, matching the old store.all order.
+    const jobs = await recruitment.jobsRepo.findMany({
+      where: { employerId: user.id, status: "active" },
+    });
     const employer = publicEmployer(user, !!req.user);
     return res.json({ success: true, data: { employer, jobs } });
   } catch (err) {

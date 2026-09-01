@@ -11,6 +11,8 @@
 const {
   listingCountsByCategory,
   firstListingImageBySeller,
+  activeListingCountsBySeller,
+  activeListingIdsForSeller,
 } = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
@@ -19,6 +21,8 @@ const reviewsRepo = require("./repository/review.repository");
 module.exports = {
   listingCountsByCategory,
   firstListingImageBySeller,
+  activeListingCountsBySeller,
+  activeListingIdsForSeller,
   bumpListingViews,
   activeBrandedListingsLean,
   reviewsRepo,

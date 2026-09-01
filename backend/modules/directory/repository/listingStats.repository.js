@@ -65,4 +65,43 @@ async function firstListingImageBySeller(sellerIds = []) {
   return new Map(rows.map((r) => [r.seller_id, r.url || null]));
 }
 
-module.exports = { listingCountsByCategory, firstListingImageBySeller };
+/**
+ * activeListingCountsBySeller() -> Promise<Map<sellerId, count>>
+ *
+ * One GROUP BY, replacing routes/users.js's getActiveListingCounts() which walked
+ * `store.all("listings.json")` (the full composite hydrate of every listing) just
+ * to tally active listings per seller for the /sellers and /sellers/featured cards.
+ */
+async function activeListingCountsBySeller() {
+  const { rows } = await pool.query(
+    `SELECT seller_id, count(*)::int AS n
+       FROM listings
+      WHERE status = 'active' AND seller_id IS NOT NULL
+      GROUP BY seller_id`
+  );
+  return new Map(rows.map((r) => [r.seller_id, r.n]));
+}
+
+/**
+ * activeListingIdsForSeller(sellerId) -> Promise<string[]>  (id-ASC)
+ *
+ * The ids of one seller's ACTIVE listings, in the same id-ascending order the old
+ * `store.findMany("listings.json", l => l.sellerId === id && l.status === "active")`
+ * yielded (it filtered `store.all`'s id-ASC output). The caller hydrates each id
+ * with store.getById — the composite document read stays on `store` by design
+ * (BACKEND-AUDIT.md), this only removes the every-listing scan.
+ */
+async function activeListingIdsForSeller(sellerId) {
+  const { rows } = await pool.query(
+    `SELECT id FROM listings WHERE seller_id = $1 AND status = 'active' ORDER BY id ASC`,
+    [sellerId]
+  );
+  return rows.map((r) => r.id);
+}
+
+module.exports = {
+  listingCountsByCategory,
+  firstListingImageBySeller,
+  activeListingCountsBySeller,
+  activeListingIdsForSeller,
+};
