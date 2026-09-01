@@ -8,7 +8,8 @@
  */
 
 const { pool, ping, close } = require("./pool");
-const { createRepository } = require("./repository");
+const { nextId, seedCounter } = require("./ids");
+const { createRepository, repoForCollection } = require("./repository");
 const { buildWhere, buildOrderBy, escapeLike } = require("./queryBuilder");
 const { paginationOf, totalPagesFor } = require("./pagination");
 const { ok, okPaged } = require("./envelope");
@@ -17,7 +18,8 @@ const { crudRouter } = require("./crudRouter");
 
 module.exports = {
   pool, ping, close,
-  createRepository,
+  nextId, seedCounter,
+  createRepository, repoForCollection,
   buildWhere, buildOrderBy, escapeLike,
   paginationOf, totalPagesFor,
   ok, okPaged,

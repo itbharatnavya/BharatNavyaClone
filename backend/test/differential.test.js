@@ -17,9 +17,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const store = require("../lib/store");
-const { pool, createRepository } = require("../modules/_shared");
+const { pool, createRepository, nextId } = require("../modules/_shared");
 const { buildFlatConfigs } = require("../modules/_shared/mappings/flat.mappings");
-const { nextId } = require("../lib/pg-store");
 
 const CONFIGS = Object.fromEntries(buildFlatConfigs(nextId).map((c) => [c.file, c]));
 const repoFor = (file) => createRepository({ pool, mapping: CONFIGS[file] });

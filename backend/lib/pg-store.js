@@ -6,6 +6,7 @@
  */
 
 const { pool, ping, close } = require("../modules/_shared/pool");
+const { nextId, seedCounter } = require("../modules/_shared/ids");
 const { FlatCollectionStore, buildFlatConfigs } = require("./db/flat");
 const { createUsersStore } = require("./db/users");
 const { createListingsStore } = require("./db/listings");
@@ -19,47 +20,8 @@ const { createSettingsStore } = require("./db/settings");
 // repository (Phase 2). Re-exported below so store.js consumers are unaffected.
 const _locks = new Map();
 
-/* ------------------------------------------------------------- id counters ---- */
-
-async function ensureCountersTable() {
-  await pool.query(
-    `CREATE TABLE IF NOT EXISTS counters (key TEXT PRIMARY KEY, value BIGINT NOT NULL DEFAULT 0)`
-  );
-}
-
-async function nextId(prefix) {
-  await ensureCountersTable();
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const res = await client.query(`SELECT value FROM counters WHERE key = $1 FOR UPDATE`, [prefix]);
-    const current = res.rowCount ? Number(res.rows[0].value) : 0;
-    const next = current + 1;
-    if (res.rowCount) {
-      await client.query(`UPDATE counters SET value = $1 WHERE key = $2`, [next, prefix]);
-    } else {
-      await client.query(`INSERT INTO counters(key, value) VALUES($1, $2)`, [prefix, next]);
-    }
-    await client.query("COMMIT");
-    return `${prefix}_${String(next).padStart(6, "0")}`;
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
-  } finally {
-    client.release();
-  }
-}
-
-/** Seed a counter's floor (raises only — GREATEST) so post-migration ids never collide
- *  with ids already present in the migrated data. */
-async function seedCounter(prefix, value) {
-  await ensureCountersTable();
-  await pool.query(
-    `INSERT INTO counters(key, value) VALUES ($1, $2)
-     ON CONFLICT (key) DO UPDATE SET value = GREATEST(counters.value, EXCLUDED.value)`,
-    [prefix, value]
-  );
-}
+// nextId / seedCounter moved to modules/_shared/ids.js (Phase 4d) — imported above,
+// re-exported below so lib/pg-store.js consumers (migration scripts) are unaffected.
 
 /* -------------------------------------------------------------- mutex ------- */
 

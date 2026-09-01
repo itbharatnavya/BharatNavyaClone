@@ -18,9 +18,11 @@
  * (anti-divergence mechanism #2). No cache in here (mechanism #4).
  */
 
-const { FlatCollectionStore } = require("./mappings/flat.mappings");
+const { FlatCollectionStore, buildFlatConfigs } = require("./mappings/flat.mappings");
 const { withTransaction, quoteIdent } = require("../../lib/db/util");
 const { buildWhere, buildOrderBy } = require("./queryBuilder");
+const { pool: sharedPool } = require("./pool");
+const { nextId } = require("./ids");
 
 function createRepository({ pool, mapping }) {
   if (!pool) throw new Error("createRepository: pool is required");
@@ -139,4 +141,21 @@ function createRepository({ pool, mapping }) {
   };
 }
 
-module.exports = { createRepository };
+/**
+ * repoForCollection("jobs.json") — a repository over a flat collection, using the
+ * shared pool and the ONE flat-mapping source. The convenience a module wants:
+ *   const jobs = repoForCollection("jobs.json");
+ * instead of re-plumbing pool + buildFlatConfigs + createRepository each time.
+ * Composite collections (users.json, listings.json) are not flat — not available here.
+ */
+let _flatConfigs;
+function repoForCollection(file) {
+  if (!_flatConfigs) {
+    _flatConfigs = Object.fromEntries(buildFlatConfigs(nextId).map((c) => [c.file, c]));
+  }
+  const mapping = _flatConfigs[file];
+  if (!mapping) throw new Error(`repoForCollection: no flat mapping for "${file}"`);
+  return createRepository({ pool: sharedPool, mapping });
+}
+
+module.exports = { createRepository, repoForCollection };
