@@ -1,0 +1,252 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Surat",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@suryodaytextiles-demo.example",
+          "employerProfile": {
+            "companyName": "Suryoday Textile Mills Pvt Ltd",
+            "isVerified": false,
+            "slug": "suryoday-textile-mills",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp4",
+          "interests": [],
+          "mobile": "9876503004",
+          "name": "Suryoday Textile Mills",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Surat",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "suratsilktextilemills@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "seller"
+          ],
+          "id": "usr_cat_textilesfabricsyarn",
+          "interests": [],
+          "mobile": "9896835978",
+          "name": "Surat Silk & Textile Mills",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "Manufacturer and wholesaler of cotton, silk and synthetic fabrics, yarn and technical textiles, supplying garment units and traders pan-India.",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": true,
+            "annualTurnover": "₹1–5 Cr",
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [
+              "ISO 9001:2015",
+              "OEKO-TEX Standard 100"
+            ],
+            "cinNumber": "U20660242014PTC538450",
+            "companyName": "Surat Silk & Textile Mills",
+            "contactEmail": "suratsilktextilemills@example.com",
+            "contactMobile": "9800000000",
+            "coverImage": "/demo/textile-5.jpg",
+            "employeeCount": "11-50",
+            "featuredCredits": 3,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": "24ABCDE2630F1Z5",
+            "isFeaturedSeller": true,
+            "isVerified": true,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Surat",
+              "pincode": "",
+              "state": "Gujarat"
+            },
+            "logo": null,
+            "natureOfBusiness": "Manufacturer",
+            "panNumber": "ABCDE2630F",
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 1,
+              "onTimeDelivery": 94,
+              "orderCompletion": 99,
+              "performanceScore": 92,
+              "repeatBuyers": 64
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "silver",
+            "priorityTier": "star",
+            "rankBoostScore": 0,
+            "rating": 5,
+            "responseRate": 88,
+            "reviewCount": 1,
+            "slug": "surat-silk-textile-mills",
+            "status": "approved",
+            "trustSealVerified": true,
+            "verifiedBadgeExpiry": null,
+            "website": "https://www.surat-silk-textile-mills.example.com",
+            "yearEstablished": 2014
+          },
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Ahmedabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "sales@arvindtextiles.example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "seller"
+          ],
+          "id": "usr_s001",
+          "interests": [],
+          "mobile": "9898989801",
+          "name": "Arvind Textiles Pvt Ltd",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "Leading textile manufacturer based in Ahmedabad with 30+ years of expertise in cotton and synthetic fabrics. We supply woven and knitted fabrics to garment exporters across India and the Middle East.",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": true,
+            "annualTurnover": "₹25–100 Cr",
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [
+              "ISO 9001:2015",
+              "OEKO-TEX Standard 100"
+            ],
+            "cinNumber": "U20500MH2010PTC100500",
+            "companyName": "Arvind Textiles Pvt Ltd",
+            "contactEmail": "sales@arvindtextiles.example.com",
+            "contactMobile": "9898989801",
+            "coverImage": "/demo/industry-3.jpg",
+            "employeeCount": "500-1000",
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": "24AAAAA0000A1Z5",
+            "isFeaturedSeller": false,
+            "isVerified": true,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [
+              "Textiles"
+            ],
+            "listingLimit": null,
+            "location": {
+              "city": "Ahmedabad",
+              "pincode": "380001",
+              "state": "Gujarat"
+            },
+            "locations": [
+              {
+                "address": "",
+                "city": "Ahmedabad",
+                "id": "loc_1785504101174_0_cjr23b",
+                "label": "Head Office",
+                "pincode": "380001",
+                "state": "Gujarat"
+              },
+              {
+                "address": "",
+                "city": "Mumbai",
+                "id": "loc_1785504101174_1_0sw3gv",
+                "label": "Mumbai Branch",
+                "pincode": "",
+                "state": "Maharashtra"
+              }
+            ],
+            "logo": null,
+            "natureOfBusiness": "Manufacturer",
+            "panNumber": "ABCDE1500F",
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 2,
+              "onTimeDelivery": 96,
+              "orderCompletion": 94,
+              "performanceScore": 85,
+              "repeatBuyers": 46
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "gold",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 5,
+            "responseRate": 96,
+            "reviewCount": 1,
+            "slug": "arvind-textiles-pvt-ltd",
+            "status": "approved",
+            "trustSealVerified": true,
+            "verifiedBadgeExpiry": null,
+            "website": "https://arvindtextiles.example.com",
+            "yearEstablished": 1991
+          },
+          "state": "Gujarat",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 1,
+        "buyers": 23,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 60,
+        "suspended": 0,
+        "total": 125
+      },
+      "total": 3,
+      "totalPages": 1
+    },
+    "success": true
+  }
+}

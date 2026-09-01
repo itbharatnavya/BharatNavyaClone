@@ -1,0 +1,696 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "id": "sk_node-js",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Node.js",
+        "order": 0,
+        "slug": "node-js"
+      },
+      {
+        "id": "sk_react",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "React",
+        "order": 1,
+        "slug": "react"
+      },
+      {
+        "id": "sk_typescript",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "TypeScript",
+        "order": 2,
+        "slug": "typescript"
+      },
+      {
+        "id": "sk_python",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Python",
+        "order": 3,
+        "slug": "python"
+      },
+      {
+        "id": "sk_java",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Java",
+        "order": 4,
+        "slug": "java"
+      },
+      {
+        "id": "sk_postgresql",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "PostgreSQL",
+        "order": 5,
+        "slug": "postgresql"
+      },
+      {
+        "id": "sk_mongodb",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "MongoDB",
+        "order": 6,
+        "slug": "mongodb"
+      },
+      {
+        "id": "sk_aws",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "AWS",
+        "order": 7,
+        "slug": "aws"
+      },
+      {
+        "id": "sk_docker",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Docker",
+        "order": 8,
+        "slug": "docker"
+      },
+      {
+        "id": "sk_kubernetes",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Kubernetes",
+        "order": 9,
+        "slug": "kubernetes"
+      },
+      {
+        "id": "sk_rest-apis",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "REST APIs",
+        "order": 10,
+        "slug": "rest-apis"
+      },
+      {
+        "id": "sk_graphql",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "GraphQL",
+        "order": 11,
+        "slug": "graphql"
+      },
+      {
+        "id": "sk_ci-cd",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "CI/CD",
+        "order": 12,
+        "slug": "ci-cd"
+      },
+      {
+        "id": "sk_git",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Git",
+        "order": 13,
+        "slug": "git"
+      },
+      {
+        "id": "sk_microservices",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Microservices",
+        "order": 14,
+        "slug": "microservices"
+      },
+      {
+        "id": "sk_system-design",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "System Design",
+        "order": 15,
+        "slug": "system-design"
+      },
+      {
+        "id": "sk_android-kotlin",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Android (Kotlin)",
+        "order": 16,
+        "slug": "android-kotlin"
+      },
+      {
+        "id": "sk_ios-swift",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "iOS (Swift)",
+        "order": 17,
+        "slug": "ios-swift"
+      },
+      {
+        "id": "sk_machine-learning",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Machine Learning",
+        "order": 18,
+        "slug": "machine-learning"
+      },
+      {
+        "id": "sk_data-structures-algorithms",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "name": "Data Structures & Algorithms",
+        "order": 19,
+        "slug": "data-structures-algorithms"
+      },
+      {
+        "id": "sk_b2b-sales",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "B2B Sales",
+        "order": 20,
+        "slug": "b2b-sales"
+      },
+      {
+        "id": "sk_b2c-sales",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "B2C Sales",
+        "order": 21,
+        "slug": "b2c-sales"
+      },
+      {
+        "id": "sk_negotiation",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Negotiation",
+        "order": 22,
+        "slug": "negotiation"
+      },
+      {
+        "id": "sk_lead-generation",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Lead Generation",
+        "order": 23,
+        "slug": "lead-generation"
+      },
+      {
+        "id": "sk_crm-software",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "CRM Software",
+        "order": 24,
+        "slug": "crm-software"
+      },
+      {
+        "id": "sk_distributor-management",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Distributor Management",
+        "order": 25,
+        "slug": "distributor-management"
+      },
+      {
+        "id": "sk_channel-sales",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Channel Sales",
+        "order": 26,
+        "slug": "channel-sales"
+      },
+      {
+        "id": "sk_cold-calling",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Cold Calling",
+        "order": 27,
+        "slug": "cold-calling"
+      },
+      {
+        "id": "sk_account-management",
+        "isActive": true,
+        "jobFunction": "sales",
+        "name": "Account Management",
+        "order": 28,
+        "slug": "account-management"
+      },
+      {
+        "id": "sk_seo",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "SEO",
+        "order": 29,
+        "slug": "seo"
+      },
+      {
+        "id": "sk_google-ads-sem",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Google Ads (SEM)",
+        "order": 30,
+        "slug": "google-ads-sem"
+      },
+      {
+        "id": "sk_content-writing",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Content Writing",
+        "order": 31,
+        "slug": "content-writing"
+      },
+      {
+        "id": "sk_social-media-marketing",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Social Media Marketing",
+        "order": 32,
+        "slug": "social-media-marketing"
+      },
+      {
+        "id": "sk_email-marketing",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Email Marketing",
+        "order": 33,
+        "slug": "email-marketing"
+      },
+      {
+        "id": "sk_google-analytics",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Google Analytics",
+        "order": 34,
+        "slug": "google-analytics"
+      },
+      {
+        "id": "sk_brand-strategy",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Brand Strategy",
+        "order": 35,
+        "slug": "brand-strategy"
+      },
+      {
+        "id": "sk_marketing-automation",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Marketing Automation",
+        "order": 36,
+        "slug": "marketing-automation"
+      },
+      {
+        "id": "sk_copywriting",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "name": "Copywriting",
+        "order": 37,
+        "slug": "copywriting"
+      },
+      {
+        "id": "sk_figma",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Figma",
+        "order": 38,
+        "slug": "figma"
+      },
+      {
+        "id": "sk_adobe-xd",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Adobe XD",
+        "order": 39,
+        "slug": "adobe-xd"
+      },
+      {
+        "id": "sk_sketch",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Sketch",
+        "order": 40,
+        "slug": "sketch"
+      },
+      {
+        "id": "sk_photoshop",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Photoshop",
+        "order": 41,
+        "slug": "photoshop"
+      },
+      {
+        "id": "sk_illustrator",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Illustrator",
+        "order": 42,
+        "slug": "illustrator"
+      },
+      {
+        "id": "sk_design-systems",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Design Systems",
+        "order": 43,
+        "slug": "design-systems"
+      },
+      {
+        "id": "sk_user-research",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "User Research",
+        "order": 44,
+        "slug": "user-research"
+      },
+      {
+        "id": "sk_wireframing",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Wireframing",
+        "order": 45,
+        "slug": "wireframing"
+      },
+      {
+        "id": "sk_prototyping",
+        "isActive": true,
+        "jobFunction": "design",
+        "name": "Prototyping",
+        "order": 46,
+        "slug": "prototyping"
+      },
+      {
+        "id": "sk_supply-chain-management",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Supply Chain Management",
+        "order": 47,
+        "slug": "supply-chain-management"
+      },
+      {
+        "id": "sk_inventory-management",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Inventory Management",
+        "order": 48,
+        "slug": "inventory-management"
+      },
+      {
+        "id": "sk_vendor-management",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Vendor Management",
+        "order": 49,
+        "slug": "vendor-management"
+      },
+      {
+        "id": "sk_logistics-planning",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Logistics Planning",
+        "order": 50,
+        "slug": "logistics-planning"
+      },
+      {
+        "id": "sk_six-sigma",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Six Sigma",
+        "order": 51,
+        "slug": "six-sigma"
+      },
+      {
+        "id": "sk_erp-software",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "ERP Software",
+        "order": 52,
+        "slug": "erp-software"
+      },
+      {
+        "id": "sk_warehouse-operations",
+        "isActive": true,
+        "jobFunction": "operations",
+        "name": "Warehouse Operations",
+        "order": 53,
+        "slug": "warehouse-operations"
+      },
+      {
+        "id": "sk_customer-service",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "name": "Customer Service",
+        "order": 54,
+        "slug": "customer-service"
+      },
+      {
+        "id": "sk_zendesk",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "name": "Zendesk",
+        "order": 55,
+        "slug": "zendesk"
+      },
+      {
+        "id": "sk_ticketing-systems",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "name": "Ticketing Systems",
+        "order": 56,
+        "slug": "ticketing-systems"
+      },
+      {
+        "id": "sk_conflict-resolution",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "name": "Conflict Resolution",
+        "order": 57,
+        "slug": "conflict-resolution"
+      },
+      {
+        "id": "sk_tally",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "Tally",
+        "order": 58,
+        "slug": "tally"
+      },
+      {
+        "id": "sk_sap",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "SAP",
+        "order": 59,
+        "slug": "sap"
+      },
+      {
+        "id": "sk_financial-modeling",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "Financial Modeling",
+        "order": 60,
+        "slug": "financial-modeling"
+      },
+      {
+        "id": "sk_gst-compliance",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "GST Compliance",
+        "order": 61,
+        "slug": "gst-compliance"
+      },
+      {
+        "id": "sk_excel",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "Excel",
+        "order": 62,
+        "slug": "excel"
+      },
+      {
+        "id": "sk_budgeting",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "Budgeting",
+        "order": 63,
+        "slug": "budgeting"
+      },
+      {
+        "id": "sk_auditing",
+        "isActive": true,
+        "jobFunction": "finance",
+        "name": "Auditing",
+        "order": 64,
+        "slug": "auditing"
+      },
+      {
+        "id": "sk_recruitment",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Recruitment",
+        "order": 65,
+        "slug": "recruitment"
+      },
+      {
+        "id": "sk_onboarding",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Onboarding",
+        "order": 66,
+        "slug": "onboarding"
+      },
+      {
+        "id": "sk_hris",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "HRIS",
+        "order": 67,
+        "slug": "hris"
+      },
+      {
+        "id": "sk_performance-management",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Performance Management",
+        "order": 68,
+        "slug": "performance-management"
+      },
+      {
+        "id": "sk_employee-engagement",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Employee Engagement",
+        "order": 69,
+        "slug": "employee-engagement"
+      },
+      {
+        "id": "sk_payroll-processing",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Payroll Processing",
+        "order": 70,
+        "slug": "payroll-processing"
+      },
+      {
+        "id": "sk_labour-law-compliance",
+        "isActive": true,
+        "jobFunction": "hr",
+        "name": "Labour Law Compliance",
+        "order": 71,
+        "slug": "labour-law-compliance"
+      },
+      {
+        "id": "sk_product-strategy",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "Product Strategy",
+        "order": 72,
+        "slug": "product-strategy"
+      },
+      {
+        "id": "sk_roadmapping",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "Roadmapping",
+        "order": 73,
+        "slug": "roadmapping"
+      },
+      {
+        "id": "sk_a-b-testing",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "A/B Testing",
+        "order": 74,
+        "slug": "a-b-testing"
+      },
+      {
+        "id": "sk_user-stories",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "User Stories",
+        "order": 75,
+        "slug": "user-stories"
+      },
+      {
+        "id": "sk_agile-scrum",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "Agile/Scrum",
+        "order": 76,
+        "slug": "agile-scrum"
+      },
+      {
+        "id": "sk_market-research",
+        "isActive": true,
+        "jobFunction": "product",
+        "name": "Market Research",
+        "order": 77,
+        "slug": "market-research"
+      },
+      {
+        "id": "sk_communication",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Communication",
+        "order": 78,
+        "slug": "communication"
+      },
+      {
+        "id": "sk_leadership",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Leadership",
+        "order": 79,
+        "slug": "leadership"
+      },
+      {
+        "id": "sk_problem-solving",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Problem Solving",
+        "order": 80,
+        "slug": "problem-solving"
+      },
+      {
+        "id": "sk_team-management",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Team Management",
+        "order": 81,
+        "slug": "team-management"
+      },
+      {
+        "id": "sk_time-management",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Time Management",
+        "order": 82,
+        "slug": "time-management"
+      },
+      {
+        "id": "sk_ms-office",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "MS Office",
+        "order": 83,
+        "slug": "ms-office"
+      },
+      {
+        "id": "sk_english-proficiency",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "English Proficiency",
+        "order": 84,
+        "slug": "english-proficiency"
+      },
+      {
+        "id": "sk_presentation-skills",
+        "isActive": true,
+        "jobFunction": null,
+        "name": "Presentation Skills",
+        "order": 85,
+        "slug": "presentation-skills"
+      }
+    ],
+    "success": true
+  }
+}

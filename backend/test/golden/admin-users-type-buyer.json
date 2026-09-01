@@ -1,0 +1,582 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Guwahati",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "akash@yopmail.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000052",
+          "interests": [],
+          "mobile": "9856234170",
+          "name": "akash",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Assam",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000050",
+          "interests": [],
+          "mobile": "9000001804",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000049",
+          "interests": [],
+          "mobile": "9000018152",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "fresh846439@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000044",
+          "interests": [],
+          "mobile": "9666684643",
+          "name": "Mobile Fresh",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "fresh751142@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000041",
+          "interests": [],
+          "mobile": "9666675114",
+          "name": "Mobile Fresh",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec435159@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000036",
+          "interests": [],
+          "mobile": "9777743515",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec323367@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000034",
+          "interests": [],
+          "mobile": "9777732336",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "dbg2300220@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000032",
+          "interests": [],
+          "mobile": "9888830022",
+          "name": "Debug User2",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "dbg213666@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000031",
+          "interests": [],
+          "mobile": "9888821366",
+          "name": "Debug User",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec075121@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000030",
+          "interests": [],
+          "mobile": "9777707512",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "cand075121@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000029",
+          "interests": [],
+          "mobile": "9888807512",
+          "name": "Test Candidate",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000025",
+          "interests": [],
+          "mobile": "5986321047",
+          "name": "5986321047",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "testemp.live@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000021",
+          "interests": [],
+          "mobile": "9991110002",
+          "name": "Test Employer Live",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "testcand.live@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000020",
+          "interests": [],
+          "mobile": "9991110001",
+          "name": "Test Candidate Live",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000010",
+          "interests": [],
+          "mobile": "9800000000",
+          "name": "9800000000",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000008",
+          "interests": [],
+          "mobile": "9998887772",
+          "name": "Test QA2",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000007",
+          "interests": [],
+          "mobile": "9998887771",
+          "name": "Test QA",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Ahmedabad",
+          "contactVisibility": "on_request",
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000005",
+          "interests": [
+            "textiles-fabrics-yarn",
+            "cotton-fabric",
+            "silk-fabric",
+            "synthetic-fabric",
+            "woolen-fabric",
+            "yarn-thread",
+            "printing-machinery",
+            "surgical-instruments",
+            "income-tax-services"
+          ],
+          "mobile": "7878787878",
+          "name": "Explorer",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Lucknow",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "karan.singh@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_b005",
+          "interests": [],
+          "legacy": {
+            "activeYears": 4,
+            "annualTurnover": "₹1-5 Cr",
+            "company": "Singh Builders",
+            "gstNumber": "211AABCB1004Q1Z4",
+            "trustScore": 73,
+            "verification": {
+              "emailVerified": true,
+              "gstVerified": true,
+              "linkedinPresence": true,
+              "phoneVerified": true,
+              "websiteVerified": false
+            },
+            "website": null
+          },
+          "mobile": "9811112205",
+          "name": "Karan Singh",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "sneha.iyer@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_b004",
+          "interests": [],
+          "legacy": {
+            "activeYears": 9,
+            "annualTurnover": "₹25 Cr+",
+            "company": "Iyer Healthcare",
+            "gstNumber": "210AABCB1003Q1Z3",
+            "trustScore": 86,
+            "verification": {
+              "emailVerified": true,
+              "gstVerified": true,
+              "linkedinPresence": false,
+              "phoneVerified": true,
+              "websiteVerified": true
+            },
+            "website": "https://iyerhealthcare.example.com"
+          },
+          "mobile": "9811112204",
+          "name": "Sneha Iyer",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 1,
+        "buyers": 23,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 60,
+        "suspended": 0,
+        "total": 125
+      },
+      "total": 23,
+      "totalPages": 2
+    },
+    "success": true
+  }
+}

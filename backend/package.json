@@ -12,7 +12,10 @@
     "migrate-schema": "node scripts/migrate-schema.js",
     "migrate-schema:status": "node scripts/migrate-schema.js --status",
     "seed-recruitment-demo": "node scripts/seed-recruitment-demo.js",
-    "test": "node --test test/*.test.js"
+    "test:setup": "node scripts/setup-test-db.js",
+    "test": "node --test --test-concurrency=1 --require ./test/_env.js test/*.test.js",
+    "test:goldens": "node --test --test-concurrency=1 --require ./test/_env.js test/golden.test.js",
+    "goldens:update": "node scripts/update-goldens.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",

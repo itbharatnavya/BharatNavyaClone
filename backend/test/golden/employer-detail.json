@@ -1,0 +1,77 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "employer": {
+        "about": "",
+        "applicationQuota": null,
+        "avatarUrl": null,
+        "benefits": [],
+        "companyName": "Acme Testing Pvt Ltd",
+        "companySize": null,
+        "coverImage": null,
+        "createdAt": "<volatile>",
+        "employeeCount": null,
+        "id": "usr_000038",
+        "industry": null,
+        "isVerified": false,
+        "jobPostLimit": null,
+        "location": {
+          "city": "",
+          "state": ""
+        },
+        "logo": null,
+        "name": "Test Recruiter",
+        "planTier": "free",
+        "slug": "acme-testing-pvt-ltd",
+        "status": "pending",
+        "website": null,
+        "workingHours": null
+      },
+      "jobs": [
+        {
+          "applicationCount": 0,
+          "benefits": [],
+          "description": "",
+          "employerId": "usr_000038",
+          "employmentType": null,
+          "experienceLevel": null,
+          "expiresAt": null,
+          "id": "job_000004",
+          "jobFunction": null,
+          "location": {
+            "city": "Mumbai",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": [
+            {
+              "id": "new_1787570528923_0",
+              "required": true,
+              "text": "Are you willing to relocate to Mumbai?"
+            },
+            {
+              "id": "new_1787570529207_1",
+              "required": false,
+              "text": "What is your notice period?"
+            }
+          ],
+          "requirements": [],
+          "responsibilities": [],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true
+          },
+          "skills": [],
+          "status": "active",
+          "title": "QA Test Role 519937",
+          "viewCount": 0
+        }
+      ]
+    },
+    "success": true
+  }
+}

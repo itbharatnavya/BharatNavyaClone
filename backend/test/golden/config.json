@@ -1,0 +1,67 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "branding": {
+        "accentBlue": "#2563EB",
+        "accentOrange": "#F97316",
+        "logoText": "BharatSource",
+        "siteName": "BharatSource",
+        "tagline": "India's business suite — source smart, hire right."
+      },
+      "contact": {
+        "address": "India",
+        "email": "hello@bharatsource.in",
+        "phone": "+91 00000 00000"
+      },
+      "featureFlags": {
+        "ads": true,
+        "ai": true,
+        "aiAutofill": true,
+        "blogs": true,
+        "chat": true,
+        "featuredListings": true,
+        "follow": true,
+        "mapView": true,
+        "multiLanguage": true,
+        "nearMe": true,
+        "notifications": true,
+        "recruitmentLive": true,
+        "referral": true,
+        "reports": true,
+        "reviews": true,
+        "stories": true,
+        "storyHighlights": true,
+        "voiceSearch": true
+      },
+      "footer": {
+        "about": "One account for sourcing and hiring: verified suppliers on Directory, vetted candidates on Recruitment. A mediator platform, we never process payments or hold inventory."
+      },
+      "homepage": {
+        "featuredCategorySlugs": [
+          "textiles-fabrics-yarn",
+          "professional-consulting-services",
+          "electronics-electrical",
+          "packaging-printing",
+          "building-construction",
+          "automotive-parts-accessories",
+          "home-local-services",
+          "accounting"
+        ],
+        "heroExamples": [
+          "CA in Pune for GST filing",
+          "stainless steel sheet suppliers",
+          "robotic vacuum cleaner distributor",
+          "wheat flour (atta) wholesaler"
+        ],
+        "heroSubtitle": "From a CA for GST filing to a supplier of steel or flour — describe what you need and let AI find the right vendor.",
+        "heroTitle": "Find any vendor. Sell anything.",
+        "showCategoryGrid": true,
+        "showFeaturedSellers": true,
+        "showStories": true,
+        "showTrending": true
+      }
+    },
+    "success": true
+  }
+}

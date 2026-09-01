@@ -1,0 +1,71 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "id": "jf_engineering",
+        "isActive": true,
+        "name": "Engineering",
+        "order": 1,
+        "slug": "engineering"
+      },
+      {
+        "id": "jf_sales",
+        "isActive": true,
+        "name": "Sales",
+        "order": 2,
+        "slug": "sales"
+      },
+      {
+        "id": "jf_marketing",
+        "isActive": true,
+        "name": "Marketing",
+        "order": 3,
+        "slug": "marketing"
+      },
+      {
+        "id": "jf_design",
+        "isActive": true,
+        "name": "Design",
+        "order": 4,
+        "slug": "design"
+      },
+      {
+        "id": "jf_operations",
+        "isActive": true,
+        "name": "Operations",
+        "order": 5,
+        "slug": "operations"
+      },
+      {
+        "id": "jf_customer-support",
+        "isActive": true,
+        "name": "Customer Support",
+        "order": 6,
+        "slug": "customer-support"
+      },
+      {
+        "id": "jf_finance",
+        "isActive": true,
+        "name": "Finance",
+        "order": 7,
+        "slug": "finance"
+      },
+      {
+        "id": "jf_hr",
+        "isActive": true,
+        "name": "Human Resources",
+        "order": 8,
+        "slug": "hr"
+      },
+      {
+        "id": "jf_product",
+        "isActive": true,
+        "name": "Product",
+        "order": 9,
+        "slug": "product"
+      }
+    ],
+    "success": true
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Guwahati",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "akash@yopmail.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000052",
+          "interests": [],
+          "mobile": "9856234170",
+          "name": "akash",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Assam",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000050",
+          "interests": [],
+          "mobile": "9000001804",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000049",
+          "interests": [],
+          "mobile": "9000018152",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": "/uploads/up_1787641801837_0xus3h.jpg",
+          "candidateProfile": {
+            "headline": "Senior Backend Engineer — Node.js & Distributed Systems",
+            "resumeUrl": "/uploads/up_1787641801871_yca9kv.pdf",
+            "skills": [
+              "Node.js",
+              "PostgreSQL",
+              "AWS",
+              "Redis",
+              "System Design",
+              "Docker"
+            ]
+          },
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rahul.mehta.qatest@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_000048",
+          "interests": [],
+          "mobile": "9000000092",
+          "name": "Rahul Mehta",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": "active"
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@brightpathqa-test.example",
+          "employerProfile": {
+            "companyName": "BrightPath Technologies Pvt Ltd",
+            "isVerified": true,
+            "slug": "brightpath-technologies-pvt-ltd",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "seller",
+            "employer"
+          ],
+          "id": "usr_000047",
+          "interests": [],
+          "mobile": "9000000091",
+          "name": "Ananya Kapoor",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "It company",
+            "contactEmail": "hr@brightpathqa-test.example",
+            "contactMobile": "9000000091",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": false,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Bengaluru",
+              "pincode": "",
+              "state": "Karnataka"
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 0,
+              "onTimeDelivery": 0,
+              "orderCompletion": 0,
+              "performanceScore": 0,
+              "repeatBuyers": 0
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "it-company",
+            "status": "pending",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "Karnataka",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 1,
+        "buyers": 23,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 60,
+        "suspended": 0,
+        "total": 125
+      },
+      "total": 125,
+      "totalPages": 25
+    },
+    "success": true
+  }
+}

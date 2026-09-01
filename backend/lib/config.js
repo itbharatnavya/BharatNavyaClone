@@ -85,7 +85,17 @@ module.exports = {
   // When there's no API key, the AI paths fall back to the locally authenticated
   // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
   AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
-  PG_URL: process.env.PG_URL || process.env.DATABASE_URL || null,
+  // In the test env (NODE_ENV=test — set by test/_env.js), PG_URL_TEST takes
+  // precedence so `npm test` runs against a dedicated, disposable database
+  // (scripts/setup-test-db.js builds it) and never the working dev DB. Falls back
+  // to the normal PG_URL when PG_URL_TEST is unset, so a machine without a test DB
+  // still runs the suite the way it did before (BACKEND-AUDIT.md Phase 0).
+  PG_URL:
+    (NODE_ENV === "test" &&
+      (process.env.PG_URL_TEST || process.env.DATABASE_URL_TEST)) ||
+    process.env.PG_URL ||
+    process.env.DATABASE_URL ||
+    null,
 
   // --- File uploads (backend/lib/uploadStorage.js) ---
   // "local" (default, dev) writes into frontend/public/uploads/, served as a static

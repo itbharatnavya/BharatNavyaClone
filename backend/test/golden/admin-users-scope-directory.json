@@ -1,0 +1,731 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Guwahati",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "akash@yopmail.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000052",
+          "interests": [],
+          "mobile": "9856234170",
+          "name": "akash",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Assam",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000050",
+          "interests": [],
+          "mobile": "9000001804",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000049",
+          "interests": [],
+          "mobile": "9000018152",
+          "name": "Test User CDP",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@brightpathqa-test.example",
+          "employerProfile": {
+            "companyName": "BrightPath Technologies Pvt Ltd",
+            "isVerified": true,
+            "slug": "brightpath-technologies-pvt-ltd",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "seller",
+            "employer"
+          ],
+          "id": "usr_000047",
+          "interests": [],
+          "mobile": "9000000091",
+          "name": "Ananya Kapoor",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "It company",
+            "contactEmail": "hr@brightpathqa-test.example",
+            "contactMobile": "9000000091",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": false,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Bengaluru",
+              "pincode": "",
+              "state": "Karnataka"
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 0,
+              "onTimeDelivery": 0,
+              "orderCompletion": 0,
+              "performanceScore": 0,
+              "repeatBuyers": 0
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "it-company",
+            "status": "pending",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "fresh846439@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000044",
+          "interests": [],
+          "mobile": "9666684643",
+          "name": "Mobile Fresh",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "fresh751142@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000041",
+          "interests": [],
+          "mobile": "9666675114",
+          "name": "Mobile Fresh",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec435159@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000036",
+          "interests": [],
+          "mobile": "9777743515",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec323367@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000034",
+          "interests": [],
+          "mobile": "9777732336",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "dbg2300220@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000032",
+          "interests": [],
+          "mobile": "9888830022",
+          "name": "Debug User2",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "dbg213666@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000031",
+          "interests": [],
+          "mobile": "9888821366",
+          "name": "Debug User",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec075121@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000030",
+          "interests": [],
+          "mobile": "9777707512",
+          "name": "Test Recruiter",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "cand075121@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000029",
+          "interests": [],
+          "mobile": "9888807512",
+          "name": "Test Candidate",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000025",
+          "interests": [],
+          "mobile": "5986321047",
+          "name": "5986321047",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "testemp.live@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000021",
+          "interests": [],
+          "mobile": "9991110002",
+          "name": "Test Employer Live",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "testcand.live@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000020",
+          "interests": [],
+          "mobile": "9991110001",
+          "name": "Test Candidate Live",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000010",
+          "interests": [],
+          "mobile": "9800000000",
+          "name": "9800000000",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Ahmedabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "seller"
+          ],
+          "id": "usr_000009",
+          "interests": [],
+          "mobile": "5623417890",
+          "name": "Rahul",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "Rk mobiles",
+            "contactEmail": null,
+            "contactMobile": "5623417890",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": false,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Ahmedabad",
+              "pincode": "",
+              "state": "Gujarat"
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 0,
+              "onTimeDelivery": 0,
+              "orderCompletion": 0,
+              "performanceScore": 0,
+              "repeatBuyers": 0
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "rk-mobiles",
+            "status": "pending",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000008",
+          "interests": [],
+          "mobile": "9998887772",
+          "name": "Test QA2",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": null,
+          "employerProfile": null,
+          "hats": [
+            "buyer"
+          ],
+          "id": "usr_000007",
+          "interests": [],
+          "mobile": "9998887771",
+          "name": "Test QA",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Kota",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "kotalearningtrainingacademy@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "seller"
+          ],
+          "id": "usr_cat_educationtrainingeve",
+          "interests": [],
+          "mobile": "9833497702",
+          "name": "Kota Learning & Training Academy",
+          "recruitmentRole": null,
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "Training academy and event management partner offering coaching, corporate training, certification programs and event execution.",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": true,
+            "annualTurnover": "₹1–5 Cr",
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [
+              "ISO 9001:2015",
+              "MSME Registered"
+            ],
+            "cinNumber": "U29048082011PTC200797",
+            "companyName": "Kota Learning & Training Academy",
+            "contactEmail": "kotalearningtrainingacademy@example.com",
+            "contactMobile": "9800000000",
+            "coverImage": "/demo/business-2.jpg",
+            "employeeCount": "11-50",
+            "featuredCredits": 3,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": "08ABCDE6316F1Z5",
+            "isFeaturedSeller": true,
+            "isVerified": true,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Kota",
+              "pincode": "",
+              "state": "Rajasthan"
+            },
+            "logo": null,
+            "natureOfBusiness": "Service Provider",
+            "panNumber": "ABCDE6316F",
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 1,
+              "onTimeDelivery": 97,
+              "orderCompletion": 96,
+              "performanceScore": 89,
+              "repeatBuyers": 61
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "gold",
+            "priorityTier": "star",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 94,
+            "reviewCount": 0,
+            "slug": "kota-learning-training-academy",
+            "status": "approved",
+            "trustSealVerified": true,
+            "verifiedBadgeExpiry": null,
+            "website": "https://www.kota-learning-training-academy.example.com",
+            "yearEstablished": 2011
+          },
+          "state": "Rajasthan",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 1,
+        "buyers": 23,
+        "candidates": 0,
+        "employers": 1,
+        "sellers": 60,
+        "suspended": 0,
+        "total": 83
+      },
+      "total": 83,
+      "totalPages": 5
+    },
+    "success": true
+  }
+}

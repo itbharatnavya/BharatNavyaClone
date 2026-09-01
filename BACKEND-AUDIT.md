@@ -20,11 +20,11 @@ Every finding below was verified by reading the code at the cited line, not infe
 
 ## RESUME HERE — current state
 
-**Last worked: 2026-08-31 (IST). Branch: `feature/backend-phase1` (off `feature/ui-phase`; `design` branch merged in — see [Branching & UI integration](#branching--ui-integration-multi-dev) below).**
+**Last worked: 2026-09-01 (IST). Branch: `feature/backend-phase1` (off `feature/ui-phase`; `design` branch merged in — see [Branching & UI integration](#branching--ui-integration-multi-dev) below).**
 
 | Phase | State |
 |---|---|
-| **0 — Safety net** | Partial. `app.js` split from `index.js` (supertest can mount it). `test/phase1-security.test.js` added (9 tests). **Not done:** golden-response harness, `test/architecture.test.js`, `PG_URL_TEST` DB, pagination edge-case tests. |
+| **0 — Safety net** | **Landed (2026-09-01).** `app.js` split (done earlier). `PG_URL_TEST` wiring + `scripts/setup-test-db.js` (`npm run test:setup` — clones the dev DB into a frozen `bharatsource_test`). `test/architecture.test.js` (5 boundary assertions, load-bearing from the first `modules/` commit). `test/golden.test.js` + `test/golden/` (37 fixtures: public Directory reads, public Recruitment reads, `GET /api/admin/users` × 17 branches). `test/pagination.test.js` (page 0 / past-last / limit 0 / limit 9999 / page-disjointness across `/api/jobs`, `/api/listings`, `/api/admin/users`). Suite is now serial (`--test-concurrency=1`) for determinism. **Follow-ups (not blockers):** version-controlled pinned seed (today it clones dev); golden coverage of authed recruitment endpoints (`/api/applications*`, `/api/admin/jobs`, `/api/admin/employers`). See [Phase 0 — Implementation log](#phase-0--implementation-log). |
 | **1 — Security + cross-cutting** | **Landed & committed:** 1a (mass-assign allowlists), 1b (self-review 403/404), 1c (helmet + rate limiting → 429), 1d-partial (CSPRNG OTP, sweep, `/ai/rfq` auth, prompt cap), 1e-core (PG pool timeouts, graceful shutdown, `/health`), 1g (dead memoization deleted), 1h (login timing fix). See [Phase 1 — Implementation log](#phase-1--implementation-log) for the full table + test results. |
 | **2 — Shared kernel** | Not started. |
 | **3–7** | Not started. |
@@ -37,9 +37,9 @@ Every finding below was verified by reading the code at the cited line, not infe
 - **1b-CHECK** — DB `CHECK (buyer_id <> target_user_id)` on reviews (needs a migration; Phase 5).
 - **1i** — **OWNER ACTION:** rotate every credential in `backend/DB/users.json` (38 bcrypt hashes + admin), then `git rm --cached backend/DB/users.json` + `.gitignore` it.
 
-**To resume:** verify green with `cd backend && npm test` (expect 29 pass) and `cd frontend && npx tsc --noEmit` (clean). Then either finish the remaining Phase 1 items above, or start **Phase 2 — Shared kernel** (`backend/modules/_shared/`: `pool.js`, `repository.js`, `queryBuilder.js`, `pagination.js`, `envelope.js`, `errors.js`, `crudRouter.js`, `mappings/flat.mappings.js`) per the [Phase 2](#phase-2--shared-kernel) spec.
+**To resume:** `cd backend && npm run test:setup` (builds/refreshes `bharatsource_test` — stop `node index.js` first, `CREATE DATABASE … TEMPLATE` needs the dev DB to have no open connections), then `npm test` (expect **76 pass**), and `cd frontend && npx tsc --noEmit` (clean). Then start **Phase 2 — Shared kernel** (`backend/modules/_shared/`: `pool.js`, `repository.js`, `queryBuilder.js`, `pagination.js`, `envelope.js`, `errors.js`, `crudRouter.js`, `mappings/flat.mappings.js`) per the [Phase 2](#phase-2--shared-kernel) spec — the Phase 2 gate ("goldens byte-identical" + the differential repository test) now has a harness to run against. Fold deferred **1f** (`_shared/pagination.js` + `/api/listings` limit cap) and **1e-pino** into that pass.
 
-**New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
+**New env vars added this pass** (all optional, safe defaults — see `backend/.env.example`): `PG_URL_TEST` (dedicated `npm test` database; unset → tests fall back to `PG_URL` as before). Earlier Phase 1 pass added: `RATE_LIMIT_ENABLED`, `RL_GLOBAL_MAX`, `RL_AUTH_MAX`, `RL_AI_MAX`, `AI_PROMPT_MAX`, `PG_STATEMENT_TIMEOUT_MS`, `PG_CONNECT_TIMEOUT_MS`, `PG_IDLE_TIMEOUT_MS`, `PG_SSL`.
 
 **New deps:** `helmet`, `express-rate-limit` (prod), `supertest` (dev).
 
@@ -143,17 +143,18 @@ Domain boundaries visible in the data: Identity · Directory · Recruitment · C
 
 Each phase is independently shippable and independently revertible. **Contract impact** is stated per phase.
 
-### Phase 0 — Safety net
-**Small · Contract impact: ✅ none — no runtime code changes**
+### Phase 0 — Safety net  ✅ LANDED 2026-09-01
+**Small · Contract impact: ✅ none — no runtime code changes** · full detail: [Phase 0 — Implementation log](#phase-0--implementation-log)
 
-- Split `app` from `server.listen` (`index.js:84-90`) so supertest can mount the app. ~10 lines.
-- Golden-response harness: `supertest` + `test/golden/` fixtures, normalizing generated ids / `createdAt` / `Date.now()`-derived fields. Coverage: every recruitment endpoint (~25), the 12 highest-traffic Directory reads, and **`GET /api/admin/users` across ~15 branch combinations** (`routes/admin.js:190-266` — these branches are impossible to reconstruct after the Phase 6 rewrite).
-- **Pagination edge cases**, where `.slice()` → `LIMIT` breaks: page 0, page past last, `limit=0`, `limit=9999`, and a **disjointness assertion** (fetch pages 1 and 2, assert no overlapping ids). That last one is the only test that catches nondeterministic `ORDER BY`.
-- `test/architecture.test.js` (~40 lines, `node --test`, no new dep). Asserts: no file under `modules/` requires `lib/store`; no cross-module deep imports; graduated collection names appear nowhere in `routes/`; no module references another module's physical tables. **Build it now, before it can catch anything** — so it is already load-bearing when Phase 4 starts.
-- Dedicated `PG_URL_TEST` database with a **pinned** seed. Never golden against dev data.
+- ✅ Split `app` from `server.listen` so supertest can mount the app (`backend/app.js`).
+- ✅ Golden-response harness: `supertest` + `test/golden/` fixtures via `test/golden/_harness.js` (sorts object keys, preserves array order, normalizes timestamps/tokens/runtime counters). 37 fixtures: public Directory reads (config, features, entitlements, categories + detail, brands, collections, listings browse + page 2 + detail, featured sellers, seller detail), public Recruitment reads (job-functions, job-roles, skills, jobs browse + page 2 + function filter, job detail, employer detail), and **`GET /api/admin/users` × 17 branches** (scope/type/status/planTier/featured/q/paging — `routes/admin.js:190-266`, impossible to reconstruct after the Phase 6 rewrite). Regenerate deliberately with `npm run goldens:update`. *Follow-up: authed recruitment endpoints (`/api/applications*`, `/api/admin/jobs`, `/api/admin/employers`) not yet covered.*
+- ✅ **Pagination edge cases** (`test/pagination.test.js`) across `/api/jobs`, `/api/listings`, `/api/admin/users`: page 0 / negative → clamp to 1; page past last → empty + envelope intact; `limit=0` → sane default; `limit=9999` → capped (jobs 50, admin 100; listings uncapped — C9, asserted as-is so a future cap is a deliberate change); **page-1 ∩ page-2 = ∅** disjointness assertion.
+- ✅ `test/architecture.test.js` — 5 assertions: no `modules/` file requires `lib/store`/`lib/pg-store`; no cross-module deep imports (only `modules/x` / `modules/x/index.js` importable); `GRADUATED_COLLECTIONS` names absent from `routes/`; no module references another module's physical tables (via a future `schema/tables.js` manifest); harness-is-wired self-check. Vacuously green until `modules/` exists — **load-bearing from the first Phase 4 commit**.
+- ✅ Dedicated `PG_URL_TEST` database — `lib/config.js` prefers `PG_URL_TEST` when `NODE_ENV=test` (set by `test/_env.js`); `scripts/setup-test-db.js` (`npm run test:setup`) drops + rebuilds `bharatsource_test`. Default mode clones the dev DB (`CREATE DATABASE … TEMPLATE`) — a frozen copy, not dev data that drifts under the suite; `--fresh` mode applies `schema.sql` + all `schema-migrations/` with no data. *Follow-up: a version-controlled pinned-fixture seed to replace the dev-clone.*
+- Suite made **serial** (`--test-concurrency=1`) so a mutating test (e.g. the Phase 1 listing-PUT test) can never race a golden capture.
 
-**Gate:** `npm test` green; a deliberate boundary violation makes the architecture test fail.
-**Rollback:** purely additive.
+**Gate:** `npm run test:setup && npm test` green (**76 pass**); a deliberate boundary violation makes `architecture.test.js` fail; a deliberate response-shape change makes a golden fail until `goldens:update` is run.
+**Rollback:** purely additive — new test files + scripts + one `PG_URL` fallback clause in `config.js`.
 
 ---
 
@@ -180,6 +181,43 @@ Each phase is independently shippable and independently revertible. **Contract i
 
 **Gate:** goldens byte-identical for every non-security endpoint. New negative tests: mass-assign attempt leaves the field unchanged; self-review 403; 11th auth attempt 429; `/api/ai/rfq` rate-limited; `/health` fails with PG down; SIGTERM drains in-flight requests.
 **Rollback:** each item is a standalone commit, revertible in isolation.
+
+---
+
+## Phase 0 — Implementation log
+
+**Status: landed 2026-09-01 (IST). Contract impact: none (test/infra only).**
+
+### New files
+
+| File | Purpose |
+|---|---|
+| `backend/test/_env.js` | Loaded via `node --test --require ./test/_env.js`. Sets `NODE_ENV=test` before `lib/config.js` is first required, so `config.PG_URL` resolves to `PG_URL_TEST`. Also defaults `RATE_LIMIT_ENABLED=false` for the suite (`phase1-security.test.js` re-enables it with tiny ceilings in its own process). |
+| `backend/scripts/setup-test-db.js` | `npm run test:setup`. Default `--template`: `DROP DATABASE IF EXISTS bharatsource_test WITH (FORCE)` then `CREATE DATABASE … TEMPLATE bharatsource` — an exact frozen copy of the dev DB (needs no open connections to the source; errors clearly if the backend is still running). `--fresh`: empty DB with `schema.sql` + every `lib/db/schema-migrations/*.sql` applied and recorded, no data. Refuses if `PG_URL` and `PG_URL_TEST` name the same database. |
+| `backend/scripts/update-goldens.js` | `npm run goldens:update`. Cross-platform wrapper (no inline `VAR=1`, no `cross-env` dep) that re-runs `test/golden.test.js` with `UPDATE_GOLDENS=1`. |
+| `backend/test/golden/_harness.js` | `golden(t, name, buildReq)` — supertest call → normalize → compare/write `test/golden/<name>.json`. Normalizer: sort object keys (key order isn't a JSON contract), **preserve array order** (it IS the contract — catches nondeterministic `ORDER BY`), map timestamp/token keys → `"<volatile>"`, ISO-8601 strings → `"<timestamp>"`, runtime counters (`views`/`viewCount`/`applicationCount`/…) → `0`. |
+| `backend/test/golden.test.js` | The manifest: mints admin/employer/candidate/seller tokens locally with `auth.signToken` against seed-stable ids (`usr_admin`, `usr_emp4`, `usr_000026`, `usr_s007` — no password, `authGuard` re-loads the row), then 37 `golden(...)` calls. |
+| `backend/test/golden/*.json` | 37 committed fixtures. Byte-identical across every non-security phase, after normalization. |
+| `backend/test/pagination.test.js` | Edge-case matrix (page 0 / negative / past-last, `limit=0`, `limit=9999`, page-disjointness) over `/api/jobs`, `/api/listings`, `/api/admin/users`. |
+| `backend/test/architecture.test.js` | Module-boundary guardrails (see Phase 0 list above). Green while `backend/modules/` is absent — that's the intended state; the self-check test proves the file is actually running. |
+
+### Modified
+
+| File | Change | Contract |
+|---|---|---|
+| `backend/lib/config.js` | `PG_URL` now resolves `PG_URL_TEST` / `DATABASE_URL_TEST` first **when `NODE_ENV==="test"`**, else the existing `PG_URL` / `DATABASE_URL`. Unset `PG_URL_TEST` → identical to before. | ✅ none — dev/prod boot unchanged; only the test env sees a new value. |
+| `backend/package.json` | Scripts: `test:setup`, `test:goldens`, `goldens:update`; `test` now `node --test --test-concurrency=1 --require ./test/_env.js test/*.test.js` (serial for determinism, `_env.js` preloaded). No dependency change (`supertest` was already a devDependency from Phase 1). | ✅ none |
+| `backend/.env` / `.env.example` | Documented `PG_URL_TEST`. | ✅ none |
+
+### Test results — 2026-09-01 (IST)
+
+`npm run test:setup` → `bharatsource_test` built (52 public tables — users:125 listings:724 jobs:50). `npm test` → **76 pass, 0 fail** (29 pre-existing + 5 architecture + 4 pagination + 38 golden sub-tests). Run twice back-to-back without re-seeding → identical (counter normalization holds; serial execution keeps mutating tests off the golden rows). `cd frontend && npx tsc --noEmit` → unaffected (no frontend change), still clean.
+
+### Known limitations / follow-ups (not blockers for Phase 2)
+
+- **Seed is a dev-DB clone, not a version-controlled pinned fixture set.** Deterministic between `test:setup` runs (the test DB isn't touched by dev work), and the manifest only asserts seed-stable ids — but a true pinned seed (`--fresh` + a committed `seed-test.js`) is the eventual target so the goldens survive a dev-DB reset. Tracked here.
+- **Golden coverage gap:** authed recruitment endpoints (`GET /api/applications`, `/api/applications/mine`, `/api/applications/:id`, `/api/admin/jobs`, `/api/admin/employers`) and the Directory write paths aren't golden'd yet. Add before Phase 4 touches recruitment.
+- The Phase 1 listing-PUT test still calls the local `claude` CLI (~8s) — unchanged from Phase 1; serial mode makes the whole suite ~130s.
 
 ---
 
@@ -465,7 +503,8 @@ Per-phase gates are stated inline above. Standing checks:
 cd frontend && npx tsc --noEmit
 
 # Backend tests — goldens, differential, architecture
-cd backend && npm test
+cd backend && npm run test:setup   # once / after a dev-DB change — builds bharatsource_test
+cd backend && npm test             # 76 pass as of Phase 0
 
 # Backend smoke (restart first — no hot reload)
 curl -s http://localhost:4000/api/config
@@ -487,7 +526,7 @@ Effort is stated in relative size, not calendar time — the work is done by an 
 
 | Phase | Effort | Risk | Value | Contract |
 |---|---|---|---|---|
-| 0 Safety net | small | none | prerequisite | ✅ |
+| 0 Safety net | small | none | prerequisite | ✅ — **landed 2026-09-01** (golden harness · pagination edge tests · architecture test · `PG_URL_TEST` DB; 76 pass. Follow-ups: pinned seed, authed-recruitment goldens — see Phase 0 Implementation log) |
 | 1 Security + cross-cutting | **small** | low | **highest** | 🔧 3 fixes — **partially landed 2026-08-31** (1a/1b/1c/1e-core/1g/1h + 1d-partial done & tested; 1d-full/1e-pino/1f/1i/1a-admin deferred — see Phase 1 Implementation log) |
 | 2 Shared kernel | small | low | prerequisite | ✅ |
 | 3 Identity read-port | medium | medium (auth path) | high | ✅ |

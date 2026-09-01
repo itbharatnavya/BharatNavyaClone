@@ -1,0 +1,626 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@brightpathqa-test.example",
+          "employerProfile": {
+            "companyName": "BrightPath Technologies Pvt Ltd",
+            "isVerified": true,
+            "slug": "brightpath-technologies-pvt-ltd",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "seller",
+            "employer"
+          ],
+          "id": "usr_000047",
+          "interests": [],
+          "mobile": "9000000091",
+          "name": "Ananya Kapoor",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "It company",
+            "contactEmail": "hr@brightpathqa-test.example",
+            "contactMobile": "9000000091",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": false,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Bengaluru",
+              "pincode": "",
+              "state": "Karnataka"
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 0,
+              "onTimeDelivery": 0,
+              "orderCompletion": 0,
+              "performanceScore": 0,
+              "repeatBuyers": 0
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "it-company",
+            "status": "pending",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Vadodara",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@chempure-demo.example",
+          "employerProfile": {
+            "companyName": "ChemPure Industries Ltd",
+            "isVerified": false,
+            "slug": "chempure-industries",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp15",
+          "interests": [],
+          "mobile": "9876503015",
+          "name": "ChemPure Industries",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Ahmedabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@packright-demo.example",
+          "employerProfile": {
+            "companyName": "PackRight Industries Pvt Ltd",
+            "isVerified": true,
+            "slug": "packright-industries",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp14",
+          "interests": [],
+          "mobile": "9876503014",
+          "name": "PackRight Industries",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Nashik",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@agrigrow-demo.example",
+          "employerProfile": {
+            "companyName": "AgriGrow Farm Solutions Pvt Ltd",
+            "isVerified": false,
+            "slug": "agrigrow-farm-solutions",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp13",
+          "interests": [],
+          "mobile": "9876503013",
+          "name": "AgriGrow Farm Solutions",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@finedge-demo.example",
+          "employerProfile": {
+            "companyName": "FinEdge Capital Advisors Pvt Ltd",
+            "isVerified": true,
+            "slug": "finedge-capital-advisors",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp12",
+          "interests": [],
+          "mobile": "9876503012",
+          "name": "FinEdge Capital Advisors",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@nextgenedtech-demo.example",
+          "employerProfile": {
+            "companyName": "NextGen EdTech Pvt Ltd",
+            "isVerified": false,
+            "slug": "nextgen-edtech",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp11",
+          "interests": [],
+          "mobile": "9876503011",
+          "name": "NextGen EdTech",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Jamshedpur",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@prakashsteel-demo.example",
+          "employerProfile": {
+            "companyName": "Prakash Steel & Alloys Ltd",
+            "isVerified": true,
+            "slug": "prakash-steel-alloys",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp10",
+          "interests": [],
+          "mobile": "9876503010",
+          "name": "Prakash Steel & Alloys",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Jharkhand",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "New Delhi",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@urbancart-demo.example",
+          "employerProfile": {
+            "companyName": "UrbanCart Retail Pvt Ltd",
+            "isVerified": true,
+            "slug": "urbancart-retail",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp9",
+          "interests": [],
+          "mobile": "9876503009",
+          "name": "UrbanCart Retail",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Delhi",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Pune",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@zenithauto-demo.example",
+          "employerProfile": {
+            "companyName": "Zenith Auto Components Ltd",
+            "isVerified": false,
+            "slug": "zenith-auto-components",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp8",
+          "interests": [],
+          "mobile": "9876503008",
+          "name": "Zenith Auto Components",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Hyderabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@healfirst-demo.example",
+          "employerProfile": {
+            "companyName": "HealFirst Diagnostics Pvt Ltd",
+            "isVerified": true,
+            "slug": "healfirst-diagnostics",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp7",
+          "interests": [],
+          "mobile": "9876503007",
+          "name": "HealFirst Diagnostics",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Telangana",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Chennai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@bluewaveelectronics-demo.example",
+          "employerProfile": {
+            "companyName": "Bluewave Electronics Manufacturing Ltd",
+            "isVerified": true,
+            "slug": "bluewave-electronics-manufacturing",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp6",
+          "interests": [],
+          "mobile": "9876503006",
+          "name": "Bluewave Electronics",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Tamil Nadu",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Gurugram",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@metrocore-demo.example",
+          "employerProfile": {
+            "companyName": "Metrocore Constructions Pvt Ltd",
+            "isVerified": true,
+            "slug": "metrocore-constructions",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp5",
+          "interests": [],
+          "mobile": "9876503005",
+          "name": "Metrocore Constructions",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Haryana",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Surat",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@suryodaytextiles-demo.example",
+          "employerProfile": {
+            "companyName": "Suryoday Textile Mills Pvt Ltd",
+            "isVerified": false,
+            "slug": "suryoday-textile-mills",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp4",
+          "interests": [],
+          "mobile": "9876503004",
+          "name": "Suryoday Textile Mills",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@vantagelogistics-demo.example",
+          "employerProfile": {
+            "companyName": "Vantage Logistics India Pvt Ltd",
+            "isVerified": true,
+            "slug": "vantage-logistics-india",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp3",
+          "interests": [],
+          "mobile": "9876503003",
+          "name": "Vantage Logistics India",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rec846439@example.com",
+          "employerProfile": {
+            "companyName": "Acme Testing Pvt Ltd",
+            "isVerified": false,
+            "slug": "acme-testing-pvt-ltd-3",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_000043",
+          "interests": [],
+          "mobile": "9777784643",
+          "name": "Test Recruiter",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Pune",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@greenleaf-demo.example",
+          "employerProfile": {
+            "companyName": "GreenLeaf Foods Pvt Ltd",
+            "isVerified": false,
+            "slug": "greenleaf-foods",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp2",
+          "interests": [],
+          "mobile": "9876500002",
+          "name": "GreenLeaf Foods",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@technova-demo.example",
+          "employerProfile": {
+            "companyName": "TechNova Solutions Pvt Ltd",
+            "isVerified": true,
+            "slug": "technova-solutions",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp1",
+          "interests": [],
+          "mobile": "9876500001",
+          "name": "TechNova Solutions",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 0,
+        "buyers": 0,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 1,
+        "suspended": 0,
+        "total": 43
+      },
+      "total": 17,
+      "totalPages": 1
+    },
+    "success": true
+  }
+}

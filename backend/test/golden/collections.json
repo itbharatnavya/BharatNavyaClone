@@ -1,0 +1,74 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "brandSlugs": [],
+        "categorySlugs": [
+          "metals-steel-alloys"
+        ],
+        "coverImage": "/demo/steel-1.jpg",
+        "createdAt": "<volatile>",
+        "id": "col_best-of-metals-and-steel",
+        "itemCount": 26,
+        "listingIds": [],
+        "order": 0,
+        "previewImages": [
+          "/demo/steel-1.jpg",
+          "/demo/steel-2.jpg",
+          "/demo/steel-3.jpg",
+          "/demo/steel-2.jpg"
+        ],
+        "slug": "best-of-metals-and-steel",
+        "status": "published",
+        "subtitle": "Top steel, alloys and metal suppliers",
+        "title": "Best of Metals & Steel"
+      },
+      {
+        "brandSlugs": [],
+        "categorySlugs": [
+          "electronics-electrical"
+        ],
+        "coverImage": "/demo/electronics-2.jpg",
+        "createdAt": "<volatile>",
+        "id": "col_electricals-and-electronics-picks",
+        "itemCount": 35,
+        "listingIds": [],
+        "order": 1,
+        "previewImages": [
+          "/demo/electronics-1.jpg",
+          "/demo/electronics-2.jpg",
+          "/demo/electronics-3.jpg",
+          "https://www.amaze-india.com/data/category/mobile-banner/solar-batteries-mobile.webp"
+        ],
+        "slug": "electricals-and-electronics-picks",
+        "status": "published",
+        "subtitle": "Trusted components and hardware",
+        "title": "Electricals & Electronics Picks"
+      },
+      {
+        "brandSlugs": [],
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "coverImage": "/demo/textile-3.jpg",
+        "createdAt": "<volatile>",
+        "id": "col_textiles-and-fabrics",
+        "itemCount": 30,
+        "listingIds": [],
+        "order": 2,
+        "previewImages": [
+          "https://kochartex.com/wp-content/uploads/2025/12/Frame-38-web.webp",
+          "/demo/textile-3.jpg",
+          "/demo/textile-4.jpg",
+          "/demo/textile-5.jpg"
+        ],
+        "slug": "textiles-and-fabrics",
+        "status": "published",
+        "subtitle": "Mills and fabric suppliers across India",
+        "title": "Textiles & Fabrics"
+      }
+    ],
+    "success": true
+  }
+}

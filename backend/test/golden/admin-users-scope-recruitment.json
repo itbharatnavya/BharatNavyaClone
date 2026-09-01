@@ -1,0 +1,781 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": "/uploads/up_1787641801837_0xus3h.jpg",
+          "candidateProfile": {
+            "headline": "Senior Backend Engineer — Node.js & Distributed Systems",
+            "resumeUrl": "/uploads/up_1787641801871_yca9kv.pdf",
+            "skills": [
+              "Node.js",
+              "PostgreSQL",
+              "AWS",
+              "Redis",
+              "System Design",
+              "Docker"
+            ]
+          },
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rahul.mehta.qatest@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_000048",
+          "interests": [],
+          "mobile": "9000000092",
+          "name": "Rahul Mehta",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": "active"
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@brightpathqa-test.example",
+          "employerProfile": {
+            "companyName": "BrightPath Technologies Pvt Ltd",
+            "isVerified": true,
+            "slug": "brightpath-technologies-pvt-ltd",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "seller",
+            "employer"
+          ],
+          "id": "usr_000047",
+          "interests": [],
+          "mobile": "9000000091",
+          "name": "Ananya Kapoor",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "It company",
+            "contactEmail": "hr@brightpathqa-test.example",
+            "contactMobile": "9000000091",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": false,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Bengaluru",
+              "pincode": "",
+              "state": "Karnataka"
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {
+              "avgResponseTimeHours": 0,
+              "onTimeDelivery": 0,
+              "orderCompletion": 0,
+              "performanceScore": 0,
+              "repeatBuyers": 0
+            },
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "active",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "it-company",
+            "status": "pending",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Supply Chain Analyst — Procurement & Planning",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Supply Chain Management",
+              "Inventory Management",
+              "Vendor Management",
+              "Excel"
+            ]
+          },
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "suresh.nair.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand14",
+          "interests": [],
+          "mobile": "9876504014",
+          "name": "Suresh Nair",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Content Marketing Specialist — B2B SaaS",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Content Writing",
+              "Copywriting",
+              "SEO",
+              "Social Media Marketing"
+            ]
+          },
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "meera.krishnan.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand13",
+          "interests": [],
+          "mobile": "9876504013",
+          "name": "Meera Krishnan",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Full Stack Developer — React & Node.js",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "React",
+              "Node.js",
+              "TypeScript",
+              "PostgreSQL",
+              "REST APIs"
+            ]
+          },
+          "city": "Pune",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "aditya.kulkarni.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand12",
+          "interests": [],
+          "mobile": "9876504012",
+          "name": "Aditya Kulkarni",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Business Development Executive — B2B & Industrial",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Lead Generation",
+              "B2B Sales",
+              "Cold Calling",
+              "CRM Software"
+            ]
+          },
+          "city": "Chennai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "pooja.iyengar.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand11",
+          "interests": [],
+          "mobile": "9876504011",
+          "name": "Pooja Iyengar",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Tamil Nadu",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Operations Manager — Manufacturing & Logistics",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Supply Chain Management",
+              "Six Sigma",
+              "Vendor Management",
+              "ERP Software"
+            ]
+          },
+          "city": "Pune",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "rahul.deshmukh.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand10",
+          "interests": [],
+          "mobile": "9876504010",
+          "name": "Rahul Deshmukh",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Customer Success Manager — SaaS & Healthcare",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Customer Service",
+              "Zendesk",
+              "Conflict Resolution",
+              "Communication"
+            ]
+          },
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "divya.nair.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand9",
+          "interests": [],
+          "mobile": "9876504009",
+          "name": "Divya Nair",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Financial Analyst — FP&A",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Financial Modeling",
+              "Excel",
+              "Budgeting",
+              "SAP"
+            ]
+          },
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "karan.malhotra.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand8",
+          "interests": [],
+          "mobile": "9876504008",
+          "name": "Karan Malhotra",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "UI/UX Designer — Product & Design Systems",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Figma",
+              "Design Systems",
+              "User Research",
+              "Prototyping",
+              "Wireframing"
+            ]
+          },
+          "city": "Hyderabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "sneha.reddy.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand7",
+          "interests": [],
+          "mobile": "9876504007",
+          "name": "Sneha Reddy",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Telangana",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Product Manager — Fintech & Lending",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Product Strategy",
+              "Roadmapping",
+              "A/B Testing",
+              "Agile/Scrum",
+              "Market Research"
+            ]
+          },
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "arjun.mehta.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand6",
+          "interests": [],
+          "mobile": "9876504006",
+          "name": "Arjun Mehta",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "HR Business Partner — Talent & Engagement",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "Recruitment",
+              "Employee Engagement",
+              "Performance Management",
+              "HRIS"
+            ]
+          },
+          "city": "Gurugram",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "neha.gupta.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand5",
+          "interests": [],
+          "mobile": "9876504005",
+          "name": "Neha Gupta",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Haryana",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "DevOps Engineer — AWS & Kubernetes",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "AWS",
+              "Kubernetes",
+              "Docker",
+              "CI/CD",
+              "System Design"
+            ]
+          },
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "vikram.singh.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand4",
+          "interests": [],
+          "mobile": "9876504004",
+          "name": "Vikram Singh",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": {
+            "headline": "Digital Marketing Executive — Performance & SEO",
+            "resumeUrl": "/uploads/up_1787570327506_dofy26.pdf",
+            "skills": [
+              "SEO",
+              "Google Ads (SEM)",
+              "Google Analytics",
+              "Content Writing",
+              "Social Media Marketing"
+            ]
+          },
+          "city": "Chennai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "ananya.iyer.demo@example.com",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "candidate"
+          ],
+          "id": "usr_cand3",
+          "interests": [],
+          "mobile": "9876504003",
+          "name": "Ananya Iyer",
+          "recruitmentRole": "candidate",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Tamil Nadu",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Vadodara",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@chempure-demo.example",
+          "employerProfile": {
+            "companyName": "ChemPure Industries Ltd",
+            "isVerified": false,
+            "slug": "chempure-industries",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp15",
+          "interests": [],
+          "mobile": "9876503015",
+          "name": "ChemPure Industries",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Ahmedabad",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@packright-demo.example",
+          "employerProfile": {
+            "companyName": "PackRight Industries Pvt Ltd",
+            "isVerified": true,
+            "slug": "packright-industries",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp14",
+          "interests": [],
+          "mobile": "9876503014",
+          "name": "PackRight Industries",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Gujarat",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Nashik",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@agrigrow-demo.example",
+          "employerProfile": {
+            "companyName": "AgriGrow Farm Solutions Pvt Ltd",
+            "isVerified": false,
+            "slug": "agrigrow-farm-solutions",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp13",
+          "interests": [],
+          "mobile": "9876503013",
+          "name": "AgriGrow Farm Solutions",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Mumbai",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@finedge-demo.example",
+          "employerProfile": {
+            "companyName": "FinEdge Capital Advisors Pvt Ltd",
+            "isVerified": true,
+            "slug": "finedge-capital-advisors",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp12",
+          "interests": [],
+          "mobile": "9876503012",
+          "name": "FinEdge Capital Advisors",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Maharashtra",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Bengaluru",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "careers@nextgenedtech-demo.example",
+          "employerProfile": {
+            "companyName": "NextGen EdTech Pvt Ltd",
+            "isVerified": false,
+            "slug": "nextgen-edtech",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp11",
+          "interests": [],
+          "mobile": "9876503011",
+          "name": "NextGen EdTech",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Karnataka",
+          "status": null
+        },
+        {
+          "accountStatus": "active",
+          "accountType": "user",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Jamshedpur",
+          "contactVisibility": null,
+          "createdAt": "<volatile>",
+          "email": "hr@prakashsteel-demo.example",
+          "employerProfile": {
+            "companyName": "Prakash Steel & Alloys Ltd",
+            "isVerified": true,
+            "slug": "prakash-steel-alloys",
+            "status": "approved"
+          },
+          "hats": [
+            "buyer",
+            "employer"
+          ],
+          "id": "usr_emp10",
+          "interests": [],
+          "mobile": "9876503010",
+          "name": "Prakash Steel & Alloys",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": "<timestamp>",
+          "roles": [
+            "user"
+          ],
+          "sellerProfile": null,
+          "state": "Jharkhand",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 0,
+        "buyers": 0,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 1,
+        "suspended": 0,
+        "total": 43
+      },
+      "total": 43,
+      "totalPages": 3
+    },
+    "success": true
+  }
+}

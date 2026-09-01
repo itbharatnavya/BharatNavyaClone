@@ -1,0 +1,77 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "applicationCount": 0,
+      "benefits": [
+        "Health insurance",
+        "Stock options",
+        "Flexible hours"
+      ],
+      "description": "Own the payments and settlements service that powers every transaction on our platform. You'll design APIs, harden reliability, and mentor two junior engineers.",
+      "employer": {
+        "city": "Bengaluru",
+        "companyName": "BrightPath Technologies Pvt Ltd",
+        "id": "usr_000047",
+        "isVerified": true,
+        "logo": "/uploads/up_1787641801612_o8c5rr.jpg",
+        "slug": "brightpath-technologies-pvt-ltd",
+        "state": "Karnataka"
+      },
+      "employerId": "usr_000047",
+      "employmentType": "full-time",
+      "experienceLevel": "senior",
+      "expiresAt": "<volatile>",
+      "id": "job_000011",
+      "jobFunction": "engineering",
+      "location": {
+        "city": "Bengaluru",
+        "remote": false,
+        "state": "Karnataka"
+      },
+      "openings": 2,
+      "postedAt": "<volatile>",
+      "qualification": "Bachelor's degree in Computer Science or related field",
+      "questions": [
+        {
+          "id": "q_0",
+          "required": true,
+          "text": "How many years of hands-on Node.js experience do you have?"
+        },
+        {
+          "id": "q_1",
+          "required": true,
+          "text": "Are you comfortable being on a weekly on-call rotation?"
+        }
+      ],
+      "requirements": [
+        "5+ years backend experience",
+        "Strong Node.js and SQL skills",
+        "Experience with distributed systems"
+      ],
+      "responsibilities": [
+        "Design and own the payments microservice",
+        "Set up monitoring and on-call rotations",
+        "Review PRs and mentor junior engineers",
+        "Partner with product on roadmap"
+      ],
+      "salaryRange": {
+        "currency": "INR",
+        "isDisclosed": true,
+        "max": 2800000,
+        "min": 1800000
+      },
+      "skills": [
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "System Design",
+        "Redis"
+      ],
+      "status": "active",
+      "title": "Senior Backend Engineer — Payments",
+      "viewCount": 0
+    },
+    "success": true
+  }
+}
