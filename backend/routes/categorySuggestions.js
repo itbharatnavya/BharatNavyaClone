@@ -16,10 +16,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
-const COLL = "category-suggestions.json";
+const sugRepo = repoForCollection("category-suggestions.json");
+const catRepo = repoForCollection("categories.json");
 
 // Same slugify as routes/adminCategories.js — kept in sync so approved suggestions
 // mint categories with identical id/slug rules.
@@ -47,12 +48,10 @@ router.post("/", authGuard, async (req, res, next) => {
     // De-dupe: if a PENDING suggestion with the same normalized name exists, just
     // bump its count instead of creating a near-identical row.
     const key = normalize(name);
-    const rows = await store.all(COLL);
-    const existing = rows.find(
-      (r) => r.status === "pending" && normalize(r.name) === key
-    );
+    const pending = await sugRepo.findMany({ where: { status: "pending" } });
+    const existing = pending.find((r) => normalize(r.name) === key);
     if (existing) {
-      const updated = await store.update(COLL, existing.id, {
+      const updated = await sugRepo.updateById(existing.id, {
         count: (existing.count || 1) + 1,
         updatedAt: new Date().toISOString(),
       });
@@ -61,7 +60,6 @@ router.post("/", authGuard, async (req, res, next) => {
 
     const now = new Date().toISOString();
     const suggestion = {
-      id: await store.nextId("sug"),
       name,
       note: b.note ? String(b.note).trim() : "",
       context: b.context ? String(b.context).trim() : "",
@@ -71,7 +69,7 @@ router.post("/", authGuard, async (req, res, next) => {
       createdAt: now,
       updatedAt: now,
     };
-    const created = await store.insert(COLL, suggestion);
+    const created = await sugRepo.insert(suggestion, "sug");
     return res.json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -83,8 +81,7 @@ router.post("/", authGuard, async (req, res, next) => {
 router.get("/", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
     const { status } = req.query;
-    let rows = await store.all(COLL);
-    if (status) rows = rows.filter((r) => r.status === status);
+    let rows = await sugRepo.findMany({ where: status ? { status } : undefined });
     rows = rows
       .slice()
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
@@ -98,13 +95,13 @@ router.get("/", authGuard, requireRole("admin"), async (req, res, next) => {
 // POST /:id/approve — mint a real category from the suggestion (body: { parentId? }).
 router.post("/:id/approve", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
-    const suggestion = await store.getById(COLL, req.params.id);
+    const suggestion = await sugRepo.findById(req.params.id);
     if (!suggestion) {
       return res.status(404).json({ success: false, error: "Suggestion not found" });
     }
 
     const b = req.body || {};
-    const cats = await store.all("categories.json");
+    const cats = await catRepo.findMany({});
     const slug = slugify(suggestion.name);
     if (!slug) {
       return res.status(400).json({ success: false, error: "name produces an empty slug" });
@@ -132,9 +129,9 @@ router.post("/:id/approve", authGuard, requireRole("admin"), async (req, res, ne
       listingCount: 0,
       order: cats.length,
     };
-    const createdCategory = await store.insert("categories.json", category);
+    const createdCategory = await catRepo.insert(category);
 
-    const updatedSuggestion = await store.update(COLL, suggestion.id, {
+    const updatedSuggestion = await sugRepo.updateById(suggestion.id, {
       status: "approved",
       categoryId: createdCategory.id,
       decidedBy: req.user.id,
@@ -154,7 +151,7 @@ router.post("/:id/approve", authGuard, requireRole("admin"), async (req, res, ne
 // POST /:id/merge — map the suggestion onto an existing category (body: { categoryId }).
 router.post("/:id/merge", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
-    const suggestion = await store.getById(COLL, req.params.id);
+    const suggestion = await sugRepo.findById(req.params.id);
     if (!suggestion) {
       return res.status(404).json({ success: false, error: "Suggestion not found" });
     }
@@ -162,12 +159,12 @@ router.post("/:id/merge", authGuard, requireRole("admin"), async (req, res, next
     if (!b.categoryId) {
       return res.status(400).json({ success: false, error: "categoryId is required" });
     }
-    const target = await store.getById("categories.json", b.categoryId);
+    const target = await catRepo.findById(b.categoryId);
     if (!target) {
       return res.status(404).json({ success: false, error: "Category not found" });
     }
 
-    const updated = await store.update(COLL, suggestion.id, {
+    const updated = await sugRepo.updateById(suggestion.id, {
       status: "merged",
       mergedInto: target.id,
       decidedBy: req.user.id,
@@ -183,11 +180,11 @@ router.post("/:id/merge", authGuard, requireRole("admin"), async (req, res, next
 // POST /:id/reject — dismiss the suggestion.
 router.post("/:id/reject", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
-    const suggestion = await store.getById(COLL, req.params.id);
+    const suggestion = await sugRepo.findById(req.params.id);
     if (!suggestion) {
       return res.status(404).json({ success: false, error: "Suggestion not found" });
     }
-    const updated = await store.update(COLL, suggestion.id, {
+    const updated = await sugRepo.updateById(suggestion.id, {
       status: "rejected",
       decidedBy: req.user.id,
       decidedAt: new Date().toISOString(),

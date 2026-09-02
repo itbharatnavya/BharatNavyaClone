@@ -14,10 +14,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 
-const COLLECTION = "blogs.json";
+const blogsRepo = repoForCollection("blogs.json");
 
 function slugify(s) {
   return String(s || "")
@@ -45,7 +46,7 @@ async function attachAuthors(blogs) {
   const list = Array.isArray(blogs) ? blogs : [blogs];
   const ids = [...new Set(list.map((b) => b && b.sellerId).filter(Boolean))];
   if (!ids.length) return blogs;
-  const users = await store.all("users.json");
+  const users = await identity.hydrateUsersByIds(ids);
   const byId = new Map(users.map((u) => [u.id, u]));
   const enrich = (b) => {
     if (!b) return b;
@@ -73,7 +74,7 @@ async function attachAuthors(blogs) {
 
 // Ensure a unique slug within the collection.
 async function uniqueSlug(base) {
-  const rows = await store.all(COLLECTION);
+  const rows = await blogsRepo.findMany({});
   const taken = new Set(rows.map((b) => b.slug));
   let slug = base || "post";
   if (!taken.has(slug)) return slug;
@@ -90,7 +91,7 @@ async function uniqueSlug(base) {
 router.get("/", async (req, res, next) => {
   try {
     const { sellerId, category, authorType } = req.query;
-    let blogs = (await store.all(COLLECTION)).filter((b) => b.status === "published");
+    let blogs = await blogsRepo.findMany({ where: { status: "published" } });
     if (sellerId) blogs = blogs.filter((b) => b.sellerId === sellerId);
     if (category) blogs = blogs.filter((b) => b.categoryId === category);
     if (authorType) blogs = blogs.filter((b) => (b.authorType || "seller") === authorType);
@@ -104,14 +105,12 @@ router.get("/", async (req, res, next) => {
 // GET /:slug — single blog by slug; increments the view counter.
 router.get("/:slug", async (req, res, next) => {
   try {
-    const blog = await store.findOne(COLLECTION, (b) => b.slug === req.params.slug);
+    const blog = await blogsRepo.findOne({ where: { slug: req.params.slug } });
     // A moderator-hidden blog is treated as non-existent to the public site.
     if (!blog || blog.status === "hidden") {
       return res.status(404).json({ success: false, error: "Blog not found" });
     }
-    const updated = await store.update(COLLECTION, blog.id, {
-      views: (blog.views || 0) + 1,
-    });
+    const updated = await blogsRepo.incrementById(blog.id, "views", 1);
     return res.json({ success: true, data: await attachAuthors(updated || blog) });
   } catch (err) {
     next(err);
@@ -148,7 +147,7 @@ router.post("/", authGuard, async (req, res, next) => {
       publishedAt: new Date().toISOString(),
       views: 0,
     };
-    const created = await store.insert(COLLECTION, doc, "blog");
+    const created = await blogsRepo.insert(doc, "blog");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -158,7 +157,7 @@ router.post("/", authGuard, async (req, res, next) => {
 // PUT /:id — update; only the author or an admin may edit.
 router.put("/:id", authGuard, async (req, res, next) => {
   try {
-    const blog = await store.getById(COLLECTION, req.params.id);
+    const blog = await blogsRepo.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ success: false, error: "Blog not found" });
     }
@@ -173,7 +172,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     if (categoryId !== undefined) patch.categoryId = categoryId;
     if (tags !== undefined) patch.tags = Array.isArray(tags) ? tags : [];
     if (status !== undefined) patch.status = status;
-    const updated = await store.update(COLLECTION, blog.id, patch);
+    const updated = await blogsRepo.updateById(blog.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -183,14 +182,14 @@ router.put("/:id", authGuard, async (req, res, next) => {
 // DELETE /:id — delete; only the author or an admin may delete.
 router.delete("/:id", authGuard, async (req, res, next) => {
   try {
-    const blog = await store.getById(COLLECTION, req.params.id);
+    const blog = await blogsRepo.findById(req.params.id);
     if (!blog) {
       return res.status(404).json({ success: false, error: "Blog not found" });
     }
     if (blog.sellerId !== req.user.id && !isAdmin(req.user)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    await store.remove(COLLECTION, blog.id);
+    await blogsRepo.deleteById(blog.id);
     return res.json({ success: true, data: { id: blog.id, deleted: true } });
   } catch (err) {
     next(err);
