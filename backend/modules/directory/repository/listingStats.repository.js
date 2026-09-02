@@ -99,9 +99,24 @@ async function activeListingIdsForSeller(sellerId) {
   return rows.map((r) => r.id);
 }
 
+/**
+ * listingTitlesByIds(ids) -> Promise<Map<listingId, title>>
+ *
+ * One `WHERE id = ANY($1)` for a lookup that used to walk `store.all("listings.json")`
+ * (the full composite hydrate of every listing) just to read one `title` per row —
+ * routes/boosts.js's `titleById` map. Missing ids are simply absent (caller `|| null`).
+ */
+async function listingTitlesByIds(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(`SELECT id, title FROM listings WHERE id = ANY($1)`, [uniq]);
+  return new Map(rows.map((r) => [r.id, r.title]));
+}
+
 module.exports = {
   listingCountsByCategory,
   firstListingImageBySeller,
   activeListingCountsBySeller,
   activeListingIdsForSeller,
+  listingTitlesByIds,
 };

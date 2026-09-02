@@ -13,6 +13,7 @@ const {
   firstListingImageBySeller,
   activeListingCountsBySeller,
   activeListingIdsForSeller,
+  listingTitlesByIds,
 } = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
@@ -29,5 +30,6 @@ module.exports = {
   activeBrandedListingsLean,
   readSearchEvents,
   activeListingsForCollectionResolve,
+  listingTitlesByIds,
   reviewsRepo,
 };

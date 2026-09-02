@@ -18,8 +18,13 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const store = require("../lib/store"); // composite listings.json read/write in the approve path stays on store
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+
+const boostsRepo = repoForCollection("boost-requests.json");
 
 // The three boost products a seller can request.
 const BOOST_TYPES = new Set(["feature", "category_top", "rank"]);
@@ -86,7 +91,7 @@ router.post("/", authGuard, async (req, res, next) => {
       status: "pending",
       createdAt: new Date().toISOString(),
     };
-    const saved = await store.insert("boost-requests.json", request, "br");
+    const saved = await boostsRepo.insert(request, "br");
     return res.status(201).json({ success: true, data: saved });
   } catch (err) {
     next(err);
@@ -96,14 +101,10 @@ router.post("/", authGuard, async (req, res, next) => {
 /* -------------------------------------- GET / (the seller's own requests) --- */
 router.get("/", authGuard, async (req, res, next) => {
   try {
-    const [requests, listings] = await Promise.all([
-      store.all("boost-requests.json"),
-      store.all("listings.json"),
-    ]);
-    const titleById = new Map(listings.map((l) => [l.id, l.title]));
+    const requests = await boostsRepo.findMany({ where: { sellerId: req.user.id } });
+    const titleById = await directory.listingTitlesByIds(requests.map((r) => r.listingId));
 
     const mine = requests
-      .filter((r) => r.sellerId === req.user.id)
       .sort((a, b) =>
         String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
       )
@@ -123,31 +124,24 @@ router.get("/", authGuard, async (req, res, next) => {
 router.get("/admin", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
     const status = req.query.status;
-    const [requests, listings, users] = await Promise.all([
-      store.all("boost-requests.json"),
-      store.all("listings.json"),
-      store.all("users.json"),
+    const where = status && status !== "all" ? { status } : {};
+    const requests = await boostsRepo.findMany({ where });
+    const [titleById, companyBySeller] = await Promise.all([
+      directory.listingTitlesByIds(requests.map((r) => r.listingId)),
+      identity.getSellerCompanyNames(requests.map((r) => r.sellerId)),
     ]);
-    const titleById = new Map(listings.map((l) => [l.id, l.title]));
-    const userById = new Map(users.map((u) => [u.id, u]));
 
-    let rows = requests.slice();
-    if (status && status !== "all") {
-      rows = rows.filter((r) => r.status === status);
-    }
-
-    rows = rows
+    const rows = requests
       .sort((a, b) =>
         String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
       )
       .map((r) => {
-        const u = userById.get(r.sellerId);
-        const sp = (u && u.sellerProfile) || {};
+        const card = companyBySeller.get(r.sellerId);
         return {
           ...r,
           listingTitle: titleById.get(r.listingId) || null,
           boostLabel: BOOST_LABELS[r.boostType] || r.boostType,
-          sellerCompany: sp.companyName || (u && u.name) || r.sellerId,
+          sellerCompany: (card && card.company) || r.sellerId,
         };
       });
 
@@ -164,7 +158,7 @@ router.post(
   requireRole("admin"),
   async (req, res, next) => {
     try {
-      const request = await store.getById("boost-requests.json", req.params.id);
+      const request = await boostsRepo.findById(req.params.id);
       if (!request) {
         return res
           .status(404)
@@ -196,7 +190,7 @@ router.post(
       }
       await store.update("listings.json", listing.id, patch);
 
-      const updated = await store.update("boost-requests.json", request.id, {
+      const updated = await boostsRepo.updateById(request.id, {
         status: "active",
         approvedAt: now.toISOString(),
       });
@@ -214,7 +208,7 @@ router.post(
   requireRole("admin"),
   async (req, res, next) => {
     try {
-      const updated = await store.update("boost-requests.json", req.params.id, {
+      const updated = await boostsRepo.updateById(req.params.id, {
         status: "rejected",
         rejectedAt: new Date().toISOString(),
       });
