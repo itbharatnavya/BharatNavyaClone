@@ -13,7 +13,14 @@ const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
 const identity = require("../modules/identity");
+const { repoForCollection } = require("../modules/_shared");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+
+const plansRepo = repoForCollection("subscription-plans.json");
+const adSlotsRepo = repoForCollection("ad-slots.json");
+const adBookingsRepo = repoForCollection("ad-bookings.json");
+const paymentsRepo = repoForCollection("payment-records.json");
+const reportsRepo = repoForCollection("reports.json");
 
 // Auth + admin role for every endpoint below.
 router.use(authGuard, requireRole("admin"));
@@ -378,7 +385,7 @@ const PAYMENT_FIELDS = [
 /* =================================================== subscription plans ===== */
 router.get("/plans", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.all("subscription-plans.json") });
+    return res.json({ success: true, data: await plansRepo.findMany({}) });
   } catch (err) {
     next(err);
   }
@@ -386,8 +393,7 @@ router.get("/plans", async (req, res, next) => {
 
 router.post("/plans", async (req, res, next) => {
   try {
-    const created = await store.insert(
-      "subscription-plans.json",
+    const created = await plansRepo.insert(
       { billingCycle: "monthly", ...pick(req.body || {}, PLAN_FIELDS) },
       "plan"
     );
@@ -399,7 +405,7 @@ router.post("/plans", async (req, res, next) => {
 
 router.put("/plans/:id", async (req, res, next) => {
   try {
-    const updated = await store.update("subscription-plans.json", req.params.id, pick(req.body || {}, PLAN_FIELDS));
+    const updated = await plansRepo.updateById(req.params.id, pick(req.body || {}, PLAN_FIELDS));
     if (!updated) return res.status(404).json({ success: false, error: "Plan not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -410,7 +416,7 @@ router.put("/plans/:id", async (req, res, next) => {
 /* ============================================================== ad slots ===== */
 router.get("/ad-slots", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.all("ad-slots.json") });
+    return res.json({ success: true, data: await adSlotsRepo.findMany({}) });
   } catch (err) {
     next(err);
   }
@@ -418,8 +424,7 @@ router.get("/ad-slots", async (req, res, next) => {
 
 router.post("/ad-slots", async (req, res, next) => {
   try {
-    const created = await store.insert(
-      "ad-slots.json",
+    const created = await adSlotsRepo.insert(
       { isActive: true, ...pick(req.body || {}, AD_SLOT_FIELDS) },
       "slot"
     );
@@ -431,7 +436,7 @@ router.post("/ad-slots", async (req, res, next) => {
 
 router.put("/ad-slots/:id", async (req, res, next) => {
   try {
-    const updated = await store.update("ad-slots.json", req.params.id, pick(req.body || {}, AD_SLOT_FIELDS));
+    const updated = await adSlotsRepo.updateById(req.params.id, pick(req.body || {}, AD_SLOT_FIELDS));
     if (!updated) return res.status(404).json({ success: false, error: "Ad slot not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -456,7 +461,7 @@ router.get("/ad-bookings", async (req, res, next) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    let list = await store.all("ad-bookings.json");
+    let list = await adBookingsRepo.findMany({});
     if (product === "recruitment") list = list.filter(isRecruitmentBooking);
     else if (product === "directory") list = list.filter((b) => !isRecruitmentBooking(b));
 
@@ -512,7 +517,7 @@ router.post("/ad-bookings", async (req, res, next) => {
       ...normaliseBooking(req.body || {}),
       createdAt: new Date().toISOString(),
     };
-    const created = await store.insert("ad-bookings.json", booking, "adb");
+    const created = await adBookingsRepo.insert(booking, "adb");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -550,7 +555,7 @@ router.put("/ad-bookings/:id", async (req, res, next) => {
     } else if (body.categoryId !== undefined) {
       patch.categoryIds = body.categoryId ? [body.categoryId] : [];
     }
-    const updated = await store.update("ad-bookings.json", req.params.id, patch);
+    const updated = await adBookingsRepo.updateById(req.params.id, patch);
     if (!updated) return res.status(404).json({ success: false, error: "Ad booking not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -561,7 +566,7 @@ router.put("/ad-bookings/:id", async (req, res, next) => {
 /* ============================================================== payments ===== */
 router.get("/payments", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.all("payment-records.json") });
+    return res.json({ success: true, data: await paymentsRepo.findMany({}) });
   } catch (err) {
     next(err);
   }
@@ -588,7 +593,7 @@ router.post("/payments", async (req, res, next) => {
       markedPaidDate: settled ? body.markedPaidDate || nowIso : body.markedPaidDate || null,
       createdAt: nowIso,
     };
-    const created = await store.insert("payment-records.json", record, "pay");
+    const created = await paymentsRepo.insert(record, "pay");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -602,7 +607,7 @@ router.put("/payments/:id", async (req, res, next) => {
     if ((patch.paymentStatus === "paid" || patch.paymentStatus === "waived") && !patch.markedPaidDate) {
       patch.markedPaidDate = new Date().toISOString();
     }
-    const updated = await store.update("payment-records.json", req.params.id, patch);
+    const updated = await paymentsRepo.updateById(req.params.id, patch);
     if (!updated) return res.status(404).json({ success: false, error: "Payment record not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
@@ -618,7 +623,7 @@ router.put("/payments/:id", async (req, res, next) => {
 router.get("/reports", async (req, res, next) => {
   try {
     const status = req.query.status;
-    let reports = await store.all("reports.json");
+    let reports = await reportsRepo.findMany({});
     if (status && status !== "all") {
       reports = reports.filter((r) => r.status === status);
     }
@@ -631,7 +636,7 @@ router.get("/reports", async (req, res, next) => {
 // PUT /reports/:id/resolve — mark a report resolved (stamps resolvedBy/resolvedAt).
 router.put("/reports/:id/resolve", async (req, res, next) => {
   try {
-    const updated = await store.update("reports.json", req.params.id, {
+    const updated = await reportsRepo.updateById(req.params.id, {
       status: "resolved",
       resolvedBy: req.user.id,
       resolvedAt: new Date().toISOString(),
@@ -648,7 +653,7 @@ router.put("/reports/:id/resolve", async (req, res, next) => {
 // PUT /reports/:id/dismiss — dismiss a report (stamps resolvedBy/resolvedAt).
 router.put("/reports/:id/dismiss", async (req, res, next) => {
   try {
-    const updated = await store.update("reports.json", req.params.id, {
+    const updated = await reportsRepo.updateById(req.params.id, {
       status: "dismissed",
       resolvedBy: req.user.id,
       resolvedAt: new Date().toISOString(),
