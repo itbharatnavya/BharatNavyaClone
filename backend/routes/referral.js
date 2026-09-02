@@ -24,10 +24,10 @@ const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
 const { authGuard } = require("../middleware/authGuard");
 
-const COLLECTION = "referrals.json";
+const referralsRepo = repoForCollection("referrals.json");
 
 /** Deterministic, stable referral code for a user id. */
 function makeCode(userId) {
@@ -43,28 +43,30 @@ function makeCode(userId) {
 }
 
 /**
- * Find (or lazily create) the referral row for a user. Serialized on the
- * collection lock so two concurrent callers can't insert duplicate rows.
- * NOTE: uses readJson/writeJson directly (not store.insert) to avoid nesting
- * the same-key lock, which would deadlock.
+ * Find (or lazily create) the referral row for a user. The old in-process
+ * `store.withLock` serialized concurrent callers; here the `referrals.code`
+ * UNIQUE constraint is the real guard — `makeCode(userId)` is deterministic, so
+ * a racing second insert hits that constraint; we swallow it and re-read.
  */
 async function ensureRow(userId) {
-  return store.withLock(COLLECTION, async () => {
-    const rows = await store.readJson(COLLECTION, []);
-    let row = rows.find((r) => r.userId === userId);
-    if (row) return row;
-    row = {
-      id: await store.nextId("ref"),
-      userId,
-      code: makeCode(userId),
-      credits: 0,
-      invitedUserIds: [],
-      createdAt: new Date().toISOString(),
-    };
-    rows.push(row);
-    await store.writeJson(COLLECTION, rows);
-    return row;
-  });
+  const existing = await referralsRepo.findOne({ where: { userId } });
+  if (existing) return existing;
+  try {
+    return await referralsRepo.insert(
+      {
+        userId,
+        code: makeCode(userId),
+        credits: 0,
+        invitedUserIds: [],
+        createdAt: new Date().toISOString(),
+      },
+      "ref"
+    );
+  } catch (err) {
+    const row = await referralsRepo.findOne({ where: { userId } });
+    if (row) return row; // lost the insert race — the winner's row is fine
+    throw err;
+  }
 }
 
 // GET /my-code — lazily generate a stable code; return a compact summary.
@@ -95,29 +97,26 @@ router.post("/redeem", authGuard, async (req, res, next) => {
         .json({ success: false, error: "code is required" });
     }
 
-    const result = await store.withLock(COLLECTION, async () => {
-      const rows = await store.readJson(COLLECTION, []);
-      const owner = rows.find((r) => String(r.code).toUpperCase() === code);
-      if (!owner) return { error: 404, message: "Referral code not found" };
-      if (owner.userId === req.user.id) {
-        return { error: 400, message: "You cannot redeem your own referral code" };
-      }
-      owner.invitedUserIds = owner.invitedUserIds || [];
-      if (!owner.invitedUserIds.includes(req.user.id)) {
-        owner.invitedUserIds.push(req.user.id);
-        owner.credits = (owner.credits || 0) + 1;
-        await store.writeJson(COLLECTION, rows);
-      }
-      return { owner };
-    });
-
-    if (result.error) {
+    const found = await referralsRepo.findOne({ where: { code } });
+    if (!found) {
+      return res.status(404).json({ success: false, error: "Referral code not found" });
+    }
+    if (found.userId === req.user.id) {
       return res
-        .status(result.error)
-        .json({ success: false, error: result.message });
+        .status(400)
+        .json({ success: false, error: "You cannot redeem your own referral code" });
     }
 
-    const owner = result.owner;
+    let owner = found;
+    const invited = found.invitedUserIds || [];
+    if (!invited.includes(req.user.id)) {
+      // Read-modify-write, as before (the old in-process lock never spanned
+      // processes anyway); the referral feature is off by default.
+      owner = await referralsRepo.updateById(found.id, {
+        invitedUserIds: [...invited, req.user.id],
+        credits: (found.credits || 0) + 1,
+      });
+    }
     return res.json({
       success: true,
       data: {
@@ -138,7 +137,7 @@ router.post("/redeem", authGuard, async (req, res, next) => {
 // GET / — my referral row (null if I haven't generated a code yet).
 router.get("/", authGuard, async (req, res, next) => {
   try {
-    const row = await store.findOne(COLLECTION, (r) => r.userId === req.user.id);
+    const row = await referralsRepo.findOne({ where: { userId: req.user.id } });
     return res.json({ success: true, data: row });
   } catch (err) {
     next(err);
