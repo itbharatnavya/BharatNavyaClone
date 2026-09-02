@@ -11,8 +11,10 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
 const { authGuard } = require("../middleware/authGuard");
+
+const adBookingsRepo = repoForCollection("ad-bookings.json");
 
 const PLACEMENTS = [
   "category_top",
@@ -82,7 +84,7 @@ router.post("/", authGuard, async (req, res, next) => {
       createdAt: new Date().toISOString(),
     };
 
-    const created = await store.insert("ad-bookings.json", booking, "adb");
+    const created = await adBookingsRepo.insert(booking, "adb");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -92,10 +94,7 @@ router.post("/", authGuard, async (req, res, next) => {
 // GET /api/my-ads — this seller's own campaigns, newest first.
 router.get("/", authGuard, async (req, res, next) => {
   try {
-    const rows = await store.findMany(
-      "ad-bookings.json",
-      (b) => b.sellerId === req.user.id
-    );
+    const rows = await adBookingsRepo.findMany({ where: { sellerId: req.user.id } });
     rows.sort((a, b) =>
       String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
     );
@@ -110,7 +109,7 @@ router.get("/", authGuard, async (req, res, next) => {
 // how planTier/status fields are excluded from PUT /me/employer's whitelist).
 router.put("/:id", authGuard, async (req, res, next) => {
   try {
-    const ad = await store.getById("ad-bookings.json", req.params.id);
+    const ad = await adBookingsRepo.findById(req.params.id);
     if (!ad) {
       return res.status(404).json({ success: false, error: "Ad not found" });
     }
@@ -135,7 +134,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
       patch.status = body.status;
     }
 
-    const updated = await store.update("ad-bookings.json", ad.id, patch);
+    const updated = await adBookingsRepo.updateById(ad.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -145,14 +144,14 @@ router.put("/:id", authGuard, async (req, res, next) => {
 // DELETE /api/my-ads/:id — owner (or admin) deletes their own campaign.
 router.delete("/:id", authGuard, async (req, res, next) => {
   try {
-    const ad = await store.getById("ad-bookings.json", req.params.id);
+    const ad = await adBookingsRepo.findById(req.params.id);
     if (!ad) {
       return res.status(404).json({ success: false, error: "Ad not found" });
     }
     if (ad.sellerId !== req.user.id && !isAdmin(req.user)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    await store.remove("ad-bookings.json", ad.id);
+    await adBookingsRepo.deleteById(ad.id);
     return res.json({ success: true, data: { id: ad.id, deleted: true } });
   } catch (err) {
     next(err);
