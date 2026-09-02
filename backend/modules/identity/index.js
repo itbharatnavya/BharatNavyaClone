@@ -129,6 +129,19 @@ async function getApprovedSellerIds() {
   return rows.map((r) => r.user_id);
 }
 
+/** Of the given user ids, the subset that actually have a seller_profiles row —
+ *  replaces `store.all("users.json").filter(u => u.sellerProfile)` seller-existence
+ *  checks (routes/adminInquiries.js's forward validation). Any status. */
+async function filterSellerIds(ids = []) {
+  const uniq = [...new Set(ids)].filter(Boolean);
+  if (!uniq.length) return [];
+  const { rows } = await pool.query(
+    `SELECT user_id FROM seller_profiles WHERE user_id = ANY($1)`,
+    [uniq]
+  );
+  return rows.map((r) => r.user_id);
+}
+
 /** Is this slug already used by a seller / employer profile? (uniqueSlug helpers
  *  in routes/users.js — replaces a `store.all("users.json")` slug-set build.) */
 async function sellerSlugTaken(slug) {
@@ -546,7 +559,7 @@ module.exports = {
   getEmployerCard, getEmployerCards,
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
-  getApprovedSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
+  getApprovedSellerIds, filterSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
   sellerSlugTaken, employerSlugTaken,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,

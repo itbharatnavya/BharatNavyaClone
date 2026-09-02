@@ -45,6 +45,13 @@ async function appendLead({ sellerId, buyerId, inquiryId, listingId }) {
   return lead;
 }
 
+/** The whole leads-ledger, as rows. The one read path for the append-only ledger —
+ *  lets routes reach it without importing lib/store directly (BACKEND-AUDIT.md
+ *  Phase 7). Same underlying mapper as `store.readJsonl("leads-ledger.jsonl")`. */
+function readLedger() {
+  return store.readJsonl("leads-ledger.jsonl");
+}
+
 /**
  * Alert a seller that a new lead was delivered to them, reusing lib/notify's
  * createNotification (type "new_lead" — the type NotificationBell already renders).
@@ -107,4 +114,4 @@ function attachSellerDeliveries(inquiries, allLeads, allUsers) {
   });
 }
 
-module.exports = { appendLead, notifySellerOfLead, sellerMini, attachSellerDeliveries };
+module.exports = { appendLead, notifySellerOfLead, sellerMini, attachSellerDeliveries, readLedger };

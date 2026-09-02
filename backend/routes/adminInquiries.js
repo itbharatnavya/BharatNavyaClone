@@ -27,9 +27,12 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
-const { appendLead, notifySellerOfLead, attachSellerDeliveries } = require("../lib/leads");
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
+const { appendLead, notifySellerOfLead, attachSellerDeliveries, readLedger } = require("../lib/leads");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+
+const inquiriesRepo = repoForCollection("inquiries.json");
 
 router.use(authGuard, requireRole("admin"));
 
@@ -50,10 +53,9 @@ router.get("/", async (req, res, next) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    const [allInquiries, allLeads, allUsers] = await Promise.all([
-      store.all("inquiries.json"),
-      store.readJsonl("leads-ledger.jsonl"),
-      store.all("users.json"),
+    const [allInquiries, allLeads] = await Promise.all([
+      inquiriesRepo.findMany({}),
+      readLedger(),
     ]);
 
     // Batch: inquiryId -> its lead rows (one pass, not one query per inquiry) —
@@ -103,7 +105,13 @@ router.get("/", async (req, res, next) => {
     const total = list.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
-    const items = attachSellerDeliveries(list.slice(start, start + limit), allLeads, allUsers);
+    const pageSlice = list.slice(start, start + limit);
+    // Only the sellers referenced by THIS page's leads are needed for the minis.
+    const pageSellerIds = pageSlice.flatMap((i) =>
+      (leadsByInquiry.get(i.id) || []).map((l) => l.sellerId)
+    );
+    const pageUsers = await identity.hydrateUsersByIds(pageSellerIds);
+    const items = attachSellerDeliveries(pageSlice, allLeads, pageUsers);
 
     return res.json({ success: true, data: { items, total, page, totalPages, summary } });
   } catch (err) {
@@ -123,7 +131,7 @@ router.get("/", async (req, res, next) => {
 // 400 only when the request names no seller at all.
 router.post("/:id/forward", async (req, res, next) => {
   try {
-    const inquiry = await store.getById("inquiries.json", req.params.id);
+    const inquiry = await inquiriesRepo.findById(req.params.id);
     if (!inquiry) {
       return res.status(404).json({ success: false, error: "Inquiry not found" });
     }
@@ -145,10 +153,7 @@ router.post("/:id/forward", async (req, res, next) => {
     const listingId = body.listingId || null;
 
     // Validate every id is a real seller before writing anything.
-    const users = await store.all("users.json");
-    const sellerSet = new Set(
-      users.filter((u) => u && u.sellerProfile).map((u) => u.id)
-    );
+    const sellerSet = new Set(await identity.filterSellerIds(sellerIds));
     const unknown = sellerIds.filter((id) => !sellerSet.has(id));
     if (unknown.length) {
       return res.status(400).json({
@@ -159,7 +164,7 @@ router.post("/:id/forward", async (req, res, next) => {
 
     // Don't double-deliver: a seller may already have a lead for this RFQ from
     // the automatic fan-out or an earlier manual forward.
-    const existingLeads = await store.readJsonl("leads-ledger.jsonl");
+    const existingLeads = await readLedger();
     const hasLead = new Set(
       existingLeads
         .filter((l) => l.inquiryId === inquiry.id)
@@ -185,7 +190,7 @@ router.post("/:id/forward", async (req, res, next) => {
 
     let updated = inquiry;
     if (added.length > 0) {
-      updated = await store.update("inquiries.json", inquiry.id, {
+      updated = await inquiriesRepo.updateById(inquiry.id, {
         unmatched: false,
         adminStatus: "forwarded",
         decidedBy: req.user.id,
@@ -201,11 +206,11 @@ router.post("/:id/forward", async (req, res, next) => {
 /* ------------------------------------------------------------ POST /:id/dismiss */
 router.post("/:id/dismiss", async (req, res, next) => {
   try {
-    const inquiry = await store.getById("inquiries.json", req.params.id);
+    const inquiry = await inquiriesRepo.findById(req.params.id);
     if (!inquiry) {
       return res.status(404).json({ success: false, error: "Inquiry not found" });
     }
-    const updated = await store.update("inquiries.json", inquiry.id, {
+    const updated = await inquiriesRepo.updateById(inquiry.id, {
       unmatched: false,
       adminStatus: "dismissed",
       decidedBy: req.user.id,
