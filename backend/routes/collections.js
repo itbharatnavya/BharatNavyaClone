@@ -30,10 +30,13 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const store = require("../lib/store"); // composite listings.json document reads (GET /:slug) stay on store
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
-const COLLECTIONS = "collections.json";
+const collectionsRepo = repoForCollection("collections.json");
 
 // Same slug rules as routes/adminCategories.js: lowercase, & → "and",
 // any run of non-alphanumerics → single dash, trimmed.
@@ -84,16 +87,17 @@ function sellerMini(user) {
   };
 }
 
-/** Load the shared lookups a resolve needs, once per request. */
+/** Load the shared lookups a resolve needs, once per request. `listings` are LEAN
+ *  rows (id/status/categoryId/categoryPath/product.brand/media) — the only fields
+ *  resolveItems() + toCard() read; the full docs for GET /:slug are hydrated by id
+ *  from the bounded resolved set. */
 async function buildContext() {
-  const [listings, categories, users] = await Promise.all([
-    store.all("listings.json"),
-    store.all("categories.json"),
-    store.all("users.json"),
+  const [listings, categories] = await Promise.all([
+    directory.activeListingsForCollectionResolve(),
+    repoForCollection("categories.json").findMany({}),
   ]);
   const catBySlug = new Map(categories.map((c) => [c.slug, c]));
-  const userById = new Map(users.map((u) => [u.id, u]));
-  return { listings, catBySlug, userById };
+  return { listings, catBySlug };
 }
 
 /**
@@ -183,7 +187,7 @@ function normalizeArrays(b) {
 // GET /admin — every collection (incl. drafts), newest-order first, with counts.
 router.get("/admin", ...adminGuard, async (req, res, next) => {
   try {
-    const [collections, ctx] = await Promise.all([store.all(COLLECTIONS), buildContext()]);
+    const [collections, ctx] = await Promise.all([collectionsRepo.findMany({}), buildContext()]);
     const data = collections
       .slice()
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.slug || "").localeCompare(b.slug || ""))
@@ -205,7 +209,7 @@ router.post("/admin", ...adminGuard, async (req, res, next) => {
     if (!slug) {
       return res.status(400).json({ success: false, error: "title must contain letters or numbers" });
     }
-    const collections = await store.all(COLLECTIONS);
+    const collections = await collectionsRepo.findMany({});
     if (collections.some((c) => c.slug === slug)) {
       return res.status(409).json({ success: false, error: "slug already exists" });
     }
@@ -223,7 +227,7 @@ router.post("/admin", ...adminGuard, async (req, res, next) => {
       status: b.status === "published" ? "published" : "draft",
       createdAt: new Date().toISOString(),
     };
-    const created = await store.insert(COLLECTIONS, collection);
+    const created = await collectionsRepo.insert(collection);
     return res.json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -244,7 +248,7 @@ router.put("/admin/:id", ...adminGuard, async (req, res, next) => {
     if ("order" in b && typeof b.order === "number") patch.order = b.order;
     if ("status" in b) patch.status = b.status === "published" ? "published" : "draft";
 
-    const updated = await store.update(COLLECTIONS, req.params.id, patch);
+    const updated = await collectionsRepo.updateById(req.params.id, patch);
     if (!updated) {
       return res.status(404).json({ success: false, error: "Collection not found" });
     }
@@ -257,7 +261,7 @@ router.put("/admin/:id", ...adminGuard, async (req, res, next) => {
 // DELETE /admin/:id
 router.delete("/admin/:id", ...adminGuard, async (req, res, next) => {
   try {
-    const removed = await store.remove(COLLECTIONS, req.params.id);
+    const removed = await collectionsRepo.deleteById(req.params.id);
     if (!removed) {
       return res.status(404).json({ success: false, error: "Collection not found" });
     }
@@ -272,7 +276,7 @@ router.delete("/admin/:id", ...adminGuard, async (req, res, next) => {
 // GET / — published collections for the /collections directory.
 router.get("/", async (req, res, next) => {
   try {
-    const [collections, ctx] = await Promise.all([store.all(COLLECTIONS), buildContext()]);
+    const [collections, ctx] = await Promise.all([collectionsRepo.findMany({}), buildContext()]);
     const data = collections
       .filter((c) => c.status === "published")
       .sort(
@@ -290,16 +294,24 @@ router.get("/", async (req, res, next) => {
 // GET /:slug — one published collection + its fully resolved listings.
 router.get("/:slug", async (req, res, next) => {
   try {
-    const collections = await store.all(COLLECTIONS);
-    const found = collections.find(
+    const found = (await collectionsRepo.findMany({})).find(
       (c) => c.slug === req.params.slug && c.status === "published"
     );
     if (!found) {
       return res.status(404).json({ success: false, error: "Collection not found" });
     }
     const ctx = await buildContext();
-    const items = resolveItems(found, ctx);
-    const listings = items.map((l) => ({ ...l, seller: sellerMini(ctx.userById.get(l.sellerId)) }));
+    const items = resolveItems(found, ctx); // lean rows, in resolved order
+
+    // Hydrate the (bounded) resolved set: the full composite listing doc + seller mini.
+    const fullDocs = (
+      await Promise.all(items.map((it) => store.getById("listings.json", it.id)))
+    ).filter(Boolean);
+    const sellerById = new Map(
+      (await identity.hydrateUsersByIds(fullDocs.map((l) => l.sellerId))).map((u) => [u.id, u])
+    );
+    const listings = fullDocs.map((l) => ({ ...l, seller: sellerMini(sellerById.get(l.sellerId)) }));
+
     const previewImages = [];
     for (const l of items) {
       const img = firstImage(l);

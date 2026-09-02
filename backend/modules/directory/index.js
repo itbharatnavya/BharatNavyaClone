@@ -17,6 +17,7 @@ const {
 const { bumpListingViews } = require("./repository/listing.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
 const { readSearchEvents } = require("./repository/searchTrends.repository");
+const { activeListingsForCollectionResolve } = require("./repository/collection.repository");
 const reviewsRepo = require("./repository/review.repository");
 
 module.exports = {
@@ -27,5 +28,6 @@ module.exports = {
   bumpListingViews,
   activeBrandedListingsLean,
   readSearchEvents,
+  activeListingsForCollectionResolve,
   reviewsRepo,
 };
