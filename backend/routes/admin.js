@@ -13,6 +13,7 @@ const express = require("express");
 const router = express.Router();
 const store = require("../lib/store");
 const identity = require("../modules/identity");
+const recruitment = require("../modules/recruitment");
 const { repoForCollection } = require("../modules/_shared");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
@@ -36,8 +37,8 @@ router.get("/analytics", async (req, res, next) => {
       store.all("users.json"),
       store.all("listings.json"),
       store.all("inquiries.json"),
-      store.all("jobs.json"),
-      store.all("applications.json"),
+      recruitment.jobsRepo.findMany({}),
+      recruitment.appsRepo.findMany({}),
     ]);
 
     const sellers = users.filter(isSeller);
@@ -239,9 +240,9 @@ router.get("/users/:id", async (req, res, next) => {
       await Promise.all([
         store.findMany("listings.json", (l) => l.sellerId === u.id),
         store.findMany("inquiries.json", (q) => q.buyerId === u.id),
-        store.findMany("jobs.json", (j) => j.employerId === u.id),
-        store.findMany("applications.json", (a) => a.candidateId === u.id),
-        store.findMany("applications.json", (a) => a.employerId === u.id),
+        recruitment.jobsRepo.findMany({ where: { employerId: u.id } }),
+        recruitment.appsRepo.findMany({ where: { candidateId: u.id } }),
+        recruitment.appsRepo.findMany({ where: { employerId: u.id } }),
         store.findMany("reviews.json", (r) => r.buyerId === u.id),
         store.findMany("reviews.json", (r) => (r.targetUserId || r.sellerId) === u.id),
       ]);

@@ -43,6 +43,10 @@ const GRADUATED_COLLECTIONS = [
   "job-functions.json",
   "job-roles.json",
   "skills.json",
+  // Phase 7 sweep-11 — the last routes/ readers (admin.js analytics + GET /users/:id,
+  // adminJobs/adminEmployers earlier) are off store; modules/recruitment owns these.
+  "jobs.json",
+  "applications.json",
 ];
 
 /* ------------------------------------------------------------------ helpers -- */
