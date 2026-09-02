@@ -17,8 +17,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+
+const featuresRepo = repoForCollection("features.json");
+const plansRepo = repoForCollection("subscription-plans.json");
 
 // Per-tier LIMIT fields the admin matrix may edit (subscription-plans.json rows).
 const LIMIT_FIELDS = [
@@ -39,8 +42,8 @@ const LIMIT_FIELDS = [
  */
 async function compose() {
   const [features, plans] = await Promise.all([
-    store.all("features.json"),
-    store.all("subscription-plans.json"),
+    featuresRepo.findMany({}),
+    plansRepo.findMany({}),
   ]);
 
   const tiers = [...plans]
@@ -105,13 +108,13 @@ router.put("/", authGuard, requireRole("admin"), async (req, res, next) => {
       for (const entry of body.features) {
         if (!entry || !entry.id || !Array.isArray(entry.plans)) continue;
         const plans = entry.plans.filter((p) => typeof p === "string");
-        await store.update("features.json", entry.id, { plans });
+        await featuresRepo.updateById(entry.id, { plans });
       }
     }
 
     // 2) Per-tier LIMITS — patch the subscription-plans row matching each tier key.
     if (body.planLimits && typeof body.planLimits === "object") {
-      const rows = await store.all("subscription-plans.json");
+      const rows = await plansRepo.findMany({});
       for (const [tier, limits] of Object.entries(body.planLimits)) {
         if (!limits || typeof limits !== "object") continue;
         const row = rows.find((r) => r.tier === tier);
@@ -121,7 +124,7 @@ router.put("/", authGuard, requireRole("admin"), async (req, res, next) => {
           if (f in limits) patch[f] = limits[f];
         }
         if (Object.keys(patch).length) {
-          await store.update("subscription-plans.json", row.id, patch);
+          await plansRepo.updateById(row.id, patch);
         }
       }
     }
