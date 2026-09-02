@@ -33,10 +33,11 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 
-const COLLECTION = "stories.json";
+const storiesRepo = repoForCollection("stories.json");
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function isAdmin(user) {
@@ -61,27 +62,27 @@ router.get("/", async (req, res, next) => {
   try {
     const authorTypeFilter = resolveAuthorTypeFilter(req);
     const now = Date.now();
-    const all = await store.all(COLLECTION);
-    // Highlights are pinned in STORAGE indefinitely (a seller can unpin/delete an
-    // old one from their dashboard at any time), but only a non-expired story —
-    // highlighted or not — belongs in this feed. An expired highlight is
-    // profile-only from here on; it does not linger in the public directory feed
-    // or the dashboard's own list once its original 24h window has passed.
-    const kept = all.filter(
-      (s) => s.isHighlight === true || new Date(s.expiresAt).getTime() > now
-    );
+    const nowIso = new Date(now).toISOString();
 
-    // Sweep on read: if anything expired (and wasn't pinned), persist the pruned set.
-    // Note: moderator-hidden stories are KEPT in the store (an admin can approve them
-    // later) — they are only filtered out of the PUBLIC response below.
-    if (kept.length !== all.length) {
-      await store.writeJson(COLLECTION, kept);
-    }
+    // Sweep on read: prune expired non-highlights from storage. Highlights are
+    // pinned in STORAGE indefinitely (a seller can unpin/delete an old one from
+    // their dashboard at any time). Was: read all, filter, store.writeJson(kept) —
+    // the criteria here reproduce that filter's inverse exactly, including the
+    // strict `isHighlight === true` (is_highlight is NOT NULL) and the
+    // NaN-on-missing-expiresAt case (null expires_at also swept).
+    await storiesRepo.deleteWhere({
+      where: {
+        isHighlight: { ne: true },
+        _or: [{ expiresAt: { lte: nowIso } }, { expiresAt: { isNull: true } }],
+      },
+    });
+
+    const all = await storiesRepo.findMany({});
 
     // Hidden stories survive in the store but never render here. Expired highlights
-    // also survive in the store (see `kept` above) but are excluded from this feed —
-    // GET /highlights is the only place they still show.
-    const visible = kept.filter(
+    // also survive in the store but are excluded from this feed by the expiresAt
+    // check below — GET /highlights is the only place they still show.
+    const visible = all.filter(
       (s) =>
         s.status !== "hidden" &&
         new Date(s.expiresAt).getTime() > now &&
@@ -89,7 +90,7 @@ router.get("/", async (req, res, next) => {
     );
 
     // Resolve seller info once.
-    const users = await store.all("users.json");
+    const users = await identity.hydrateUsersByIds(visible.map((s) => s.sellerId));
     const userById = new Map(users.map((u) => [u.id, u]));
 
     // Group by seller, preserving chronological story order within each group.
@@ -156,12 +157,10 @@ router.get("/highlights", async (req, res, next) => {
         .json({ success: false, error: "sellerId query param is required" });
     }
     const authorTypeFilter = resolveAuthorTypeFilter(req);
-    const all = await store.all(COLLECTION);
-    const highlights = all
+    const rows = await storiesRepo.findMany({ where: { sellerId, isHighlight: true } });
+    const highlights = rows
       .filter(
         (s) =>
-          s.sellerId === sellerId &&
-          s.isHighlight === true &&
           s.status !== "hidden" &&
           (authorTypeFilter === null || (s.authorType || "seller") === authorTypeFilter)
       )
@@ -187,11 +186,10 @@ router.get("/active", async (req, res, next) => {
     }
     const authorTypeFilter = resolveAuthorTypeFilter(req);
     const now = Date.now();
-    const all = await store.all(COLLECTION);
-    const active = all
+    const rows = await storiesRepo.findMany({ where: { sellerId } });
+    const active = rows
       .filter(
         (s) =>
-          s.sellerId === sellerId &&
           s.status !== "hidden" &&
           new Date(s.expiresAt).getTime() > now &&
           (authorTypeFilter === null || (s.authorType || "seller") === authorTypeFilter)
@@ -233,7 +231,7 @@ router.post("/", authGuard, async (req, res, next) => {
       views: 0,
       isHighlight: false,
     };
-    const created = await store.insert(COLLECTION, doc, "story");
+    const created = await storiesRepo.insert(doc, "story");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -247,7 +245,7 @@ router.post("/", authGuard, async (req, res, next) => {
 // (unpinning an already-expired story returns it to the normal sweep).
 router.put("/:id/highlight", authGuard, async (req, res, next) => {
   try {
-    const story = await store.getById(COLLECTION, req.params.id);
+    const story = await storiesRepo.findById(req.params.id);
     if (!story) {
       return res.status(404).json({ success: false, error: "Story not found" });
     }
@@ -257,9 +255,7 @@ router.put("/:id/highlight", authGuard, async (req, res, next) => {
         .json({ success: false, error: "You can only highlight your own stories" });
     }
     const isHighlight = req.body?.isHighlight !== undefined ? !!req.body.isHighlight : true;
-    const updated = await store.update(COLLECTION, story.id, {
-      isHighlight,
-    });
+    const updated = await storiesRepo.updateById(story.id, { isHighlight });
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -269,13 +265,11 @@ router.put("/:id/highlight", authGuard, async (req, res, next) => {
 // POST /:id/view — increment a story's view counter.
 router.post("/:id/view", async (req, res, next) => {
   try {
-    const story = await store.getById(COLLECTION, req.params.id);
+    const story = await storiesRepo.findById(req.params.id);
     if (!story) {
       return res.status(404).json({ success: false, error: "Story not found" });
     }
-    const updated = await store.update(COLLECTION, story.id, {
-      views: (story.views || 0) + 1,
-    });
+    const updated = await storiesRepo.incrementById(story.id, "views", 1);
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -285,14 +279,14 @@ router.post("/:id/view", async (req, res, next) => {
 // DELETE /:id — remove a story outright (owner or admin).
 router.delete("/:id", authGuard, async (req, res, next) => {
   try {
-    const story = await store.getById(COLLECTION, req.params.id);
+    const story = await storiesRepo.findById(req.params.id);
     if (!story) {
       return res.status(404).json({ success: false, error: "Story not found" });
     }
     if (story.sellerId !== req.user.id && !isAdmin(req.user)) {
       return res.status(403).json({ success: false, error: "You can only delete your own stories" });
     }
-    await store.remove(COLLECTION, story.id);
+    await storiesRepo.deleteById(story.id);
     return res.json({ success: true, data: { id: story.id, deleted: true } });
   } catch (err) {
     next(err);

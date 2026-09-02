@@ -145,4 +145,14 @@ test("repository vs legacy store — differential", async (t) => {
     const down = await repo.incrementById("job_000011", "viewCount", -5);
     assert.equal(down.viewCount, base, "restored to the original count");
   });
+
+  await t.test("deleteWhere refuses an empty where and compiles a scoped delete", async () => {
+    const repo = repoFor("jobs.json");
+    await assert.rejects(() => repo.deleteWhere({ where: {} }), /empty where/);
+    await assert.rejects(() => repo.deleteWhere({}), /empty where/);
+    // A criterion that matches nothing — proves the DELETE builds + runs, no rows touched.
+    const n = await repo.deleteWhere({ where: { id: "job__no_such_row__" } });
+    assert.equal(n, 0);
+    assert.equal((await store.all("jobs.json")).length > 0, true, "seed jobs untouched");
+  });
 });

@@ -9,7 +9,7 @@
  *     count, page,                      // page(): items + total in ONE round trip (count(*) OVER())
  *     insert, updateById, updateWhere,
  *     incrementById,                    // atomic  SET col = COALESCE(col,0) + n   -> fixes C2
- *     deleteById, withTx,
+ *     deleteById, deleteWhere, withTx,  // deleteWhere: bulk delete by criteria (empty where refused)
  *   }
  *
  * `mapping` is one entry from buildFlatConfigs() (flat.mappings.js). Row<->doc
@@ -131,13 +131,26 @@ function createRepository({ pool, mapping }) {
     return flat.remove(id);
   }
 
+  /** Bulk delete — every row matching `where`. Returns the rows deleted (rowCount).
+   *  An empty `where` is refused (never a delete-all by accident); pass an explicit
+   *  criterion. Mirror of updateWhere — values only, no structural input. */
+  async function deleteWhere({ where } = {}) {
+    if (!where || !Object.keys(where).length) {
+      throw new Error("deleteWhere: refusing to run with an empty where");
+    }
+    const w = buildWhere(where, resolveCol, 1);
+    const sql = `DELETE FROM ${TABLE}${w.text ? ` WHERE ${w.text}` : ""}`;
+    const res = await pool.query(sql, w.values);
+    return res.rowCount;
+  }
+
   async function withTx(fn) {
     return withTransaction(pool, fn);
   }
 
   return {
     findById, findOne, findMany, count, page,
-    insert, updateById, updateWhere, incrementById, deleteById, withTx,
+    insert, updateById, updateWhere, incrementById, deleteById, deleteWhere, withTx,
   };
 }
 
