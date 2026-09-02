@@ -100,6 +100,48 @@ async function activeListingIdsForSeller(sellerId) {
 }
 
 /**
+ * sellerListingIds(sellerId) -> Promise<string[]>  (id-ASC, ANY status)
+ *
+ * Every listing id owned by one seller regardless of status — the id-ascending
+ * order the old `store.all("listings.json").filter(l => l.sellerId === id)`
+ * yielded (it filtered `store.all`'s id-ASC output). routes/users.js's
+ * `GET /api/me/listings` hydrates each id with `store.getById` (the composite
+ * document read stays on `store` by design), then re-sorts by createdAt DESC —
+ * the JS sort is stable so equal/absent-createdAt ties keep this id-ASC order.
+ */
+async function sellerListingIds(sellerId) {
+  const { rows } = await pool.query(
+    `SELECT id FROM listings WHERE seller_id = $1 ORDER BY id ASC`,
+    [sellerId]
+  );
+  return rows.map((r) => r.id);
+}
+
+/**
+ * sellerListingStats(sellerId) -> Promise<[{ id, title, views, status, isFeatured }]>
+ *
+ * The LEAN per-listing fields routes/users.js's `GET /api/me/analytics` reads off
+ * every one of a seller's listings (totalViews / activeListings / featuredListings
+ * / the top-10-by-views perListing breakdown). Was `store.all("listings.json")`
+ * (full composite hydrate of EVERY listing) + a JS `sellerId` filter. id-ASC so
+ * the route's later stable `sort((a,b) => b.views - a.views)` breaks ties the same.
+ */
+async function sellerListingStats(sellerId) {
+  const { rows } = await pool.query(
+    `SELECT id, title, views, status, is_featured
+       FROM listings WHERE seller_id = $1 ORDER BY id ASC`,
+    [sellerId]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    views: r.views,
+    status: r.status,
+    isFeatured: r.is_featured,
+  }));
+}
+
+/**
  * listingTitlesByIds(ids) -> Promise<Map<listingId, title>>
  *
  * One `WHERE id = ANY($1)` for a lookup that used to walk `store.all("listings.json")`
@@ -118,5 +160,7 @@ module.exports = {
   firstListingImageBySeller,
   activeListingCountsBySeller,
   activeListingIdsForSeller,
+  sellerListingIds,
+  sellerListingStats,
   listingTitlesByIds,
 };

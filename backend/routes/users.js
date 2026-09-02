@@ -10,9 +10,11 @@ const express = require("express");
 const router = express.Router();
 
 const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 const recruitment = require("../modules/recruitment");
+const { readLedger } = require("../lib/leads");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { coordsForCity } = require("../lib/geo");
 const { deriveBadges } = require("../lib/badges");
@@ -539,10 +541,15 @@ router.put("/me/profile", authGuard, async (req, res, next) => {
 // dashboard even while pending/suspended.
 router.get("/me/listings", authGuard, async (req, res, next) => {
   try {
-    const all = await store.all("listings.json");
-    const mine = all
-      .filter((l) => l.sellerId === req.user.id)
-      .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    // The every-listing scan is now an indexed id list; the composite document
+    // read stays per-id on store by design (BACKEND-AUDIT.md).
+    const ids = await directory.sellerListingIds(req.user.id);
+    const docs = (
+      await Promise.all(ids.map((id) => store.getById("listings.json", id)))
+    ).filter(Boolean);
+    const mine = docs.sort((a, b) =>
+      String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+    );
     return res.json({ success: true, data: { listings: mine, total: mine.length } });
   } catch (err) {
     next(err);
@@ -566,14 +573,15 @@ const CLOSED_INQUIRY_STAGES = new Set([
 router.get("/me/analytics", authGuard, async (req, res, next) => {
   try {
     const me = req.user.id;
-    const [listings, leads, inquiries, reviews] = await Promise.all([
-      store.all("listings.json"),
-      store.readJsonl("leads-ledger.jsonl"),
-      store.all("inquiries.json"),
-      store.all("reviews.json"),
+    const [myListings, leads, inquiries, myReviews] = await Promise.all([
+      directory.sellerListingStats(me),
+      readLedger(),
+      repoForCollection("inquiries.json").findMany({}),
+      directory.reviewsRepo.findMany({
+        where: { status: "approved", _or: [{ targetUserId: me }, { sellerId: me }] },
+      }),
     ]);
 
-    const myListings = listings.filter((l) => l.sellerId === me);
     const myLeads = leads.filter((l) => l.sellerId === me);
 
     // Leads delivered per listing id (for the per-listing breakdown).
@@ -594,11 +602,8 @@ router.get("/me/analytics", authGuard, async (req, res, next) => {
         !CLOSED_INQUIRY_STAGES.has(i.stage)
     ).length;
 
-    // Approved reviews written ABOUT me (targetUserId or the sellerId alias).
-    const myReviews = reviews.filter(
-      (r) =>
-        r.status === "approved" && (r.targetUserId === me || r.sellerId === me)
-    );
+    // Approved reviews written ABOUT me (targetUserId or the sellerId alias) —
+    // the criteria are pushed into the repo query above.
     const reviewCount = myReviews.length;
     const avgRating = reviewCount
       ? Math.round(

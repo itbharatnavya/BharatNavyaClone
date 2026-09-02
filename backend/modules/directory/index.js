@@ -13,6 +13,8 @@ const {
   firstListingImageBySeller,
   activeListingCountsBySeller,
   activeListingIdsForSeller,
+  sellerListingIds,
+  sellerListingStats,
   listingTitlesByIds,
 } = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
@@ -27,6 +29,8 @@ module.exports = {
   firstListingImageBySeller,
   activeListingCountsBySeller,
   activeListingIdsForSeller,
+  sellerListingIds,
+  sellerListingStats,
   bumpListingViews,
   activeBrandedListingsLean,
   readSearchEvents,
