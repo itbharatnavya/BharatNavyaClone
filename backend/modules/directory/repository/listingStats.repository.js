@@ -142,6 +142,52 @@ async function sellerListingStats(sellerId) {
 }
 
 /**
+ * activeListingCountsByType() -> Promise<{ product, service }>
+ *
+ * One GROUP BY for the "how many products / services are live" answer in
+ * routes/assistant.js's `buildStatsReply` — was `store.all("listings.json")`
+ * (full composite hydrate of every listing) + two JS `.filter().length` passes.
+ * Any `type` outside product/service is ignored (matches the old filters).
+ */
+async function activeListingCountsByType() {
+  const { rows } = await pool.query(
+    `SELECT type, count(*)::int AS n FROM listings WHERE status = 'active' GROUP BY type`
+  );
+  const out = { product: 0, service: 0 };
+  for (const r of rows) if (r.type === "product" || r.type === "service") out[r.type] = r.n;
+  return out;
+}
+
+/**
+ * listingsForAiFallback() -> Promise<[lean active listing]>
+ *
+ * The lean rows routes/ai.js's `fallbackScan` reads (`status/type/location.city/
+ * title/description/keywords/legacyCategory/isFeatured`) when `lib/search` is
+ * unavailable — was `store.all("listings.json")` (full composite hydrate of every
+ * listing) for a defensive in-memory scan. id-ASC, active only (the scan skips
+ * non-active anyway).
+ */
+async function listingsForAiFallback() {
+  const { rows } = await pool.query(
+    `SELECT id, seller_id, type, title, description, keywords, legacy_category,
+            is_featured, location_city
+       FROM listings WHERE status = 'active' ORDER BY id ASC`
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    sellerId: r.seller_id,
+    status: "active",
+    type: r.type,
+    title: r.title,
+    description: r.description,
+    keywords: r.keywords || [],
+    legacyCategory: r.legacy_category,
+    isFeatured: r.is_featured,
+    location: { city: r.location_city || null },
+  }));
+}
+
+/**
  * listingTitlesByIds(ids) -> Promise<Map<listingId, title>>
  *
  * One `WHERE id = ANY($1)` for a lookup that used to walk `store.all("listings.json")`
@@ -162,5 +208,7 @@ module.exports = {
   activeListingIdsForSeller,
   sellerListingIds,
   sellerListingStats,
+  activeListingCountsByType,
+  listingsForAiFallback,
   listingTitlesByIds,
 };

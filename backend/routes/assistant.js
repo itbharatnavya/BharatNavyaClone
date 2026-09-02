@@ -17,12 +17,18 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const store = require("../lib/store"); // ONLY the settings.json singleton read (isRecruitmentLive) — no collection scans
+const { repoForCollection } = require("../modules/_shared");
+const directory = require("../modules/directory");
+const identity = require("../modules/identity");
 const config = require("../lib/config");
 const { parseQuery, selectRelevantCategories } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
 const { searchJobs } = require("../modules/recruitment");
 const { optionalAuth } = require("../middleware/authGuard");
+
+/** categories.json rows (slug + name) via the flat repo — was `store.all`. */
+const loadCategories = () => repoForCollection("categories.json").findMany({});
 
 const WINDOW_MS = 60 * 60 * 1000;
 const LIMIT = 20;
@@ -420,17 +426,15 @@ function detectStatsSubject(message) {
 }
 
 async function buildStatsReply(subject) {
-  const [listings, users, cats] = await Promise.all([
-    store.all("listings.json"),
-    store.all("users.json"),
-    store.all("categories.json"),
+  const [byType, counts, categories] = await Promise.all([
+    directory.activeListingCountsByType(),
+    identity.directoryCounts(),
+    repoForCollection("categories.json").count(),
   ]);
-  const active = listings.filter((l) => l.status === "active");
-  const products = active.filter((l) => l.type === "product").length;
-  const services = active.filter((l) => l.type === "service").length;
-  const sellers = users.filter((u) => u.sellerProfile).length;
-  const experts = users.filter((u) => u.sellerProfile && u.sellerProfile.expert).length;
-  const categories = cats.length;
+  const products = byType.product;
+  const services = byType.service;
+  const sellers = counts.sellers;
+  const experts = counts.experts;
   const fmt = (n) => Number(n).toLocaleString("en-IN");
 
   const suggestions = [];
@@ -867,6 +871,11 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
     const statsSubject = detectStatsSubject(message);
     let nav;
     let usedAI = false;
+    // C8: true when an AI-CLI / SDK reply was attempted but failed or returned
+    // nothing, so `nav` is the deterministic fallback — lets a caller tell that
+    // 200 apart from a clean one. Stays false when AI simply wasn't attempted
+    // (over the hourly cap, no CLI, or a confident deterministic match).
+    let degraded = false;
 
     if (statsSubject) {
       nav = await buildStatsReply(statsSubject);
@@ -895,6 +904,7 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
           hits.push(Date.now());
           nav = await resolveActionWithAI(actionIntent, message, req.user, req.body.history);
           usedAI = !!nav;
+          if (!nav) degraded = true;
         }
         if (!nav) nav = buildActionReply(actionIntent, req.user);
       } else if (looksLikeJobIntent(message)) {
@@ -907,12 +917,12 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
             results: [],
           };
         } else {
-          const cats = await store.all("categories.json");
+          const cats = await loadCategories();
           const parsedForCity = parseQuery(message, cats, { preferGeneral: true });
           nav = await buildJobReply(message, parsedForCity);
         }
       } else {
-        const cats = await store.all("categories.json");
+        const cats = await loadCategories();
         // preferGeneral: on a scoring tie, land on the broader top-level category
         // (e.g. "Electronics & Electrical") instead of whichever subcategory
         // happened to be listed first — see lib/nlp.js matchCategory(). Directory's
@@ -949,13 +959,15 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
               usedAI = true;
             }
           } catch (e) {
-            // fall back to the deterministic reply silently
+            // fall back to the deterministic reply (marked degraded)
+            degraded = true;
           }
         } else if (!config.ANTHROPIC_API_KEY && config.AI_CLI_ENABLED && claudeCli.isClaudeAvailable() && allowAI()) {
           hits.push(Date.now());
           nav = await resolveWithAI({ message, history: req.body.history, user: req.user, categories: cats, parsed, recruitmentLive });
           usedAI = !!nav;
           if (!nav) {
+            degraded = true;
             nav = await buildNavigation(message, cats, parsed, recruitmentLive);
           }
         } else {
@@ -966,7 +978,7 @@ router.post("/chat", optionalAuth, async (req, res, next) => {
 
     res.json({
       success: true,
-      data: { reply: nav.reply, suggestions: nav.suggestions, results: nav.results || [], usedAI, remaining: remaining() },
+      data: { reply: nav.reply, suggestions: nav.suggestions, results: nav.results || [], usedAI, degraded, remaining: remaining() },
     });
   } catch (err) {
     next(err);

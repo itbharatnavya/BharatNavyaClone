@@ -129,6 +129,19 @@ async function getApprovedSellerIds() {
   return rows.map((r) => r.user_id);
 }
 
+/** { sellers, experts } platform totals — routes/assistant.js's `buildStatsReply`
+ *  "how many sellers / experts" answer, was `store.all("users.json")` (full
+ *  composite hydrate of EVERY user, 9 child tables) + two JS `.filter().length`.
+ *  `experts` = users with an `expert_profiles` row (FK to `seller_profiles`), i.e.
+ *  the old `u.sellerProfile && u.sellerProfile.expert`. */
+async function directoryCounts() {
+  const { rows } = await pool.query(
+    `SELECT (SELECT count(*)::int FROM seller_profiles) AS sellers,
+            (SELECT count(*)::int FROM expert_profiles) AS experts`
+  );
+  return { sellers: rows[0].sellers, experts: rows[0].experts };
+}
+
 /** Of the given user ids, the subset that actually have a seller_profiles row —
  *  replaces `store.all("users.json").filter(u => u.sellerProfile)` seller-existence
  *  checks (routes/adminInquiries.js's forward validation). Any status. */
@@ -559,7 +572,7 @@ module.exports = {
   getEmployerCard, getEmployerCards,
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
-  getApprovedSellerIds, filterSellerIds, getSellerBrowseCards, getSellerPriorityTiers,
+  getApprovedSellerIds, filterSellerIds, directoryCounts, getSellerBrowseCards, getSellerPriorityTiers,
   sellerSlugTaken, employerSlugTaken,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,

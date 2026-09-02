@@ -24,7 +24,8 @@
  */
 
 const express = require("express");
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const directory = require("../modules/directory");
 const config = require("../lib/config");
 const { parseQuery } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
@@ -32,6 +33,10 @@ const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { logSearchEvent } = require("../lib/searchEvents");
 
 const router = express.Router();
+
+/** The category list (slug + name) every path here validates model output against.
+ *  Was `store.all("categories.json")` — same rows, via the flat repo. */
+const loadCategories = () => repoForCollection("categories.json").findMany({});
 
 const MODEL = "claude-sonnet-5"; // latest Claude model id (fallback string)
 const RESULT_LIMIT = 12;
@@ -66,7 +71,7 @@ async function runSearch(q, filters, limit) {
 }
 
 async function fallbackScan(q, filters, limit) {
-  const listings = await store.all("listings.json");
+  const listings = await directory.listingsForAiFallback();
   const terms = (String(q || "").toLowerCase().match(/[a-z0-9]+/g) || []).filter(
     (t) => t.length > 2
   );
@@ -395,7 +400,7 @@ router.post("/search", optionalAuth, async (req, res, next) => {
         error: `query must be ${config.AI_PROMPT_MAX} characters or fewer`,
       });
     }
-    const categories = await store.all("categories.json"); // [] if not seeded yet
+    const categories = await loadCategories(); // [] if not seeded yet
     const parsed = parseQuery(query, categories);
 
     // Directory's own search bar opts out of AI refinement entirely (explicit
@@ -405,6 +410,11 @@ router.post("/search", optionalAuth, async (req, res, next) => {
     const noAi = req.body && req.body.ai === false;
 
     let result;
+    // C8: `degraded` is true ONLY when an AI/CLI refine call was attempted and
+    // failed, so the response is the deterministic fallback — a caller can tell
+    // that 200 apart from a normal one. It stays false when AI simply wasn't
+    // attempted (no key/CLI, or `ai:false`).
+    let degraded = false;
     if (noAi) {
       result = await deterministicResolve({ query, parsed });
     } else if (config.ANTHROPIC_API_KEY) {
@@ -413,6 +423,7 @@ router.post("/search", optionalAuth, async (req, res, next) => {
       } catch (_err) {
         // Any SDK / network / parsing failure -> deterministic guarantee.
         result = await deterministicResolve({ query, parsed });
+        degraded = true;
       }
     } else if (config.AI_CLI_ENABLED && claudeCli.isClaudeAvailable()) {
       // No API key, but the locally authenticated `claude` CLI is available:
@@ -421,10 +432,12 @@ router.post("/search", optionalAuth, async (req, res, next) => {
         result = await cliResolve({ query, parsed, categories });
       } catch (_err) {
         result = await deterministicResolve({ query, parsed });
+        degraded = true;
       }
     } else {
       result = await deterministicResolve({ query, parsed });
     }
+    result = { ...result, degraded };
 
     logSearchEvent({
       query,
@@ -600,7 +613,7 @@ router.post("/autofill", authGuard, async (req, res, next) => {
       });
     }
 
-    const categories = await store.all("categories.json");
+    const categories = await loadCategories();
     try {
       const draft = await autofillFromImage({ imageUrl, imageBase64, hint, categories });
       return res.json({ success: true, data: { ...draft, fallback: false } });
@@ -829,7 +842,7 @@ router.post("/rfq", optionalAuth, async (req, res, next) => {
         error: `need must be ${config.AI_PROMPT_MAX} characters or fewer`,
       });
     }
-    const categories = await store.all("categories.json");
+    const categories = await loadCategories();
     const parsed = parseQuery(need, categories);
 
     if (config.ANTHROPIC_API_KEY) {

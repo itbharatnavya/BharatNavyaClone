@@ -15,6 +15,8 @@ const {
   activeListingIdsForSeller,
   sellerListingIds,
   sellerListingStats,
+  activeListingCountsByType,
+  listingsForAiFallback,
   listingTitlesByIds,
 } = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
@@ -31,6 +33,8 @@ module.exports = {
   activeListingIdsForSeller,
   sellerListingIds,
   sellerListingStats,
+  activeListingCountsByType,
+  listingsForAiFallback,
   bumpListingViews,
   activeBrandedListingsLean,
   readSearchEvents,
