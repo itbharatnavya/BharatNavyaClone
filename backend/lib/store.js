@@ -1,9 +1,33 @@
 /**
- * store.js — file-based storage abstraction for BharatSource.
+ * store.js — the ORIGINAL persistence abstraction (JS-predicate interface).
  *
- * The whole app persists to plain files under backend/DB/ (no external database).
- * This module is the ONLY place that touches the filesystem for data, so the rest
- * of the codebase stays swappable to a real DB later (see DESIGN.md §2, §11).
+ * ┌─ DEPRECATED for new code (BACKEND-AUDIT.md Phase 2 / Phase 7). ──────────────┐
+ * │ `store.findOne/findMany(coll, jsPredicate)` compile to a FULL TABLE SCAN     │
+ * │ under Postgres — the anti-pattern the modular-monolith migration exists to   │
+ * │ remove. New query-shaped reads go through `modules/_shared`'s                │
+ * │ `repoForCollection(file)` (closed criteria grammar → indexed SQL) or a       │
+ * │ domain module's public port (`modules/identity`, `modules/directory`,        │
+ * │ `modules/recruitment`, `lib/leads`). Do NOT add new `store.*` call sites.    │
+ * │                                                                             │
+ * │ What still legitimately uses `store` after Phase 7's sweep (sweeps 1–14):    │
+ * │  - composite `listings.json` DOCUMENT reads/writes (per-id hydrate, bulk     │
+ * │    import, the 114-line PUT) — `listings` never graduates, by owner decision  │
+ * │  - the `settings.json` singleton (`config.js`, `features.js`, `admin.js`,     │
+ * │    `assistant.js`, `lib/ranking.js`) — needs a settings module               │
+ * │  - `users.json` WRITES (`users.js`, `admin.js`, `auth.js`) — needs the       │
+ * │    Phase 6d identity write-port                                              │
+ * │  - `categories.json` tree writes (`categories.js`, `adminCategories.js`) —   │
+ * │    needs a categories module (nested tree, not a flat collection)            │
+ * │  - `chat.js` (conversations/messages) and `consultations.js` — need their    │
+ * │    own modules                                                              │
+ * │ Deleting store.js + pg-store.js is gated on those modules existing;          │
+ * │ `test/architecture.test.js` does not yet report zero `routes/` consumers.    │
+ * └────────────────────────────────────────────────────────────────────────────┘
+ *
+ * The whole app persists via `lib/store.js`'s interface. Under `PG_URL` it
+ * dispatches to `lib/pg-store.js` (Postgres); unset, the original file-DB below
+ * (backend/DB/*.json|jsonl) serves it — same interface either way (see DESIGN.md
+ * §2, §11 and POSTGRES-MIGRATION.md).
  *
  * Guarantees:
  *  - Atomic whole-file writes: write to a temp file, then rename() (atomic on POSIX),
