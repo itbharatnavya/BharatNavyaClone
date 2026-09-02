@@ -19,34 +19,12 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
+const store = require("../lib/store"); // composite listings.json document reads stay on store (Phase 5/6b)
 const { authGuard } = require("../middleware/authGuard");
 
-const FILE = "shortlist.json";
-
-// Flat seller mini-object for cards — built EXACTLY as the browse endpoint builds it
-// (company name + slug link + trust), so shortlist cards render like search results.
-function makeSellerMini(users) {
-  const userById = new Map(users.map((u) => [u.id, u]));
-  return (sellerId) => {
-    const u = userById.get(sellerId);
-    if (!u) return null;
-    const sp = u.sellerProfile || {};
-    return {
-      id: u.id,
-      name: u.name,
-      companyName: sp.companyName || u.name || null,
-      slug: sp.slug || null,
-      city: (sp.location && sp.location.city) || null,
-      state: (sp.location && sp.location.state) || null,
-      logo: sp.logo || u.avatarUrl || null,
-      isVerified: !!sp.isVerified,
-      rating: sp.rating ?? 0,
-      reviewCount: sp.reviewCount ?? 0,
-      responseRate: sp.responseRate ?? 0,
-    };
-  };
-}
+const shortlistRepo = repoForCollection("shortlist.json");
 
 /** Strip internal scratch fields before returning a listing to clients. */
 function clean(l) {
@@ -56,7 +34,7 @@ function clean(l) {
 
 /** The user's saved rows, newest-saved first. */
 async function savedRows(userId) {
-  const rows = await store.findMany(FILE, (s) => s.userId === userId);
+  const rows = await shortlistRepo.findMany({ where: { userId } });
   return rows.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
 }
 
@@ -66,22 +44,19 @@ router.get("/", authGuard, async (req, res, next) => {
     const rows = await savedRows(req.user.id);
     const ids = rows.map((r) => r.listingId);
 
-    const [allListings, users] = await Promise.all([
-      store.all("listings.json"),
-      store.all("users.json"),
-    ]);
-    const sellerMini = makeSellerMini(users);
-    const byId = new Map(allListings.map((l) => [l.id, l]));
-
     // Resolve in saved-order; drop anything missing or no longer active.
-    const listings = ids
-      .map((id) => byId.get(id))
-      .filter((l) => l && l.status === "active")
-      .map((l) => {
-        const c = clean(l);
-        c.seller = sellerMini(l.sellerId);
-        return c;
-      });
+    const resolved = (
+      await Promise.all(ids.map((id) => store.getById("listings.json", id)))
+    ).filter((l) => l && l.status === "active");
+
+    const cardBySeller = await identity.getSellerBrowseCards(
+      resolved.map((l) => l.sellerId)
+    );
+    const listings = resolved.map((l) => {
+      const c = clean(l);
+      c.seller = cardBySeller.get(l.sellerId) || null;
+      return c;
+    });
 
     return res.json({ success: true, data: { ids, listings } });
   } catch (err) {
@@ -104,13 +79,11 @@ router.post("/", authGuard, async (req, res, next) => {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
 
-    const existing = await store.findOne(
-      FILE,
-      (s) => s.userId === req.user.id && s.listingId === listingId
-    );
+    const existing = await shortlistRepo.findOne({
+      where: { userId: req.user.id, listingId },
+    });
     if (!existing) {
-      await store.insert(
-        FILE,
+      await shortlistRepo.insert(
         { userId: req.user.id, listingId, createdAt: new Date().toISOString() },
         "sl"
       );
@@ -127,12 +100,11 @@ router.post("/", authGuard, async (req, res, next) => {
 router.delete("/:listingId", authGuard, async (req, res, next) => {
   try {
     const { listingId } = req.params;
-    const existing = await store.findOne(
-      FILE,
-      (s) => s.userId === req.user.id && s.listingId === listingId
-    );
+    const existing = await shortlistRepo.findOne({
+      where: { userId: req.user.id, listingId },
+    });
     if (existing) {
-      await store.remove(FILE, existing.id);
+      await shortlistRepo.deleteById(existing.id);
     }
 
     const rows = await savedRows(req.user.id);

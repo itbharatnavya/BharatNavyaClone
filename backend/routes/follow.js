@@ -13,11 +13,12 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const identity = require("../modules/identity");
 const { authGuard } = require("../middleware/authGuard");
 const { createNotification } = require("../lib/notify");
 
-const FILE = "follows.json";
+const followsRepo = repoForCollection("follows.json");
 
 // Basic, public-safe projection of a user for follow lists.
 function publicUser(u) {
@@ -51,18 +52,16 @@ router.post("/:userId", authGuard, async (req, res, next) => {
         .json({ success: false, error: "Cannot follow yourself" });
     }
 
-    const target = await store.getById("users.json", followingId);
+    const target = await identity.getAuthUser(followingId);
     if (!target) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    const existing = await store.findOne(
-      FILE,
-      (f) => f.followerId === followerId && f.followingId === followingId
-    );
+    const existing = await followsRepo.findOne({
+      where: { followerId, followingId },
+    });
     if (!existing) {
-      await store.insert(
-        FILE,
+      await followsRepo.insert(
         { followerId, followingId, createdAt: new Date().toISOString() },
         "flw"
       );
@@ -84,12 +83,11 @@ router.delete("/:userId", authGuard, async (req, res, next) => {
     const followingId = req.params.userId;
     const followerId = req.user.id;
 
-    const existing = await store.findOne(
-      FILE,
-      (f) => f.followerId === followerId && f.followingId === followingId
-    );
+    const existing = await followsRepo.findOne({
+      where: { followerId, followingId },
+    });
     if (existing) {
-      await store.remove(FILE, existing.id);
+      await followsRepo.deleteById(existing.id);
     }
 
     return res.json({ success: true, data: { following: false } });
@@ -101,11 +99,8 @@ router.delete("/:userId", authGuard, async (req, res, next) => {
 // GET /api/follow/me — users I follow (newest-first), with basic info.
 router.get("/me", authGuard, async (req, res, next) => {
   try {
-    const edges = await store.findMany(
-      FILE,
-      (f) => f.followerId === req.user.id
-    );
-    const users = await store.all("users.json");
+    const edges = await followsRepo.findMany({ where: { followerId: req.user.id } });
+    const users = await identity.hydrateUsersByIds(edges.map((f) => f.followingId));
     const byId = new Map(users.map((u) => [u.id, u]));
 
     const following = edges
@@ -129,11 +124,8 @@ router.get("/me", authGuard, async (req, res, next) => {
 router.get("/:userId/followers", async (req, res, next) => {
   try {
     const followingId = req.params.userId;
-    const edges = await store.findMany(
-      FILE,
-      (f) => f.followingId === followingId
-    );
-    const users = await store.all("users.json");
+    const edges = await followsRepo.findMany({ where: { followingId } });
+    const users = await identity.hydrateUsersByIds(edges.map((f) => f.followerId));
     const byId = new Map(users.map((u) => [u.id, u]));
 
     const followers = edges
@@ -156,11 +148,9 @@ router.get("/:userId/followers", async (req, res, next) => {
 // GET /api/follow/:userId/status — authed: am I following this user?
 router.get("/:userId/status", authGuard, async (req, res, next) => {
   try {
-    const existing = await store.findOne(
-      FILE,
-      (f) =>
-        f.followerId === req.user.id && f.followingId === req.params.userId
-    );
+    const existing = await followsRepo.findOne({
+      where: { followerId: req.user.id, followingId: req.params.userId },
+    });
     return res.json({ success: true, data: { following: !!existing } });
   } catch (err) {
     next(err);
