@@ -14,6 +14,10 @@
  * is the single choke point for that rule; both /trending and /popular go
  * through it.
  *
+ * Phase 7 sweep-3: event reads go through `directory.readSearchEvents()` and the
+ * category lookups through `repoForCollection("categories.json")` — this route no
+ * longer imports lib/store. The window / city / group-by passes below stay in JS.
+ *
  * NEVER-EMPTY guarantee (explicit product requirement): a brand-new install
  * has zero search events, so real aggregation alone would render an empty
  * section. DEMO_FALLBACK below is a small curated list (same spirit as
@@ -25,11 +29,13 @@
  */
 
 const express = require("express");
-const store = require("../lib/store");
+const { repoForCollection } = require("../modules/_shared");
+const directory = require("../modules/directory");
 const { optionalAuth } = require("../middleware/authGuard");
 const { logSearchEvent } = require("../lib/searchEvents");
 
 const router = express.Router();
+const categoriesRepo = repoForCollection("categories.json");
 
 const TRENDING_WINDOW_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
@@ -79,7 +85,7 @@ function aggregate(events) {
 }
 
 async function withCategoryNames(rows) {
-  const categories = await store.all("categories.json");
+  const categories = await categoriesRepo.findMany({});
   const bySlug = new Map(categories.map((c) => [c.slug, c]));
   return rows.map((r) => {
     const cat = r.categorySlug ? bySlug.get(r.categorySlug) : null;
@@ -112,7 +118,7 @@ router.get("/trending", async (req, res, next) => {
     const limit = Math.max(1, Math.min(20, parseInt(req.query.limit, 10) || 8));
     const city = req.query.city ? String(req.query.city).trim().toLowerCase() : null;
 
-    const events = await store.readJsonl("search-events.jsonl");
+    const events = await directory.readSearchEvents();
     const cutoff = Date.now() - TRENDING_WINDOW_MS;
     const recent = events.filter((e) => {
       if (!e.createdAt || new Date(e.createdAt).getTime() < cutoff) return false;
@@ -133,7 +139,7 @@ router.get("/trending", async (req, res, next) => {
 router.get("/popular", async (req, res, next) => {
   try {
     const limit = Math.max(1, Math.min(20, parseInt(req.query.limit, 10) || 8));
-    const events = await store.readJsonl("search-events.jsonl");
+    const events = await directory.readSearchEvents();
 
     const real = aggregate(events).slice(0, limit);
     const padded = padWithFallback(real, limit);
@@ -158,7 +164,7 @@ router.post("/log", optionalAuth, async (req, res, next) => {
     const city = req.body && typeof req.body.city === "string" ? req.body.city : null;
 
     if (categorySlug) {
-      const categories = await store.all("categories.json");
+      const categories = await categoriesRepo.findMany({});
       const valid = categories.some((c) => c.slug === categorySlug);
       if (valid) {
         logSearchEvent({ query, categorySlug, city, userId: req.user && req.user.id }); // fire-and-forget
