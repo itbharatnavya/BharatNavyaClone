@@ -9,15 +9,27 @@
  * Every delivered inquiry produces a Lead in leads-ledger.jsonl (leadType "rfq").
  * A seller reaches the buyer directly (Call/WhatsApp — the "Connect" action,
  * POST /leads/:leadId/contact) rather than filling in a quote; there is no
- * quote-back step in this flow. All persistence goes through lib/store.js.
+ * quote-back step in this flow. Persistence: `inquiries.json` via a repository;
+ * the leads-ledger and `listings` / `users` reads via the leads / directory /
+ * identity module ports (BACKEND-AUDIT.md Phase 7 — no lib/store here).
  */
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
-const { appendLead, notifySellerOfLead, attachSellerDeliveries } = require("../lib/leads");
+const { repoForCollection, nextId } = require("../modules/_shared");
+const directory = require("../modules/directory");
+const identity = require("../modules/identity");
+const {
+  appendLead,
+  notifySellerOfLead,
+  attachSellerDeliveries,
+  readLedger,
+  updateLead,
+} = require("../lib/leads");
 const { validate, schemas } = require("../lib/validate");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
+
+const inquiriesRepo = repoForCollection("inquiries.json");
 
 const MAX_FANOUT = 6;
 
@@ -38,7 +50,7 @@ function categoryTerm(body) {
 async function resolveTargets(body, inquiry) {
   // Specific-listing inquiry: attach that listing's seller.
   if (body.listingId) {
-    const listing = await store.getById("listings.json", body.listingId);
+    const listing = await directory.listingOwner(body.listingId);
     if (listing) {
       inquiry.sellerId = listing.sellerId;
       return [{ sellerId: listing.sellerId, listingId: listing.id }];
@@ -46,16 +58,12 @@ async function resolveTargets(body, inquiry) {
     // Unknown listingId: fall through to broad matching.
   }
 
-  const [listings, users] = await Promise.all([
-    store.all("listings.json"),
-    store.all("users.json"),
+  const [listings, approvedIds] = await Promise.all([
+    directory.rfqMatchListingsLean(),
+    identity.getApprovedSellerIds(),
   ]);
 
-  const approvedSellerIds = new Set(
-    users
-      .filter((u) => u.sellerProfile && u.sellerProfile.status === "approved")
-      .map((u) => u.id)
-  );
+  const approvedSellerIds = new Set(approvedIds);
 
   const term = categoryTerm(body);
   const tokens = String(body.productName || "")
@@ -96,7 +104,7 @@ async function resolveTargets(body, inquiry) {
 router.post("/", optionalAuth, validate(schemas.postInquiry), async (req, res, next) => {
   try {
     const body = req.body || {};
-    const id = await store.nextId("inq");
+    const id = await nextId("inq");
 
     // The buyer identity is ONLY ever taken from the verified req.user — never
     // from the request body. optionalAuth means this route is reachable by an
@@ -130,7 +138,7 @@ router.post("/", optionalAuth, validate(schemas.postInquiry), async (req, res, n
     // (routes/adminInquiries.js) can pick it up and manually forward it,
     // instead of it silently vanishing with a false "sent" confirmation.
     inquiry.unmatched = targets.length === 0;
-    await store.insert("inquiries.json", inquiry);
+    await inquiriesRepo.insert(inquiry, "inq");
 
     const leads = [];
     for (const t of targets) {
@@ -171,8 +179,8 @@ router.get("/", authGuard, async (req, res, next) => {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
     const [allLeads, allInquiries] = await Promise.all([
-      store.readJsonl("leads-ledger.jsonl"),
-      store.all("inquiries.json"),
+      readLedger(),
+      inquiriesRepo.findMany({}),
     ]);
     const inquiriesById = new Map(allInquiries.map((i) => [i.id, i]));
 
@@ -227,15 +235,21 @@ router.get("/", authGuard, async (req, res, next) => {
 router.get("/mine", authGuard, async (req, res, next) => {
   try {
     const buyerId = req.user.id;
-    const [allInquiries, allLeads, users] = await Promise.all([
-      store.all("inquiries.json"),
-      store.readJsonl("leads-ledger.jsonl"),
-      store.all("users.json"),
+    const [mineRaw, allLeads] = await Promise.all([
+      inquiriesRepo.findMany({ where: { buyerId } }),
+      readLedger(),
     ]);
 
-    const mine = allInquiries
-      .filter((i) => i.buyerId === buyerId)
+    const mine = mineRaw
+      .slice()
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+
+    // Only the sellers this buyer's RFQs were actually delivered to.
+    const mineIds = new Set(mine.map((i) => i.id));
+    const sellerIds = allLeads
+      .filter((l) => mineIds.has(l.inquiryId))
+      .map((l) => l.sellerId);
+    const users = await identity.hydrateUsersByIds(sellerIds);
 
     const data = attachSellerDeliveries(mine, allLeads, users);
 
@@ -259,7 +273,7 @@ router.post("/leads/:leadId/contact", authGuard, async (req, res, next) => {
         .json({ success: false, error: 'via must be "call" or "whatsapp"' });
     }
 
-    const allLeads = await store.readJsonl("leads-ledger.jsonl");
+    const allLeads = await readLedger();
     const lead = allLeads.find((l) => l.leadId === leadId);
     if (!lead) {
       return res.status(404).json({ success: false, error: "Lead not found" });
@@ -270,7 +284,7 @@ router.post("/leads/:leadId/contact", authGuard, async (req, res, next) => {
         .json({ success: false, error: "You can only update your own leads." });
     }
 
-    const updated = await store.updateLead(leadId, {
+    const updated = await updateLead(leadId, {
       contactedAt: new Date().toISOString(),
       contactedVia: via,
     });

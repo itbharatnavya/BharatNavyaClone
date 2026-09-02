@@ -52,6 +52,14 @@ function readLedger() {
   return store.readJsonl("leads-ledger.jsonl");
 }
 
+/** Patch one lead row by leadId (the RFQ "Connect" contact-status fields —
+ *  contactedAt / contactedVia). The one write path for the append-only ledger
+ *  that routes reach through, so they don't import lib/store directly
+ *  (BACKEND-AUDIT.md Phase 7). Same underlying op as store.updateLead. */
+function updateLead(leadId, patch) {
+  return store.updateLead(leadId, patch);
+}
+
 /**
  * Alert a seller that a new lead was delivered to them, reusing lib/notify's
  * createNotification (type "new_lead" — the type NotificationBell already renders).
@@ -114,4 +122,4 @@ function attachSellerDeliveries(inquiries, allLeads, allUsers) {
   });
 }
 
-module.exports = { appendLead, notifySellerOfLead, sellerMini, attachSellerDeliveries, readLedger };
+module.exports = { appendLead, notifySellerOfLead, sellerMini, attachSellerDeliveries, readLedger, updateLead };
