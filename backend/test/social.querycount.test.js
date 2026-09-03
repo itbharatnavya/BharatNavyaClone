@@ -29,7 +29,7 @@ test("follow / shortlist reads don't full-scan users or listings (Phase 7 sweep-
     await pool.end().catch(() => {});
   });
 
-  const followSrc = fs.readFileSync(path.join(__dirname, "../routes/follow.js"), "utf8");
+  const followSrc = fs.readFileSync(path.join(__dirname, "../modules/directory/routes/follow.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(followSrc),
     "routes/follow.js must not require lib/store"

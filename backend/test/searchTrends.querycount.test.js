@@ -25,7 +25,7 @@ test("searchTrends reads via port/repo, not lib/store (Phase 7 sweep-3)", async 
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/searchTrends.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/directory/routes/searchTrends.routes.js"), "utf8");
   assert.ok(!/require\(["']\.\.\/lib\/store["']\)/.test(src), "routes/searchTrends.js must not require lib/store");
 
   const orig = pool.query.bind(pool);

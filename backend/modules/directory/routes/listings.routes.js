@@ -13,14 +13,14 @@
 const express = require("express");
 const router = express.Router();
 
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
-const { authGuard } = require("../middleware/authGuard");
-const { searchListings, computeFacets, slugify } = require("../lib/search");
-const { rankListings } = require("../lib/ranking");
-const { coordsForCity, distanceKm } = require("../lib/geo");
-const { resolveSellerLocations } = require("../lib/sellerLocations");
-const { verifyListing } = require("../lib/listingVerification");
+const identity = require("../../identity");
+const directory = require("../index");
+const { authGuard } = require("../../../middleware/authGuard");
+const { searchListings, computeFacets, slugify } = require("../../../lib/search");
+const { rankListings } = require("../../../lib/ranking");
+const { coordsForCity, distanceKm } = require("../../../lib/geo");
+const { resolveSellerLocations } = require("../../../lib/sellerLocations");
+const { verifyListing } = require("../../../lib/listingVerification");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
 const DEFAULT_LIMIT = 12;

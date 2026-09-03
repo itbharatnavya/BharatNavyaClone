@@ -33,9 +33,9 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const { authGuard } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const { authGuard } = require("../../../middleware/authGuard");
 
 const storiesRepo = repoForCollection("stories.json");
 const DAY_MS = 24 * 60 * 60 * 1000;

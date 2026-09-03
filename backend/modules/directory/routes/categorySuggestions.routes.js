@@ -16,9 +16,9 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const directory = require("../modules/directory");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const directory = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const sugRepo = repoForCollection("category-suggestions.json");
 const catRepo = directory.categoriesRepo; // the Directory domain owns `categories`

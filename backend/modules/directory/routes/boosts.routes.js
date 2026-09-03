@@ -18,10 +18,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const directory = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const boostsRepo = repoForCollection("boost-requests.json");
 

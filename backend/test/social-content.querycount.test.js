@@ -28,11 +28,11 @@ test("blogs / category-suggestions don't full-scan users (Phase 7 sweep-5)", asy
     await pool.end().catch(() => {});
   });
 
-  for (const f of ["blogs.js", "categorySuggestions.js"]) {
-    const src = fs.readFileSync(path.join(__dirname, "../routes", f), "utf8");
+  for (const f of ["blogs.routes.js", "categorySuggestions.routes.js"]) {
+    const src = fs.readFileSync(path.join(__dirname, "../modules/directory/routes", f), "utf8");
     assert.ok(
       !/require\(["']\.\.\/lib\/store["']\)/.test(src),
-      `routes/${f} must not require lib/store`
+      `modules/directory/routes/${f} must not require lib/store`
     );
   }
 

@@ -29,10 +29,10 @@
  */
 
 const express = require("express");
-const { repoForCollection } = require("../modules/_shared");
-const directory = require("../modules/directory");
-const { optionalAuth } = require("../middleware/authGuard");
-const { logSearchEvent } = require("../lib/searchEvents");
+const { repoForCollection } = require("../../_shared");
+const directory = require("../index");
+const { optionalAuth } = require("../../../middleware/authGuard");
+const { logSearchEvent } = require("../../../lib/searchEvents");
 
 const router = express.Router();
 const categoriesRepo = repoForCollection("categories.json");

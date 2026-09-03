@@ -40,7 +40,7 @@ test("inquiries: broad + specific fan-out and lists read via module ports (Phase
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/inquiries.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/directory/routes/inquiries.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/inquiries.js must not require lib/store"

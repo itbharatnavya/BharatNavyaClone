@@ -14,10 +14,10 @@
 const express = require("express");
 const router = express.Router();
 
-const directory = require("../modules/directory");
-const identity = require("../modules/identity");
-const { authGuard } = require("../middleware/authGuard");
-const { recomputeSellerRating } = require("../lib/sellerRating");
+const directory = require("../index");
+const identity = require("../../identity");
+const { authGuard } = require("../../../middleware/authGuard");
+const { recomputeSellerRating } = require("../../../lib/sellerRating");
 
 // Phase 5b: reviews.json reads/writes go through modules/directory `reviewsRepo`
 // (criteria grammar → SQL), not the predicate store. Phase 5 loose end: the two

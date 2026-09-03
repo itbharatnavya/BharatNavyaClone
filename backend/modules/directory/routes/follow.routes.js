@@ -13,10 +13,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const { authGuard } = require("../middleware/authGuard");
-const { createNotification } = require("../lib/notify");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const { authGuard } = require("../../../middleware/authGuard");
+const { createNotification } = require("../../../lib/notify");
 
 const followsRepo = repoForCollection("follows.json");
 

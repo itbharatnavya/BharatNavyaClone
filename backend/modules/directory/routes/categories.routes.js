@@ -15,7 +15,7 @@
 
 const express = require("express");
 const router = express.Router();
-const directory = require("../modules/directory");
+const directory = require("../index");
 
 // GET / — full taxonomy as a flat array (frontend nests via parentId).
 router.get("/", async (req, res, next) => {

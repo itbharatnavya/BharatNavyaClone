@@ -16,18 +16,18 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection, nextId } = require("../modules/_shared");
-const directory = require("../modules/directory");
-const identity = require("../modules/identity");
+const { repoForCollection, nextId } = require("../../_shared");
+const directory = require("../index");
+const identity = require("../../identity");
 const {
   appendLead,
   notifySellerOfLead,
   attachSellerDeliveries,
   readLedger,
   updateLead,
-} = require("../lib/leads");
-const { validate, schemas } = require("../lib/validate");
-const { authGuard, optionalAuth } = require("../middleware/authGuard");
+} = require("../../../lib/leads");
+const { validate, schemas } = require("../../../lib/validate");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
 
 const inquiriesRepo = repoForCollection("inquiries.json");
 

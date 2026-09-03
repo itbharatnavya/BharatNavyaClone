@@ -37,7 +37,7 @@ test("stories GET / sweep prunes only expired non-highlights (Phase 7 sweep-6)",
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/stories.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/directory/routes/stories.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/stories.js must not require lib/store"

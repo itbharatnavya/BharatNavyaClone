@@ -14,8 +14,8 @@
 
 const express = require("express");
 const router = express.Router();
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
+const identity = require("../../identity");
+const directory = require("../index");
 
 // Same slug rules as the taxonomy (see routes/adminCategories.js): lowercase,
 // & → "and", any run of non-alphanumerics → single dash, trimmed.

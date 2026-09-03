@@ -13,11 +13,11 @@
 
 const express = require("express");
 const router = express.Router();
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
-const { appendConsultationLead } = require("../lib/leads");
-const notify = require("../lib/notify");
-const { authGuard, optionalAuth } = require("../middleware/authGuard");
+const identity = require("../../identity");
+const directory = require("../index");
+const { appendConsultationLead } = require("../../../lib/leads");
+const notify = require("../../../lib/notify");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
 
 const bookingsRepo = directory.consultationBookingsRepo;
 

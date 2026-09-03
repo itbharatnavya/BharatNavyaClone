@@ -29,7 +29,7 @@ test("collections reads don't full-scan listings or users (Phase 7 sweep-7)", as
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/collections.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/directory/routes/collections.routes.js"), "utf8");
   assert.ok(!/store\.all\(/.test(src), "routes/collections.js must not call store.all");
 
   const admin = await store.getById("users.json", "usr_admin");

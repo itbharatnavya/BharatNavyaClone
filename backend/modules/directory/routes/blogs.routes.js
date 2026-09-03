@@ -14,9 +14,9 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const { authGuard } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const { authGuard } = require("../../../middleware/authGuard");
 
 const blogsRepo = repoForCollection("blogs.json");
 

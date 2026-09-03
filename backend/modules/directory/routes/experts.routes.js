@@ -12,7 +12,7 @@
 
 const express = require("express");
 const router = express.Router();
-const experts = require("../lib/experts");
+const experts = require("../../../lib/experts");
 
 /** Case/space-insensitive contains for the free-text `q` match. */
 function includesCI(haystack, needle) {

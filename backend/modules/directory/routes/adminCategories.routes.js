@@ -5,8 +5,8 @@
 
 const express = require("express");
 const router = express.Router();
-const directory = require("../modules/directory");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const directory = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const categoriesRepo = directory.categoriesRepo;
 

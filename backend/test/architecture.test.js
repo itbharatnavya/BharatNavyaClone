@@ -30,7 +30,13 @@ const path = require("path");
 
 const BACKEND = path.join(__dirname, "..");
 const MODULES_DIR = path.join(BACKEND, "modules");
-const ROUTES_DIR = path.join(BACKEND, "routes");
+// Phase 8.9: every route file now lives inside its owning module
+// (modules/<domain>/routes/*.routes.js). The old flat backend/routes/ is gone.
+const ROUTE_DIRS = fs
+  .readdirSync(MODULES_DIR, { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => path.join(MODULES_DIR, e.name, "routes"))
+  .filter((d) => fs.existsSync(d));
 
 /**
  * Collections that have been migrated into a module and are now OFF-LIMITS to
@@ -89,11 +95,7 @@ const moduleFiles = listJsFiles(MODULES_DIR);
 // The runtime layers that must be 100% off the legacy store after the Phase 8
 // demolition. lib/store.js is DELETED; lib/pg-store.js survives only for offline
 // seed scripts + test oracles, so no server-path file may import it either.
-const STORE_FREE_DIRS = [
-  MODULES_DIR,
-  ROUTES_DIR,
-  path.join(BACKEND, "realtime"),
-];
+const STORE_FREE_DIRS = [MODULES_DIR, path.join(BACKEND, "realtime")];
 const LEGACY_STORE_ABS = new Set([
   path.join(BACKEND, "lib", "store"),
   path.join(BACKEND, "lib", "pg-store"),
@@ -139,10 +141,11 @@ test("modules/ has no cross-module deep imports (only the public port is importa
   assert.deepEqual(offenders, [], `cross-module deep imports:\n${offenders.join("\n")}`);
 });
 
-test("graduated collections are not referenced anywhere under routes/", () => {
-  if (GRADUATED_COLLECTIONS.length === 0) return; // nothing has graduated yet
+test("graduated collections are not referenced in any module route file", () => {
+  if (GRADUATED_COLLECTIONS.length === 0) return;
   const offenders = [];
-  for (const file of listJsFiles(ROUTES_DIR)) {
+  const routeFiles = ROUTE_DIRS.flatMap((d) => listJsFiles(d));
+  for (const file of routeFiles) {
     const src = fs.readFileSync(file, "utf-8");
     for (const coll of GRADUATED_COLLECTIONS) {
       if (src.includes(`"${coll}"`) || src.includes(`'${coll}'`)) {
@@ -180,6 +183,6 @@ test("no module references another module's physical tables", () => {
 });
 
 test("architecture harness is wired (this file runs)", () => {
-  assert.ok(fs.existsSync(ROUTES_DIR), "routes/ should exist — sanity check that paths resolve");
+  assert.ok(ROUTE_DIRS.length > 0, "at least one modules/<domain>/routes/ dir should exist");
   assert.ok(Array.isArray(moduleFiles));
 });
