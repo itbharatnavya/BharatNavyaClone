@@ -19,7 +19,8 @@
 
 const express = require("express");
 const { authGuard } = require("../middleware/authGuard");
-const store = require("../lib/store");
+const chat = require("../modules/chat");
+const identity = require("../modules/identity");
 
 const router = express.Router();
 
@@ -47,14 +48,14 @@ function samePair(a, b) {
 router.get("/conversations", authGuard, async (req, res, next) => {
   try {
     const me = req.user.id;
-    const convos = await store.readJson(CONV_INDEX, []);
+    const convos = await chat.conversationsRepo.findMany({});
     const mine = convos.filter((c) => isParticipant(c, me));
 
     const enriched = await Promise.all(
       mine.map(async (c) => {
         const otherId = (c.participants || []).find((p) => p !== me) || null;
-        const other = otherId ? await store.getById("users.json", otherId) : null;
-        const rs = await store.readJson(readStateFor(c.id), {});
+        const other = otherId ? await identity.getAuthUser(otherId) : null;
+        const rs = await chat.chatSupport.readReadState(readStateFor(c.id), {});
         const lastRead = rs[me] || 0;
         const unread = Math.max(0, (c.lastMsgSeq || 0) - lastRead);
         return {
@@ -98,17 +99,18 @@ router.post("/conversations", authGuard, async (req, res, next) => {
 
     const pair = [me, toUserId];
 
-    // Get-or-create atomically under the index-file lock. Use readJson/writeJson
-    // (NOT store.insert) so we don't re-enter the same lock key and deadlock.
-    const convo = await store.withLock(CONV_INDEX, async () => {
-      const convos = await store.readJson(CONV_INDEX, []);
+    // Get-or-create atomically under an in-process lock — the (pair + listing)
+    // match is order-independent (`samePair`), not a clean SQL where, so scan the
+    // small index then insert the one new row.
+    const convo = await chat.withLock(CONV_INDEX, async () => {
+      const convos = await chat.conversationsRepo.findMany({});
       const existing = convos.find(
         (c) => (c.listingId || null) === (listingId || null) && samePair(c.participants, pair)
       );
       if (existing) return existing;
 
-      const id = await store.nextId("cnv");
-      const doc = {
+      const id = await chat.nextId("cnv");
+      return chat.conversationsRepo.insert({
         id,
         participants: pair,
         listingId: listingId || null,
@@ -116,10 +118,7 @@ router.post("/conversations", authGuard, async (req, res, next) => {
         lastMsgAt: null,
         preview: "",
         createdAt: new Date().toISOString(),
-      };
-      convos.push(doc);
-      await store.writeJson(CONV_INDEX, convos);
-      return doc;
+      });
     });
 
     res.json({ success: true, data: convo });
@@ -135,7 +134,7 @@ router.get("/conversations/:id/messages", authGuard, async (req, res, next) => {
     const me = req.user.id;
     const id = req.params.id;
 
-    const convo = await store.getById(CONV_INDEX, id);
+    const convo = await chat.conversationsRepo.findById(id);
     if (!convo) {
       return res.status(404).json({ success: false, error: "Conversation not found" });
     }
@@ -144,17 +143,17 @@ router.get("/conversations/:id/messages", authGuard, async (req, res, next) => {
     }
 
     const afterSeq = parseInt(req.query.afterSeq, 10) || 0;
-    const all = await store.readJsonl(msgFileFor(id));
+    const all = await chat.chatSupport.readMessages(msgFileFor(id));
     const messages = all.filter((m) => (m.seq || 0) > afterSeq);
 
     // Advance my read-state to the latest seq I have now seen.
     const latestSeq = all.length ? all[all.length - 1].seq || 0 : 0;
     if (latestSeq > 0) {
-      await store.withLock(readStateFor(id), async () => {
-        const rs = await store.readJson(readStateFor(id), {});
+      await chat.withLock(readStateFor(id), async () => {
+        const rs = await chat.chatSupport.readReadState(readStateFor(id), {});
         if ((rs[me] || 0) < latestSeq) {
           rs[me] = latestSeq;
-          await store.writeJson(readStateFor(id), rs);
+          await chat.chatSupport.writeReadState(readStateFor(id), rs);
         }
       });
     }

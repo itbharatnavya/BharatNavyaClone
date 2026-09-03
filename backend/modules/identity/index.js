@@ -396,6 +396,14 @@ async function hydrateUsersByIds(ids = []) {
   return usersStore.hydrateManyByIds(ids);
 }
 
+/** EVERY user as a full composite doc, id-ASC — byte-identical to the legacy
+ *  `store.all("users.json")`. Only the admin analytics + admin sellers-list
+ *  endpoints legitimately need the whole population; everything else is scoped. */
+async function allUsers() {
+  const { rows } = await pool.query(`SELECT id FROM users ORDER BY id ASC`);
+  return usersStore.hydrateManyByIds(rows.map((r) => r.id));
+}
+
 /* --------------------------------------------------------------- writes ----- */
 // The identity write-port (BACKEND-AUDIT.md Phase 8.4). These delegate straight
 // to the composite mapper — byte-identical to the legacy
@@ -599,7 +607,7 @@ module.exports = {
   sellerSlugTaken, employerSlugTaken,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,
-  hydrateUsersByIds, adminUserPage,
+  hydrateUsersByIds, allUsers, adminUserPage,
   getSellerBySlug, getEmployerBySlug,
   getUserByMobile, getUserByEmail,
   getEmployerUserIds, getEmployerStatusCards,

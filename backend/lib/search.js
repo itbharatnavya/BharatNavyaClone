@@ -17,7 +17,7 @@
  */
 
 const MiniSearch = require("minisearch");
-const store = require("../lib/store");
+const directory = require("../modules/directory");
 
 const INDEX_FIELDS = ["title", "description", "keywords", "legacyCategory"];
 const FIELD_BOOST = { title: 3, keywords: 2 };
@@ -146,7 +146,7 @@ function getIndex(listings) {
  * otherwise by recency (newest first). `limit` (optional) caps the number returned.
  */
 async function searchListings({ q, filters = {}, limit } = {}) {
-  const listings = await store.all("listings.json");
+  const listings = await directory.listingsRepo.all();
   const survivors = applyFilters(listings, filters);
 
   const query = (q || "").trim();

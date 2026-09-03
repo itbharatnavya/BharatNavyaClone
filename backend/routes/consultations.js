@@ -13,11 +13,13 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
+const { appendConsultationLead } = require("../lib/leads");
 const notify = require("../lib/notify");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 
-const COLLECTION = "consultation-bookings.json";
+const bookingsRepo = directory.consultationBookingsRepo;
 
 /** True when a user record is an approved expert (bookable). */
 function isApprovedExpert(user) {
@@ -34,41 +36,14 @@ function isApprovedExpert(user) {
  * record only if it's an approved expert, else null.
  */
 async function resolveExpert(body) {
-  const users = await store.all("users.json");
   let user = null;
   if (body.expertId) {
-    user = users.find((u) => u.id === body.expertId) || null;
+    user = await identity.getAuthUser(body.expertId);
   }
   if (!user && body.expertSlug) {
-    user = users.find((u) => u.sellerProfile && u.sellerProfile.slug === body.expertSlug) || null;
+    user = await identity.getSellerBySlug(body.expertSlug);
   }
   return isApprovedExpert(user) ? user : null;
-}
-
-/**
- * Append a Lead row for a consultation booking, mirroring inquiries.js's ledger shape
- * (leadType "consultation"). Best-effort: never let a ledger failure fail the booking.
- */
-async function appendConsultationLead({ expertId, buyerId, bookingId }) {
-  try {
-    const lead = {
-      leadId: await store.nextId("lead"),
-      sellerId: expertId,
-      buyerId: buyerId || null,
-      bookingId,
-      inquiryId: null,
-      listingId: null,
-      leadType: "consultation",
-      deliveredDate: new Date().toISOString(),
-      consumedFromQuota: true,
-      chargeable: false,
-      billingStatus: "free_quota",
-      status: "new",
-    };
-    await store.appendJsonl("leads-ledger.jsonl", lead);
-  } catch (err) {
-    console.error("appendConsultationLead failed:", err && err.message);
-  }
 }
 
 /* ----------------------------------------- POST /api/consultations/book ---- */
@@ -96,7 +71,7 @@ router.post("/book", optionalAuth, async (req, res, next) => {
     // If a package was named, resolve its title (and verify it belongs to this expert).
     let packageTitle = null;
     if (body.packageId) {
-      const listing = await store.getById("listings.json", body.packageId);
+      const listing = await directory.listingsRepo.getById(body.packageId);
       if (listing && listing.sellerId === expert.id) {
         packageTitle = listing.title;
       }
@@ -120,14 +95,18 @@ router.post("/book", optionalAuth, async (req, res, next) => {
       createdAt: new Date().toISOString(),
     };
 
-    const booking = await store.insert(COLLECTION, doc, "booking");
+    const booking = await bookingsRepo.insert(doc, "booking");
 
     // Best-effort fan-out to the seller's lead ledger + notification bell (non-fatal).
-    await appendConsultationLead({
-      expertId: expert.id,
-      buyerId: booking.userId,
-      bookingId: booking.id,
-    });
+    try {
+      await appendConsultationLead({
+        expertId: expert.id,
+        buyerId: booking.userId,
+        bookingId: booking.id,
+      });
+    } catch (err) {
+      console.error("appendConsultationLead failed:", err && err.message);
+    }
     try {
       await notify.createNotification(expert.id, "consultation_request", {
         bookingId: booking.id,
@@ -152,7 +131,7 @@ router.post("/book", optionalAuth, async (req, res, next) => {
 // An expert's incoming consultation requests (newest first).
 router.get("/bookings", authGuard, async (req, res, next) => {
   try {
-    const bookings = (await store.all(COLLECTION))
+    const bookings = (await bookingsRepo.findMany({}))
       .filter((b) => b.expertId === req.user.id)
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
     return res.json({ success: true, data: bookings });

@@ -23,7 +23,8 @@
  */
 
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const chat = require("../modules/chat");
+const identity = require("../modules/identity");
 
 const CONV_INDEX = "conversations/index.json";
 const MAX_BODY = 4000;
@@ -38,8 +39,7 @@ function msgFileFor(conversationId) {
 }
 
 async function loadConversation(conversationId) {
-  const convos = await store.readJson(CONV_INDEX, []);
-  return convos.find((c) => c && c.id === conversationId) || null;
+  return chat.conversationsRepo.findById(conversationId);
 }
 
 function isParticipant(convo, userId) {
@@ -66,7 +66,7 @@ function attachChat(io) {
         socket.handshake && socket.handshake.auth && socket.handshake.auth.token;
       const payload = auth.verifyToken(token);
       if (!payload || !payload.sub) return next(new Error("unauthorized"));
-      const user = await store.getById("users.json", payload.sub);
+      const user = await identity.getAuthUser(payload.sub);
       if (!user) return next(new Error("unauthorized"));
       socket.user = user;
       return next();
@@ -119,8 +119,8 @@ function attachChat(io) {
         }
 
         // Per-conversation mutex: seq -> append -> index update, atomically.
-        const outcome = await store.withLock(conversationId, async () => {
-          const existing = await store.readJsonl(msgFileFor(conversationId));
+        const outcome = await chat.withLock(conversationId, async () => {
+          const existing = await chat.chatSupport.readMessages(msgFileFor(conversationId));
 
           if (clientMsgId) {
             const dup = existing.find(
@@ -137,8 +137,8 @@ function attachChat(io) {
             ts: Date.now(),
             body,
           };
-          await store.appendJsonl(msgFileFor(conversationId), msg);
-          await store.update(CONV_INDEX, conversationId, {
+          await chat.chatSupport.appendMessage(msgFileFor(conversationId), msg);
+          await chat.conversationsRepo.updateById(conversationId, {
             lastMsgSeq: seq,
             lastMsgAt: msg.ts,
             preview: body.slice(0, PREVIEW_LEN),
