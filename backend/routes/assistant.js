@@ -17,10 +17,10 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store"); // ONLY the settings.json singleton read (isRecruitmentLive) — no collection scans
 const { repoForCollection } = require("../modules/_shared");
 const directory = require("../modules/directory");
 const identity = require("../modules/identity");
+const settingsRepo = require("../modules/platform/repository/settings.repository");
 const config = require("../lib/config");
 const { parseQuery, selectRelevantCategories } = require("../lib/nlp");
 const claudeCli = require("../lib/claudeCli");
@@ -55,7 +55,7 @@ function remaining() {
  */
 async function isRecruitmentLive() {
   if (config.RECRUITMENT_LIVE !== null) return config.RECRUITMENT_LIVE;
-  const s = await store.readJson("settings.json", {});
+  const s = await settingsRepo.read({});
   return !!(s.featureFlags && s.featureFlags.recruitmentLive);
 }
 

@@ -20,7 +20,8 @@
  * maxSponsoredPerPage.
  */
 
-const store = require("../lib/store");
+const settingsRepo = require("../modules/platform/repository/settings.repository");
+const identity = require("../modules/identity");
 
 const DEFAULTS = { wOrganic: 0.7, wPaid: 0.3, maxSponsoredPerPage: 3 };
 
@@ -34,7 +35,7 @@ const FEATURED_BONUS = 1;
 /* ------------------------------------------------------------- helpers ----- */
 
 async function loadWeights() {
-  const s = await store.readJson("settings.json", {});
+  const s = await settingsRepo.read({});
   const r = (s && s.ranking) || s || {};
   const num = (v, d) => (typeof v === "number" && !Number.isNaN(v) ? v : d);
   return {
@@ -100,12 +101,9 @@ async function rankListings(listings, { query, categorySlug, tierBySeller } = {}
   // load if a caller didn't supply it.
   const tierMap =
     tierBySeller ||
-    new Map(
-      (await store.all("users.json")).map((u) => [
-        u.id,
-        (u.sellerProfile && u.sellerProfile.priorityTier) || "none",
-      ])
-    );
+    (await identity.getSellerPriorityTiers(
+      [...new Set(items.map((l) => l.sellerId).filter(Boolean))]
+    ));
 
   // Normalization bases across the candidate set.
   const times = items.map((l) => Date.parse(l.createdAt) || 0);

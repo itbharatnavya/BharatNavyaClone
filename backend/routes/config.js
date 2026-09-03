@@ -7,12 +7,12 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const settingsRepo = require("../modules/platform/repository/settings.repository");
 const config = require("../lib/config");
 
 router.get("/", async (req, res, next) => {
   try {
-    const s = await store.readJson("settings.json", {});
+    const s = await settingsRepo.read({});
     const featureFlags = { ...(s.featureFlags || {}) };
     // RECRUITMENT_LIVE env var, when explicitly set, overrides whatever's stored in
     // settings.json — the production go-live switch (flip the env var + restart, no

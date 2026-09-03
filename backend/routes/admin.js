@@ -15,6 +15,7 @@ const store = require("../lib/store");
 const identity = require("../modules/identity");
 const recruitment = require("../modules/recruitment");
 const { repoForCollection } = require("../modules/_shared");
+const settingsRepo = require("../modules/platform/repository/settings.repository");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 const plansRepo = repoForCollection("subscription-plans.json");
@@ -671,19 +672,20 @@ router.put("/reports/:id/dismiss", async (req, res, next) => {
 /* ============================================================== settings ===== */
 router.get("/settings", async (req, res, next) => {
   try {
-    return res.json({ success: true, data: await store.readJson("settings.json", {}) });
+    return res.json({ success: true, data: await settingsRepo.read({}) });
   } catch (err) {
     next(err);
   }
 });
 
-// PUT /settings — shallow-merge the patch into settings.json (locked read-modify-write).
+// PUT /settings — shallow-merge the patch into the settings singleton (locked
+// read-modify-write via the platform settings repo).
 router.put("/settings", async (req, res, next) => {
   try {
-    const merged = await store.withLock("settings.json", async () => {
-      const current = await store.readJson("settings.json", {});
+    const merged = await settingsRepo.withLock(async () => {
+      const current = await settingsRepo.read({});
       const next = { ...current, ...(req.body || {}) };
-      await store.writeJson("settings.json", next);
+      await settingsRepo.write(next);
       return next;
     });
     return res.json({ success: true, data: merged });
