@@ -10,9 +10,15 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const config = require("./lib/config");
-const store = require("./lib/store");
+const { ping } = require("./modules/_shared/pool");
 const { helmetMw, globalLimiter, authLimiter, aiLimiter } = require("./lib/security");
+const { mountIdentity } = require("./modules/identity/mount");
+const { mountDirectory } = require("./modules/directory/mount");
 const { mountRecruitment } = require("./modules/recruitment/mount");
+const { mountMonetization } = require("./modules/monetization/mount");
+const { mountPlatform } = require("./modules/platform/mount");
+const { mountAI } = require("./modules/ai/mount");
+const { mountChat } = require("./modules/chat/mount");
 
 const app = express();
 
@@ -44,57 +50,38 @@ app.get("/", (req, res) =>
 // is unreachable, so a load balancer can pull a broken instance out of rotation.
 app.get("/health", async (req, res) => {
   try {
-    await store.ping();
+    await ping();
     res.json({ success: true, data: { status: "ok", db: "up" } });
   } catch (err) {
     res.status(503).json({ success: false, error: "db_unavailable", code: "db_down" });
   }
 });
 
-// --- API routes (specific prefixes first; users mounted at /api last) ---
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/config", require("./routes/config")); // public read of admin site config
-app.use("/api/features", require("./routes/features")); // living feature catalog
-app.use("/api/admin/entitlements", require("./routes/entitlements")); // admin bulk save (guarded inside; before /api/admin)
-app.use("/api/entitlements", require("./routes/entitlements")); // PUBLIC composed tier×feature matrix (gating + "What we offer")
-app.use("/api/admin/categories", require("./routes/adminCategories")); // admin taxonomy CRUD (before /api/admin)
-app.use("/api/admin/collections", require("./routes/collections")); // admin curated collections CRUD (guarded inside; before /api/admin)
-app.use("/api/category-suggestions", require("./routes/categorySuggestions")); // seller "Other" category ideas → admin triage
-app.use("/api/categories", require("./routes/categories"));
-app.use("/api/brands", require("./routes/brands")); // brand directory + landing (aggregated from listings)
-app.use("/api/collections", require("./routes/collections")); // PUBLIC curated collections (Concepts)
-app.use("/api/listings", require("./routes/listings"));
-app.use("/api/reviews", require("./routes/reviews"));
-app.use("/api/inquiries", require("./routes/inquiries"));
-// Recruitment routes (modules/recruitment/mount.js) — EXPLICIT phase ordering
-// (BACKEND-AUDIT.md Phase 4f): every admin-sub router (each self-guarded with its
-// own authGuard + requireRole) first, so the blanket /api/admin catch-all below
-// can't shadow — or worse, open — them; then the public routers.
-mountRecruitment(app, "admin-sub");
-mountRecruitment(app, "public");
-app.use("/api/admin/boosts", require("./routes/boosts")); // self-serve boosts admin (guarded inside; before /api/admin)
-app.use("/api/boosts", require("./routes/boosts")); // seller self-serve boost requests
-app.use("/api/admin/moderation", require("./routes/moderation")); // content moderation + verification queue (guarded inside; before /api/admin)
-app.use("/api/admin/listings", require("./routes/adminListings")); // AI listing verification queue (guarded inside; before /api/admin)
-app.use("/api/admin/inquiries", require("./routes/adminInquiries")); // unmatched-RFQ triage queue (guarded inside; before /api/admin)
-app.use("/api/admin", require("./routes/admin")); // authGuard + requireRole applied inside
-app.use("/api/ai", require("./routes/ai"));
-app.use("/api/search", require("./routes/searchTrends")); // trending/popular searches (Directory homepage)
-app.use("/api/assistant", require("./routes/assistant"));
-app.use("/api/ads", require("./routes/ads"));
-app.use("/api/chat", require("./routes/chat"));
-app.use("/api/blogs", require("./routes/blogs"));
-app.use("/api/stories", require("./routes/stories"));
-app.use("/api/reports", require("./routes/reports"));
-app.use("/api/notifications", require("./routes/notifications"));
-app.use("/api/follow", require("./routes/follow"));
-app.use("/api/referral", require("./routes/referral"));
-app.use("/api/uploads", require("./routes/uploads")); // image upload primitive (base64 → /uploads/<name>)
-app.use("/api/my-ads", require("./routes/myAds")); // seller self-serve ad campaigns (pending → admin activates)
-app.use("/api/shortlist", require("./routes/shortlist")); // buyer's saved-products shortlist (server-persisted)
-app.use("/api/experts", require("./routes/experts")); // Consultations: public directory of experts (service sellers)
-app.use("/api/consultations", require("./routes/consultations")); // Consultations: booking flow (guest-friendly)
-app.use("/api", require("./routes/users")); // /api/sellers/:slug, /api/become-seller, /api/me/seller, /api/me/profile, /api/employers/:slug, /api/candidates/:id, /api/become-employer, /api/me/employer, /api/me/candidate
+// --- API routes: each domain module mounts its own routers via modules/<name>/
+// mount.js (BACKEND-AUDIT.md Phase 8). The call ORDER here is the contract — it
+// reproduces the historical app.use() sequence exactly:
+//   1. specific-prefix routers ("early") before recruitment
+//   2. every module's "admin-sub" ( /api/admin/* self-guarded routers )
+//   3. platform's "admin" ( the blanket /api/admin catch-all ) — after ALL admin-sub
+//   4. the rest of the specific-prefix routers ("late")
+//   5. identity "users" — the broad app.use("/api", …) — dead last
+mountIdentity(app, "early"); // /api/auth
+mountPlatform(app, "early"); // /api/config
+mountMonetization(app, "early"); // /api/features
+mountMonetization(app, "admin-sub"); // /api/admin/entitlements
+mountMonetization(app, "public"); // /api/entitlements
+mountDirectory(app, "admin-sub"); // /api/admin/{categories,collections,boosts}
+mountDirectory(app, "public"); // categories/brands/listings/reviews/inquiries/search/… + /api/boosts
+mountRecruitment(app, "admin-sub"); // /api/admin/{job-functions,job-roles,skills,employers,jobs}
+mountRecruitment(app, "public"); // /api/{job-functions,job-roles,skills,jobs,applications}
+mountPlatform(app, "admin-sub"); // /api/admin/{moderation,listings,inquiries}
+mountPlatform(app, "admin"); // /api/admin  (blanket — authGuard+requireRole inside)
+mountAI(app, "public"); // /api/ai, /api/assistant
+mountMonetization(app, "late"); // /api/ads, /api/reports, /api/my-ads
+mountPlatform(app, "late"); // /api/notifications, /api/uploads
+mountChat(app, "public"); // /api/chat
+mountIdentity(app, "late"); // /api/referral
+mountIdentity(app, "users"); // /api  (LAST — the broad catch-all)
 
 // 404 for unknown API routes
 app.use((req, res) => res.status(404).json({ success: false, error: "Endpoint not found" }));

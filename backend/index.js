@@ -9,7 +9,7 @@
 const http = require("http");
 const { Server } = require("socket.io");
 const config = require("./lib/config");
-const store = require("./lib/store");
+const { close: closePool } = require("./modules/_shared/pool");
 const logger = require("./lib/logger");
 const app = require("./app");
 
@@ -34,7 +34,7 @@ function shutdown(signal) {
       /* ignore */
     }
     try {
-      await store.close();
+      await closePool();
     } catch (_e) {
       /* ignore */
     }
