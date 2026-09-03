@@ -9,7 +9,6 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
 const identity = require("../modules/identity");
 const auth = require("../lib/auth");
 const config = require("../lib/config");
@@ -23,11 +22,11 @@ function sanitizeUser(u) {
   return rest;
 }
 
-/** Build a fresh unified-identity user document. */
-async function buildUser({ name, mobile, email, passwordHash, city, state }) {
-  const id = await store.nextId("usr");
+/** Build a fresh unified-identity user document (no id — identity.createUser
+ *  mints usr_<n> on insert and the caller merges it back onto this exact shape,
+ *  so the register/verify-otp response stays byte-identical). */
+function buildUser({ name, mobile, email, passwordHash, city, state }) {
   return {
-    id,
     name,
     mobile,
     email: email || null,
@@ -54,8 +53,9 @@ router.post("/register", validate(schemas.register), async (req, res, next) => {
     }
 
     const passwordHash = password ? await auth.hashPassword(password) : null;
-    const user = await buildUser({ name, mobile, email, passwordHash, city, state });
-    await store.insert("users.json", user);
+    const draft = buildUser({ name, mobile, email, passwordHash, city, state });
+    const saved = await identity.createUser(draft);
+    const user = { id: saved.id, ...draft };
 
     return res.json({
       success: true,
@@ -89,8 +89,9 @@ router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) =
 
     let user = await identity.getUserByMobile(mobile);
     if (!user) {
-      user = await buildUser({ name: mobile, mobile });
-      await store.insert("users.json", user);
+      const draft = buildUser({ name: mobile, mobile });
+      const saved = await identity.createUser(draft);
+      user = { id: saved.id, ...draft };
     }
     if (user.status === "suspended") {
       return res.status(403).json({

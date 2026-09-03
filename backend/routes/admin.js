@@ -234,7 +234,7 @@ router.get("/users", async (req, res, next) => {
 // GET /users/:id — one account, every hat, plus cross-product activity counts.
 router.get("/users/:id", async (req, res, next) => {
   try {
-    const u = await store.getById("users.json", req.params.id);
+    const u = await identity.getAuthUser(req.params.id);
     if (!u) return res.status(404).json({ success: false, error: "User not found" });
 
     const [listings, inquiriesSent, jobsPosted, appsSent, appsReceived, reviewsWritten, reviewsReceived] =
@@ -274,7 +274,7 @@ router.get("/users/:id", async (req, res, next) => {
 // Admin accounts and your own account are protected.
 async function setAccountStatus(req, res, next, status) {
   try {
-    const u = await store.getById("users.json", req.params.id);
+    const u = await identity.getAuthUser(req.params.id);
     if (!u) return res.status(404).json({ success: false, error: "User not found" });
     if (isAdminUser(u)) {
       return res.status(400).json({ success: false, error: "Admin accounts cannot be suspended." });
@@ -282,7 +282,7 @@ async function setAccountStatus(req, res, next, status) {
     if (req.user && req.user.id === u.id) {
       return res.status(400).json({ success: false, error: "You cannot change your own account status." });
     }
-    const updated = await store.update("users.json", u.id, { status });
+    const updated = await identity.updateUser(u.id, { status });
     return res.json({ success: true, data: { id: updated.id, status: acctStatus(updated) } });
   } catch (err) {
     next(err);
@@ -315,13 +315,13 @@ router.put("/sellers/:id/:action", async (req, res, next) => {
     if (!status) {
       return res.status(400).json({ success: false, error: "Invalid action" });
     }
-    const user = await store.getById("users.json", req.params.id);
+    const user = await identity.getAuthUser(req.params.id);
     if (!isSeller(user)) {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
     const sellerProfile = { ...user.sellerProfile, status };
     if (req.params.action === "approve") sellerProfile.isVerified = true;
-    const updated = await store.update("users.json", user.id, { sellerProfile });
+    const updated = await identity.updateUser(user.id, { sellerProfile });
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -344,7 +344,7 @@ const MONETIZATION_FIELDS = [
 
 router.put("/sellers/:id/monetization", async (req, res, next) => {
   try {
-    const user = await store.getById("users.json", req.params.id);
+    const user = await identity.getAuthUser(req.params.id);
     if (!isSeller(user)) {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
@@ -353,7 +353,7 @@ router.put("/sellers/:id/monetization", async (req, res, next) => {
     for (const f of MONETIZATION_FIELDS) {
       if (body[f] !== undefined) sellerProfile[f] = body[f];
     }
-    const updated = await store.update("users.json", user.id, { sellerProfile });
+    const updated = await identity.updateUser(user.id, { sellerProfile });
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);

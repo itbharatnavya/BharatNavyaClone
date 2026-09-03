@@ -9,11 +9,12 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
+const store = require("../lib/store"); // composite listings.json document reads only (per-id hydrate) — moves to a directory port in Phase 8.5
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 const recruitment = require("../modules/recruitment");
+const verifRepo = require("../modules/platform/repository/verification.repository");
 const { readLedger } = require("../lib/leads");
 const { authGuard, optionalAuth } = require("../middleware/authGuard");
 const { coordsForCity } = require("../lib/geo");
@@ -377,7 +378,7 @@ router.post("/become-seller", authGuard, async (req, res, next) => {
       adminNotes: null,
     };
 
-    const updated = await store.update("users.json", req.user.id, { sellerProfile });
+    const updated = await identity.updateUser(req.user.id, { sellerProfile });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -443,7 +444,7 @@ router.put("/me/seller", authGuard, async (req, res, next) => {
 
     // Shallow-merge onto the existing profile; monetization/status fields untouched.
     const sellerProfile = { ...req.user.sellerProfile, ...patch };
-    const updated = await store.update("users.json", req.user.id, { sellerProfile });
+    const updated = await identity.updateUser(req.user.id, { sellerProfile });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -469,8 +470,7 @@ router.post("/me/verification", authGuard, async (req, res, next) => {
         .json({ success: false, error: "gstNumber or panNumber is required" });
     }
 
-    const request = await store.insert(
-      "verification-requests.json",
+    const request = await verifRepo.insert(
       {
         sellerId: req.user.id,
         gstNumber: gstNumber || null,
@@ -486,7 +486,7 @@ router.post("/me/verification", authGuard, async (req, res, next) => {
     const sellerProfile = { ...req.user.sellerProfile };
     if (gstNumber) sellerProfile.gstNumber = gstNumber;
     if (panNumber) sellerProfile.panNumber = panNumber;
-    await store.update("users.json", req.user.id, { sellerProfile });
+    await identity.updateUser(req.user.id, { sellerProfile });
 
     return res.json({ success: true, data: { request } });
   } catch (err) {
@@ -528,7 +528,7 @@ router.put("/me/profile", authGuard, async (req, res, next) => {
       });
     }
 
-    const updated = await store.update("users.json", req.user.id, patch);
+    const updated = await identity.updateUser(req.user.id, patch);
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -707,7 +707,7 @@ router.post("/me/recruitment-role", authGuard, async (req, res, next) => {
         error: `Your Recruitment role is locked to '${req.user.recruitmentRole}' and cannot be changed.`,
       });
     }
-    const updated = await store.update("users.json", req.user.id, { recruitmentRole: role });
+    const updated = await identity.updateUser(req.user.id, { recruitmentRole: role });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -757,7 +757,7 @@ router.post("/become-employer", authGuard, async (req, res, next) => {
     };
     // First-ever employer profile for this account locks the Recruitment role — see
     // the migration/enhancement-doc comment above POST /me/recruitment-role.
-    const updated = await store.update("users.json", req.user.id, {
+    const updated = await identity.updateUser(req.user.id, {
       employerProfile,
       recruitmentRole: "recruiter",
       recruitmentRoleLockedAt: req.user.recruitmentRoleLockedAt || new Date().toISOString(),
@@ -794,7 +794,7 @@ router.put("/me/employer", authGuard, async (req, res, next) => {
         : [];
     }
     const employerProfile = { ...req.user.employerProfile, ...patch };
-    const updated = await store.update("users.json", req.user.id, { employerProfile });
+    const updated = await identity.updateUser(req.user.id, { employerProfile });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -843,7 +843,7 @@ router.put("/me/candidate", authGuard, async (req, res, next) => {
           recruitmentRole: "candidate",
           recruitmentRoleLockedAt: req.user.recruitmentRoleLockedAt || new Date().toISOString(),
         };
-    const updated = await store.update("users.json", req.user.id, { candidateProfile, ...roleUpdate });
+    const updated = await identity.updateUser(req.user.id, { candidateProfile, ...roleUpdate });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
@@ -877,7 +877,7 @@ router.get("/employers/:slug", optionalAuth, async (req, res, next) => {
 // contactEmail only attached when authenticated, same gating shape as employers/sellers.
 router.get("/candidates/:id", optionalAuth, async (req, res, next) => {
   try {
-    const user = await store.getById("users.json", req.params.id);
+    const user = await identity.getAuthUser(req.params.id);
     if (!user || !user.candidateProfile) {
       return res.status(404).json({ success: false, error: "Candidate not found" });
     }

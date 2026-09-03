@@ -3,31 +3,34 @@
  * (BACKEND-AUDIT.md Phase 3). `users` is the one table shared by all domains; this
  * module is the single, named, greppable seam onto it.
  *
- * Phase 3 is READ-PORT ONLY:
- *   - getAuthUser(id) returns the FULL hydrated user doc, byte-identical to
- *     store.getById("users.json", id) — routes read arbitrary fields off req.user
- *     (employerProfile, sellerProfile, recruitmentRole, roles, status, …), so
- *     narrowing the projection is a later step with its own audit (Phase 6).
+ * Reads (Phase 3):
+ *   - getAuthUser(id) returns the FULL hydrated user doc, byte-identical to the
+ *     legacy store.getById("users.json", id).
  *   - the get*Card(s) readers return the narrow, contact-free shapes other modules
- *     actually need. Batched variants exist so a list endpoint never loops per row;
- *     the single-query view-backed versions land in Phase 4 (identity_*_cards).
- *   - setEmployerApproval is the ONLY write this port will ever expose. Defined now,
- *     not yet wired (routes/adminEmployers.js still writes directly until Phase 4).
+ *     need. Batched variants exist so a list endpoint never loops per row.
+ *
+ * Writes (Phase 8.4 — the identity write-port):
+ *   - createUser(doc)         mints usr_* and inserts (register / verify-otp).
+ *   - updateUser(id, patch)   shallow-merge patch on the composite doc
+ *                             (sellerProfile / employerProfile / candidateProfile /
+ *                             recruitmentRole / plain fields) — the one write path
+ *                             routes/users.js, routes/auth.js, routes/admin.js and
+ *                             routes/moderation.js use. Byte-identical to the old
+ *                             store.update("users.json", …).
+ *   - setEmployerApproval     the recruitment-facing employer-status write.
  *
  * Internals use the users composite mapper (lib/db/users.js) directly — never
  * lib/store — so the architecture test stays green.
  */
 
-// Import the pool leaf directly (not the _shared barrel) — the barrel pulls in
-// crudRouter, which requires middleware/authGuard, which requires this module:
-// a cycle. The kernel's leaves are meant to be imported at any depth.
+// Import the pool + id-generator leaves directly (not the _shared barrel) — the
+// barrel pulls in crudRouter, which requires middleware/authGuard, which requires
+// this module: a cycle. The kernel's leaves are importable at any depth.
 const { pool } = require("../_shared/pool");
+const { nextId } = require("../_shared/ids");
 const { createUsersStore } = require("../../lib/db/users");
 
-// identity never inserts a user — a throwing stub makes that explicit.
-const usersStore = createUsersStore(pool, () => {
-  throw new Error("identity does not create users");
-});
+const usersStore = createUsersStore(pool, nextId);
 
 /**
  * The hydrated user document middleware/authGuard.js puts on `req.user`.
@@ -393,6 +396,26 @@ async function hydrateUsersByIds(ids = []) {
   return usersStore.hydrateManyByIds(ids);
 }
 
+/* --------------------------------------------------------------- writes ----- */
+// The identity write-port (BACKEND-AUDIT.md Phase 8.4). These delegate straight
+// to the composite mapper — byte-identical to the legacy
+// store.insert/update("users.json", …) they replace.
+
+/** Insert a new user, minting `usr_<n>` unless `doc.id` is already set. */
+async function createUser(doc) {
+  return usersStore.insert(doc, "usr");
+}
+
+/** Shallow-merge `patch` onto the user's composite doc; null if the id is unknown. */
+async function updateUser(id, patch) {
+  return usersStore.update(id, patch);
+}
+
+/** Delete a user (admin only). true when a row was removed. */
+async function removeUser(id) {
+  return usersStore.remove(id);
+}
+
 // LEFT JOINs shared by both statements; every hat test is `<child>.user_id IS [NOT] NULL`.
 const ADMIN_USERS_FROM = `
   FROM users u
@@ -581,4 +604,5 @@ module.exports = {
   getUserByMobile, getUserByEmail,
   getEmployerUserIds, getEmployerStatusCards,
   setEmployerApproval,
+  createUser, updateUser, removeUser,
 };

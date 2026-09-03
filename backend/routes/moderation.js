@@ -27,7 +27,6 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store"); // ONLY the users.json verification-approve write — moves to the identity write-port in Phase 8.4
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const verifRepo = require("../modules/platform/repository/verification.repository");
@@ -146,7 +145,7 @@ router.post("/verifications/:id/approve", async (req, res, next) => {
     if (!request) {
       return res.status(404).json({ success: false, error: "Request not found" });
     }
-    const user = await store.getById("users.json", request.sellerId);
+    const user = await identity.getAuthUser(request.sellerId);
     if (!user || !user.sellerProfile) {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
@@ -156,7 +155,7 @@ router.post("/verifications/:id/approve", async (req, res, next) => {
       trustSealVerified: true,
       verifiedBadgeExpiry: new Date(Date.now() + YEAR_MS).toISOString(),
     };
-    await store.update("users.json", user.id, { sellerProfile });
+    await identity.updateUser(user.id, { sellerProfile });
     const updated = await verifRepo.updateById(request.id, {
       status: "approved",
       reviewedBy: req.user.id,
