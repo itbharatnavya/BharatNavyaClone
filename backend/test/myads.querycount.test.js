@@ -25,7 +25,7 @@ test("myAds reads via repo, not lib/store (Phase 7 sweep-8)", async (t) => {
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/myAds.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/monetization/routes/myAds.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/myAds.js must not require lib/store"

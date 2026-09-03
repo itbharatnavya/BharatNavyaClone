@@ -6,8 +6,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { featuresRepo } = require("../modules/monetization");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { featuresRepo } = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 // Public: list all features (optionally filter by group/audience/status/plan)
 router.get("/", async (req, res, next) => {

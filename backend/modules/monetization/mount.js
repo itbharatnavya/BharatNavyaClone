@@ -11,12 +11,12 @@
  */
 
 const MOUNTS = [
-  { path: "/api/features", router: require("../../routes/features"), phase: "early" },
-  { path: "/api/admin/entitlements", router: require("../../routes/entitlements"), phase: "admin-sub" },
-  { path: "/api/entitlements", router: require("../../routes/entitlements"), phase: "public" },
-  { path: "/api/ads", router: require("../../routes/ads"), phase: "late" },
-  { path: "/api/reports", router: require("../../routes/reports"), phase: "late" },
-  { path: "/api/my-ads", router: require("../../routes/myAds"), phase: "late" },
+  { path: "/api/features", router: require("./routes/features.routes"), phase: "early" },
+  { path: "/api/admin/entitlements", router: require("./routes/entitlements.routes"), phase: "admin-sub" },
+  { path: "/api/entitlements", router: require("./routes/entitlements.routes"), phase: "public" },
+  { path: "/api/ads", router: require("./routes/ads.routes"), phase: "late" },
+  { path: "/api/reports", router: require("./routes/reports.routes"), phase: "late" },
+  { path: "/api/my-ads", router: require("./routes/myAds.routes"), phase: "late" },
 ];
 
 function mountMonetization(app, phase) {

@@ -17,8 +17,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const featuresRepo = repoForCollection("features.json");
 const plansRepo = repoForCollection("subscription-plans.json");

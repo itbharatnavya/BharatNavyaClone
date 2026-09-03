@@ -18,9 +18,9 @@
  */
 
 const express = require("express");
-const { authGuard } = require("../middleware/authGuard");
-const chat = require("../modules/chat");
-const identity = require("../modules/identity");
+const { authGuard } = require("../../../middleware/authGuard");
+const chat = require("../index");
+const identity = require("../../identity");
 
 const router = express.Router();
 

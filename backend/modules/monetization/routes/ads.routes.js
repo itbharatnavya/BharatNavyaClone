@@ -7,7 +7,7 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
+const { repoForCollection } = require("../../_shared");
 
 // Phase 7: ad-bookings.json is a flat collection — this public read graduates onto
 // the repo. (routes/admin.js still writes it, so it isn't fully graduated yet.)

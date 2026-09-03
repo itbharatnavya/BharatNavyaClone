@@ -11,8 +11,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const { authGuard } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const { authGuard } = require("../../../middleware/authGuard");
 
 const adBookingsRepo = repoForCollection("ad-bookings.json");
 

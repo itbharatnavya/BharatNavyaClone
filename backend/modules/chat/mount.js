@@ -10,7 +10,7 @@
  */
 
 const MOUNTS = [
-  { path: "/api/chat", router: require("../../routes/chat"), phase: "public" },
+  { path: "/api/chat", router: require("./routes/chat.routes"), phase: "public" },
 ];
 
 function mountChat(app, phase = "public") {

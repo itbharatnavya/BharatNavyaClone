@@ -12,8 +12,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { repoForCollection } = require("../modules/_shared");
-const { authGuard } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const { authGuard } = require("../../../middleware/authGuard");
 
 // Phase 7: reports.json is a flat collection — its one writer graduates onto the
 // criteria-grammar repo. (routes/admin.js still store.update()s it from the

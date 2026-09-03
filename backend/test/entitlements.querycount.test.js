@@ -23,7 +23,7 @@ test("entitlements reads features + plans via repo, not lib/store (Phase 7 sweep
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/entitlements.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/monetization/routes/entitlements.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/entitlements.js must not require lib/store"
