@@ -5,8 +5,10 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const directory = require("../modules/directory");
 const { authGuard, requireRole } = require("../middleware/authGuard");
+
+const categoriesRepo = directory.categoriesRepo;
 
 router.use(authGuard, requireRole("admin"));
 
@@ -23,7 +25,7 @@ router.post("/", async (req, res, next) => {
   try {
     const b = req.body || {};
     if (!b.name) return res.status(400).json({ success: false, error: "name is required" });
-    const cats = await store.all("categories.json");
+    const cats = await categoriesRepo.findMany({});
     const slug = b.slug ? slugify(b.slug) : slugify(b.name);
     if (cats.some((c) => c.slug === slug)) {
       return res.status(409).json({ success: false, error: "slug already exists" });
@@ -46,7 +48,7 @@ router.post("/", async (req, res, next) => {
       listingCount: 0,
       order: typeof b.order === "number" ? b.order : cats.length,
     };
-    const created = await store.insert("categories.json", category);
+    const created = await categoriesRepo.insert(category);
     res.json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -58,7 +60,7 @@ router.put("/:id", async (req, res, next) => {
     const allowed = ["name", "description", "icon", "facets", "order", "type"];
     const patch = {};
     for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-    const updated = await store.update("categories.json", req.params.id, patch);
+    const updated = await categoriesRepo.updateById(req.params.id, patch);
     if (!updated) return res.status(404).json({ success: false, error: "Category not found" });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -68,7 +70,7 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const cats = await store.all("categories.json");
+    const cats = await categoriesRepo.findMany({});
     const target = cats.find((c) => c.id === req.params.id);
     if (!target) return res.status(404).json({ success: false, error: "Category not found" });
     if (cats.some((c) => c.parentId === target.id)) {
@@ -76,7 +78,7 @@ router.delete("/:id", async (req, res, next) => {
         .status(400)
         .json({ success: false, error: "Category has sub-categories; delete those first" });
     }
-    await store.remove("categories.json", req.params.id);
+    await categoriesRepo.deleteById(req.params.id);
     res.json({ success: true, data: { deleted: true } });
   } catch (err) {
     next(err);

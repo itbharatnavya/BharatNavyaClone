@@ -25,6 +25,7 @@ const { readSearchEvents } = require("./repository/searchTrends.repository");
 const { activeListingsForCollectionResolve } = require("./repository/collection.repository");
 const { rfqMatchListingsLean, listingOwner } = require("./repository/rfq.repository");
 const reviewsRepo = require("./repository/review.repository");
+const categoriesRepo = require("./repository/category.repository");
 
 module.exports = {
   listingCountsByCategory,
@@ -43,4 +44,5 @@ module.exports = {
   listingOwner,
   listingTitlesByIds,
   reviewsRepo,
+  categoriesRepo,
 };

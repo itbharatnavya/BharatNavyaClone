@@ -17,10 +17,11 @@
 const express = require("express");
 const router = express.Router();
 const { repoForCollection } = require("../modules/_shared");
+const directory = require("../modules/directory");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 const sugRepo = repoForCollection("category-suggestions.json");
-const catRepo = repoForCollection("categories.json");
+const catRepo = directory.categoriesRepo; // the Directory domain owns `categories`
 
 // Same slugify as routes/adminCategories.js — kept in sync so approved suggestions
 // mint categories with identical id/slug rules.

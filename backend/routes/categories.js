@@ -9,21 +9,19 @@
  *
  * Phase 5a: per-category live listing counts come from
  * modules/directory `listingCountsByCategory()` — one GROUP BY over the `listings`
- * table — instead of `store.all("listings.json")` + a JS pass on every request.
- * `categories.json` itself still reads through `store` (not graduated — many routes
- * still touch it; reads may straddle).
+ * table. Phase 8.2: the `categories` rows themselves come from
+ * `directory.categoriesRepo` (flat repo over the `categories` table), not `store`.
  */
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
 const directory = require("../modules/directory");
 
 // GET / — full taxonomy as a flat array (frontend nests via parentId).
 router.get("/", async (req, res, next) => {
   try {
     const [categories, counts] = await Promise.all([
-      store.all("categories.json"),
+      directory.categoriesRepo.findMany({}),
       directory.listingCountsByCategory(),
     ]);
     const data = categories.map((c) => ({
@@ -41,7 +39,7 @@ router.get("/:slug", async (req, res, next) => {
   try {
     const { slug } = req.params;
     const [categories, counts] = await Promise.all([
-      store.all("categories.json"),
+      directory.categoriesRepo.findMany({}),
       directory.listingCountsByCategory(),
     ]);
     const found = categories.find((c) => c.slug === slug) || null;
