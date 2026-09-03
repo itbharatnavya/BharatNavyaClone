@@ -16,10 +16,10 @@
  */
 
 const MOUNTS = [
-  { path: "/api/auth", router: require("../../routes/auth"), phase: "early" },
-  { path: "/api/referral", router: require("../../routes/referral"), phase: "late" },
+  { path: "/api/auth", router: require("./routes/auth.routes"), phase: "early" },
+  { path: "/api/referral", router: require("./routes/referral.routes"), phase: "late" },
   // The broad catch-all — /api/sellers/:slug, /api/become-seller, /api/me/*, etc.
-  { path: "/api", router: require("../../routes/users"), phase: "users" },
+  { path: "/api", router: require("./routes/users.routes"), phase: "users" },
 ];
 
 function mountIdentity(app, phase) {

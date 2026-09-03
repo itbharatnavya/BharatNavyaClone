@@ -29,7 +29,7 @@ test("identity write-port: register / verify-otp / updateUser (Phase 8.4)", asyn
   });
 
   // routes/auth.js must not require lib/store any more
-  const authSrc = fs.readFileSync(path.join(__dirname, "../routes/auth.js"), "utf8");
+  const authSrc = fs.readFileSync(path.join(__dirname, "../modules/identity/routes/auth.routes.js"), "utf8");
   assert.ok(!/require\(["']\.\.\/lib\/store["']\)/.test(authSrc), "routes/auth.js must not require lib/store");
 
   const mobile = "9" + String(Date.now()).slice(-9);

@@ -24,8 +24,8 @@ const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
 
-const { repoForCollection } = require("../modules/_shared");
-const { authGuard } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const { authGuard } = require("../../../middleware/authGuard");
 
 const referralsRepo = repoForCollection("referrals.json");
 

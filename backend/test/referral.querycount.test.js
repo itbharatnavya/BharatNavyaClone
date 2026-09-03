@@ -36,7 +36,7 @@ test("referral: repo swap, dup-safe ensureRow, redeem credits (Phase 7 sweep-10)
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/referral.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/identity/routes/referral.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/referral.js must not require lib/store"

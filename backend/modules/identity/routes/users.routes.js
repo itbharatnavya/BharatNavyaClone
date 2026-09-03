@@ -9,16 +9,16 @@
 const express = require("express");
 const router = express.Router();
 
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
-const recruitment = require("../modules/recruitment");
-const { verificationRepo: verifRepo } = require("../modules/platform");
-const { readLedger } = require("../lib/leads");
-const { authGuard, optionalAuth } = require("../middleware/authGuard");
-const { coordsForCity } = require("../lib/geo");
-const { deriveBadges } = require("../lib/badges");
-const { trustScore } = require("../lib/trustScore");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../index");
+const directory = require("../../directory");
+const recruitment = require("../../recruitment");
+const { verificationRepo: verifRepo } = require("../../platform");
+const { readLedger } = require("../../../lib/leads");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
+const { coordsForCity } = require("../../../lib/geo");
+const { deriveBadges } = require("../../../lib/badges");
+const { trustScore } = require("../../../lib/trustScore");
 
 /** Strip secrets (passwordHash) before a user leaves the API. */
 function sanitizeUser(u) {
@@ -51,7 +51,7 @@ async function uniqueSlug(base) {
 // resolveSellerLocations moved to lib/sellerLocations.js in Phase 5d (it's a pure
 // helper and routes/listings.js needed it — a route importing a route). Re-exported
 // at the bottom of this file for any existing `require("./users").resolveSellerLocations`.
-const { resolveSellerLocations } = require("../lib/sellerLocations");
+const { resolveSellerLocations } = require("../../../lib/sellerLocations");
 
 /**
  * Normalize a client-supplied locations array: keep only objects that have at least a

@@ -9,11 +9,11 @@
 const express = require("express");
 const router = express.Router();
 
-const identity = require("../modules/identity");
-const auth = require("../lib/auth");
-const config = require("../lib/config");
-const { validate, schemas } = require("../lib/validate");
-const { authGuard } = require("../middleware/authGuard");
+const identity = require("../index");
+const auth = require("../../../lib/auth");
+const config = require("../../../lib/config");
+const { validate, schemas } = require("../../../lib/validate");
+const { authGuard } = require("../../../middleware/authGuard");
 
 /** Strip secrets (passwordHash) before a user ever leaves the API. */
 function sanitizeUser(u) {
