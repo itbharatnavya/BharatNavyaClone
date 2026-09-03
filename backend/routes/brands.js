@@ -14,7 +14,7 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const store = require("../lib/store"); // composite listings.json document read (GET /:slug hydrate) — moves to a directory port in Phase 8.5
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 
@@ -126,7 +126,7 @@ router.get("/", async (req, res, next) => {
     // store.all("listings.json") (the full composite hydrate of every listing).
     const [listings, categories] = await Promise.all([
       directory.activeBrandedListingsLean(),
-      store.all("categories.json"),
+      directory.categoriesRepo.findMany({}),
     ]);
 
     const data = getBrandsList(categorySlug, categories, listings);

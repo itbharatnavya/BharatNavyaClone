@@ -27,20 +27,20 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const store = require("../lib/store"); // ONLY the users.json verification-approve write — moves to the identity write-port in Phase 8.4
+const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
+const verifRepo = require("../modules/platform/repository/verification.repository");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 // Auth + admin role for every endpoint below.
 router.use(authGuard, requireRole("admin"));
 
-// Per-type metadata: which collection + what "visible" status means for that type.
+// Per-type metadata: which repository + what "visible" status means for that type.
 const TYPE_META = {
-  blog: { file: "blogs.json", published: "published" },
-  story: { file: "stories.json", published: "published" },
+  blog: { repo: repoForCollection("blogs.json"), published: "published" },
+  story: { repo: repoForCollection("stories.json"), published: "published" },
 };
-
-const VERIFICATIONS = "verification-requests.json";
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
 /** Strip markdown/whitespace and clip to a short snippet for the moderation table. */
@@ -99,7 +99,7 @@ router.get("/content", async (req, res, next) => {
         .json({ success: false, error: "type must be blog | story" });
     }
     const authorType = req.query.authorType;
-    const rows = await store.all(meta.file);
+    const rows = await meta.repo.findMany({});
     // Author company/type only for the ids actually present (Phase 5e) — not a
     // `store.all("users.json")` hydrate of every user.
     const byId = await identity.getAccountCards(rows.map((r) => r.sellerId));
@@ -123,7 +123,7 @@ router.get("/content", async (req, res, next) => {
 router.get("/verifications", async (req, res, next) => {
   try {
     const status = req.query.status;
-    const rows = await store.all(VERIFICATIONS);
+    const rows = await verifRepo.findMany({});
     const byId = await identity.getAccountCards(rows.map((r) => r.sellerId));
     let list = rows;
     if (status && status !== "all") list = list.filter((r) => r.status === status);
@@ -142,7 +142,7 @@ router.get("/verifications", async (req, res, next) => {
 // POST /verifications/:id/approve — grant the verified badge + trust seal (+1yr).
 router.post("/verifications/:id/approve", async (req, res, next) => {
   try {
-    const request = await store.getById(VERIFICATIONS, req.params.id);
+    const request = await verifRepo.findById(req.params.id);
     if (!request) {
       return res.status(404).json({ success: false, error: "Request not found" });
     }
@@ -157,7 +157,7 @@ router.post("/verifications/:id/approve", async (req, res, next) => {
       verifiedBadgeExpiry: new Date(Date.now() + YEAR_MS).toISOString(),
     };
     await store.update("users.json", user.id, { sellerProfile });
-    const updated = await store.update(VERIFICATIONS, request.id, {
+    const updated = await verifRepo.updateById(request.id, {
       status: "approved",
       reviewedBy: req.user.id,
       reviewedAt: new Date().toISOString(),
@@ -171,7 +171,7 @@ router.post("/verifications/:id/approve", async (req, res, next) => {
 // POST /verifications/:id/reject — mark the request rejected (badge untouched).
 router.post("/verifications/:id/reject", async (req, res, next) => {
   try {
-    const updated = await store.update(VERIFICATIONS, req.params.id, {
+    const updated = await verifRepo.updateById(req.params.id, {
       status: "rejected",
       reviewedBy: req.user.id,
       reviewedAt: new Date().toISOString(),
@@ -198,7 +198,7 @@ router.post("/:type/:id/:action", async (req, res, next) => {
     }
     const action = req.params.action;
     if (action === "delete") {
-      const ok = await store.remove(meta.file, req.params.id);
+      const ok = await meta.repo.deleteById(req.params.id);
       if (!ok) return res.status(404).json({ success: false, error: "Not found" });
       return res.json({ success: true, data: { id: req.params.id, deleted: true } });
     }
@@ -207,7 +207,7 @@ router.post("/:type/:id/:action", async (req, res, next) => {
     else if (action === "approve") status = meta.published;
     else return res.status(400).json({ success: false, error: "Invalid action" });
 
-    const updated = await store.update(meta.file, req.params.id, { status });
+    const updated = await meta.repo.updateById(req.params.id, { status });
     if (!updated) return res.status(404).json({ success: false, error: "Not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {

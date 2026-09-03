@@ -6,13 +6,13 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const { featuresRepo } = require("../modules/monetization");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 // Public: list all features (optionally filter by group/audience/status/plan)
 router.get("/", async (req, res, next) => {
   try {
-    let features = await store.all("features.json");
+    let features = await featuresRepo.findMany({});
     const { group, audience, status, plan } = req.query;
     if (group) features = features.filter((f) => f.group === group);
     if (audience) features = features.filter((f) => f.audience === audience || f.audience === "all");
@@ -26,7 +26,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const f = await store.getById("features.json", req.params.id);
+    const f = await featuresRepo.findById(req.params.id);
     if (!f) return res.status(404).json({ success: false, error: "Feature not found" });
     res.json({ success: true, data: f });
   } catch (err) {
@@ -50,7 +50,7 @@ router.post("/", authGuard, requireRole("admin"), async (req, res, next) => {
       status: b.status || "live",
       phase: b.phase || 1,
     };
-    const created = await store.insert("features.json", feature, "feat");
+    const created = await featuresRepo.insert(feature, "feat");
     res.json({ success: true, data: created });
   } catch (err) {
     next(err);
@@ -62,7 +62,7 @@ router.put("/:id", authGuard, requireRole("admin"), async (req, res, next) => {
     const allowed = ["name", "group", "description", "audience", "plans", "status", "phase"];
     const patch = {};
     for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-    const updated = await store.update("features.json", req.params.id, patch);
+    const updated = await featuresRepo.updateById(req.params.id, patch);
     if (!updated) return res.status(404).json({ success: false, error: "Feature not found" });
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -72,7 +72,7 @@ router.put("/:id", authGuard, requireRole("admin"), async (req, res, next) => {
 
 router.delete("/:id", authGuard, requireRole("admin"), async (req, res, next) => {
   try {
-    const ok = await store.remove("features.json", req.params.id);
+    const ok = await featuresRepo.deleteById(req.params.id);
     if (!ok) return res.status(404).json({ success: false, error: "Feature not found" });
     res.json({ success: true, data: { deleted: true } });
   } catch (err) {
