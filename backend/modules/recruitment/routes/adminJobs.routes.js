@@ -16,10 +16,10 @@
 
 const express = require("express");
 const router = express.Router();
-const identity = require("../modules/identity");
-const recruitment = require("../modules/recruitment");
-const { authGuard, requireRole } = require("../middleware/authGuard");
-const { paginationOf } = require("../modules/_shared/pagination");
+const identity = require("../../identity");
+const recruitment = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
+const { paginationOf } = require("../../_shared/pagination");
 
 router.use(authGuard, requireRole("admin"));
 

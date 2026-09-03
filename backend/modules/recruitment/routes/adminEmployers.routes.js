@@ -17,8 +17,8 @@
 const express = require("express");
 const router = express.Router();
 
-const identity = require("../modules/identity");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const identity = require("../../identity");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 router.use(authGuard, requireRole("admin"));
 

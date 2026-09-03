@@ -27,8 +27,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { authGuard } = require("../middleware/authGuard");
-const identity = require("../modules/identity");
+const { authGuard } = require("../../../middleware/authGuard");
+const identity = require("../../identity");
 const {
   searchJobs,
   employerProfileGaps,
@@ -46,9 +46,9 @@ const {
   normalizeStringList,
   // policy.js
   isJobOwnerOrAdmin,
-} = require("../modules/recruitment");
-const { validateBody } = require("../modules/recruitment/http/validateBody");
-const { updateJob: updateJobSchema } = require("../modules/recruitment/schema/job.schema");
+} = require("../index");
+const { validateBody } = require("../http/validateBody");
+const { updateJob: updateJobSchema } = require("../schema/job.schema");
 
 /* --------------------------------------------------- GET / (browse) -------- */
 

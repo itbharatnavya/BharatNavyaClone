@@ -20,9 +20,9 @@
 const express = require("express");
 const router = express.Router();
 
-const identity = require("../modules/identity");
-const { authGuard } = require("../middleware/authGuard");
-const { createNotification } = require("../lib/notify");
+const identity = require("../../identity");
+const { authGuard } = require("../../../middleware/authGuard");
+const { createNotification } = require("../../../lib/notify");
 const {
   candidateProfileGaps,
   // application.service.js (Phase 4b extraction)
@@ -36,7 +36,7 @@ const {
   // repositories (Phase 4d)
   jobsRepo,
   appsRepo,
-} = require("../modules/recruitment");
+} = require("../index");
 
 /* --------------------------------------------------------- POST / ---------- */
 

@@ -7,7 +7,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { jobFunctionsRepo } = require("../modules/recruitment");
+const { jobFunctionsRepo } = require("../index");
 
 router.get("/", async (req, res, next) => {
   try {

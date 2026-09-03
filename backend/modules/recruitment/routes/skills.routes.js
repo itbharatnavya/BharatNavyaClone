@@ -7,7 +7,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { skillsRepo } = require("../modules/recruitment");
+const { skillsRepo } = require("../index");
 
 router.get("/", async (req, res, next) => {
   try {

@@ -13,23 +13,22 @@
  *                      or the catch-all shadows it.
  *   phase "public"     a normal /api/* router.
  *
- * Requires the route files straight from routes/ — their physical move into
- * modules/recruitment/http/ is deferred (BACKEND-AUDIT.md "file moves last").
+ * Route files live in modules/recruitment/routes/*.routes.js (Phase 8.9).
  * Imported by app.js directly (not via index.js) to avoid a load cycle:
- * routes/jobs.js already requires modules/recruitment.
+ * the route files require modules/recruitment.
  */
 
 const MOUNTS = [
-  { path: "/api/admin/job-functions", router: require("../../routes/adminJobFunctions"), phase: "admin-sub" },
-  { path: "/api/admin/job-roles", router: require("../../routes/adminJobRoles"), phase: "admin-sub" },
-  { path: "/api/admin/skills", router: require("../../routes/adminSkills"), phase: "admin-sub" },
-  { path: "/api/admin/employers", router: require("../../routes/adminEmployers"), phase: "admin-sub" },
-  { path: "/api/admin/jobs", router: require("../../routes/adminJobs"), phase: "admin-sub" },
-  { path: "/api/job-functions", router: require("../../routes/jobFunctions"), phase: "public" },
-  { path: "/api/job-roles", router: require("../../routes/jobRoles"), phase: "public" },
-  { path: "/api/skills", router: require("../../routes/skills"), phase: "public" },
-  { path: "/api/jobs", router: require("../../routes/jobs"), phase: "public" },
-  { path: "/api/applications", router: require("../../routes/applications"), phase: "public" },
+  { path: "/api/admin/job-functions", router: require("./routes/adminJobFunctions.routes"), phase: "admin-sub" },
+  { path: "/api/admin/job-roles", router: require("./routes/adminJobRoles.routes"), phase: "admin-sub" },
+  { path: "/api/admin/skills", router: require("./routes/adminSkills.routes"), phase: "admin-sub" },
+  { path: "/api/admin/employers", router: require("./routes/adminEmployers.routes"), phase: "admin-sub" },
+  { path: "/api/admin/jobs", router: require("./routes/adminJobs.routes"), phase: "admin-sub" },
+  { path: "/api/job-functions", router: require("./routes/jobFunctions.routes"), phase: "public" },
+  { path: "/api/job-roles", router: require("./routes/jobRoles.routes"), phase: "public" },
+  { path: "/api/skills", router: require("./routes/skills.routes"), phase: "public" },
+  { path: "/api/jobs", router: require("./routes/jobs.routes"), phase: "public" },
+  { path: "/api/applications", router: require("./routes/applications.routes"), phase: "public" },
 ];
 
 /** Mount every recruitment route of the given phase onto `app`, in declared order. */

@@ -1,13 +1,14 @@
 /**
- * adminSkills.js — admin CRUD for the predefined skills picklist (RECRUITMENT.md §2).
- * Mounted at /api/admin/skills, before the blanket /api/admin guard. Mirrors
+ * adminJobFunctions.js — admin CRUD for the flat, admin-editable job-function
+ * taxonomy (RECRUITMENT.md §2: "New, small, admin-editable flat list"). Mounted at
+ * /api/admin/job-functions, before the blanket /api/admin guard. Mirrors
  * adminCategories.js's CRUD pattern, simplified — flat list, no parentId/path tree.
  */
 
 const express = require("express");
 const router = express.Router();
-const { skillsRepo } = require("../modules/recruitment");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { jobFunctionsRepo } = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 router.use(authGuard, requireRole("admin"));
 
@@ -24,7 +25,7 @@ const slugify = (s) =>
 // this is the only way the admin UI can see/reactivate a soft-deleted row).
 router.get("/", async (req, res, next) => {
   try {
-    const all = await skillsRepo.findMany({});
+    const all = await jobFunctionsRepo.findMany({});
     all.sort((a, b) => (a.order || 0) - (b.order || 0));
     res.json({ success: true, data: all });
   } catch (err) {
@@ -36,16 +37,15 @@ router.post("/", async (req, res, next) => {
   try {
     const b = req.body || {};
     if (!b.name) return res.status(400).json({ success: false, error: "name is required" });
-    const all = await skillsRepo.findMany({});
+    const all = await jobFunctionsRepo.findMany({});
     const slug = b.slug ? slugify(b.slug) : slugify(b.name);
     if (all.some((r) => r.slug === slug)) {
       return res.status(409).json({ success: false, error: "slug already exists" });
     }
-    const created = await skillsRepo.insert({
-      id: "sk_" + slug,
+    const created = await jobFunctionsRepo.insert({
+      id: "jf_" + slug,
       name: b.name,
       slug,
-      jobFunction: b.jobFunction || null,
       order: typeof b.order === "number" ? b.order : all.length,
       isActive: b.isActive !== false,
     });
@@ -57,11 +57,11 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const allowed = ["name", "jobFunction", "order", "isActive"];
+    const allowed = ["name", "order", "isActive"];
     const patch = {};
     for (const k of allowed) if (k in (req.body || {})) patch[k] = req.body[k];
-    const updated = await skillsRepo.updateById(req.params.id, patch);
-    if (!updated) return res.status(404).json({ success: false, error: "Skill not found" });
+    const updated = await jobFunctionsRepo.updateById(req.params.id, patch);
+    if (!updated) return res.status(404).json({ success: false, error: "Job function not found" });
     res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -70,8 +70,8 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const ok = await skillsRepo.deleteById(req.params.id);
-    if (!ok) return res.status(404).json({ success: false, error: "Skill not found" });
+    const ok = await jobFunctionsRepo.deleteById(req.params.id);
+    if (!ok) return res.status(404).json({ success: false, error: "Job function not found" });
     res.json({ success: true, data: { deleted: true } });
   } catch (err) {
     next(err);
