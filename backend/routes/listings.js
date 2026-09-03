@@ -13,7 +13,6 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 const { authGuard } = require("../middleware/authGuard");
@@ -98,7 +97,7 @@ function productKeyOf(listing) {
  * category page even though it's active and the seller is approved.
  */
 async function resolveCategoryFields({ categoryId, categorySlugOrName }) {
-  const categories = await store.all("categories.json");
+  const categories = await directory.categoriesRepo.findMany({});
   let cat = null;
   if (categoryId) {
     cat = categories.find((c) => c.id === categoryId) || null;
@@ -397,7 +396,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
@@ -409,7 +408,7 @@ router.get("/:id", async (req, res, next) => {
     directory.bumpListingViews(listing.id).catch(() => {});
 
     let seller = null;
-    const user = await store.getById("users.json", listing.sellerId);
+    const user = await identity.getAuthUser(listing.sellerId);
     if (user) {
       const sp = user.sellerProfile || {};
       // FLAT shape — the frontend's ListingSeller reads seller.slug / .companyName
@@ -459,54 +458,37 @@ router.get("/:id", async (req, res, next) => {
  */
 router.get("/:id/offers", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
 
     const key = productKeyOf(listing);
-    const [allListings, users] = await Promise.all([
-      store.all("listings.json"),
-      store.all("users.json"),
+    // Composite hydrate of every listing is unavoidable here — productKeyOf reads
+    // product.brand + title and the offer row reads product/location — but the
+    // seller side is now the indexed identity port, not a full users hydrate.
+    const [allListings, approvedIds] = await Promise.all([
+      directory.listingsRepo.all(),
+      identity.getApprovedSellerIds(),
     ]);
+    const approvedSellerIds = new Set(approvedIds);
 
-    // Only approved sellers surface publicly (mirrors the browse endpoint).
-    const approvedSellerIds = new Set(
-      users
-        .filter((u) => u.sellerProfile && u.sellerProfile.status === "approved")
-        .map((u) => u.id)
+    // Flat seller mini — identity.getSellerBrowseCards is the SAME 11-key shape
+    // the browse endpoint builds (id/name/companyName/slug/city/state/logo/
+    // isVerified/rating/reviewCount/responseRate), resolved once for just the
+    // sellers on this product's other offers (all approved ⇒ all present).
+    const matched = allListings.filter(
+      (l) =>
+        l.id !== listing.id &&
+        l.status === "active" &&
+        l.sellerId !== listing.sellerId &&
+        approvedSellerIds.has(l.sellerId) &&
+        productKeyOf(l) === key
     );
+    const _sellerCards = await identity.getSellerBrowseCards(matched.map((l) => l.sellerId));
+    const sellerMini = (sellerId) => _sellerCards.get(sellerId) || null;
 
-    // Flat seller mini — built EXACTLY as the browse endpoint builds it (from users.json).
-    const userById = new Map(users.map((u) => [u.id, u]));
-    const sellerMini = (sellerId) => {
-      const u = userById.get(sellerId);
-      if (!u) return null;
-      const sp = u.sellerProfile || {};
-      return {
-        id: u.id,
-        name: u.name,
-        companyName: sp.companyName || u.name || null,
-        slug: sp.slug || null,
-        city: (sp.location && sp.location.city) || null,
-        state: (sp.location && sp.location.state) || null,
-        logo: sp.logo || u.avatarUrl || null,
-        isVerified: !!sp.isVerified,
-        rating: sp.rating ?? 0,
-        reviewCount: sp.reviewCount ?? 0,
-        responseRate: sp.responseRate ?? 0,
-      };
-    };
-
-    const offers = allListings
-      .filter(
-        (l) =>
-          l.id !== listing.id &&
-          l.status === "active" &&
-          l.sellerId !== listing.sellerId &&
-          approvedSellerIds.has(l.sellerId) &&
-          productKeyOf(l) === key
-      )
+    const offers = matched
       .map((l) => {
         const p = l.product || {};
         return {
@@ -558,7 +540,7 @@ router.post("/", authGuard, async (req, res, next) => {
     // Lazily create a minimal sellerProfile the first time a user publishes (DESIGN §3.1).
     let user = req.user;
     if (!user.sellerProfile) {
-      const updated = await store.update("users.json", user.id, {
+      const updated = await identity.updateUser(user.id, {
         sellerProfile: minimalSellerProfile(user),
       });
       user = updated || user;
@@ -677,7 +659,7 @@ router.post("/", authGuard, async (req, res, next) => {
       reviewedAt: null,
     };
 
-    const saved = await store.insert("listings.json", listing, "lst");
+    const saved = await directory.listingsRepo.insert(listing, "lst");
     return res.json({ success: true, data: saved });
   } catch (err) {
     next(err);
@@ -723,7 +705,7 @@ router.post("/bulk", authGuard, async (req, res, next) => {
     // Lazily create a minimal sellerProfile ONCE for the whole batch (DESIGN §3.1).
     let user = req.user;
     if (!user.sellerProfile) {
-      const updated = await store.update("users.json", user.id, {
+      const updated = await identity.updateUser(user.id, {
         sellerProfile: minimalSellerProfile(user),
       });
       user = updated || user;
@@ -731,7 +713,7 @@ router.post("/bulk", authGuard, async (req, res, next) => {
     const sp = user.sellerProfile || {};
 
     // Category resolver: slug (case-insensitive) → category doc (for id + full path).
-    const categories = await store.all("categories.json");
+    const categories = await directory.categoriesRepo.findMany({});
     const catBySlug = new Map(
       categories.map((c) => [String(c.slug || "").trim().toLowerCase(), c])
     );
@@ -856,7 +838,7 @@ router.post("/bulk", authGuard, async (req, res, next) => {
         // Stamp the multi-vendor grouping key (brand + title) like the single-create path.
         listing.productKey = productKeyOf(listing);
 
-        await store.insert("listings.json", listing, "lst");
+        await directory.listingsRepo.insert(listing, "lst");
         created += 1;
       } catch (rowErr) {
         errors.push({
@@ -876,7 +858,7 @@ router.post("/bulk", authGuard, async (req, res, next) => {
 
 router.put("/:id", authGuard, async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
@@ -977,7 +959,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     // branch's city/state/pincode (+ geo coords) onto listing.location. Skipped when
     // the same request set PAN India.
     if (patch.locationId && !patch.panIndia) {
-      const owner = await store.getById("users.json", listing.sellerId);
+      const owner = await identity.getAuthUser(listing.sellerId);
       const branch = resolveSellerLocations(owner && owner.sellerProfile).find(
         (l) => l.id === patch.locationId
       );
@@ -1001,7 +983,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     // shallow-merges, so `product` is replaced wholesale when patched).
     patch.productKey = productKeyOf({ ...listing, ...patch });
 
-    const updated = await store.update("listings.json", req.params.id, patch);
+    const updated = await directory.listingsRepo.update(req.params.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -1012,14 +994,14 @@ router.put("/:id", authGuard, async (req, res, next) => {
 
 router.put("/:id/sold", authGuard, async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
     if (!isOwnerOrAdmin(req.user, listing)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    const updated = await store.update("listings.json", req.params.id, { status: "sold" });
+    const updated = await directory.listingsRepo.update(req.params.id, { status: "sold" });
     return res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
@@ -1030,14 +1012,14 @@ router.put("/:id/sold", authGuard, async (req, res, next) => {
 
 router.delete("/:id", authGuard, async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
     if (!isOwnerOrAdmin(req.user, listing)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    await store.remove("listings.json", req.params.id);
+    await directory.listingsRepo.remove(req.params.id);
     return res.json({ success: true, data: { deleted: true } });
   } catch (err) {
     next(err);

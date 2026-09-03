@@ -30,7 +30,6 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store"); // composite listings.json document reads (GET /:slug) stay on store
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
@@ -305,7 +304,7 @@ router.get("/:slug", async (req, res, next) => {
 
     // Hydrate the (bounded) resolved set: the full composite listing doc + seller mini.
     const fullDocs = (
-      await Promise.all(items.map((it) => store.getById("listings.json", it.id)))
+      await Promise.all(items.map((it) => directory.listingsRepo.getById(it.id)))
     ).filter(Boolean);
     const sellerById = new Map(
       (await identity.hydrateUsersByIds(fullDocs.map((l) => l.sellerId))).map((u) => [u.id, u])

@@ -27,7 +27,7 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store");
+const directory = require("../modules/directory");
 const identity = require("../modules/identity");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 const { verifyListing } = require("../lib/listingVerification");
@@ -66,7 +66,7 @@ async function approveOne(listing, adminId) {
     reviewedBy: adminId,
     reviewedAt: new Date().toISOString(),
   };
-  return store.update("listings.json", listing.id, { status: "active", verification });
+  return directory.listingsRepo.update(listing.id, { status: "active", verification });
 }
 
 async function rejectOne(listing, adminId, reason) {
@@ -77,7 +77,7 @@ async function rejectOne(listing, adminId, reason) {
     reviewedAt: new Date().toISOString(),
     rejectionReason: reason || null,
   };
-  return store.update("listings.json", listing.id, { status: "rejected", verification });
+  return directory.listingsRepo.update(listing.id, { status: "rejected", verification });
 }
 
 async function reverifyOne(listing) {
@@ -94,7 +94,7 @@ async function reverifyOne(listing) {
     reviewedAt: null,
   };
   const status = result.status === "auto_approved" ? "active" : "pending";
-  return store.update("listings.json", listing.id, { status, verification });
+  return directory.listingsRepo.update(listing.id, { status, verification });
 }
 
 /** Normalize a request's `ids` body field into a deduped array of strings, capped at `max`. */
@@ -119,7 +119,7 @@ router.get("/", async (req, res, next) => {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
 
-    const listings = await store.all("listings.json");
+    const listings = await directory.listingsRepo.all();
 
     let rows = listings;
     if (statusFilter && statusFilter !== "all") {
@@ -172,7 +172,7 @@ router.get("/", async (req, res, next) => {
 // GET /:id — full listing (admin detail/edit view).
 router.get("/:id", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) return res.status(404).json({ success: false, error: "Listing not found" });
     const byId = await identity.getSellerCompanyNames([listing.sellerId]);
     const who = byId.get(listing.sellerId);
@@ -198,7 +198,7 @@ router.post("/bulk/approve", async (req, res, next) => {
     const results = [];
     const errors = [];
     for (const id of ids) {
-      const listing = await store.getById("listings.json", id);
+      const listing = await directory.listingsRepo.getById(id);
       if (!listing) {
         errors.push({ id, message: "Not found" });
         continue;
@@ -222,7 +222,7 @@ router.post("/bulk/reject", async (req, res, next) => {
     const results = [];
     const errors = [];
     for (const id of ids) {
-      const listing = await store.getById("listings.json", id);
+      const listing = await directory.listingsRepo.getById(id);
       if (!listing) {
         errors.push({ id, message: "Not found" });
         continue;
@@ -253,7 +253,7 @@ router.post("/bulk/reverify", async (req, res, next) => {
     const results = [];
     const errors = [];
     for (const id of ids) {
-      const listing = await store.getById("listings.json", id);
+      const listing = await directory.listingsRepo.getById(id);
       if (!listing) {
         errors.push({ id, message: "Not found" });
         continue;
@@ -274,7 +274,7 @@ router.post("/bulk/reverify", async (req, res, next) => {
 // POST /:id/approve — manual admin approval → listing goes live.
 router.post("/:id/approve", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) return res.status(404).json({ success: false, error: "Listing not found" });
     const updated = await approveOne(listing, req.user.id);
     return res.json({ success: true, data: updated });
@@ -286,7 +286,7 @@ router.post("/:id/approve", async (req, res, next) => {
 // POST /:id/reject — manual admin rejection → listing stays off the site.
 router.post("/:id/reject", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) return res.status(404).json({ success: false, error: "Listing not found" });
     const reason =
       req.body && typeof req.body.reason === "string" ? req.body.reason.trim().slice(0, 500) : null;
@@ -301,7 +301,7 @@ router.post("/:id/reject", async (req, res, next) => {
 // via PUT /api/listings/:id, or to retry once the `claude` CLI comes back online).
 router.post("/:id/reverify", async (req, res, next) => {
   try {
-    const listing = await store.getById("listings.json", req.params.id);
+    const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) return res.status(404).json({ success: false, error: "Listing not found" });
     const updated = await reverifyOne(listing);
     return res.json({ success: true, data: updated });

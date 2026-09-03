@@ -21,7 +21,7 @@ const router = express.Router();
 
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
-const store = require("../lib/store"); // composite listings.json document reads stay on store (Phase 5/6b)
+const directory = require("../modules/directory");
 const { authGuard } = require("../middleware/authGuard");
 
 const shortlistRepo = repoForCollection("shortlist.json");
@@ -46,7 +46,7 @@ router.get("/", authGuard, async (req, res, next) => {
 
     // Resolve in saved-order; drop anything missing or no longer active.
     const resolved = (
-      await Promise.all(ids.map((id) => store.getById("listings.json", id)))
+      await Promise.all(ids.map((id) => directory.listingsRepo.getById(id)))
     ).filter((l) => l && l.status === "active");
 
     const cardBySeller = await identity.getSellerBrowseCards(
@@ -74,7 +74,7 @@ router.post("/", authGuard, async (req, res, next) => {
         .json({ success: false, error: "listingId is required" });
     }
 
-    const listing = await store.getById("listings.json", listingId);
+    const listing = await directory.listingsRepo.getById(listingId);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }

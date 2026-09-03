@@ -9,7 +9,6 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store"); // composite listings.json document reads only (per-id hydrate) — moves to a directory port in Phase 8.5
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
@@ -269,7 +268,7 @@ router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
     const listingIds = await directory.activeListingIdsForSeller(user.id);
     const listings = [];
     for (const lid of listingIds) {
-      const doc = await store.getById("listings.json", lid);
+      const doc = await directory.listingsRepo.getById(lid);
       if (doc) listings.push(doc);
     }
 
@@ -545,7 +544,7 @@ router.get("/me/listings", authGuard, async (req, res, next) => {
     // read stays per-id on store by design (BACKEND-AUDIT.md).
     const ids = await directory.sellerListingIds(req.user.id);
     const docs = (
-      await Promise.all(ids.map((id) => store.getById("listings.json", id)))
+      await Promise.all(ids.map((id) => directory.listingsRepo.getById(id)))
     ).filter(Boolean);
     const mine = docs.sort((a, b) =>
       String(b.createdAt || "").localeCompare(String(a.createdAt || ""))

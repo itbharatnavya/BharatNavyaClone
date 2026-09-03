@@ -18,7 +18,6 @@
 const express = require("express");
 const router = express.Router();
 
-const store = require("../lib/store"); // composite listings.json read/write in the approve path stays on store
 const { repoForCollection } = require("../modules/_shared");
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
@@ -72,7 +71,7 @@ router.post("/", authGuard, async (req, res, next) => {
     }
 
     // The listing must exist AND belong to the requesting seller.
-    const listing = await store.getById("listings.json", listingId);
+    const listing = await directory.listingsRepo.getById(listingId);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
     }
@@ -165,7 +164,7 @@ router.post(
           .json({ success: false, error: "Boost request not found" });
       }
 
-      const listing = await store.getById("listings.json", request.listingId);
+      const listing = await directory.listingsRepo.getById(request.listingId);
       if (!listing) {
         return res
           .status(404)
@@ -188,7 +187,7 @@ router.post(
         patch.rankBoostScore =
           (Number(listing.rankBoostScore) || 0) + RANK_BOOST_DELTA;
       }
-      await store.update("listings.json", listing.id, patch);
+      await directory.listingsRepo.update(listing.id, patch);
 
       const updated = await boostsRepo.updateById(request.id, {
         status: "active",

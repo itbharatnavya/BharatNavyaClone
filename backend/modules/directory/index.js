@@ -20,6 +20,7 @@ const {
   listingTitlesByIds,
 } = require("./repository/listingStats.repository");
 const { bumpListingViews } = require("./repository/listing.repository");
+const listingsRepo = require("./repository/listingDocument.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
 const { readSearchEvents } = require("./repository/searchTrends.repository");
 const { activeListingsForCollectionResolve } = require("./repository/collection.repository");
@@ -45,4 +46,5 @@ module.exports = {
   listingTitlesByIds,
   reviewsRepo,
   categoriesRepo,
+  listingsRepo,
 };

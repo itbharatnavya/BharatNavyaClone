@@ -14,7 +14,6 @@
 
 const express = require("express");
 const router = express.Router();
-const store = require("../lib/store"); // composite listings.json document read (GET /:slug hydrate) — moves to a directory port in Phase 8.5
 const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 
@@ -153,7 +152,7 @@ router.get("/:slug", async (req, res, next) => {
 
     const full = [];
     for (const lr of matchedLean) {
-      const doc = await store.getById("listings.json", lr.id); // id-ASC order preserved
+      const doc = await directory.listingsRepo.getById(lr.id); // id-ASC order preserved
       if (doc) full.push(doc);
     }
     if (full.length === 0) {
