@@ -19,7 +19,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const ENDPOINTS = [
   { name: "GET /api/jobs", base: "/api/jobs", itemsKey: "jobs", limitCap: 50, auth: null },

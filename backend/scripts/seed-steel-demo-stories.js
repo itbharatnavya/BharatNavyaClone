@@ -13,7 +13,7 @@
  * Run:  node scripts/seed-steel-demo-stories.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const SELLER_ID = "usr_cat_metalssteelalloys";
 const LISTING_ID = "lst_cat00324";

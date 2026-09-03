@@ -16,7 +16,7 @@
  * Run:  node scripts/seed-full-catalog.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const auth = require("../lib/auth");
 
 /* ------------------------------------------------------------ small helpers ---- */

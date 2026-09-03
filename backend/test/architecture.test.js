@@ -86,18 +86,36 @@ const moduleFiles = listJsFiles(MODULES_DIR);
 
 /* -------------------------------------------------------------------- tests -- */
 
-test("modules/ never requires the legacy store (lib/store / lib/pg-store)", () => {
+// The runtime layers that must be 100% off the legacy store after the Phase 8
+// demolition. lib/store.js is DELETED; lib/pg-store.js survives only for offline
+// seed scripts + test oracles, so no server-path file may import it either.
+const STORE_FREE_DIRS = [
+  MODULES_DIR,
+  ROUTES_DIR,
+  path.join(BACKEND, "realtime"),
+];
+const LEGACY_STORE_ABS = new Set([
+  path.join(BACKEND, "lib", "store"),
+  path.join(BACKEND, "lib", "pg-store"),
+]);
+
+test("no runtime file imports the legacy store (lib/store deleted; lib/pg-store is offline-only)", () => {
   const offenders = [];
-  for (const file of moduleFiles) {
-    for (const spec of readRequires(file)) {
-      if (!spec.startsWith(".")) continue;
-      const abs = resolveSpec(file, spec);
-      if (abs === path.join(BACKEND, "lib", "store") || abs === path.join(BACKEND, "lib", "pg-store")) {
-        offenders.push(`${path.relative(BACKEND, file)} -> ${spec}`);
+  for (const dir of STORE_FREE_DIRS) {
+    for (const file of listJsFiles(dir)) {
+      for (const spec of readRequires(file)) {
+        if (!spec.startsWith(".")) continue;
+        if (LEGACY_STORE_ABS.has(resolveSpec(file, spec))) {
+          offenders.push(`${path.relative(BACKEND, file)} -> ${spec}`);
+        }
       }
     }
   }
-  assert.deepEqual(offenders, [], `module files importing the legacy store:\n${offenders.join("\n")}`);
+  assert.deepEqual(offenders, [], `runtime files importing the legacy store:\n${offenders.join("\n")}`);
+});
+
+test("lib/store.js is gone (Phase 8.10 demolition)", () => {
+  assert.ok(!fs.existsSync(path.join(BACKEND, "lib", "store.js")), "lib/store.js should be deleted");
 });
 
 test("modules/ has no cross-module deep imports (only the public port is importable)", () => {

@@ -10,7 +10,7 @@
  * Run: node scripts/seed-demo.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 // top-level slug -> image search keywords
 const KW = {

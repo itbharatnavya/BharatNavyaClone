@@ -10,9 +10,9 @@
  * stays consistent wherever it's triggered (follows, and future producers).
  */
 
-const store = require("./store");
+const { repoForCollection } = require("../modules/_shared");
 
-const FILE = "notifications.json";
+const notifRepo = repoForCollection("notifications.json");
 
 /**
  * Create + persist a notification for `userId`. Returns the inserted document.
@@ -20,19 +20,18 @@ const FILE = "notifications.json";
  */
 async function createNotification(userId, type, data = {}) {
   const notification = {
-    id: await store.nextId("ntf"),
     userId,
     type,
     data: data || {},
     read: false,
     createdAt: new Date().toISOString(),
   };
-  return store.insert(FILE, notification);
+  return notifRepo.insert(notification, "ntf");
 }
 
 /** A user's notifications, newest-first (createdAt desc, id as tie-breaker). */
 async function listForUser(userId) {
-  const rows = await store.findMany(FILE, (n) => n.userId === userId);
+  const rows = await notifRepo.findMany({ where: { userId } });
   return rows.sort((a, b) => {
     const t = (b.createdAt || "").localeCompare(a.createdAt || "");
     return t !== 0 ? t : (b.id || "").localeCompare(a.id || "");
@@ -44,19 +43,16 @@ async function listForUser(userId) {
  * mismatched owner (or a missing id) returns null.
  */
 async function markRead(id, userId) {
-  const existing = await store.getById(FILE, id);
+  const existing = await notifRepo.findById(id);
   if (!existing || existing.userId !== userId) return null;
-  return store.update(FILE, id, { read: true });
+  return notifRepo.updateById(id, { read: true });
 }
 
 /** Mark all of a user's unread notifications read. Returns the number updated. */
 async function markAllRead(userId) {
-  const unread = await store.findMany(
-    FILE,
-    (n) => n.userId === userId && !n.read
-  );
+  const unread = (await notifRepo.findMany({ where: { userId } })).filter((n) => !n.read);
   for (const n of unread) {
-    await store.update(FILE, n.id, { read: true });
+    await notifRepo.updateById(n.id, { read: true });
   }
   return unread.length;
 }

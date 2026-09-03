@@ -20,7 +20,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { repoForCollection } = require("../modules/_shared");
 const { pool } = require("../modules/_shared/pool");
 

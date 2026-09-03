@@ -20,7 +20,7 @@
  * Run:  node scripts/seed-categories.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 /* -------------------------------------------------------------- helpers ---- */
 

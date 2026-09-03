@@ -16,7 +16,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool, createRepository, nextId } = require("../modules/_shared");
 const { buildFlatConfigs } = require("../modules/_shared/mappings/flat.mappings");
 

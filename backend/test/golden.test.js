@@ -17,7 +17,7 @@
 
 const test = require("node:test");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { golden } = require("./golden/_harness");
 
 // Deterministic ids/slugs/values from the standard seed (present in the cloned test DB).

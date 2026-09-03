@@ -21,7 +21,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("collections reads don't full-scan listings or users (Phase 7 sweep-7)", async (t) => {

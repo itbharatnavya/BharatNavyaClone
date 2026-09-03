@@ -19,7 +19,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("admin.js analytics + user detail read jobs/apps via recruitment repos (Phase 7 sweep-11)", async (t) => {

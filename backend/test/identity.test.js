@@ -12,7 +12,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const identity = require("../modules/identity");
 const { pool } = require("../modules/_shared");
 

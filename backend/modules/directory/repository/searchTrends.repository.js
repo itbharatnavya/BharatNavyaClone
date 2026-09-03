@@ -13,6 +13,7 @@
  */
 
 const { pool } = require("../../_shared/pool");
+const { nextId } = require("../../_shared/ids");
 const { createSearchEventsStore } = require("../../../lib/db/search-events");
 
 const events = createSearchEventsStore(pool);
@@ -26,4 +27,12 @@ function readSearchEvents() {
   return events.readAll();
 }
 
-module.exports = { readSearchEvents };
+/** Append one search event (fire-and-forget from routes/ai.js + POST /log).
+ *  Mints `srch_<n>` unless `event.id` is set — same as the old
+ *  `store.appendJsonl("search-events.jsonl", { id: store.nextId("srch"), … })`. */
+async function appendSearchEvent(event) {
+  const row = { id: event.id || (await nextId("srch")), ...event };
+  return events.append(row);
+}
+
+module.exports = { readSearchEvents, appendSearchEvent };

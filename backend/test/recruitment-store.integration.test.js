@@ -19,7 +19,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const EMPLOYER_ID = "usr_test_emp_recruitment";
 const CANDIDATE_ID = "usr_test_cand_recruitment";

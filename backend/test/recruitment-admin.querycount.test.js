@@ -18,7 +18,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("recruitment-admin lists don't full-scan users/jobs (Phase 7 sweep-2)", async (t) => {

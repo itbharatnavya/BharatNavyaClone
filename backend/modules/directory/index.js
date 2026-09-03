@@ -22,7 +22,7 @@ const {
 const { bumpListingViews } = require("./repository/listing.repository");
 const listingsRepo = require("./repository/listingDocument.repository");
 const { activeBrandedListingsLean } = require("./repository/brand.repository");
-const { readSearchEvents } = require("./repository/searchTrends.repository");
+const { readSearchEvents, appendSearchEvent } = require("./repository/searchTrends.repository");
 const { activeListingsForCollectionResolve } = require("./repository/collection.repository");
 const { rfqMatchListingsLean, listingOwner } = require("./repository/rfq.repository");
 const reviewsRepo = require("./repository/review.repository");
@@ -41,6 +41,7 @@ module.exports = {
   bumpListingViews,
   activeBrandedListingsLean,
   readSearchEvents,
+  appendSearchEvent,
   activeListingsForCollectionResolve,
   rfqMatchListingsLean,
   listingOwner,

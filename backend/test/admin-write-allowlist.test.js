@@ -16,7 +16,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("admin write handlers ignore injected id/timestamps/unknown keys (Phase 6a-sec)", async (t) => {

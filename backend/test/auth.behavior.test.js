@@ -17,7 +17,7 @@ const assert = require("node:assert/strict");
 const request = require("supertest");
 
 const app = require("../app");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 const uniqMobile = () => "9" + String(Date.now()).slice(-8) + Math.floor(Math.random() * 10);

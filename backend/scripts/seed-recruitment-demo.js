@@ -42,7 +42,7 @@
  * then this script.
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 // Shared demo password hash — same one already used across most other seeded demo
 // accounts in backend/DB/users.json (see HANDOVER.md for the plaintext).

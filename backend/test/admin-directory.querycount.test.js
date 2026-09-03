@@ -17,7 +17,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("admin listing + moderation queues don't full-scan users (Phase 5e)", async (t) => {

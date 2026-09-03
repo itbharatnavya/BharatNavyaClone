@@ -13,7 +13,7 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 const crypto = require("crypto");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const PUBLIC_DEMO = path.resolve(__dirname, "../../frontend/public/demo");
 const MIN_PER_THEME = 5;

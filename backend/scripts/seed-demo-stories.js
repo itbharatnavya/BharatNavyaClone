@@ -16,7 +16,7 @@
  * Run:  node scripts/seed-demo-stories.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const SELLERS = [
   {

@@ -6,7 +6,7 @@
  * Run: node scripts/seed-features.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 // plans: which subscription tiers include it (for seller-facing capabilities).
 // audience: who it's for. status: live | beta | planned. phase: original roadmap phase.

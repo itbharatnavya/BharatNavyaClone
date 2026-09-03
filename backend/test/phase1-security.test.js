@@ -21,7 +21,7 @@ const assert = require("node:assert/strict");
 const request = require("supertest");
 
 const app = require("../app");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const uniqMobile = () => String(Date.now()).slice(-9) + Math.floor(Math.random() * 10);
 const created = { listings: [], jobs: [], users: [] };

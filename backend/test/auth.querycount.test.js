@@ -15,7 +15,7 @@ const assert = require("node:assert/strict");
 const request = require("supertest");
 
 const app = require("../app");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("register / login don't full-hydrate users (Phase 6c)", async (t) => {

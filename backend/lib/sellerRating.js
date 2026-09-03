@@ -9,13 +9,14 @@
  * editing a review back to "pending" — must call this afterward.
  */
 
-const store = require("./store");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 
 async function recomputeSellerRating(targetUserId) {
   if (!targetUserId) return;
   const [reviews, seller] = await Promise.all([
-    store.all("reviews.json"),
-    store.getById("users.json", targetUserId),
+    directory.reviewsRepo.findMany({}),
+    identity.getAuthUser(targetUserId),
   ]);
   if (!seller || !seller.sellerProfile) return;
   const mine = reviews.filter(
@@ -33,7 +34,7 @@ async function recomputeSellerRating(targetUserId) {
         (mine.reduce((s, r) => s + (Number(r.rating) || 0), 0) / reviewCount) * 10
       ) / 10
     : 0;
-  await store.update("users.json", targetUserId, {
+  await identity.updateUser(targetUserId, {
     sellerProfile: { ...seller.sellerProfile, rating, reviewCount },
   });
 }

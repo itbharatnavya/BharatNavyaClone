@@ -9,7 +9,8 @@
  * All reads go through lib/store (the only module that touches the filesystem).
  */
 
-const store = require("./store");
+const identity = require("../modules/identity");
+const directory = require("../modules/directory");
 
 /* ------------------------------------------------------------- taxonomy ---- *
  * professionKey → human label. The single source of truth for the profession filter;
@@ -109,8 +110,8 @@ function summarize(user, packages) {
  */
 async function listExperts() {
   const [users, listings] = await Promise.all([
-    store.all("users.json"),
-    store.all("listings.json"),
+    identity.allUsers(),
+    directory.listingsRepo.all(),
   ]);
 
   // seller id -> [package summaries] (active service listings only).
@@ -139,9 +140,9 @@ async function listExperts() {
  */
 async function getExpertBySlug(slug) {
   const [users, listings, reviews] = await Promise.all([
-    store.all("users.json"),
-    store.all("listings.json"),
-    store.all("reviews.json"),
+    identity.allUsers(),
+    directory.listingsRepo.all(),
+    directory.reviewsRepo.findMany({}),
   ]);
 
   const user = users.find(

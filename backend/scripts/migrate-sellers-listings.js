@@ -18,7 +18,7 @@
  */
 
 const path = require("path");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const PLAN_TIER = { premium: "gold", free: "free" };
 

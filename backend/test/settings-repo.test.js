@@ -15,7 +15,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const settingsRepo = require("../modules/platform/repository/settings.repository");
 const { pool } = require("../modules/_shared/pool");
 

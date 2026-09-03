@@ -17,7 +17,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("myAds reads via repo, not lib/store (Phase 7 sweep-8)", async (t) => {

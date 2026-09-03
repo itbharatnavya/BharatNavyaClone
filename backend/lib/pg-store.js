@@ -1,8 +1,20 @@
 /**
- * pg-store.js — Postgres-backed implementation of the store.js interface, dispatching
- * each collection name to its relational mapper (lib/db/*). Every mapper exposes the
- * same shape { all, findOne, findMany, getById, insert, update, remove, writeJson },
- * so most of this file is just routing; see lib/db/schema.sql for the actual tables.
+ * pg-store.js — the bundled composite-mapper data layer, kept for OFFLINE use
+ * only (BACKEND-AUDIT.md Phase 8.10).
+ *
+ * `lib/store.js` (the dispatch + file-DB backend) is GONE. The running server no
+ * longer imports this file — every runtime read/write goes through a
+ * `modules/<domain>` port or a `repoForCollection(...)` repo.
+ *
+ * What still uses it, by name:
+ *   - `scripts/seed-*.js` / `scripts/migrate-*.js` — bulk seed + one-off migrations
+ *   - `test/*.js` — as a byte-for-byte oracle when asserting a module port matches
+ *     the legacy composite mapper
+ *
+ * It dispatches each collection name to its relational mapper (`lib/db/*`); every
+ * mapper exposes `{ all, findOne, findMany, getById, insert, update, remove,
+ * writeJson }` (+ the jsonl / singleton helpers). Postgres only — `PG_URL` (or
+ * `DATABASE_URL`) is required. See `lib/db/schema.sql` for the tables.
  */
 
 const { pool, ping, close } = require("../modules/_shared/pool");

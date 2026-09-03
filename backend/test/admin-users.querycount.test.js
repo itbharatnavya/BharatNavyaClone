@@ -18,7 +18,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("GET /api/admin/users does not full-hydrate the users table (Phase 6a)", async (t) => {

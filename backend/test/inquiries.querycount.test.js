@@ -23,7 +23,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("inquiries: broad + specific fan-out and lists read via module ports (Phase 7 sweep-12)", async (t) => {

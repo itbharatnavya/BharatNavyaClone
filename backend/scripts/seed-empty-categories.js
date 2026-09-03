@@ -5,7 +5,7 @@
  * public browse), uses local /demo images, and marks gift items PAN India.
  * Idempotent-ish: skips a category if it already has seeded demo products.
  */
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const slugify = (s) =>
   String(s).toLowerCase().trim().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");

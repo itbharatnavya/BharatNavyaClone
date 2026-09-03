@@ -142,3 +142,14 @@ module.exports = {
 if (module.exports.UPLOAD_STORAGE === "s3" && !isDev && !module.exports.AWS_S3_BUCKET) {
   throw new Error("AWS_S3_BUCKET must be set when UPLOAD_STORAGE=s3 in production (see backend/.env)");
 }
+
+// Postgres is the only backend as of the Phase 8 demolition (the file-DB fallback
+// and lib/store.js dispatch layer are gone) — fail fast at boot with a clear
+// message instead of a confusing pool error on the first query.
+if (!module.exports.PG_URL) {
+  throw new Error(
+    NODE_ENV === "test"
+      ? "PG_URL_TEST (or PG_URL) must be set for the test suite — run `npm run test:setup` (see BACKEND-AUDIT.md Phase 0)"
+      : "PG_URL (or DATABASE_URL) must be set — Postgres is required (see backend/.env / POSTGRES-MIGRATION.md)"
+  );
+}

@@ -4,7 +4,7 @@
  * visibly demonstrates. Same brand + title => same productKey => grouped as offers.
  * Idempotent-ish: skips a product if 3+ sellers already list it.
  */
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { slugify } = require("../lib/search");
 
 const productKeyOf = (brand, title) => slugify(`${brand} ${title}`.trim());

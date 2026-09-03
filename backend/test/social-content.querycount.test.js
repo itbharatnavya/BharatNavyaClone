@@ -20,7 +20,7 @@ const request = require("supertest");
 
 const app = require("../app");
 const auth = require("../lib/auth");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const { pool } = require("../modules/_shared/pool");
 
 test("blogs / category-suggestions don't full-scan users (Phase 7 sweep-5)", async (t) => {

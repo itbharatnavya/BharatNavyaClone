@@ -10,7 +10,7 @@
  * Ranking, featured rails and ad rendering all gate on isBenefitActive().
  */
 
-const store = require("./store");
+const { paymentsRepo } = require("../modules/monetization");
 
 /**
  * True when `record` represents a currently-active paid benefit.
@@ -32,7 +32,7 @@ function isBenefitActive(record, now = Date.now()) {
  * Async because it reads the collection through the store.
  */
 async function activeBenefitsForSeller(sellerId, now = Date.now()) {
-  const records = await store.readJson("payment-records.json", []);
+  const records = await paymentsRepo.findMany({});
   return records.filter(
     (r) => r.sellerId === sellerId && isBenefitActive(r, now)
   );
