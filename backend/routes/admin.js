@@ -15,7 +15,7 @@ const identity = require("../modules/identity");
 const directory = require("../modules/directory");
 const recruitment = require("../modules/recruitment");
 const { repoForCollection } = require("../modules/_shared");
-const settingsRepo = require("../modules/platform/repository/settings.repository");
+const { settingsRepo } = require("../modules/platform");
 const { authGuard, requireRole } = require("../middleware/authGuard");
 
 const inquiriesRepo = repoForCollection("inquiries.json");

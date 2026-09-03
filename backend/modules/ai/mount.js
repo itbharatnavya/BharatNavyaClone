@@ -10,8 +10,8 @@
  */
 
 const MOUNTS = [
-  { path: "/api/ai", router: require("../../routes/ai"), phase: "public" },
-  { path: "/api/assistant", router: require("../../routes/assistant"), phase: "public" },
+  { path: "/api/ai", router: require("./routes/ai.routes"), phase: "public" },
+  { path: "/api/assistant", router: require("./routes/assistant.routes"), phase: "public" },
 ];
 
 function mountAI(app, phase = "public") {

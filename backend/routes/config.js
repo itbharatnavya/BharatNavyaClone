@@ -7,7 +7,7 @@
 
 const express = require("express");
 const router = express.Router();
-const settingsRepo = require("../modules/platform/repository/settings.repository");
+const { settingsRepo } = require("../modules/platform");
 const config = require("../lib/config");
 
 router.get("/", async (req, res, next) => {

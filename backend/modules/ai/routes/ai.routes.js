@@ -24,13 +24,13 @@
  */
 
 const express = require("express");
-const { repoForCollection } = require("../modules/_shared");
-const directory = require("../modules/directory");
-const config = require("../lib/config");
-const { parseQuery } = require("../lib/nlp");
-const claudeCli = require("../lib/claudeCli");
-const { authGuard, optionalAuth } = require("../middleware/authGuard");
-const { logSearchEvent } = require("../lib/searchEvents");
+const { repoForCollection } = require("../../_shared");
+const directory = require("../../directory");
+const config = require("../../../lib/config");
+const { parseQuery } = require("../../../lib/nlp");
+const claudeCli = require("../../../lib/claudeCli");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
+const { logSearchEvent } = require("../../../lib/searchEvents");
 
 const router = express.Router();
 
@@ -58,7 +58,7 @@ function cleanFilters(f) {
  */
 async function runSearch(q, filters, limit) {
   try {
-    const search = require("../lib/search");
+    const search = require("../../../lib/search");
     if (search && typeof search.searchListings === "function") {
       const res = await search.searchListings({ q, filters, limit });
       const arr = Array.isArray(res) ? res : (res && res.listings) || [];

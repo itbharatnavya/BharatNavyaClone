@@ -36,10 +36,10 @@ test("ai + assistant read via module ports, not store scans; C8 degraded flag (P
     await pool.end().catch(() => {});
   });
 
-  const aiSrc = fs.readFileSync(path.join(__dirname, "../routes/ai.js"), "utf8");
+  const aiSrc = fs.readFileSync(path.join(__dirname, "../modules/ai/routes/ai.routes.js"), "utf8");
   assert.ok(!/require\(["']\.\.\/lib\/store["']\)/.test(aiSrc), "routes/ai.js must not require lib/store");
 
-  const asSrc = fs.readFileSync(path.join(__dirname, "../routes/assistant.js"), "utf8");
+  const asSrc = fs.readFileSync(path.join(__dirname, "../modules/ai/routes/assistant.routes.js"), "utf8");
   assert.ok(!/store\.all\(/.test(asSrc), "routes/assistant.js must not call store.all()");
 
   const orig = pool.query.bind(pool);

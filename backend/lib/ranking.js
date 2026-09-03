@@ -20,7 +20,7 @@
  * maxSponsoredPerPage.
  */
 
-const settingsRepo = require("../modules/platform/repository/settings.repository");
+const { settingsRepo } = require("../modules/platform");
 const identity = require("../modules/identity");
 
 const DEFAULTS = { wOrganic: 0.7, wPaid: 0.3, maxSponsoredPerPage: 3 };

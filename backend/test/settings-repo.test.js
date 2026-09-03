@@ -28,7 +28,7 @@ test("settings repo matches the legacy store path; consumers no longer use store
   const viaStore = await store.readJson("settings.json", {});
   assert.deepEqual(viaRepo, viaStore, "settingsRepo.read() != store.readJson('settings.json')");
 
-  for (const rel of ["../routes/config.js", "../routes/assistant.js", "../lib/ranking.js"]) {
+  for (const rel of ["../routes/config.js", "../modules/ai/routes/assistant.routes.js", "../lib/ranking.js"]) {
     const src = fs.readFileSync(path.join(__dirname, rel), "utf8");
     assert.ok(
       !/store\.(readJson|writeJson|withLock)\(\s*["']settings\.json["']/.test(src),

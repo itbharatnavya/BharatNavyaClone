@@ -17,15 +17,15 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const directory = require("../modules/directory");
-const identity = require("../modules/identity");
-const settingsRepo = require("../modules/platform/repository/settings.repository");
-const config = require("../lib/config");
-const { parseQuery, selectRelevantCategories } = require("../lib/nlp");
-const claudeCli = require("../lib/claudeCli");
-const { searchJobs } = require("../modules/recruitment");
-const { optionalAuth } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const directory = require("../../directory");
+const identity = require("../../identity");
+const { settingsRepo } = require("../../platform");
+const config = require("../../../lib/config");
+const { parseQuery, selectRelevantCategories } = require("../../../lib/nlp");
+const claudeCli = require("../../../lib/claudeCli");
+const { searchJobs } = require("../../recruitment");
+const { optionalAuth } = require("../../../middleware/authGuard");
 
 /** categories.json rows (slug + name) via the flat repo — was `store.all`. */
 const loadCategories = () => repoForCollection("categories.json").findMany({});
@@ -567,7 +567,7 @@ async function buildNavigation(message, cats, parsed, recruitmentLive) {
   let results = [];
   if (!site || cat) {
     try {
-      const { searchListings } = require("../lib/search");
+      const { searchListings } = require("../../../lib/search");
       const hitsL = await searchListings({ q: message, filters: { status: "active" }, limit: RESULT_CARD_LIMIT });
       results = hitsL.map(({ listing }) => listingToResult(listing));
     } catch {}
@@ -608,7 +608,7 @@ async function buildCategoryNav(message, cats, parsed) {
   let results = [];
   let totalHits = 0;
   try {
-    const { searchListings } = require("../lib/search");
+    const { searchListings } = require("../../../lib/search");
     const filters = { status: "active" };
     if (parsed.city) filters.city = parsed.city;
     if (parsed.type) filters.type = parsed.type;
@@ -827,7 +827,7 @@ async function resolveWithAI({ message, history, user, categories, parsed, recru
     if (parsed && parsed.budgetMax) q.set("budgetMax", String(parsed.budgetMax));
     suggestions.push({ label: `Browse ${cat.name}`, href: `/${cat.slug}${q.toString() ? "?" + q : ""}` });
     try {
-      const { searchListings } = require("../lib/search");
+      const { searchListings } = require("../../../lib/search");
       const filters = { status: "active" };
       if (parsed && parsed.city) filters.city = parsed.city;
       if (parsed && parsed.type) filters.type = parsed.type;
