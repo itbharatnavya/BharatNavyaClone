@@ -27,10 +27,10 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const { verificationRepo: verifRepo } = require("../modules/platform");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const { verificationRepo: verifRepo } = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 // Auth + admin role for every endpoint below.
 router.use(authGuard, requireRole("admin"));

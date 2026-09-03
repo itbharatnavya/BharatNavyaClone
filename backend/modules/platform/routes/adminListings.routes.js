@@ -27,10 +27,10 @@
 
 const express = require("express");
 const router = express.Router();
-const directory = require("../modules/directory");
-const identity = require("../modules/identity");
-const { authGuard, requireRole } = require("../middleware/authGuard");
-const { verifyListing } = require("../lib/listingVerification");
+const directory = require("../../directory");
+const identity = require("../../identity");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
+const { verifyListing } = require("../../../lib/listingVerification");
 
 router.use(authGuard, requireRole("admin"));
 

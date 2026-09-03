@@ -14,13 +14,13 @@
  */
 
 const MOUNTS = [
-  { path: "/api/config", router: require("../../routes/config"), phase: "early" },
-  { path: "/api/admin/moderation", router: require("../../routes/moderation"), phase: "admin-sub" },
-  { path: "/api/admin/listings", router: require("../../routes/adminListings"), phase: "admin-sub" },
-  { path: "/api/admin/inquiries", router: require("../../routes/adminInquiries"), phase: "admin-sub" },
-  { path: "/api/admin", router: require("../../routes/admin"), phase: "admin" },
-  { path: "/api/notifications", router: require("../../routes/notifications"), phase: "late" },
-  { path: "/api/uploads", router: require("../../routes/uploads"), phase: "late" },
+  { path: "/api/config", router: require("./routes/config.routes"), phase: "early" },
+  { path: "/api/admin/moderation", router: require("./routes/moderation.routes"), phase: "admin-sub" },
+  { path: "/api/admin/listings", router: require("./routes/adminListings.routes"), phase: "admin-sub" },
+  { path: "/api/admin/inquiries", router: require("./routes/adminInquiries.routes"), phase: "admin-sub" },
+  { path: "/api/admin", router: require("./routes/admin.routes"), phase: "admin" },
+  { path: "/api/notifications", router: require("./routes/notifications.routes"), phase: "late" },
+  { path: "/api/uploads", router: require("./routes/uploads.routes"), phase: "late" },
 ];
 
 function mountPlatform(app, phase) {

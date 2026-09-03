@@ -28,7 +28,7 @@ test("settings repo matches the legacy store path; consumers no longer use store
   const viaStore = await store.readJson("settings.json", {});
   assert.deepEqual(viaRepo, viaStore, "settingsRepo.read() != store.readJson('settings.json')");
 
-  for (const rel of ["../routes/config.js", "../modules/ai/routes/assistant.routes.js", "../lib/ranking.js"]) {
+  for (const rel of ["../modules/platform/routes/config.routes.js", "../modules/ai/routes/assistant.routes.js", "../lib/ranking.js"]) {
     const src = fs.readFileSync(path.join(__dirname, rel), "utf8");
     assert.ok(
       !/store\.(readJson|writeJson|withLock)\(\s*["']settings\.json["']/.test(src),
@@ -36,7 +36,7 @@ test("settings repo matches the legacy store path; consumers no longer use store
     );
   }
   // config.js + ranking.js should not require lib/store at all any more
-  for (const rel of ["../routes/config.js", "../lib/ranking.js"]) {
+  for (const rel of ["../modules/platform/routes/config.routes.js", "../lib/ranking.js"]) {
     const src = fs.readFileSync(path.join(__dirname, rel), "utf8");
     assert.ok(!/require\(["']\.\.\/lib\/store["']\)/.test(src), `${rel} must not require lib/store`);
   }

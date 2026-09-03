@@ -28,7 +28,7 @@ test("adminInquiries GET / doesn't full-hydrate users (Phase 7 sweep-8)", async 
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/adminInquiries.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/platform/routes/adminInquiries.routes.js"), "utf8");
   assert.ok(
     !/require\(["']\.\.\/lib\/store["']\)/.test(src),
     "routes/adminInquiries.js must not require lib/store"

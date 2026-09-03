@@ -11,8 +11,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { authGuard } = require("../middleware/authGuard");
-const notify = require("../lib/notify");
+const { authGuard } = require("../../../middleware/authGuard");
+const notify = require("../../../lib/notify");
 
 // GET /api/notifications — my notifications (newest-first) + unread count.
 router.get("/", authGuard, async (req, res, next) => {

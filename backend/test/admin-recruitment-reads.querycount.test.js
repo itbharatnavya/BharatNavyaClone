@@ -27,7 +27,7 @@ test("admin.js analytics + user detail read jobs/apps via recruitment repos (Pha
     await pool.end().catch(() => {});
   });
 
-  const src = fs.readFileSync(path.join(__dirname, "../routes/admin.js"), "utf8");
+  const src = fs.readFileSync(path.join(__dirname, "../modules/platform/routes/admin.routes.js"), "utf8");
   for (const lit of ['"jobs.json"', '"applications.json"', "'jobs.json'", "'applications.json'"]) {
     assert.ok(!src.includes(lit), `routes/admin.js must not reference ${lit}`);
   }

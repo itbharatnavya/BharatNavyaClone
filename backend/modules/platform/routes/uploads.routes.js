@@ -11,8 +11,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { authGuard } = require("../middleware/authGuard");
-const uploadStorage = require("../lib/uploadStorage");
+const { authGuard } = require("../../../middleware/authGuard");
+const uploadStorage = require("../../../lib/uploadStorage");
 
 // A 5 MB image is ~6.7 MB once base64-encoded inside JSON, well over the app's default
 // body limit — raise it at the route level so a legit photo isn't rejected before we

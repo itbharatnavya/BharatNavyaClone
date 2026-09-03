@@ -11,12 +11,12 @@
 
 const express = require("express");
 const router = express.Router();
-const identity = require("../modules/identity");
-const directory = require("../modules/directory");
-const recruitment = require("../modules/recruitment");
-const { repoForCollection } = require("../modules/_shared");
-const { settingsRepo } = require("../modules/platform");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const identity = require("../../identity");
+const directory = require("../../directory");
+const recruitment = require("../../recruitment");
+const { repoForCollection } = require("../../_shared");
+const { settingsRepo } = require("../index");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const inquiriesRepo = repoForCollection("inquiries.json");
 

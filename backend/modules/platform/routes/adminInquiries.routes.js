@@ -27,10 +27,10 @@
 
 const express = require("express");
 const router = express.Router();
-const { repoForCollection } = require("../modules/_shared");
-const identity = require("../modules/identity");
-const { appendLead, notifySellerOfLead, attachSellerDeliveries, readLedger } = require("../lib/leads");
-const { authGuard, requireRole } = require("../middleware/authGuard");
+const { repoForCollection } = require("../../_shared");
+const identity = require("../../identity");
+const { appendLead, notifySellerOfLead, attachSellerDeliveries, readLedger } = require("../../../lib/leads");
+const { authGuard, requireRole } = require("../../../middleware/authGuard");
 
 const inquiriesRepo = repoForCollection("inquiries.json");
 
