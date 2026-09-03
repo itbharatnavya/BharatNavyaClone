@@ -161,6 +161,17 @@ async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T>
         window.dispatchEvent(new Event("bs:session-expired"));
       }
     }
+    // 429 (helmet + express-rate-limit — auth, AI, and the global /api limiter):
+    // give callers a stable, friendly message instead of the raw backend body,
+    // and honour Retry-After when the server sent it.
+    if (res.status === 429) {
+      const retryAfter = Number(res.headers.get("retry-after"));
+      const wait =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? ` Try again in about ${retryAfter}s.`
+          : " Please wait a moment and try again.";
+      throw new Error(`Too many requests.${wait}`);
+    }
     throw new Error(message);
   }
 

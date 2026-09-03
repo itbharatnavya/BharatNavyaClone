@@ -169,8 +169,10 @@ async function searchListings({ q, filters = {}, limit } = {}) {
     // No query → rank survivors by recency, newest first. Score is a normalized
     // recency value in [0,1] so callers have a usable relevance signal.
     const times = survivors.map((l) => Date.parse(l.createdAt) || 0);
-    const minT = Math.min(...times, 0);
-    const maxT = Math.max(...times, 1);
+    // reduce, not Math.min(...times) — a few thousand survivors would blow the
+    // call-stack limit on the spread.
+    const minT = times.reduce((m, t) => (t < m ? t : m), 0);
+    const maxT = times.reduce((m, t) => (t > m ? t : m), 1);
     const span = maxT - minT || 1;
     results = survivors
       .map((l) => ({ listing: l, ts: Date.parse(l.createdAt) || 0 }))

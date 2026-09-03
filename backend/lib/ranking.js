@@ -105,14 +105,15 @@ async function rankListings(listings, { query, categorySlug, tierBySeller } = {}
       [...new Set(items.map((l) => l.sellerId).filter(Boolean))]
     ));
 
-  // Normalization bases across the candidate set.
+  // Normalization bases across the candidate set. reduce, not Math.min(...times)
+  // — a large candidate set would blow the call-stack limit on the spread.
   const times = items.map((l) => Date.parse(l.createdAt) || 0);
-  const minT = Math.min(...times, 0);
-  const maxT = Math.max(...times, 1);
+  const minT = times.reduce((m, t) => (t < m ? t : m), 0);
+  const maxT = times.reduce((m, t) => (t > m ? t : m), 1);
   const tSpan = maxT - minT || 1;
 
   const relScores = items.map((l) => (typeof l._relevance === "number" ? l._relevance : 0));
-  const maxRel = Math.max(...relScores, 0);
+  const maxRel = relScores.reduce((m, r) => (r > m ? r : m), 0);
   const hasQuery = !!(query && String(query).trim());
 
   for (const l of items) {
