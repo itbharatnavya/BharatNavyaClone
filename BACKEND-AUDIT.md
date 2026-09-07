@@ -43,6 +43,17 @@ Every finding below was verified by reading the code at the cited line, not infe
 - **1i (OWNER)** — rotate `backend/DB/users.json` creds + `git rm --cached` + `.gitignore`. Not started (explicitly deferred by owner).
 - **5c-2** — MiniSearch `?q=` → SQL still owner-blocked; the `search.js` spread fix is done.
 
+**Media-field upload pass (2026-09-07) — API accepts a URL *or* an inline data URL everywhere:**
+`lib/uploadStorage.js` gained `saveDataUrl(dataUrl)` + `resolveUpload(value)` — a `data:` URL is validated (png/jpg/webp/pdf, 5 MB / 10 MB caps, same as `routes/uploads.routes.js`) and stored, returning its `/uploads/…` path; a plain URL / path passes straight through; a bad inline upload maps to the matching 400/413. Wired into every media write path, contract-neutral for existing plain-string callers:
+- `directory/routes/blogs.routes.js` — `coverImage` (POST/PUT) — `7274cfa`
+- `directory/routes/stories.routes.js` — `media.url` (POST; video stays URL-only) — `a1eca10`
+- `directory/routes/listings.routes.js` — `media[].url` (POST + PUT; bulk untouched) — `76cdd9f`
+- `identity/routes/users.routes.js` — `logo` / `coverImage` / `avatarUrl` / `resumeUrl` on `PUT /me/{seller,profile,employer,candidate}` — `0a1ac39`
+- `directory/routes/collections.routes.js` — `coverImage` (POST/PUT `/admin`) — `4f0cd19`
+- `recruitment/routes/applications.routes.js` — `resumeUrl` (POST) — `4f0cd19`
+- `monetization/routes/myAds.routes.js` + `platform/routes/admin.routes.js` — `creativeImageUrl` (ad-booking POST/PUT; no pricing/quota/status touched) — `c4e7c3d`
+- **Not wired:** `adminCategories` `icon` (renders as a text glyph, not a photo — owner call); `ai.routes.js` `imageUrl` (AI search input, not stored media). Frontend forms still send plain URL text inputs for blogs/stories/collections/ads/listing-edit/profile-logo — dropping in the existing `ImageUpload`/`MediaUpload` widgets is the deferred frontend follow-up. Finding **S6** (no scheme validation on a plain-string `media.url` → stored-XSS via `javascript:`) is unchanged — `resolveUpload` only handles the `data:` case.
+
 | Phase | State |
 |---|---|
 | **0 — Safety net** | **Landed (2026-09-01).** `app.js` split (done earlier). `PG_URL_TEST` wiring + `scripts/setup-test-db.js` (`npm run test:setup` — clones the dev DB into a frozen `bharatsource_test`). `test/architecture.test.js` (5 boundary assertions, load-bearing from the first `modules/` commit). `test/golden.test.js` + `test/golden/` (37 fixtures: public Directory reads, public Recruitment reads, `GET /api/admin/users` × 17 branches). `test/pagination.test.js` (page 0 / past-last / limit 0 / limit 9999 / page-disjointness across `/api/jobs`, `/api/listings`, `/api/admin/users`). Suite is now serial (`--test-concurrency=1`) for determinism. **Follow-ups (not blockers):** version-controlled pinned seed (today it clones dev); golden coverage of authed recruitment endpoints (`/api/applications*`, `/api/admin/jobs`, `/api/admin/employers`). See [Phase 0 — Implementation log](#phase-0--implementation-log). |
