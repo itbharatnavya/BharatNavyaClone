@@ -21,6 +21,7 @@ const { rankListings } = require("../../../lib/ranking");
 const { coordsForCity, distanceKm } = require("../../../lib/geo");
 const { resolveSellerLocations } = require("../../../lib/sellerLocations");
 const { verifyListing } = require("../../../lib/listingVerification");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
 const DEFAULT_LIMIT = 12;
@@ -41,6 +42,29 @@ const VALID_LISTING_STATUSES = new Set(["active", "inactive", "sold", "pending",
 const VALID_CONDITIONS = new Set(["new", "used", "refurbished", "na"]);
 
 /* ------------------------------------------------------------- helpers ----- */
+
+// Normalize a listing's `media` array: any entry whose `url` is a "data:" URL is
+// stored via lib/uploadStorage and replaced with its "/uploads/…" path; plain URLs
+// (and non-object entries) pass through untouched.
+async function resolveMediaList(media) {
+  if (!Array.isArray(media)) return media;
+  return Promise.all(
+    media.map(async (m) =>
+      m && typeof m === "object" && typeof m.url === "string"
+        ? { ...m, url: await resolveUpload(m.url) }
+        : m
+    )
+  );
+}
+
+// A bad inline upload ("data:" URL failing validation) → the matching 4xx JSON;
+// everything else is rethrown to the error handler.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 function normalizeCondition(c) {
   return VALID_CONDITIONS.has(c) ? c : "na";
@@ -615,7 +639,7 @@ router.post("/", authGuard, async (req, res, next) => {
         ? [slugify(category)]
         : [],
       keywords: Array.isArray(body.keywords) ? body.keywords : [],
-      media: Array.isArray(body.media) ? body.media : [],
+      media: Array.isArray(body.media) ? await resolveMediaList(body.media) : [],
       location,
       locationId,
       panIndia,
@@ -662,7 +686,7 @@ router.post("/", authGuard, async (req, res, next) => {
     const saved = await directory.listingsRepo.insert(listing, "lst");
     return res.json({ success: true, data: saved });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -886,6 +910,8 @@ router.put("/:id", authGuard, async (req, res, next) => {
     for (const key of Object.keys(body)) {
       if (LISTING_EDITABLE.has(key)) patch[key] = body[key];
     }
+    // A media entry may arrive as a "data:" URL — store it, swap in the /uploads/ path.
+    if (patch.media !== undefined) patch.media = await resolveMediaList(patch.media);
 
     // status may be set to active | inactive | sold (§12 reconciliation), or
     // pending | rejected (AI-verification flow, admin/system-set only below).
@@ -986,7 +1012,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     const updated = await directory.listingsRepo.update(req.params.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
