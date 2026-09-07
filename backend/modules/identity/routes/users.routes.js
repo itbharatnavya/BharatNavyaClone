@@ -19,12 +19,33 @@ const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
 const { coordsForCity } = require("../../../lib/geo");
 const { deriveBadges } = require("../../../lib/badges");
 const { trustScore } = require("../../../lib/trustScore");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 
 /** Strip secrets (passwordHash) before a user leaves the API. */
 function sanitizeUser(u) {
   if (!u) return u;
   const { passwordHash, ...rest } = u;
   return rest;
+}
+
+// Profile media fields that may arrive as a "data:" URL instead of a plain URL —
+// each is stored via lib/uploadStorage and replaced with its "/uploads/…" path
+// (logo/coverImage/avatarUrl are images; resumeUrl is a PDF). Plain URLs pass through.
+const MEDIA_FIELDS = ["logo", "coverImage", "avatarUrl", "resumeUrl"];
+async function resolveMediaFields(patch) {
+  for (const k of MEDIA_FIELDS) {
+    if (patch[k] !== undefined) patch[k] = await resolveUpload(patch[k]);
+  }
+  return patch;
+}
+
+// A bad inline upload ("data:" URL failing validation) → the matching 4xx JSON;
+// anything else is rethrown to the error handler.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
 }
 
 /** URL-safe slug from an arbitrary string. */
@@ -409,6 +430,7 @@ router.put("/me/seller", authGuard, async (req, res, next) => {
     for (const key of allowed) {
       if (b[key] !== undefined) patch[key] = b[key];
     }
+    await resolveMediaFields(patch); // logo / coverImage may be inline data URLs
 
     // Multi-location branches: accept + persist a `locations` array (each needs a city).
     if (b.locations !== undefined) {
@@ -446,7 +468,7 @@ router.put("/me/seller", authGuard, async (req, res, next) => {
     const updated = await identity.updateUser(req.user.id, { sellerProfile });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -526,11 +548,12 @@ router.put("/me/profile", authGuard, async (req, res, next) => {
         error: "contactVisibility must be one of public|on_request|hidden",
       });
     }
+    await resolveMediaFields(patch); // avatarUrl may be an inline data URL
 
     const updated = await identity.updateUser(req.user.id, patch);
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -792,11 +815,12 @@ router.put("/me/employer", authGuard, async (req, res, next) => {
         ? patch.benefits.map((x) => String(x).trim()).filter(Boolean)
         : [];
     }
+    await resolveMediaFields(patch); // logo / coverImage may be inline data URLs
     const employerProfile = { ...req.user.employerProfile, ...patch };
     const updated = await identity.updateUser(req.user.id, { employerProfile });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -830,6 +854,7 @@ router.put("/me/candidate", authGuard, async (req, res, next) => {
     for (const key of allowed) {
       if (b[key] !== undefined) patch[key] = b[key];
     }
+    await resolveMediaFields(patch); // resumeUrl may be an inline data URL (PDF)
     const candidateProfile = { ...existing, ...patch };
     if (!candidateProfile.headline || !String(candidateProfile.headline).trim()) {
       return res.status(400).json({ success: false, error: "headline is required" });
@@ -845,7 +870,7 @@ router.put("/me/candidate", authGuard, async (req, res, next) => {
     const updated = await identity.updateUser(req.user.id, { candidateProfile, ...roleUpdate });
     return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 

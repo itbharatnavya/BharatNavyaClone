@@ -117,6 +117,7 @@ function storyDoc({ id, sellerId, img, caption, listingId, isHighlight, createdA
   return {
     id,
     sellerId,
+    authorType: "seller", // Directory stories (schema-migrations/0007 — column is NOT NULL)
     media: { type: "image", url: img },
     caption,
     linkListingId: listingId || null,
