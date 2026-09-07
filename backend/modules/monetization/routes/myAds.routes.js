@@ -13,8 +13,18 @@ const express = require("express");
 const router = express.Router();
 const { repoForCollection } = require("../../_shared");
 const { authGuard } = require("../../../middleware/authGuard");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const adBookingsRepo = repoForCollection("ad-bookings.json");
+
+// creativeImageUrl may arrive as a "data:" URL — store it and swap in the /uploads/
+// path; a plain URL passes through. Bad inline upload → the matching 4xx JSON.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 const PLACEMENTS = [
   "category_top",
@@ -71,7 +81,7 @@ router.post("/", authGuard, async (req, res, next) => {
       sellerId: req.user.id, // FORCED — never trust the client
       listingId: body.listingId || null,
       categoryIds,
-      creativeImageUrl,
+      creativeImageUrl: await resolveUpload(creativeImageUrl),
       headline,
       targetUrl:
         (typeof body.targetUrl === "string" && body.targetUrl.trim()) || null,
@@ -87,7 +97,7 @@ router.post("/", authGuard, async (req, res, next) => {
     const created = await adBookingsRepo.insert(booking, "adb");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -123,7 +133,9 @@ router.put("/:id", authGuard, async (req, res, next) => {
     const body = req.body || {};
     const patch = {};
     if (body.headline !== undefined) patch.headline = String(body.headline).trim();
-    if (body.creativeImageUrl !== undefined) patch.creativeImageUrl = String(body.creativeImageUrl).trim();
+    if (body.creativeImageUrl !== undefined) {
+      patch.creativeImageUrl = await resolveUpload(String(body.creativeImageUrl).trim());
+    }
     if (body.targetUrl !== undefined) patch.targetUrl = (typeof body.targetUrl === "string" && body.targetUrl.trim()) || null;
     if (body.startDate !== undefined) patch.startDate = body.startDate || null;
     if (body.endDate !== undefined) patch.endDate = body.endDate || null;
@@ -137,7 +149,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     const updated = await adBookingsRepo.updateById(ad.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 

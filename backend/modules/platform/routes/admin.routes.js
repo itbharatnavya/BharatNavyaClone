@@ -17,6 +17,16 @@ const recruitment = require("../../recruitment");
 const { repoForCollection } = require("../../_shared");
 const { settingsRepo } = require("../index");
 const { authGuard, requireRole } = require("../../../middleware/authGuard");
+const { resolveUpload } = require("../../../lib/uploadStorage");
+
+// An ad creative may arrive as a "data:" URL — store it and use the /uploads/ path;
+// a plain URL passes through. Bad inline upload → the matching 4xx JSON.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 const inquiriesRepo = repoForCollection("inquiries.json");
 
@@ -524,10 +534,11 @@ router.post("/ad-bookings", async (req, res, next) => {
       ...normaliseBooking(req.body || {}),
       createdAt: new Date().toISOString(),
     };
+    booking.creativeImageUrl = await resolveUpload(booking.creativeImageUrl);
     const created = await adBookingsRepo.insert(booking, "adb");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -555,6 +566,9 @@ router.put("/ad-bookings/:id", async (req, res, next) => {
     for (const f of fields) {
       if (body[f] !== undefined) patch[f] = body[f];
     }
+    if (patch.creativeImageUrl !== undefined) {
+      patch.creativeImageUrl = await resolveUpload(patch.creativeImageUrl);
+    }
     if (body.categoryIds !== undefined) {
       patch.categoryIds = Array.isArray(body.categoryIds)
         ? body.categoryIds.filter((s) => typeof s === "string" && s.trim() !== "")
@@ -566,7 +580,7 @@ router.put("/ad-bookings/:id", async (req, res, next) => {
     if (!updated) return res.status(404).json({ success: false, error: "Ad booking not found" });
     return res.json({ success: true, data: updated });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
