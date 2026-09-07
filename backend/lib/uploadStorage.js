@@ -96,4 +96,65 @@ async function saveFile(buffer, ext, mime) {
   return saveLocal(buffer, name);
 }
 
-module.exports = { saveFile };
+/* --------------------------------------------------------------- data URLs -- */
+// The same accept-list and size caps routes/uploads.routes.js enforces, so a media
+// field that carries an inline `data:<mime>;base64,...` value is validated and stored
+// identically to a file POSTed to /api/uploads.
+
+const MIME_EXT = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+  "application/pdf": "pdf",
+};
+const MAX_BYTES = 5 * 1024 * 1024; // 5 MB decoded (images)
+const MAX_BYTES_PDF = 10 * 1024 * 1024; // 10 MB decoded (PDFs run larger)
+
+/** A caller-facing 4xx: bad upload input, not a server fault. Carries `.status` so a
+ *  route can turn it into the right { success:false, error } response. */
+function uploadInputError(message, status = 400) {
+  return Object.assign(new Error(message), { status, isUploadInputError: true });
+}
+
+/**
+ * Decode a `data:<mime>;base64,<payload>` string, validate mime + size, store it and
+ * return the public URL. Throws `uploadInputError(...)` for malformed / oversized /
+ * unsupported input.
+ */
+async function saveDataUrl(dataUrl) {
+  const match = /^data:([a-z0-9/+.-]+);base64,(.+)$/is.exec(String(dataUrl));
+  if (!match) throw uploadInputError("Malformed data URL");
+
+  const mime = match[1].toLowerCase();
+  const ext = MIME_EXT[mime];
+  if (!ext) {
+    throw uploadInputError("Unsupported file type (use PNG, JPEG, WebP or PDF)");
+  }
+  const isPdf = mime === "application/pdf";
+  const maxBytes = isPdf ? MAX_BYTES_PDF : MAX_BYTES;
+
+  const buf = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
+  if (!buf.length) throw uploadInputError("Empty or invalid file data");
+  if (buf.length > maxBytes) {
+    throw uploadInputError(
+      isPdf ? "PDF too large (max 10 MB)" : "Image too large (max 5 MB)",
+      413
+    );
+  }
+  return saveFile(buf, ext, mime);
+}
+
+/**
+ * Normalize one inbound media field. A plain string (http(s) URL, "/uploads/…",
+ * "/demo/…") is returned unchanged; a `data:` URL is saved via saveDataUrl and its
+ * stored "/uploads/…" URL returned instead. Anything non-string (undefined/null)
+ * passes straight through so callers keep their own `|| null` handling.
+ */
+async function resolveUpload(value) {
+  if (typeof value !== "string") return value;
+  if (!value.startsWith("data:")) return value;
+  return saveDataUrl(value);
+}
+
+module.exports = { saveFile, saveDataUrl, resolveUpload, MIME_EXT, MAX_BYTES, MAX_BYTES_PDF };

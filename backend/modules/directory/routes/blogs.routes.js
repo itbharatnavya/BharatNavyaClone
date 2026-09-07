@@ -17,6 +17,16 @@ const router = express.Router();
 const { repoForCollection } = require("../../_shared");
 const identity = require("../../identity");
 const { authGuard } = require("../../../middleware/authGuard");
+const { resolveUpload } = require("../../../lib/uploadStorage");
+
+// A media field ("data:" URL → save + swap for the stored /uploads/ path; a plain URL
+// passes through). Turns a bad-upload error into the matching 4xx JSON, else rethrows.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 const blogsRepo = repoForCollection("blogs.json");
 
@@ -139,7 +149,7 @@ router.post("/", authGuard, async (req, res, next) => {
       authorType: resolvedAuthorType,
       title,
       slug,
-      coverImage: coverImage || null,
+      coverImage: (await resolveUpload(coverImage)) || null,
       body,
       categoryId: categoryId || null,
       tags: Array.isArray(tags) ? tags : [],
@@ -150,7 +160,7 @@ router.post("/", authGuard, async (req, res, next) => {
     const created = await blogsRepo.insert(doc, "blog");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -167,7 +177,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     const { title, coverImage, body, categoryId, tags, status } = req.body || {};
     const patch = {};
     if (title !== undefined) patch.title = title;
-    if (coverImage !== undefined) patch.coverImage = coverImage;
+    if (coverImage !== undefined) patch.coverImage = await resolveUpload(coverImage);
     if (body !== undefined) patch.body = body;
     if (categoryId !== undefined) patch.categoryId = categoryId;
     if (tags !== undefined) patch.tags = Array.isArray(tags) ? tags : [];
@@ -175,7 +185,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
     const updated = await blogsRepo.updateById(blog.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
