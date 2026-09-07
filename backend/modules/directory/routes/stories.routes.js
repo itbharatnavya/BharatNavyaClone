@@ -36,9 +36,19 @@ const router = express.Router();
 const { repoForCollection } = require("../../_shared");
 const identity = require("../../identity");
 const { authGuard } = require("../../../middleware/authGuard");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const storiesRepo = repoForCollection("stories.json");
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+// A bad inline-upload ("data:" URL that fails validation) → the matching 4xx JSON;
+// anything else is rethrown to the error handler.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 function isAdmin(user) {
   return !!user && (user.roles || []).includes("admin");
@@ -223,7 +233,10 @@ router.post("/", authGuard, async (req, res, next) => {
     const doc = {
       sellerId: req.user.id,
       authorType: resolvedAuthorType,
-      media: { type: media.type, url: media.url },
+      // media.url may arrive as a "data:image/…;base64,…" value — store it and swap in
+      // the /uploads/ path; a plain URL passes straight through. (Video stays
+      // URL-only for now: uploadStorage's accept-list is images + PDF.)
+      media: { type: media.type, url: await resolveUpload(media.url) },
       caption: caption || null,
       linkListingId: linkListingId || null,
       createdAt: now.toISOString(),
@@ -234,7 +247,7 @@ router.post("/", authGuard, async (req, res, next) => {
     const created = await storiesRepo.insert(doc, "story");
     return res.status(201).json({ success: true, data: created });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
