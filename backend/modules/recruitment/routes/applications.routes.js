@@ -23,6 +23,7 @@ const router = express.Router();
 const identity = require("../../identity");
 const { authGuard } = require("../../../middleware/authGuard");
 const { createNotification } = require("../../../lib/notify");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 const {
   candidateProfileGaps,
   // application.service.js (Phase 4b extraction)
@@ -60,7 +61,11 @@ router.post("/", authGuard, async (req, res, next) => {
     }
 
     const cp = candidate.candidateProfile || {};
-    const resumeUrl = (req.body && req.body.resumeUrl) || cp.resumeUrl || null;
+    // resumeUrl may arrive as a "data:application/pdf;base64,…" value — store it and
+    // use the /uploads/ path; a plain URL passes through; nothing sent → the CV
+    // already on the candidate's profile.
+    const resumeUrl =
+      (await resolveUpload((req.body && req.body.resumeUrl) || null)) || cp.resumeUrl || null;
     const coverNote = req.body && req.body.coverNote ? String(req.body.coverNote).trim().slice(0, 4000) : "";
 
     // Full candidate-profile gate: an incomplete profile can't apply at all. The same
@@ -152,6 +157,9 @@ router.post("/", authGuard, async (req, res, next) => {
   } catch (err) {
     if (err.status === 409) {
       return res.status(409).json({ success: false, error: err.message });
+    }
+    if (err && err.isUploadInputError) {
+      return res.status(err.status || 400).json({ success: false, error: err.message });
     }
     next(err);
   }

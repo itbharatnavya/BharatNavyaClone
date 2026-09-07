@@ -34,8 +34,18 @@ const { repoForCollection } = require("../../_shared");
 const identity = require("../../identity");
 const directory = require("../index");
 const { authGuard, requireRole } = require("../../../middleware/authGuard");
+const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const collectionsRepo = repoForCollection("collections.json");
+
+// coverImage may arrive as a "data:" URL — store it and swap in the /uploads/ path;
+// a plain URL passes through. Bad inline upload → the matching 4xx JSON.
+function uploadFail(res, err, next) {
+  if (err && err.isUploadInputError) {
+    return res.status(err.status || 400).json({ success: false, error: err.message });
+  }
+  return next(err);
+}
 
 // Same slug rules as routes/adminCategories.js: lowercase, & → "and",
 // any run of non-alphanumerics → single dash, trimmed.
@@ -218,7 +228,7 @@ router.post("/admin", ...adminGuard, async (req, res, next) => {
       slug,
       title: String(b.title).trim(),
       subtitle: b.subtitle ? String(b.subtitle) : "",
-      coverImage: b.coverImage || null,
+      coverImage: (await resolveUpload(b.coverImage)) || null,
       listingIds: arrays.listingIds,
       categorySlugs: arrays.categorySlugs,
       brandSlugs: arrays.brandSlugs,
@@ -229,7 +239,7 @@ router.post("/admin", ...adminGuard, async (req, res, next) => {
     const created = await collectionsRepo.insert(collection);
     return res.json({ success: true, data: created });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
@@ -240,7 +250,7 @@ router.put("/admin/:id", ...adminGuard, async (req, res, next) => {
     const patch = {};
     if ("title" in b) patch.title = String(b.title || "").trim();
     if ("subtitle" in b) patch.subtitle = b.subtitle == null ? "" : String(b.subtitle);
-    if ("coverImage" in b) patch.coverImage = b.coverImage || null;
+    if ("coverImage" in b) patch.coverImage = (await resolveUpload(b.coverImage)) || null;
     if ("listingIds" in b) patch.listingIds = normalizeArrays(b).listingIds;
     if ("categorySlugs" in b) patch.categorySlugs = normalizeArrays(b).categorySlugs;
     if ("brandSlugs" in b) patch.brandSlugs = normalizeArrays(b).brandSlugs;
@@ -253,7 +263,7 @@ router.put("/admin/:id", ...adminGuard, async (req, res, next) => {
     }
     return res.json({ success: true, data: updated });
   } catch (err) {
-    next(err);
+    uploadFail(res, err, next);
   }
 });
 
