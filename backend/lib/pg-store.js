@@ -19,7 +19,7 @@
 
 const { pool, ping, close } = require("../modules/_shared/pool");
 const { nextId, seedCounter } = require("../modules/_shared/ids");
-const { FlatCollectionStore, buildFlatConfigs } = require("./db/flat");
+const { FlatCollectionStore, buildFlatConfigs } = require("../modules/_shared/mappings/flat.mappings");
 const { createUsersStore } = require("./db/users");
 const { createListingsStore } = require("./db/listings");
 const { createChatSupport, isMessagesPath, isReadStatePath } = require("./db/chat");
