@@ -157,8 +157,9 @@ test("graduated collections are not referenced in any module route file", () => 
 });
 
 test("no module references another module's physical tables", () => {
-  // Enforced once modules ship a schema/tables.js manifest (Phase 4). Until then
-  // there are no module-owned tables to cross-reference.
+  // Live once modules ship a schema/tables.js manifest (Phase 8.11). Each module's
+  // manifest is the array of Postgres tables it OWNS; only that module may name one
+  // in raw SQL.
   const manifests = moduleFiles.filter((f) => /[\\/]schema[\\/]tables\.js$/.test(f));
   if (manifests.length === 0) return;
 
@@ -167,6 +168,18 @@ test("no module references another module's physical tables", () => {
     const list = require(f);
     for (const t of Array.isArray(list) ? list : list.tables || []) owned.set(t, moduleOf(f));
   }
+  assert.ok(owned.size > 20, `manifests loaded but only ${owned.size} tables mapped — check schema/tables.js`);
+
+  // A "reference" is the table used as a SQL identifier — after FROM / JOIN / INTO /
+  // UPDATE / DELETE FROM / TABLE, optionally double-quoted. This deliberately does
+  // NOT match repoForCollection("<name>.json") strings or prose: going through the
+  // shared kernel (repoForCollection) or a module's public port is the sanctioned
+  // cross-collection path; only hand-written SQL against another module's base
+  // table is the boundary break. Published VIEWs (e.g. identity_employer_cards) are
+  // not in any manifest and stay importable — a view is an interface.
+  const sqlRef = (table) =>
+    new RegExp(`\\b(?:FROM|JOIN|INTO|UPDATE|TABLE)\\s+"?${table}"?\\b`, "i");
+
   const offenders = [];
   for (const file of moduleFiles) {
     if (/[\\/]schema[\\/]/.test(file)) continue;
@@ -174,7 +187,7 @@ test("no module references another module's physical tables", () => {
     const src = fs.readFileSync(file, "utf-8");
     for (const [table, ownerMod] of owned) {
       if (ownerMod === self) continue;
-      if (new RegExp(`\\b${table}\\b`).test(src)) {
+      if (sqlRef(table).test(src)) {
         offenders.push(`${path.relative(BACKEND, file)} references modules/${ownerMod}'s table "${table}"`);
       }
     }
