@@ -295,12 +295,13 @@
 
 .recruitment-result-row.is-selected .recruitment-result-company b { color: #c9f2df; }
 
-/* Public navigation: an ink service header with route-owned active blocks. */
+/* Public navigation: a white service header with route-owned active blocks. */
 .bn-header.is-counter-public {
   height: 4.25rem;
   border: 0;
-  background: var(--counter-ink);
-  color: var(--counter-ivory);
+  border-bottom: 1px solid var(--counter-line);
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
   font-family: var(--font-work-sans), system-ui, sans-serif;
   backdrop-filter: none;
 }
@@ -310,7 +311,7 @@
 }
 
 .bn-header.is-counter-public .bn-wordmark {
-  color: var(--counter-ivory);
+  color: var(--counter-ink);
   font-family: var(--font-anek-latin), sans-serif;
   letter-spacing: -0.01em;
 }
@@ -319,7 +320,7 @@
   width: 2.25rem;
   height: 2.25rem;
   padding: 0.16rem;
-  background: var(--counter-ivory);
+  background: transparent;
 }
 
 .bn-header.is-counter-public .bn-primary-nav {
@@ -328,9 +329,13 @@
 
 .bn-header.is-counter-public .bn-primary-nav a {
   padding-inline: 1rem;
-  color: var(--counter-on-ink);
+  color: var(--counter-muted);
   font-family: var(--font-anek-latin), sans-serif;
   font-weight: 650;
+}
+
+.bn-header.is-counter-public .bn-primary-nav a:hover {
+  color: var(--counter-ink);
 }
 
 .bn-header.is-counter-public .bn-primary-nav a[aria-current="page"]::after {
@@ -338,8 +343,8 @@
 }
 
 .bn-header.is-counter-public .bn-primary-nav a[href="/"][aria-current="page"] {
-  background: var(--counter-ivory);
-  color: var(--counter-ink);
+  background: var(--counter-ink);
+  color: white;
 }
 
 .bn-header.is-counter-public .bn-primary-nav a[href="/directory"][aria-current="page"] {
@@ -353,7 +358,7 @@
 }
 
 .bn-header.is-counter-public :is(.bn-sign-in, .bn-menu-button, .bn-account > button) {
-  border-color: #4a4f5c;
+  border-color: var(--counter-line);
   border-radius: 0;
 }
 
@@ -364,7 +369,7 @@
 
 .bn-header.is-counter-public .bn-menu-button {
   background: transparent;
-  color: var(--counter-ivory);
+  color: var(--counter-ink);
 }
 
 .bn-header.is-counter-public .bn-account-menu,
@@ -378,7 +383,7 @@
 .bn-header.is-counter-public .bn-section-search,
 .bn-header.is-counter-public .bn-header-search-mobile,
 .bn-header.is-counter-public .bn-universal-compact {
-  border: 0;
+  border: 1px solid var(--counter-line);
   border-radius: 0;
   background: var(--counter-ivory);
   box-shadow: none;
