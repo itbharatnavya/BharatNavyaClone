@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "validate:design": "node scripts/validate-design-system.mjs"
   },
   "dependencies": {
     "next": "^14.2.35",

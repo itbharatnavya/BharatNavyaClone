@@ -45,9 +45,15 @@
   --bn-space-12: 3rem;
   --bn-space-16: 4rem;
   --bn-space-24: 6rem;
+  --bn-radius-small: 0.5rem;
   --bn-radius-control: 0.875rem;
   --bn-radius-card: 1.25rem;
-  --bn-radius-panel: 2rem;
+  --bn-radius-panel: 1.25rem;
+  /* Search is a distinct cross-product control: horizontal forms use the
+     Browse Roles pill; genuinely stacked mobile forms use the card radius. */
+  --bn-radius-search: 999px;
+  --bn-radius-search-stacked: var(--bn-radius-card);
+  --bn-radius-search-action: 999px;
   --bn-shadow-card: 0 16px 40px rgba(25, 38, 65, 0.08);
   --bn-shadow-float: 0 20px 55px rgba(25, 38, 65, 0.14);
   --bn-control-height: 3.5rem;
@@ -55,6 +61,10 @@
   --bn-motion-base: 220ms;
   --bn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --bn-container: 75rem;
+  --bn-section-space: 5rem;
+  --bn-section-space-tablet: 3.5rem;
+  --bn-section-space-mobile: 2.5rem;
+  --bn-content-gap: 2rem;
 
   --bn-search-height: 4.5rem;
   --bn-gateway-width: 11.25rem;
@@ -63,6 +73,8 @@
   --bn-header-height: 4.5rem;
   --bn-on-dark-secondary: #c8cfdd;
   --bn-on-dark-border: #3a4050;
+  --bn-section-hero-start: #f7f9fe;
+  --bn-section-hero-end: #f1f5fc;
 
   /* canvas / surfaces */
   --canvas: #ffffff;

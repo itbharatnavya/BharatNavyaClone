@@ -1,59 +1,85 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Avatar from "@/components/Avatar";
+import UpdateRail from "@/components/evidence/UpdateRail";
+import UpdateFeature from "@/components/evidence/UpdateFeature";
+import EvidenceMedia from "@/components/evidence/EvidenceMedia";
+import EvidenceRecord from "@/components/evidence/EvidenceRecord";
+import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
 import { useFeaturedSellers } from "@/lib/catalog";
-import { getRecentActivity } from "@/lib/api";
-import type { RecentActivityItem } from "@/lib/types";
+import { getBlogs, getRecentActivity, getStories } from "@/lib/api";
+import type { Blog, RecentActivityItem, StoryGroup } from "@/lib/types";
 import { isAlignedDirectoryCompany, mapDirectoryCompany } from "@/lib/productDesign";
+import { resolvePublicUpdates, type EvidenceAsset } from "@/lib/livingEvidence";
+import { DirectorySectionSearch } from "@/components/SectionSearchDock";
+import { useSearchDock } from "@/lib/searchDock";
 
 const families = [
-  ["Finance, Legal and Compliance", "Register, file, and stay compliant", "scale"],
-  ["Manufacturing and Suppliers", "Source, make, and package", "factory"],
-  ["Technology and Software", "Build and improve digital products", "code"],
-  ["Marketing and Creative", "Reach customers and strengthen your brand", "spark"],
-  ["Logistics and Operations", "Move, fulfil, and run reliably", "route"],
-  ["Professional Business Services", "Find specialist support for people and operations", "briefcase"],
-] as const;
+  { name: "Finance, Legal and Compliance", outcome: "Register, file and stay compliant", query: "compliance", media: "/seed-media/work/work-5.jpg" },
+  { name: "Manufacturing and Suppliers", outcome: "Source, make and package", query: "manufacturing", media: "/seed-media/company/company-3.jpg" },
+  { name: "Technology and Software", outcome: "Build and improve digital products", query: "software", media: "/seed-media/work/work-2.jpg" },
+  { name: "Marketing and Creative", outcome: "Reach customers and strengthen your brand", query: "marketing", media: "/seed-media/work/work-1.jpg" },
+  { name: "Logistics and Operations", outcome: "Move, fulfil and run reliably", query: "logistics", media: "/seed-media/work/work-4.jpg" },
+  { name: "Professional Business Services", outcome: "Find specialist people and operational support", query: "business services", media: "/seed-media/company/company-5.jpg" },
+];
 
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
-function SearchIcon() { return <svg aria-hidden viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></svg>; }
-function FamilyIcon({ kind }: { kind: string }) { return <svg aria-hidden viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" /><path d={kind === "route" ? "M8 16c0-5 8-3 8-8M8 8h.01M16 16h.01" : kind === "code" ? "m10 8-4 4 4 4m4-8 4 4-4 4" : "M8 16h8M9 12h6M10 8h4"} /></svg>; }
+function FamilyIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 16h8M9 12h6M10 8h4"/></svg>; }
 
 export default function DirectoryPage() {
   const router = useRouter();
   const { sellers, loading } = useFeaturedSellers();
-  const [query, setQuery] = useState("");
-  const [city, setCity] = useState("");
+  const { docked, setProgress, setQuery, markSearchNav } = useSearchDock();
+  const searchAnchorRef = useRef<HTMLDivElement>(null);
+  const heroFocusedRef = useRef(false);
+  const pendingDockRef = useRef<boolean | null>(null);
+  const [stories, setStories] = useState<StoryGroup[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [activity, setActivity] = useState<RecentActivityItem[]>([]);
-  useEffect(() => { getRecentActivity({ limit: 4 }).then(setActivity).catch(() => setActivity([])); }, []);
+  const [activeFamily, setActiveFamily] = useState(families[0]);
+  const allowPrototype = process.env.NEXT_PUBLIC_DESIGN_CONTENT_PREVIEW === "true";
+
+  useEffect(() => { Promise.allSettled([getStories("seller"), getBlogs({ authorType: "seller" }), getRecentActivity({ limit: 6 })]).then(([storyResult, blogResult, activityResult]) => { if (storyResult.status === "fulfilled") setStories(storyResult.value); if (blogResult.status === "fulfilled") setBlogs(blogResult.value); if (activityResult.status === "fulfilled") setActivity(activityResult.value); }); }, []);
+  useEffect(() => {
+    const anchor = searchAnchorRef.current;
+    if (!anchor || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => { const shouldDock = !entry.isIntersecting && entry.boundingClientRect.bottom <= 72; if (heroFocusedRef.current && shouldDock) { pendingDockRef.current = true; return; } pendingDockRef.current = null; setProgress(shouldDock ? 1 : 0); }, { threshold: 0.08, rootMargin: "-72px 0px 0px 0px" });
+    observer.observe(anchor);
+    return () => { observer.disconnect(); setProgress(0); };
+  }, [setProgress]);
+  useEffect(() => {
+    searchAnchorRef.current?.toggleAttribute("inert", docked);
+  }, [docked]);
 
   const companies = useMemo(() => sellers.filter(isAlignedDirectoryCompany).map(mapDirectoryCompany).filter((company): company is NonNullable<typeof company> => Boolean(company)).slice(0, 6), [sellers]);
-  function submit(event: React.FormEvent) { event.preventDefault(); const params = new URLSearchParams(); if (query.trim()) params.set("q", query.trim()); if (city.trim()) params.set("city", city.trim()); router.push(`/search?${params}`); }
+  const updates = useMemo(() => resolvePublicUpdates({ context: "directory", stories, blogs, reviews: activity, allowPrototype }), [stories, blogs, activity, allowPrototype]);
+  function runExample(item: string) { setQuery(item); markSearchNav(); router.push(`/search?q=${encodeURIComponent(item)}`); }
+  const activeMedia: EvidenceAsset = { src: activeFamily.media, alt: `${activeFamily.name} team at work`, kind: "workplace", source: "prototype", attribution: "Prototype service-family media" };
 
-  return <div className="directory-design">
-    <section className="directory-hero" aria-labelledby="directory-title"><div className="directory-shell">
-      <p className="directory-eyebrow">Bharat Navya Directory</p>
-      <h1 id="directory-title">Find the right company<br />for the work ahead.</h1>
-      <p>Discover startups, SMEs, suppliers, and service partners through evidence you can inspect—not a catalogue you have to decode.</p>
-      <form className="directory-search" onSubmit={submit}><SearchIcon /><label><span className="sr-only">What do you need?</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="What company or support do you need?" /></label><label><span className="sr-only">Location</span><input value={city} onChange={(event) => setCity(event.target.value)} placeholder="City or remote" /></label><button type="submit">Search companies <Arrow /></button></form>
-      <div className="directory-examples"><span>Popular needs</span>{["GST and compliance", "Website development", "Marketing partner", "Logistics provider"].map((item) => <button type="button" key={item} onClick={() => { setQuery(item); router.push(`/search?q=${encodeURIComponent(item)}`); }}>{item}</button>)}</div>
+  return <div className="le-page counter-directory-page">
+    <section className="le-hero" aria-labelledby="directory-title"><div className="le-shell">
+      <h1 id="directory-title">Find the right company for the work ahead.</h1>
+      <p>Discover startups, SMEs and service partners through evidence you can inspect—not a catalogue you have to decode.</p>
+      <div ref={searchAnchorRef} className="le-hero-search" inert={docked ? true : undefined} aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><DirectorySectionSearch /></div>
+      <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>
     </div></section>
 
-    <section className="directory-trust" aria-label="Company trust vocabulary"><div className="directory-shell">{[["Claimed company","A representative manages the record."],["Identity verified","Core business identity has been checked."],["Evidence verified","Selected work or credentials have been reviewed."]].map(([title,body], index) => <div key={title}><b>0{index + 1}</b><span><strong>{title}</strong><small>{body}</small></span></div>)}</div></section>
+    <div className="le-shell"><UpdateRail updates={updates} title="Fresh from companies" /></div>
 
-    <section className="directory-section" aria-labelledby="families-title"><div className="directory-shell"><header className="directory-section-heading"><div><p className="directory-eyebrow">Recognizable pathways</p><h2 id="families-title">Start with the kind of work.</h2></div><p>Six stable families lead directly into company results. No product catalogue or intermediate category maze.</p></header><div className="directory-pathways">{families.map(([name,outcome,icon]) => <Link key={name} href={`/search?family=${encodeURIComponent(name)}`}><FamilyIcon kind={icon} /><span><strong>{name}</strong><small>{outcome}</small></span><Arrow /></Link>)}</div></div></section>
+    <section className="le-trust-ledger" aria-label="Company trust vocabulary"><div className="le-shell">{[["01","Claimed company","A representative manages the record."],["02","Identity verified","Core business identity has been checked."],["03","Evidence verified","Selected work or credentials have been reviewed."]].map(([n,title,body]) => <article key={n}><b>{n}</b><span><strong>{title}</strong><small>{body}</small></span></article>)}</div></section>
 
-    <section className="directory-section directory-record-band" aria-labelledby="companies-title"><div className="directory-shell"><header className="directory-section-heading"><div><p className="directory-eyebrow">Useful records</p><h2 id="companies-title">Companies with context to inspect.</h2></div><Link href="/search">Browse all companies <Arrow /></Link></header><div className="directory-company-grid">{(loading ? [1,2,3] : companies).map((company) => typeof company === "number" ? <div className="directory-company-card is-loading" key={company} /> : <Link className="directory-company-card" href={`/seller/${company.slug}`} key={company.id}><div className="directory-company-top"><Avatar src={company.logo} name={company.name} size={48} /><span>{company.verified ? "Identity verified" : "Profile available"}</span></div><strong>{company.name}</strong><small>{company.location}</small><p>{company.serviceFamily}</p><ul>{company.capabilities.slice(0,2).map((capability) => <li key={capability}>{capability}</li>)}</ul><span className="directory-record-link">View company <Arrow /></span></Link>)}</div>{!loading && companies.length === 0 && <div className="directory-empty">Aligned company records are temporarily unavailable. Search remains available.</div>}</div></section>
+    <section className="le-section" aria-labelledby="families-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="families-title">Start with the work you need.</h2></div><p>Six stable service families open directly into company results. The visual preview shows the kind of evidence a visitor can expect.</p></header><div className="le-index-showcase"><div className="le-index">{families.map((family) => <Link href={`/search?family=${encodeURIComponent(family.name)}`} className={family.name === activeFamily.name ? "is-active" : undefined} key={family.name} onMouseEnter={() => setActiveFamily(family)} onFocus={() => setActiveFamily(family)}><FamilyIcon /><span><strong>{family.name}</strong><small>{family.outcome}</small></span><Arrow /></Link>)}</div><aside className="le-index-preview"><EvidenceMedia key={activeFamily.name} asset={activeMedia} ratio="wide" /><div><span className="le-update-context is-directory">Service family</span><h3>{activeFamily.name}</h3><p>{activeFamily.outcome}. Browse companies with identity, services and work evidence together.</p><Link href={`/search?q=${encodeURIComponent(activeFamily.query)}`}>View matching companies →</Link></div></aside></div></div></section>
 
-    <section className="directory-section directory-journey" aria-labelledby="directory-journey-title"><div className="directory-shell"><p className="directory-eyebrow">A guided decision</p><h2 id="directory-journey-title">Describe. Inspect. Shortlist. Inquire.</h2><div>{[["01","Describe the need","Search by the work, context and location."],["02","Inspect evidence","Review identity, capability, media and proof."],["03","Build a shortlist","Keep credible options together."],["04","Send an inquiry","Share a structured need with the company."]].map(([n,t,b]) => <article key={n}><b>{n}</b><h3>{t}</h3><p>{b}</p></article>)}</div></div></section>
+    <section className="le-section is-tinted" aria-labelledby="companies-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="companies-title">Companies with context to inspect.</h2></div><Link className="le-button" href="/search">Browse all companies</Link></header><div className="le-discovery-grid"><article className="le-discovery-feature"><EvidenceMedia asset={{ src: "/seed-media/company/company-4.jpg", alt: "A company team sharing its work", kind: "work-sample", source: "prototype", attribution: "Prototype company media" }} ratio="wide" /><div className="le-discovery-feature-copy"><span><small>Work evidence</small><strong>{companies[0]?.name || "Featured company"}</strong><p>{companies[0] ? `${companies[0].location} · ${companies[0].serviceFamily}` : "Aligned company evidence will appear here."}</p></span><Link href={companies[0] ? `/seller/${companies[0].slug}` : "/search"}>Inspect company →</Link></div></article><div className="le-record-stack">{(loading ? [] : companies.slice(1, 5)).map((company, index) => <EvidenceRecord key={company.id} href={`/seller/${company.slug}`} title={company.name} meta={`${company.location} · ${company.verified ? "Identity verified" : "Profile available"}`} detail={company.capabilities.slice(0, 2).join(" · ")} logo={company.logo} media={index < 2 ? { src: `/seed-media/work/work-${index + 2}.jpg`, alt: `Work evidence from ${company.name}`, kind: "work-sample", source: "prototype", attribution: "Prototype company media" } : undefined} label={company.serviceFamily} />)}{!loading && companies.length === 0 && <div className="le-empty">Aligned company records are temporarily unavailable. Search remains ready.</div>}</div></div></div></section>
 
-    <section className="directory-section" aria-labelledby="activity-title"><div className="directory-shell"><header className="directory-section-heading"><div><p className="directory-eyebrow">Current evidence</p><h2 id="activity-title">Work and updates from companies.</h2></div><p>Media and public reviews add useful texture; missing proof stays visibly incomplete.</p></header><div className="directory-media-ledger">{activity.length ? activity.slice(0,3).map((item) => <Link href={item.sellerSlug ? `/seller/${item.sellerSlug}` : "/search"} key={item.reviewId}><div>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={item.image || "/demo/business-1.jpg"} alt={item.image ? `Work shared by ${item.sellerName}` : "Small business work in progress"} /></div><span>{item.sellerCity || "India"}</span><strong>{item.sellerName}</strong><p>{item.reviewText}</p></Link>) : <div className="directory-empty">Company updates will appear here as public evidence becomes available.</div>}</div></div></section>
+    <AdvertisingSlot kind="external" context="Contextual partner · Directory" title="Useful tools for the work around the work." summary="A dedicated partner placement for business software, logistics, compliance or operational support—shown only after meaningful organic company discovery." media={{ src: "/seed-media/company/company-6.jpg", alt: "A business team using operational tools together", kind: "workplace", source: "prototype", attribution: "Prototype advertising creative" }} />
 
-    <aside id="advertising-policy" className="directory-partner" aria-label="Advertisement"><div className="directory-shell"><small>Advertisement · External partner</small><div><strong>Tools for growing teams</strong><p>A reserved, clearly disclosed partner placement appears only after organic discovery.</p></div><details><summary>Why this ad?</summary><p>This prototype placement uses only the current public section and broad location context—not private profile, message, inquiry, or application data.</p></details></div></aside>
+    <section className="le-journey-wrap" aria-labelledby="directory-journey-title"><div className="le-shell"><h2 id="directory-journey-title">From a need to a useful inquiry.</h2><div className="le-journey">{[["01","Describe","Search by work, context and location."],["02","Inspect","Review identity, capability, media and proof."],["03","Shortlist","Keep credible options together."],["04","Inquire","Share a structured need with the company."]].map(([n,t,b]) => <article key={n}><b>{n}</b><h3>{t}</h3><p>{b}</p></article>)}</div></div></section>
 
-    <section className="directory-section directory-closing"><div className="directory-shell"><div><p className="directory-eyebrow">Participate in Directory</p><h2>Find useful business support—or represent your company accurately.</h2></div><div><Link className="directory-primary" href="/search">Find a company</Link><Link className="directory-secondary" href="/sell">List or claim a company</Link></div></div></section>
+    <section className="le-section" aria-labelledby="directory-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="directory-updates-title">Current from companies.</h2></div><p>Work samples, public reviews, stories and company-authored guidance stay connected to the company behind them.</p></header>{updates.length ? <UpdateFeature updates={updates} title="Company updates" /> : <div className="le-empty">Company updates will appear as businesses publish public evidence.</div>}</div></section>
+
+    <section className="le-closing"><div className="le-shell"><div><h2>Find useful support—or represent your company accurately.</h2><p>Start a company search or create the public record your customers should see.</p></div><div className="le-closing-actions"><Link className="le-button is-primary" href="/search">Find a company</Link><Link className="le-button" href="/sell">List or claim a company</Link></div></div></section>
   </div>;
 }

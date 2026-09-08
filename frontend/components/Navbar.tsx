@@ -7,6 +7,9 @@ import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import NotificationBell from "./NotificationBell";
 import Avatar from "./Avatar";
+import { useSearchDock } from "@/lib/searchDock";
+import { DirectoryDockedSearch, RecruitmentDockedSearch } from "./SectionSearchDock";
+import { UniversalDockedSearch } from "./home/UniversalSearch";
 
 const links = [
   { href: "/", label: "Home", match: (path: string) => path === "/" },
@@ -25,6 +28,15 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const { progress } = useSearchDock();
+  const homeDocked = pathname === "/" && progress > 0;
+  const directoryDocked = (pathname === "/directory" || pathname === "/search") && progress > 0;
+  const recruitmentDocked = (pathname === "/recruitment" || pathname === "/recruitment/jobs") && progress > 0;
+  const searchDocked = homeDocked || directoryDocked || recruitmentDocked;
+  const recruitmentPublic = (pathname === "/recruitment" || pathname.startsWith("/recruitment/"))
+    && pathname !== "/recruitment/dashboard"
+    && !pathname.startsWith("/recruitment/dashboard/");
+  const counterPublic = pathname === "/" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {
@@ -34,16 +46,23 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", close);
   }, [accountOpen]);
 
+  useEffect(() => {
+    if (searchDocked) setMenuOpen(false);
+  }, [searchDocked]);
+
   return (
-    <header className="bn-header">
+    <header className={`bn-header ${counterPublic ? "is-counter-public" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" />
           <span>Bharat Navya</span>
         </Link>
-        <nav className="bn-primary-nav" aria-label="Primary navigation">
+        {!searchDocked && <nav className="bn-primary-nav" aria-label="Primary navigation">
           {links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}
-        </nav>
+        </nav>}
+        {directoryDocked && <DirectoryDockedSearch />}
+        {recruitmentDocked && <RecruitmentDockedSearch />}
+        {homeDocked && <UniversalDockedSearch />}
         <div className="bn-header-actions">
           {!loading && user && featureFlags.notifications && <NotificationBell />}
           {!loading && !user && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}

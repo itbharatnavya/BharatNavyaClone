@@ -156,10 +156,11 @@ export default function JobFilters({ value, onChange, jobFunctions, className = 
         .jf-panel { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
         .jf-head { display: flex; align-items: center; justify-content: space-between; }
         .jf-title { font-size: 15px; font-weight: 700; color: var(--ink); }
-        .jf-clear { background: none; border: none; padding: 0; font-size: 12.5px; font-weight: 600; color: var(--tricolor-green-hover); cursor: pointer; }
+        .jf-clear { min-height: 44px; background: none; border: none; padding: 0 4px; font-size: 12.5px; font-weight: 700; color: var(--bn-action); cursor: pointer; }
         .jf-field { display: flex; flex-direction: column; gap: 6px; }
         .jf-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
-        .jf-checkbox input { width: 16px; height: 16px; accent-color: var(--tricolor-green); }
+        .jf-checkbox { min-height: 44px; }
+        .jf-checkbox input { width: 18px; height: 18px; accent-color: var(--bn-action); }
         .jf-salary-row { display: flex; align-items: center; gap: 8px; }
         .jf-salary-sep { color: var(--faint); flex-shrink: 0; }
       `}</style>

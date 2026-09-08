@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Anek_Latin, Inter, Manrope, Work_Sans } from "next/font/google";
 import "./globals.css";
 import "./bharat-navya-home.css";
 import "./directory-design.css";
+import "./recruitment-design.css";
+import "./recruitment-core.css";
+import "./living-evidence.css";
+import "./counter-direction.css";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";
@@ -28,6 +32,18 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const anekLatin = Anek_Latin({
+  subsets: ["latin"],
+  variable: "--font-anek-latin",
+  display: "swap",
+});
+
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Bharat Navya — Companies, work and opportunity connected",
   description:
@@ -40,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${manrope.variable}`}>
+    <html lang="en" className={`${inter.variable} ${manrope.variable} ${anekLatin.variable} ${workSans.variable}`}>
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <RouteProgress />

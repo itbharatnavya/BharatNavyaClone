@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { getAds } from "@/lib/api";
+import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
 
 interface NativeAd { id?: string; creativeImageUrl?: string; headline?: string; targetUrl?: string }
 
@@ -17,6 +17,10 @@ export default function NativePromotionSlot() {
     }).catch(() => setAd(null));
     return () => { active = false; };
   }, []);
-  if (!ad?.targetUrl || !ad.headline) return null;
-  return <section className="bn-native-promotion" aria-label="Sponsored"><div className="bn-container"><Link href={ad.targetUrl}>{ad.creativeImageUrl && <span className="bn-native-image">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={ad.creativeImageUrl} alt="" /></span>}<span className="bn-native-copy"><small>Sponsored · Bharat Navya placement</small><strong>{ad.headline}</strong><span>View promoted profile</span></span></Link></div></section>;
+  const preview = process.env.NEXT_PUBLIC_DESIGN_CONTENT_PREVIEW === "true";
+  if (!ad?.targetUrl || !ad.headline) {
+    if (!preview) return null;
+    return <AdvertisingSlot kind="native" context="A late native placement after organic discovery" title="Help the right people discover a credible company or transparent role." summary="Promoted Bharat Navya records retain the same evidence requirements and remain visibly separated from organic results." href="/pricing" action="Explore promotion options" media={{ src: "/seed-media/work/work-6.jpg", alt: "A growing team presenting its current work", kind: "work-sample", source: "prototype", attribution: "Prototype sponsored creative" }} />;
+  }
+  return <AdvertisingSlot kind="native" context="A late native placement after organic discovery" title={ad.headline} summary="This promoted Bharat Navya record is clearly separated from organic discovery and trust signals." href={ad.targetUrl} action="View promoted profile" media={{ src: ad.creativeImageUrl || "/seed-media/work/work-6.jpg", alt: `Promoted creative for ${ad.headline}`, kind: "work-sample", source: ad.creativeImageUrl ? "api" : "prototype", attribution: ad.creativeImageUrl ? undefined : "Prototype sponsored creative" }} />;
 }

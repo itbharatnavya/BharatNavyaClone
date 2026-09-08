@@ -299,7 +299,7 @@ export default function RoleSearchBar({
           align-items: center;
           background: #ffffff;
           border: 1.5px solid var(--border-strong);
-          border-radius: 999px;
+          border-radius: var(--bn-radius-search);
           box-shadow: var(--shadow-card);
           padding: 6px 6px 6px 20px;
           gap: 4px;
@@ -307,8 +307,8 @@ export default function RoleSearchBar({
           max-width: 100%;
         }
         .rsb:focus-within {
-          border-color: var(--tricolor-green);
-          box-shadow: 0 0 0 3px var(--tricolor-green-tint);
+          border-color: var(--bn-action);
+          box-shadow: 0 0 0 3px var(--bn-blue-050);
         }
         .rsb-compact {
           padding: 3px 3px 3px 14px;
@@ -384,10 +384,10 @@ export default function RoleSearchBar({
         }
         .rsb-submit {
           flex-shrink: 0;
-          background: var(--tricolor-green);
+          background: var(--bn-action);
           color: #fff;
           border: none;
-          border-radius: 999px;
+          border-radius: var(--bn-radius-search-action);
           padding: 12px 26px;
           font-size: 14.5px;
           font-weight: 700;
@@ -399,7 +399,7 @@ export default function RoleSearchBar({
           font-size: 13.5px;
         }
         .rsb-submit:hover {
-          background: var(--tricolor-green-hover);
+          background: var(--bn-action-hover);
         }
 
         @media (min-width: 560px) {
@@ -411,7 +411,7 @@ export default function RoleSearchBar({
         @media (max-width: 480px) {
           .rsb:not(.rsb-compact) {
             flex-wrap: wrap;
-            border-radius: 20px;
+            border-radius: var(--bn-radius-search-stacked);
             padding: 12px 14px;
           }
           .rsb:not(.rsb-compact) .rsb-input {
@@ -475,8 +475,8 @@ export default function RoleSearchBar({
           cursor: pointer;
         }
         .rsb-opt-active {
-          background: var(--tricolor-green-tint);
-          color: var(--tricolor-green-hover);
+          background: var(--bn-blue-050);
+          color: var(--bn-action-hover);
         }
       `}</style>
     </div>

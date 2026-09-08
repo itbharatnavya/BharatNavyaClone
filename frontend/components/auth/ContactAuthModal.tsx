@@ -22,13 +22,14 @@ export interface ContactAuthModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  purpose?: "contact" | "apply";
 }
 
 type Mode = "login" | "register";
 type LoginTab = "otp" | "password";
 type OtpStage = "mobile" | "otp";
 
-export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAuthModalProps) {
+export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "contact" }: ContactAuthModalProps) {
   const t = useTr();
   const { addToast } = useToast();
   const { loginOtp, login, register } = useAuth();
@@ -244,7 +245,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
         city: regCity.trim() || undefined,
         state: regState.trim() || undefined,
       });
-      addToast("Account created. Welcome to BharatSource.", "success");
+      addToast("Account created. Welcome to Bharat Navya.", "success");
       handleSuccess();
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to create account.", "error");
@@ -260,15 +261,19 @@ export default function ContactAuthModal({ open, onClose, onSuccess }: ContactAu
       size="sm"
       title={
         mode === "login"
-          ? t("auth.contactGate.loginTitle", "Log in to contact this seller")
+          ? purpose === "apply"
+            ? "Sign in to apply"
+            : t("auth.contactGate.loginTitle", "Log in to contact this seller")
           : t("auth.contactGate.registerTitle", "Create your account")
       }
     >
       <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -8, marginBottom: 18 }}>
-        {t(
-          "auth.contactGate.subtitle",
-          "Phone and WhatsApp details are shown to logged-in members only."
-        )}
+        {purpose === "apply"
+          ? "Sign in or create an account to continue. Your application is not submitted until you complete the review step."
+          : t(
+              "auth.contactGate.subtitle",
+              "Phone and WhatsApp details are shown to logged-in members only."
+            )}
       </p>
 
       {mode === "login" ? (

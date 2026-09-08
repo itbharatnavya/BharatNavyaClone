@@ -33,10 +33,9 @@ export default function RecruitmentBlogPage() {
   }, []);
 
   return (
-    <div className="container-bs section-pad-sm">
+    <div className="counter-public-page container-bs section-pad-sm">
       <div style={{ maxWidth: 680, marginBottom: 32 }}>
-        <span className="eyebrow" style={{ color: "var(--tricolor-green-hover)" }}>Recruitment blog</span>
-        <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em", marginTop: 10 }}>
+        <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
           Hiring insights from companies on BharatSource
         </h1>
         <p style={{ color: "var(--muted)", marginTop: 10, fontSize: 16 }}>

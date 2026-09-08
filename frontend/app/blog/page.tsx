@@ -39,7 +39,7 @@ export default function BlogIndexPage() {
   }, []);
 
   return (
-    <div className="container-bs section-pad-sm">
+    <div className="counter-public-page container-bs section-pad-sm">
       <div style={{ maxWidth: 680, marginBottom: 32 }}>
         <span className="eyebrow">{t("blog.eyebrow", "Vendor stories")}</span>
         <h1
