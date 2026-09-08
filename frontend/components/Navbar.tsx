@@ -36,7 +36,7 @@ export default function Navbar() {
   const recruitmentPublic = (pathname === "/recruitment" || pathname.startsWith("/recruitment/"))
     && pathname !== "/recruitment/dashboard"
     && !pathname.startsWith("/recruitment/dashboard/");
-  const counterPublic = pathname === "/" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
+  const counterPublic = pathname === "/" || pathname === "/about" || pathname === "/pricing" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {

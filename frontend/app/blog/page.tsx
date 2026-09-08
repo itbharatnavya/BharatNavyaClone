@@ -39,26 +39,15 @@ export default function BlogIndexPage() {
   }, []);
 
   return (
-    <div className="counter-public-page container-bs section-pad-sm">
-      <div style={{ maxWidth: 680, marginBottom: 32 }}>
-        <span className="eyebrow">{t("blog.eyebrow", "Vendor stories")}</span>
-        <h1
-          style={{
-            fontSize: 32,
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            marginTop: 10,
-          }}
-        >
-          {t("blog.title", "Insights from India's vendors")}
-        </h1>
-        <p style={{ color: "var(--muted)", marginTop: 10, fontSize: 16 }}>
-          {t(
-            "blog.subtitle",
-            "Guides, know-how and stories published by the sellers and service providers on BharatSource."
-          )}
-        </p>
-      </div>
+    <div className="counter-public-page counter-editorial">
+      <header className="counter-support-hero is-ivory">
+        <div className="counter-support-shell counter-editorial-heading">
+          <h1>Context worth carrying forward.</h1>
+          <p>Practical guides and public updates connected to the companies and people behind them on Bharat Navya.</p>
+        </div>
+      </header>
+
+      <div className="counter-support-shell counter-editorial-index">
 
       {loading ? (
         <div className="blog-grid">
@@ -163,6 +152,8 @@ export default function BlogIndexPage() {
           })}
         </div>
       )}
+
+      </div>
 
       <style jsx>{`
         .blog-grid {
