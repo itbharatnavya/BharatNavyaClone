@@ -299,7 +299,6 @@
 .bn-header.is-counter-public {
   height: 4.25rem;
   border: 0;
-  border-bottom: 1px solid var(--counter-line);
   background: var(--counter-ivory);
   color: var(--counter-ink);
   font-family: var(--font-work-sans), system-ui, sans-serif;
