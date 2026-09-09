@@ -1,10 +1,5 @@
 "use client";
 
-// /pricing — public Free / Silver / Gold comparison.
-// Plan headers come from adminPlans() when available (it's auth-gated, so we
-// fall back to sensible defaults). The capability matrix is always built from
-// the public getFeatures(), checking each feature's `plans` for the tier.
-
 import React, { useEffect, useMemo, useState } from "react";
 import { adminPlans, getFeatures, type Feature } from "@/lib/api";
 import type { SubscriptionPlan, PlanTier } from "@/lib/types";
@@ -22,37 +17,13 @@ interface TierMeta {
 }
 
 const DEFAULT_TIERS: TierMeta[] = [
-  {
-    tier: "free",
-    name: "Free",
-    price: 0,
-    currency: "INR",
-    cycle: "monthly",
-    tagline: "Get discovered",
-    highlight: false,
-  },
-  {
-    tier: "silver",
-    name: "Silver",
-    price: 999,
-    currency: "INR",
-    cycle: "monthly",
-    tagline: "Grow your reach",
-    highlight: false,
-  },
-  {
-    tier: "gold",
-    name: "Gold",
-    price: 2999,
-    currency: "INR",
-    cycle: "monthly",
-    tagline: "Lead your market",
-    highlight: true,
-  },
+  { tier: "free", name: "Free", price: 0, currency: "INR", cycle: "monthly", tagline: "Create a visible company record", highlight: false },
+  { tier: "silver", name: "Silver", price: 999, currency: "INR", cycle: "monthly", tagline: "Extend your reach", highlight: false },
+  { tier: "gold", name: "Gold", price: 2999, currency: "INR", cycle: "monthly", tagline: "Lead your market", highlight: true },
 ];
 
-const money = (n: number, currency = "INR") =>
-  currency === "INR" ? `₹${n.toLocaleString("en-IN")}` : `${currency} ${n}`;
+const TIER_KEYS: PlanTier[] = ["free", "silver", "gold"];
+const money = (value: number, currency = "INR") => currency === "INR" ? `₹${value.toLocaleString("en-IN")}` : `${currency} ${value}`;
 
 export default function PricingPage() {
   const tr = useTr();
@@ -62,282 +33,123 @@ export default function PricingPage() {
 
   useEffect(() => {
     let active = true;
-    Promise.allSettled([getFeatures(), adminPlans()]).then((res) => {
+    Promise.allSettled([getFeatures(), adminPlans()]).then((results) => {
       if (!active) return;
-      if (res[0].status === "fulfilled") setFeatures(res[0].value);
-      if (res[1].status === "fulfilled") setPlans(res[1].value);
+      if (results[0].status === "fulfilled") setFeatures(results[0].value);
+      if (results[1].status === "fulfilled") setPlans(results[1].value);
       setLoading(false);
     });
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
-  // Merge admin plan data over defaults, keyed by tier.
-  const tiers: TierMeta[] = useMemo(() => {
-    return DEFAULT_TIERS.map((d) => {
-      const p = plans.find((pl) => pl.tier === d.tier);
-      if (!p) return d;
-      return {
-        ...d,
-        name: p.name || d.name,
-        price: typeof p.price === "number" ? p.price : d.price,
-        currency: p.currency || d.currency,
-        cycle: p.billingCycle || d.cycle,
-        highlight: p.highlighted ?? d.highlight,
-      };
-    });
-  }, [plans]);
+  const tiers = useMemo<TierMeta[]>(() => DEFAULT_TIERS.map((fallback) => {
+    const plan = plans.find((item) => item.tier === fallback.tier);
+    if (!plan) return fallback;
+    return {
+      ...fallback,
+      name: plan.name || fallback.name,
+      price: typeof plan.price === "number" ? plan.price : fallback.price,
+      currency: plan.currency || fallback.currency,
+      cycle: plan.billingCycle || fallback.cycle,
+      highlight: plan.highlighted ?? fallback.highlight,
+    };
+  }), [plans]);
 
-  // Features grouped by `group`, ordered by first appearance.
   const grouped = useMemo(() => {
-    const map = new Map<string, Feature[]>();
-    features.forEach((f) => {
-      const g = f.group || "Other";
-      const arr = map.get(g) || [];
-      arr.push(f);
-      map.set(g, arr);
+    const groups = new Map<string, Feature[]>();
+    features.forEach((feature) => {
+      const group = feature.group || "Other";
+      groups.set(group, [...(groups.get(group) || []), feature]);
     });
-    return Array.from(map.entries());
+    return Array.from(groups.entries());
   }, [features]);
 
-  const hasTier = (f: Feature, tier: PlanTier) =>
-    Array.isArray(f.plans) && (f.plans as string[]).includes(tier);
-
-  const TIER_KEYS: PlanTier[] = ["free", "silver", "gold"];
+  const hasTier = (feature: Feature, tier: PlanTier) => Array.isArray(feature.plans) && (feature.plans as string[]).includes(tier);
 
   return (
-    <div className="container-bs section-pad-sm">
-      {/* Hero */}
-      <div style={{ textAlign: "center", maxWidth: 640, margin: "0 auto 8px" }}>
-        <span className="eyebrow">{tr("pricing.eyebrow", "Pricing")}</span>
-        <h1
-          style={{
-            fontSize: 34,
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            marginTop: 10,
-          }}
-        >
-          {tr("pricing.title", "Simple, honest pricing")}
-        </h1>
-        <p style={{ color: "var(--muted)", marginTop: 10, fontSize: 16 }}>
-          {tr(
-            "pricing.subtitle",
-            "Start free and get found. Upgrade for more reach, leads and placement. Paid plans are activated by our team — no card needed."
-          )}
-        </p>
-      </div>
-
-      {/* Plan cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 16,
-          maxWidth: 900,
-          margin: "36px auto 0",
-        }}
-      >
-        {tiers.map((t) => (
-          <div
-            key={t.tier}
-            className="card card-flat"
-            style={{
-              padding: 24,
-              display: "flex",
-              flexDirection: "column",
-              borderColor: t.highlight ? "var(--brand)" : "var(--border)",
-              outline: t.highlight ? "2px solid var(--brand)" : "none",
-              position: "relative",
-            }}
-          >
-            {t.highlight && (
-              <span
-                className="badge badge-verified"
-                style={{ position: "absolute", top: 16, right: 16 }}
-              >
-                {tr("pricing.mostPopular", "Most popular")}
-              </span>
-            )}
-            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
-              {t.name}
-            </div>
-            <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
-              {t.tagline}
-            </div>
-            <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 4 }}>
-              <span style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
-                {t.price === 0 ? tr("pricing.free", "Free") : money(t.price, t.currency)}
-              </span>
-              {t.price > 0 && (
-                <span style={{ color: "var(--muted)", fontSize: 13 }}>
-                  /{t.cycle === "yearly" ? "yr" : t.cycle === "quarterly" ? "qtr" : "mo"}
-                </span>
-              )}
-            </div>
-            <div style={{ marginTop: 20 }}>
-              <Button
-                block
-                href="/login?next=/pricing"
-                variant={t.highlight ? "primary" : "secondary"}
-              >
-                {t.tier === "free" ? tr("pricing.startFree", "Start free") : `${tr("pricing.choose", "Choose")} ${t.name}`}
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Comparison matrix */}
-      <div style={{ maxWidth: 900, margin: "48px auto 0" }}>
-        <h2
-          style={{
-            fontSize: 20,
-            fontWeight: 700,
-            marginBottom: 16,
-            textAlign: "center",
-          }}
-        >
-          {tr("pricing.compare", "Compare capabilities")}
-        </h2>
-
-        {loading ? (
-          <div className="skeleton" style={{ height: 280, width: "100%" }} />
-        ) : grouped.length === 0 ? (
-          <p style={{ textAlign: "center", color: "var(--muted)" }}>
-            {tr("pricing.catalogSetup", "Feature catalog is being set up.")}
-          </p>
-        ) : (
-          <div className="card card-flat" style={{ overflowX: "auto" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                minWidth: 560,
-                fontSize: 14,
-              }}
-            >
-              <thead>
-                <tr>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "14px 18px",
-                      fontWeight: 600,
-                      color: "var(--muted)",
-                      borderBottom: "1px solid var(--border)",
-                    }}
-                  >
-                    {tr("pricing.capability", "Capability")}
-                  </th>
-                  {tiers.map((t) => (
-                    <th
-                      key={t.tier}
-                      style={{
-                        padding: "14px 18px",
-                        fontWeight: 700,
-                        textAlign: "center",
-                        color: t.highlight ? "var(--brand)" : "var(--ink)",
-                        borderBottom: "1px solid var(--border)",
-                        minWidth: 96,
-                      }}
-                    >
-                      {t.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {grouped.map(([group, items]) => (
-                  <React.Fragment key={group}>
-                    <tr>
-                      <td
-                        colSpan={4}
-                        style={{
-                          padding: "14px 18px 6px",
-                          fontSize: 12,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.06em",
-                          color: "var(--brand)",
-                          background: "var(--bg-subtle)",
-                        }}
-                      >
-                        {group}
-                      </td>
-                    </tr>
-                    {items.map((f) => (
-                      <tr key={f.id}>
-                        <td
-                          style={{
-                            padding: "12px 18px",
-                            borderBottom: "1px solid var(--border)",
-                            color: "var(--ink)",
-                          }}
-                        >
-                          {f.name}
-                        </td>
-                        {TIER_KEYS.map((tier) => (
-                          <td
-                            key={tier}
-                            style={{
-                              padding: "12px 18px",
-                              textAlign: "center",
-                              borderBottom: "1px solid var(--border)",
-                            }}
-                          >
-                            {hasTier(f, tier) ? (
-                              <span
-                                aria-label="Included"
-                                style={{ color: "var(--success)", display: "inline-flex" }}
-                              >
-                                <svg
-                                  width="15"
-                                  height="15"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="3"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  aria-hidden
-                                >
-                                  <path d="M5 13l4 4L19 7" />
-                                </svg>
-                              </span>
-                            ) : (
-                              <span aria-label="Not included" style={{ color: "var(--faint)" }}>
-                                –
-                              </span>
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom CTA */}
-      <div style={{ textAlign: "center", marginTop: 48 }}>
-        <h3 style={{ fontSize: 20, fontWeight: 700 }}>{tr("pricing.readyToSell", "Ready to sell?")}</h3>
-        <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 18 }}>
-          {tr("pricing.readySubtitle", "List your first product or service in minutes.")}
-        </p>
-        <div style={{ display: "inline-flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-          <Button href="/sell" variant="primary" size="lg">
-            {tr("cta.startSelling", "Start selling")}
-          </Button>
-          <Button href="/features" variant="secondary" size="lg">
-            {tr("pricing.exploreFeatures", "Explore features")}
-          </Button>
+    <div className="counter-public-page counter-pricing">
+      <section className="counter-support-hero is-indigo">
+        <div className="counter-support-shell counter-pricing-hero">
+          <h1>{tr("pricing.title", "Simple, honest pricing")}</h1>
+          <p>{tr("pricing.subtitle", "Start free and get found. Upgrade for more reach, leads and placement. Paid plans are activated by our team — no card needed.")}</p>
         </div>
-      </div>
+      </section>
+
+      <section className="counter-pricing-body">
+        <div className="counter-support-shell">
+          <div className="counter-pricing-plans">
+            {tiers.map((tier) => (
+              <article className={`counter-price-plan ${tier.highlight ? "is-highlighted" : ""}`} key={tier.tier}>
+                <header>
+                  <div>
+                    <h2>{tier.name}</h2>
+                    <p>{tier.tagline}</p>
+                  </div>
+                  {tier.highlight && <span>{tr("pricing.mostPopular", "Most popular")}</span>}
+                </header>
+                <div className="counter-price-value">
+                  <strong>{tier.price === 0 ? tr("pricing.free", "Free") : money(tier.price, tier.currency)}</strong>
+                  {tier.price > 0 && <small>/{tier.cycle === "yearly" ? "yr" : tier.cycle === "quarterly" ? "qtr" : "mo"}</small>}
+                </div>
+                <Button block href="/login?next=/pricing" variant={tier.highlight ? "primary" : "secondary"}>
+                  {tier.tier === "free" ? tr("pricing.startFree", "Start free") : `${tr("pricing.choose", "Choose")} ${tier.name}`}
+                </Button>
+              </article>
+            ))}
+          </div>
+
+          <section className="counter-pricing-comparison" aria-labelledby="pricing-comparison-title">
+            <header className="counter-support-heading">
+              <h2 id="pricing-comparison-title">{tr("pricing.compare", "Compare capabilities")}</h2>
+              <p>See what each company plan makes available before choosing.</p>
+            </header>
+
+            {loading ? (
+              <div className="counter-pricing-loading" aria-label="Loading plan capabilities" />
+            ) : grouped.length === 0 ? (
+              <p className="counter-public-state">{tr("pricing.catalogSetup", "Feature catalog is being set up.")}</p>
+            ) : (
+              <div className="counter-pricing-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">{tr("pricing.capability", "Capability")}</th>
+                      {tiers.map((tier) => <th scope="col" key={tier.tier}>{tier.name}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {grouped.map(([group, items]) => (
+                      <React.Fragment key={group}>
+                        <tr className="counter-pricing-group"><th colSpan={4} scope="colgroup">{group}</th></tr>
+                        {items.map((feature) => (
+                          <tr key={feature.id}>
+                            <th scope="row">{feature.name}</th>
+                            {TIER_KEYS.map((tier) => (
+                              <td key={tier}>
+                                {hasTier(feature, tier) ? <span className="is-included" aria-label="Included">✓</span> : <span className="is-excluded" aria-label="Not included">—</span>}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        </div>
+      </section>
+
+      <section className="counter-pricing-close">
+        <div className="counter-support-shell">
+          <div><h2>{tr("pricing.readyToSell", "Ready to represent your company?")}</h2><p>{tr("pricing.readySubtitle", "Create the public record your customers and applicants should see.")}</p></div>
+          <div className="counter-support-actions">
+            <Button href="/sell" variant="primary" size="lg">{tr("cta.startSelling", "Start your company record")}</Button>
+            <Button href="/features" variant="secondary" size="lg">{tr("pricing.exploreFeatures", "Explore features")}</Button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

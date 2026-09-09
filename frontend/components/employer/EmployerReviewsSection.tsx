@@ -189,7 +189,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
             rows={4}
           />
           <div>
-            <Button type="submit" variant="green" disabled={submitting}>
+            <Button type="submit" variant="brand" disabled={submitting}>
               {submitting ? "Submitting…" : myReview ? "Update review" : "Submit review"}
             </Button>
           </div>

@@ -184,7 +184,8 @@ export default function FloatingRfqButton() {
   // Placed after every hook so hook order stays stable across the pathname
   // changes that flip this — same pattern ChatAssistant's own feature flag
   // check uses.
-  if (!isDirectoryPage(pathname) || pathname === "/rfq") {
+  const companyFirstRoute = pathname === "/directory" || pathname === "/search" || pathname.startsWith("/seller/");
+  if (!isDirectoryPage(pathname) || pathname === "/rfq" || companyFirstRoute) {
     return null;
   }
 

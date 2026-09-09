@@ -25,22 +25,22 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Hi! I'm the BharatSource assistant. Tell me what you're sourcing — a product, a service, a vendor in your city — or ask how to sell. I'll point you the right way.",
+    "Hi! I'm the Bharat Navya assistant. Tell me what kind of company, service, or role you need and I'll point you to Directory or Recruitment.",
 };
 
 // Client-side quick starters (fill + send). API suggestions come back as links.
 const QUICK_PROMPTS = [
-  "Find electronics suppliers",
-  "Services near me",
-  "How do I sell on BharatSource?",
-  "Post a requirement (RFQ)",
+  "Find a GST consultant",
+  "Technology companies near me",
+  "Show remote operations roles",
+  "How do I list my company?",
 ];
 
-function SparkleIcon({ size = 16 }: { size?: number }) {
+function AssistantIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3l1.8 4.6L18.5 9.5 13.8 11.4 12 16l-1.8-4.6L5.5 9.5l4.7-1.9L12 3z" />
-      <path d="M19 14l.7 1.8L21.5 16.5l-1.8.7L19 19l-.7-1.8L16.5 16.5l1.8-.7L19 14z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 18.5 3.5 21l4.1-1.2c1.3.8 2.8 1.2 4.4 1.2 5 0 9-3.8 9-8.5S17 4 12 4s-9 3.8-9 8.5c0 2.3.8 4.3 2 6Z" />
+      <path d="M8 10h8M8 14h5" />
     </svg>
   );
 }
@@ -70,6 +70,8 @@ export default function ChatAssistant() {
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
 
   // Auto-scroll to the latest message.
   useEffect(() => {
@@ -78,9 +80,17 @@ export default function ChatAssistant() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, loading, open]);
 
-  // Focus the input when the panel opens.
+  // Match the frozen shell: focus the close control, support Escape, and
+  // restore focus to the trigger after the drawer closes.
   useEffect(() => {
-    if (open) inputRef.current?.focus();
+    if (!open) return;
+    closeRef.current?.focus();
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") closeAssistant();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Close on route change so navigation via a suggestion feels clean.
@@ -140,49 +150,57 @@ export default function ChatAssistant() {
 
   const showQuickPrompts = messages.length === 1;
 
+  function closeAssistant() {
+    setOpen(false);
+    window.requestAnimationFrame(() => triggerRef.current?.focus());
+  }
+
   return (
     <>
       {/* Floating bubble */}
       {!open && (
         <button
+          ref={triggerRef}
           type="button"
-          aria-label="Open assistant"
+          aria-label="Open Bharat Navya assistant"
+          aria-expanded={open}
+          aria-controls="bharat-navya-assistant"
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-4 z-[120] inline-flex h-14 w-14 items-center justify-center rounded-full text-white shadow-pop transition-transform hover:scale-105 active:scale-95"
-          style={{ background: "linear-gradient(135deg,#2563EB,#F97316)" }}
+          className="fixed bottom-6 right-6 z-[120] inline-flex h-[52px] w-[52px] items-center justify-center rounded-full text-white shadow-pop transition-transform hover:-translate-y-0.5 active:translate-y-0"
+          style={{ background: "#172033" }}
         >
-          <SparkleIcon size={24} />
+          <AssistantIcon size={23} />
         </button>
       )}
 
       {/* Chat panel — full-width sheet on mobile, floating panel on desktop */}
       {open && (
         <div
+          id="bharat-navya-assistant"
           role="dialog"
-          aria-label="BharatSource assistant"
+          aria-modal="false"
+          aria-label="Bharat Navya assistant"
           className="fixed z-[120] flex flex-col overflow-hidden border border-border bg-surface shadow-pop
                      inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
                      sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:h-[560px] sm:max-h-[calc(100vh-2.5rem)]"
         >
           {/* Header */}
-          <div
-            className="flex items-center gap-2.5 px-4 py-3 text-white flex-shrink-0"
-            style={{ background: "linear-gradient(135deg,#2563EB,#F97316)" }}
-          >
-            <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/20">
-              <SparkleIcon size={18} />
+          <div className="flex flex-shrink-0 items-center gap-2.5 border-b border-border bg-surface px-4 py-3 text-ink">
+            <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand">
+              <AssistantIcon size={18} />
             </span>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight">Assistant</div>
-              <div className="text-[11px] leading-tight text-white/80">
+              <div className="text-[11px] leading-tight text-muted">
                 {remaining !== null ? `AI · ${remaining} left this hour` : "Here to help you navigate"}
               </div>
             </div>
             <button
+              ref={closeRef}
               type="button"
               aria-label="Close assistant"
-              onClick={() => setOpen(false)}
-              className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-white/90 hover:bg-white/15"
+              onClick={closeAssistant}
+              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink"
             >
               <CloseIcon />
             </button>
@@ -214,7 +232,7 @@ export default function ChatAssistant() {
                           key={`${i}-r-${j}`}
                           href={r.href || "#"}
                           onClick={() => setOpen(false)}
-                          className="flex flex-col gap-0.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-bg-subtle"
+                          className="flex min-h-11 flex-col justify-center gap-0.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-bg-subtle"
                         >
                           <span className="truncate text-sm font-medium text-ink">{r.title}</span>
                           {r.subtitle && <span className="truncate text-xs text-muted">{r.subtitle}</span>}
@@ -230,7 +248,7 @@ export default function ChatAssistant() {
                           key={`${i}-${j}`}
                           href={s.href || "#"}
                           onClick={() => setOpen(false)}
-                          className="inline-flex max-w-full items-center gap-1 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-xs font-medium text-brand-hover transition-colors hover:bg-brand hover:text-white"
+                          className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-xs font-medium text-brand-hover transition-colors hover:bg-brand hover:text-white"
                         >
                           <span className="truncate">{s.label}</span>
                         </Link>
@@ -249,7 +267,7 @@ export default function ChatAssistant() {
                     key={q}
                     type="button"
                     onClick={() => send(q)}
-                    className="inline-flex max-w-full items-center rounded-full border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-faint hover:text-ink"
+                    className="inline-flex min-h-11 max-w-full items-center rounded-full border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-faint hover:text-ink"
                   >
                     <span className="truncate">{q}</span>
                   </button>
@@ -292,7 +310,7 @@ export default function ChatAssistant() {
               type="submit"
               aria-label="Send"
               disabled={loading || !input.trim()}
-              className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-white transition-colors disabled:opacity-50"
+              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-white transition-colors disabled:opacity-50"
               style={{ background: "var(--brand)" }}
             >
               <SendIcon />
@@ -300,7 +318,7 @@ export default function ChatAssistant() {
           </form>
 
           {error && (
-            <div className="px-4 pb-2 text-[11px] text-error flex-shrink-0" role="alert">
+            <div className="px-4 pb-2 text-[11px] text-error flex-shrink-0" role="alert" aria-live="assertive">
               {error}
             </div>
           )}

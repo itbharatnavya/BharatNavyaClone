@@ -53,7 +53,7 @@ export default function BlogArticlePage({
 
   if (loading) {
     return (
-      <div className="container-bs section-pad-sm" style={{ maxWidth: 760 }}>
+      <div className="counter-public-page counter-article container-bs section-pad-sm" style={{ maxWidth: 760 }}>
         <div className="skeleton" style={{ height: 20, width: 240, marginBottom: 20 }} />
         <div className="skeleton" style={{ height: 40, width: "90%", marginBottom: 12 }} />
         <div className="skeleton" style={{ height: 280, width: "100%", marginTop: 20 }} />
@@ -64,7 +64,7 @@ export default function BlogArticlePage({
   if (error || !blog) {
     return (
       <div
-        className="container-bs section-pad"
+        className="counter-public-page counter-article container-bs section-pad"
         style={{ maxWidth: 640, textAlign: "center" }}
       >
         <h1 style={{ fontSize: 24, fontWeight: 700 }}>{t("blog.notFound", "Article not found")}</h1>
@@ -81,7 +81,7 @@ export default function BlogArticlePage({
   }
 
   const isEmployerAuthor = author?.type === "employer";
-  const vendorName = author?.name || (isEmployerAuthor ? "A company on BharatSource" : "BharatSource Seller");
+  const vendorName = author?.name || (isEmployerAuthor ? "A company on Bharat Navya" : "Bharat Navya company");
   const vendorSlug = author?.slug;
   // Employer authors link to their /employer/<slug> profile, not /seller/<slug> —
   // build plan Phase 7, needed once /recruitment/blog started linking articles here.
@@ -91,7 +91,7 @@ export default function BlogArticlePage({
   const aboutText = profile?.seller?.about;
 
   return (
-    <article className="container-bs section-pad-sm" style={{ maxWidth: 760 }}>
+    <article className="counter-public-page counter-article container-bs section-pad-sm" style={{ maxWidth: 760 }}>
       <Breadcrumbs
         items={[
           isEmployerAuthor ? { label: "Recruitment blog", href: "/recruitment/blog" } : { label: "Blog", href: "/blog" },
@@ -161,7 +161,7 @@ export default function BlogArticlePage({
         <div
           style={{
             marginTop: 24,
-            borderRadius: 14,
+            borderRadius: 0,
             overflow: "hidden",
             border: "1px solid var(--border)",
           }}
@@ -279,27 +279,28 @@ export default function BlogArticlePage({
         .blog-prose ul, .blog-prose ol { padding-left: 24px; }
         .blog-prose li { margin-bottom: 6px; }
         .blog-prose blockquote {
-          border-left: 3px solid var(--brand);
-          padding-left: 16px;
+          border: 0;
+          padding: 16px;
+          background: var(--bg-subtle);
           color: var(--muted);
           font-style: italic;
         }
         .blog-prose code {
           background: var(--bg-subtle);
           border: 1px solid var(--border);
-          border-radius: 6px;
+          border-radius: 0;
           padding: 2px 6px;
           font-size: 0.9em;
         }
         .blog-prose pre {
           background: var(--bg-subtle);
           border: 1px solid var(--border);
-          border-radius: 10px;
+          border-radius: 0;
           padding: 16px;
           overflow-x: auto;
         }
         .blog-prose pre code { background: transparent; border: none; padding: 0; }
-        .blog-prose img { max-width: 100%; border-radius: 10px; margin: 8px 0; }
+        .blog-prose img { max-width: 100%; border-radius: 0; margin: 8px 0; }
         .blog-prose hr { border: none; border-top: 1px solid var(--border); }
         .blog-prose table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
         .blog-prose th, .blog-prose td {
@@ -310,7 +311,7 @@ export default function BlogArticlePage({
         .vendor-card {
           margin-top: 36px;
           border: 1px solid var(--border);
-          border-radius: 14px;
+          border-radius: 0;
           padding: 20px;
           background: var(--bg-subtle);
         }

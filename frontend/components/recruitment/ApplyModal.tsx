@@ -14,6 +14,7 @@ import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 import Button from "@/components/Button";
+import ApplicationStepper from "@/components/recruitment/ApplicationStepper";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
 import { applyToJob } from "@/lib/api";
@@ -27,7 +28,7 @@ interface Props {
   onApplied: () => void;
 }
 
-type Step = "questions" | "note" | "review";
+type Step = "questions" | "note" | "profile" | "review";
 
 function CheckIcon() {
   return (
@@ -73,6 +74,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
   const steps: Step[] = [
     ...(questions.length ? (["questions"] as Step[]) : []),
     "note",
+    "profile",
     "review",
   ];
   const step = steps[Math.min(stepIndex, steps.length - 1)];
@@ -139,7 +141,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
         blocked ? (
           <>
             <Button variant="secondary" onClick={close}>Cancel</Button>
-            <Button variant="green" href="/recruitment/dashboard?tab=profile" onClick={close}>
+            <Button variant="brand" href="/recruitment/dashboard?tab=profile" onClick={close}>
               Go to profile
             </Button>
           </>
@@ -150,16 +152,17 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
             )}
             <Button variant="secondary" onClick={close} disabled={submitting}>Cancel</Button>
             {isLast ? (
-              <Button variant="green" onClick={submit} disabled={submitting}>
+              <Button variant="brand" onClick={submit} disabled={submitting}>
                 {submitting ? "Sending…" : "Submit application"}
               </Button>
             ) : (
-              <Button variant="green" onClick={goNext}>Continue</Button>
+              <Button variant="brand" onClick={goNext}>Continue</Button>
             )}
           </>
         )
       }
     >
+      {!blocked && <ApplicationStepper steps={steps.map((item) => item === "questions" ? "Questions" : item === "note" ? "Cover note" : item === "profile" ? "Profile" : "Review")} activeIndex={stepIndex} />}
       {blocked && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ fontSize: 13.5, color: "var(--muted)" }}>
@@ -219,6 +222,20 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
             placeholder="Why you're a good fit for this role…"
             maxLength={4000}
           />
+        </div>
+      )}
+
+      {!blocked && step === "profile" && (
+        <div style={{ display: "grid", gap: 14 }}>
+          <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>
+            Confirm the profile and résumé that {companyName} will receive.
+          </p>
+          <div style={{ padding: 16, border: "1px solid var(--bn-border)", borderRadius: "var(--bn-radius-control)", background: "var(--bn-neutral-100)", display: "grid", gap: 8 }}>
+            <strong>{user.name}</strong>
+            <span>{cp?.headline || cp?.currentRole || "Candidate profile"}</span>
+            <small style={{ color: "var(--muted)" }}>{cp?.skills?.slice(0, 5).join(" · ") || "Skills are stored on your profile"}</small>
+            {resumeUrl ? <a href={resumeUrl} target="_blank" rel="noreferrer" style={{ color: "var(--bn-action)", fontWeight: 700 }}>Preview résumé ↗</a> : <span style={{ color: "var(--error)" }}>Résumé not available</span>}
+          </div>
         </div>
       )}
 

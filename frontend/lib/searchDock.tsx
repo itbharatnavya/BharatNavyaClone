@@ -1,12 +1,12 @@
 "use client";
 
-// SearchDock — lets the Directory homepage hero (components/home/HomeHero.tsx)
-// tell the global Navbar (components/Navbar.tsx) how far its search has
+// SearchDock lets each public search surface tell the global Navbar
+// (components/Navbar.tsx) how far its primary search has
 // scrolled out of view, as a continuous 0→1 `progress` rather than a single
 // on/off flip, so the compact search bar can visibly slide/fade into the
-// sticky main navbar row instead of just popping in. Directory
-// homepage is the only publisher today; Navbar just renders whatever it's
-// told, and defaults to "not docked" everywhere else.
+// sticky main navbar row instead of just popping in. Home, Directory,
+// Recruitment and their results workbenches publish this state; Navbar
+// renders the route-appropriate compact search.
 //
 // It also holds the shared `query`/`city` the hero search box and the
 // navbar's docked copy both read/write through as CONTROLLED AISearchBar
@@ -57,12 +57,16 @@ interface SearchDockValue {
   // there. `chips` (Directory example searches) stays Directory-only too.
   roleQuery: string;
   roleCity: string;
+  roleWorkplace: string;
+  universalQuery: string;
   setProgress: (progress: number, chips?: string[]) => void;
   setQuery: (query: string) => void;
   setCity: (city: string) => void;
   setSelectedCategory: (category: SelectedCategory | null) => void;
   setRoleQuery: (query: string) => void;
   setRoleCity: (city: string) => void;
+  setRoleWorkplace: (workplace: string) => void;
+  setUniversalQuery: (query: string) => void;
   // Call immediately before a `router.push` that a real search action (submit,
   // or picking a category/listing suggestion) triggers — see file header.
   markSearchNav: () => void;
@@ -77,12 +81,16 @@ const SearchDockContext = createContext<SearchDockValue>({
   selectedCategory: null,
   roleQuery: "",
   roleCity: "",
+  roleWorkplace: "All workplaces",
+  universalQuery: "",
   setProgress: () => {},
   setQuery: () => {},
   setCity: () => {},
   setSelectedCategory: () => {},
   setRoleQuery: () => {},
   setRoleCity: () => {},
+  setRoleWorkplace: () => {},
+  setUniversalQuery: () => {},
   markSearchNav: () => {},
 });
 
@@ -94,6 +102,8 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
   const [selectedCategory, setSelectedCategory] = useState<SelectedCategory | null>(null);
   const [roleQuery, setRoleQuery] = useState("");
   const [roleCity, setRoleCity] = useState("");
+  const [roleWorkplace, setRoleWorkplace] = useState("All workplaces");
+  const [universalQuery, setUniversalQuery] = useState("");
 
   const pathname = usePathname();
   const pendingSearchNavRef = useRef(false);
@@ -105,14 +115,21 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
       pendingSearchNavRef.current = false; // expected — a real search action drove this navigation
       return;
     }
-    // Some other navigation (plain link/tile/mega-menu/back-button) — the
-    // previous page's search state must not leak onto a page nobody searched for.
-    setQuery("");
+    // A route-specific category chip must not leak onto unrelated pages.
+    // Section query state intentionally survives so detail visits and browser
+    // Back restore the last intent.
     setSelectedCategory(null);
-    setRoleQuery("");
+    // Keep the two section-search states intact so browser Back and a detail
+    // visit restore the user's last intent. Directory and Recruitment use
+    // separate fields, so retaining them cannot leak one product's query into
+    // the other. Category chips remain route-specific and are cleared.
   }, [pathname]);
   const markSearchNav = useCallback(() => {
     pendingSearchNavRef.current = true;
+  }, []);
+  const setProgress = useCallback((p: number, c?: string[]) => {
+    setProgressState(p);
+    if (c) setChips(c);
   }, []);
 
   const value = useMemo<SearchDockValue>(
@@ -125,18 +142,19 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
       selectedCategory,
       roleQuery,
       roleCity,
-      setProgress: (p, c) => {
-        setProgressState(p);
-        if (c) setChips(c);
-      },
+      roleWorkplace,
+      universalQuery,
+      setProgress,
       setQuery,
       setCity,
       setSelectedCategory,
       setRoleQuery,
       setRoleCity,
+      setRoleWorkplace,
+      setUniversalQuery,
       markSearchNav,
     }),
-    [progress, chips, query, city, selectedCategory, roleQuery, roleCity, markSearchNav]
+    [progress, chips, query, city, selectedCategory, roleQuery, roleCity, roleWorkplace, universalQuery, markSearchNav, setProgress]
   );
 
   return <SearchDockContext.Provider value={value}>{children}</SearchDockContext.Provider>;

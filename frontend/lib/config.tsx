@@ -65,9 +65,9 @@ const DEFAULT_FLAGS: FeatureFlags = {
 };
 
 const DEFAULT_BRANDING: Branding = {
-  siteName: "BharatSource",
-  tagline: "India's business suite — source smart, hire right.",
-  logoText: "BharatSource",
+  siteName: "Bharat Navya",
+  tagline: "Companies, work and opportunity—connected.",
+  logoText: "Bharat Navya",
 };
 
 const DEFAULT_HOMEPAGE: HomepageConfig = {
@@ -114,7 +114,16 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<ConfigContextValue>(
     () => ({
       // Merge fetched config over defaults so any missing key falls back safely.
-      branding: { ...DEFAULT_BRANDING, ...(config?.branding || {}) },
+      // Public migration contract: the backend still carries the legacy
+      // suite name, while the frontend brand is Bharat Navya. Keep the API
+      // shape and every other remotely-managed branding field compatible.
+      branding: {
+        ...DEFAULT_BRANDING,
+        ...(config?.branding || {}),
+        siteName: "Bharat Navya",
+        logoText: "Bharat Navya",
+        tagline: "Companies, work and opportunity—connected.",
+      },
       homepage: { ...DEFAULT_HOMEPAGE, ...(config?.homepage || {}) },
       featureFlags: { ...DEFAULT_FLAGS, ...(config?.featureFlags || {}) },
       contact: { ...DEFAULT_CONTACT, ...(config?.contact || {}) },

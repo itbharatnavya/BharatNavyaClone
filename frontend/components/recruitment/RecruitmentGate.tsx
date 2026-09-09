@@ -17,7 +17,8 @@ import RecruitmentComingSoon from "./RecruitmentComingSoon";
 
 export default function RecruitmentGate({ children }: { children: React.ReactNode }) {
   const { featureFlags } = useConfig();
-  if (!featureFlags.recruitmentLive) {
+  const designPreview = process.env.NEXT_PUBLIC_RECRUITMENT_DESIGN_PREVIEW === "true";
+  if (!designPreview && !featureFlags.recruitmentLive) {
     return <RecruitmentComingSoon />;
   }
   return <>{children}</>;
