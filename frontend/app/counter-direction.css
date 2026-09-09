@@ -1082,6 +1082,146 @@
 .le-journey b { color: var(--counter-saffron); }
 .le-journey p { color: var(--counter-on-ink); }
 
+/* Supporting-page decision journeys: one route, one focused explanation. */
+.bn-decision-journey {
+  --journey-accent: var(--counter-saffron);
+  padding: clamp(3.25rem, 6vw, 5.5rem) 0;
+  background: var(--counter-ink);
+  color: white;
+}
+
+.bn-decision-journey.is-directory { --journey-accent: var(--counter-green); }
+
+.bn-decision-journey-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.bn-decision-journey-head h2 {
+  max-width: 22ch;
+  font-size: clamp(2.25rem, 4.6vw, 4.75rem);
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.bn-decision-journey-head > span {
+  flex: 0 0 auto;
+  color: var(--counter-on-ink);
+  font-size: 0.8rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.bn-decision-journey-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  border-block: 1px solid #343846;
+}
+
+.bn-decision-journey-track button {
+  position: relative;
+  min-height: 5.5rem;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-right: 1px solid #343846;
+  background: transparent;
+  color: var(--counter-on-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 180ms ease-out, color 180ms ease-out;
+}
+
+.bn-decision-journey-track button:last-child { border-right: 0; }
+.bn-decision-journey-track button:hover { color: white; }
+
+.bn-decision-journey-track button::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--journey-accent);
+  opacity: 0;
+}
+
+.bn-decision-journey-track button[aria-pressed="true"] {
+  background: var(--journey-accent);
+  color: var(--counter-ink);
+}
+
+.bn-decision-journey.is-directory .bn-decision-journey-track button[aria-pressed="true"] {
+  color: white;
+}
+
+.bn-decision-journey-track button[aria-pressed="true"]::after { opacity: 1; }
+
+.bn-decision-journey-track button b {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.bn-decision-journey-track button span {
+  font-family: var(--font-anek-latin), sans-serif;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  font-weight: 750;
+}
+
+.bn-decision-journey-focus {
+  min-height: 10.5rem;
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr) 4rem;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
+}
+
+.bn-decision-journey-mark {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  background: var(--journey-accent);
+  font-family: var(--font-anek-latin), sans-serif;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.bn-decision-journey-focus h3 {
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.bn-decision-journey-focus p {
+  max-width: 52ch;
+  margin-top: 0.4rem;
+  color: #555c6c;
+  font-size: clamp(0.92rem, 1.3vw, 1.08rem);
+  line-height: 1.55;
+}
+
+.bn-decision-journey-focus svg {
+  width: 3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.bn-decision-journey.is-directory .bn-decision-journey-mark { color: white; }
+
 .le-closing,
 .directory-closing,
 .recruitment-closing {
@@ -1248,6 +1388,14 @@
   .bn-home-journey-head p { max-width: 38rem; }
   .bn-home-journey-focus { grid-template-columns: minmax(7rem, 0.22fr) minmax(0, 0.78fr); }
   .bn-home-journey-map { grid-column: 1 / -1; min-height: 12rem; }
+  .bn-decision-journey-track button {
+    min-height: 5rem;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.35rem;
+    text-align: center;
+  }
+  .bn-decision-journey-focus { grid-template-columns: 7rem minmax(0, 1fr) 3rem; }
 }
 
 @media (max-width: 640px) {
@@ -1334,6 +1482,38 @@
   .bn-home-journey-map { min-height: 6.25rem; padding: 1rem; }
   .bn-home-journey-map-line { left: 1.25rem; right: 1.25rem; }
   .bn-home-journey-map > span:not(.bn-home-journey-map-line) { gap: 0.8rem; font-size: 0.58rem; }
+  .bn-decision-journey { padding: 3rem 0; }
+  .bn-decision-journey-head {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .bn-decision-journey-head h2 { font-size: clamp(2.25rem, 11vw, 3.15rem); }
+  .bn-decision-journey-track {
+    grid-template-columns: repeat(4, minmax(8.25rem, 1fr));
+    overflow-x: auto;
+    margin-top: 1.75rem;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+  .bn-decision-journey-track button {
+    min-height: 4.75rem;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    justify-items: start;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+  }
+  .bn-decision-journey-focus {
+    min-height: 9rem;
+    grid-template-columns: 4.75rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .bn-decision-journey-mark { font-size: 2rem; }
+  .bn-decision-journey-focus > div { padding-block: 1rem; }
+  .bn-decision-journey-focus h3 { font-size: 1.8rem; }
+  .bn-decision-journey-focus p { font-size: 0.88rem; line-height: 1.45; }
+  .bn-decision-journey-focus svg { display: none; }
   .le-page .bn-universal-search form,
   .le-page .bn-section-search--hero,
   .directory-results-head .directory-search {

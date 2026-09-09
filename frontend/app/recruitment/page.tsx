@@ -8,6 +8,7 @@ import UpdateRail from "@/components/evidence/UpdateRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
+import DecisionJourney from "@/components/evidence/DecisionJourney";
 import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
 import { RecruitmentSectionSearch } from "@/components/SectionSearchDock";
 import { getBlogs, getJobFunctions, getJobs, getStories } from "@/lib/api";
@@ -88,7 +89,17 @@ export default function RecruitmentPage() {
 
     <AdvertisingSlot kind="native" context="Recruitment promotion" title="Hiring for a growing team? Show candidates the context that matters." summary="Publish a role with clear salary, workplace, process and closure expectations. The placement remains separate from organic role ranking." href="/post-job" action="Post a transparent role" media={{ src: "/seed-media/company/company-5.jpg", alt: "A hiring team discussing an open role", kind: "team", source: "prototype", attribution: "Prototype sponsored creative" }} />
 
-    <section className="le-journey-wrap" aria-labelledby="application-journey-title"><div className="le-shell"><h2 id="application-journey-title">An application path with an outcome.</h2><div className="le-journey">{[["01","Inspect","Review pay, company, freshness and process."],["02","Apply","Answer focused questions and review the submission."],["03","Follow","See interviews, requests and stage updates."],["04","Close","Hires, withdrawals and rejections stay explicit."]].map(([n,t,b]) => <article key={n}><b>{n}</b><h3>{t}</h3><p>{b}</p></article>)}</div></div></section>
+    <DecisionJourney
+      id="application-journey-title"
+      title="An application path with an outcome."
+      context="recruitment"
+      steps={[
+        { label: "Inspect", detail: "Review pay, company, freshness and process." },
+        { label: "Apply", detail: "Answer focused questions and review the submission." },
+        { label: "Follow", detail: "See interviews, requests and stage updates." },
+        { label: "Close", detail: "Hires, withdrawals and rejections stay explicit." },
+      ]}
+    />
 
     <section className="le-section" aria-labelledby="hiring-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-updates-title">Know more before you apply.</h2></div><Link className="le-button" href="/recruitment/blog">View career guides</Link></header>{updates.length ? <UpdateFeature updates={updates} title="Hiring updates and guides" /> : <div className="le-empty">Recruiter updates and workplace media will appear here when published.</div>}</div></section>
 
