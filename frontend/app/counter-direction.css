@@ -453,6 +453,18 @@
   background: var(--counter-ivory);
 }
 
+/* Hero copy is white, so form controls must explicitly return to dark ink.
+   Otherwise the universal search inherits white and typed queries disappear
+   against the ivory field. Keep placeholders readable as well. */
+.le-page :is(.bn-universal-search, .bn-section-search) :is(input, select) {
+  color: var(--counter-ink);
+}
+
+.le-page :is(.bn-universal-search, .bn-section-search) input::placeholder {
+  color: var(--counter-muted);
+  opacity: 1;
+}
+
 .recruitment-core .rsb-submit {
   border-radius: 0 !important;
   background: var(--counter-saffron) !important;

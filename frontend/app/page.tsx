@@ -115,7 +115,7 @@ export default function BharatNavyaHome() {
       frame = 0;
       if (reducedMotion.matches) return;
 
-      const headerOffset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bn-header-height")) || 68;
+      const headerOffset = document.querySelector<HTMLElement>(".bn-header")?.getBoundingClientRect().height || 68;
       const stickyHeight = Math.max(window.innerHeight - headerOffset, 1);
       const travel = Math.max(section.offsetHeight - stickyHeight, 1);
       const progress = Math.min(Math.max((headerOffset - section.getBoundingClientRect().top) / travel, 0), 1);
@@ -148,7 +148,7 @@ export default function BharatNavyaHome() {
     const section = journeyScrollRef.current;
     if (!section || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const headerOffset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--bn-header-height")) || 68;
+    const headerOffset = document.querySelector<HTMLElement>(".bn-header")?.getBoundingClientRect().height || 68;
     const stickyHeight = Math.max(window.innerHeight - headerOffset, 1);
     const travel = Math.max(section.offsetHeight - stickyHeight, 1);
     const targetProgress = (index + 0.5) / journey.length;
