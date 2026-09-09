@@ -419,16 +419,18 @@
 
 .le-hero h1 {
   max-width: 14ch;
-  margin: 0;
+  margin: 0 auto;
   color: white;
   font-size: clamp(3.4rem, 6.2vw, 5.4rem);
   line-height: 0.92;
+  text-align: center;
 }
 
 .le-hero > div > p:not(.le-destination-label) {
   max-width: 48rem;
-  margin: 1.25rem 0 0;
+  margin: 1.25rem auto 0;
   color: var(--counter-on-indigo);
+  text-align: center;
 }
 
 .le-hero-search {
