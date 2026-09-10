@@ -98,8 +98,10 @@ export default function ChatAssistant() {
     setOpen(false);
   }, [pathname]);
 
-  // Feature-gated (default on). Placed after hooks so hook order stays stable.
-  if (featureFlags.ai === false) return null;
+  // Feature-gated (default on). Task-heavy workspaces keep the assistant out of
+  // the way of forms, tables and persistent actions; hooks stay above this gate.
+  const workspaceRoute = pathname === "/login" || pathname === "/register" || pathname === "/sell" || pathname === "/post-job" || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/profile" || pathname === "/shortlist" || pathname === "/admin" || pathname.startsWith("/admin/");
+  if (featureFlags.ai === false || workspaceRoute) return null;
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -279,9 +281,9 @@ export default function ChatAssistant() {
               <div className="flex justify-start">
                 <div className="rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3 text-sm text-faint">
                   <span className="inline-flex gap-1">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:-0.2s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:-0.1s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint [animation-delay:-0.4s]" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint [animation-delay:-0.2s]" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint" />
                   </span>
                 </div>
               </div>

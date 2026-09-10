@@ -396,6 +396,7 @@ export default function DashboardShell() {
         return (
           <button
             key={t.id}
+            className={`counter-workspace-nav-item ${isActive ? "is-active" : ""}`}
             onClick={() => setTab(t.id)}
             style={{
               display: "flex",
@@ -482,7 +483,7 @@ export default function DashboardShell() {
   }
 
   return (
-    <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 64 }}>
+    <div className="container-bs counter-dashboard-page counter-directory-dashboard" style={{ paddingTop: 28, paddingBottom: 64 }}>
       {/* header strip */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
         <Avatar name={user.name} src={user.avatarUrl} size={44} />

@@ -37,6 +37,7 @@ export default function Navbar() {
     && pathname !== "/recruitment/dashboard"
     && !pathname.startsWith("/recruitment/dashboard/");
   const counterPublic = pathname === "/" || pathname === "/about" || pathname === "/pricing" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
+  const counterWorkspace = pathname === "/login" || pathname === "/register" || pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/sell" || pathname === "/post-job" || pathname === "/profile" || pathname === "/shortlist";
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Navbar() {
   }, [searchDocked]);
 
   return (
-    <header className={`bn-header ${counterPublic ? "is-counter-public" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
+    <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" />
@@ -65,7 +66,7 @@ export default function Navbar() {
         {homeDocked && <UniversalDockedSearch />}
         <div className="bn-header-actions">
           {!loading && user && featureFlags.notifications && <NotificationBell />}
-          {!loading && !user && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
+          {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
           {!loading && user && <div className="bn-account" ref={accountRef}>
             <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}><Avatar name={user.name} size={40} /></button>
             {accountOpen && <div className="bn-account-menu"><strong>{user.name}</strong><Link href="/dashboard">Directory workspace</Link><Link href="/recruitment/dashboard">Recruitment workspace</Link><button type="button" onClick={logout}>Sign out</button></div>}

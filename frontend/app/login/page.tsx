@@ -174,10 +174,10 @@ export default function LoginPage() {
   if (authLoading || redirecting) return null;
 
   return (
-    <div style={{ display: "flex", minHeight: "calc(100vh - 64px)" }}>
+    <div className="counter-auth-page counter-auth-login" style={{ display: "flex", minHeight: "calc(100vh - 64px)" }}>
       {/* Left brand panel */}
       <div
-        className="auth-aside"
+        className="auth-aside counter-auth-aside"
         style={{
           width: "44%",
           flexShrink: 0,
@@ -189,7 +189,7 @@ export default function LoginPage() {
           padding: 48,
         }}
       >
-        <div style={{ maxWidth: 380 }}>
+        <div className="counter-auth-aside-copy" style={{ maxWidth: 380 }}>
           <span className="eyebrow">{branding.siteName}</span>
           <h2
             style={{
@@ -200,17 +200,18 @@ export default function LoginPage() {
               color: "var(--ink)",
             }}
           >
-            {t("auth.login.welcome", "Welcome back.")}
+            {t("auth.login.welcome", "Return to clearer decisions.")}
           </h2>
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
             {branding.tagline ||
-              t("auth.login.asideCopy", "Source products, hire services and connect with trusted vendors across India.")}
+              t("auth.login.asideCopy", "Manage company listings, inquiries, jobs and applications through one connected account.")}
           </p>
         </div>
       </div>
 
       {/* Right form */}
       <div
+        className="counter-auth-form-zone"
         style={{
           flexGrow: 1,
           display: "flex",
@@ -219,14 +220,15 @@ export default function LoginPage() {
           padding: "48px 24px",
         }}
       >
-        <div style={{ width: "100%", maxWidth: 400 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Log in")}</h1>
-          <p style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
-            {t("auth.login.subtitle", "One account to buy, sell and chat.")}
+        <div className="counter-auth-form" style={{ width: "100%", maxWidth: 400 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Log in to Bharat Navya")}</h1>
+          <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
+            {t("auth.login.subtitle", "One account for Directory and Recruitment.")}
           </p>
 
           {/* Tabs */}
           <div
+            className="counter-auth-tabs"
             style={{
               display: "flex",
               gap: 28,
@@ -245,6 +247,7 @@ export default function LoginPage() {
                 <button
                   key={key}
                   type="button"
+                  aria-pressed={active}
                   onClick={() => setTab(key)}
                   style={{
                     background: "transparent",
@@ -270,6 +273,8 @@ export default function LoginPage() {
             stage === "mobile" ? (
               <div>
                 <Input
+                  id="login-mobile"
+                  name="mobile"
                   label={t("auth.mobileLabel", "Mobile number")}
                   type="tel"
                   inputMode="numeric"
@@ -346,6 +351,8 @@ export default function LoginPage() {
             <form onSubmit={handlePasswordLogin} noValidate>
               <div style={{ display: "grid", gap: 16 }}>
                 <Input
+                  id="login-email"
+                  name="email"
                   label={t("auth.email", "Email")}
                   type="email"
                   autoComplete="email"
@@ -358,6 +365,8 @@ export default function LoginPage() {
                   error={emailError}
                 />
                 <Input
+                  id="login-password"
+                  name="password"
                   label={t("auth.password", "Password")}
                   type="password"
                   autoComplete="current-password"
@@ -391,11 +400,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 860px) {
-          .auth-aside { display: none !important; }
-        }
-      `}</style>
     </div>
   );
 }

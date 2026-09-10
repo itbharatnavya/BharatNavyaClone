@@ -108,7 +108,7 @@ export default function AdminUserDetailPage() {
 
   if (authLoading) {
     return (
-      <div className="container-bs flex min-h-[60vh] items-center justify-center">
+      <div className="container-bs flex min-h-[60vh] items-center justify-center counter-admin-page">
         <span
           className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-border"
           style={{ borderTopColor: "var(--brand)" }}
@@ -129,7 +129,7 @@ export default function AdminUserDetailPage() {
   const isAdminAccount = !!u && (u.roles || []).includes("admin");
 
   return (
-    <div className="container-bs py-8">
+    <div className="container-bs py-8 counter-admin-page">
       <button
         type="button"
         onClick={goBack}

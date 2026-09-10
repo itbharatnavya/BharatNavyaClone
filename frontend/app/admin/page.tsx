@@ -284,7 +284,7 @@ export default function AdminPage() {
   if (!isAdmin) return null;
 
   return (
-    <div className="container-bs py-8">
+    <div className="container-bs py-8 counter-admin-page">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="eyebrow mb-1">Admin</div>

@@ -30,12 +30,12 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="container-bs flex min-h-[70vh] items-center justify-center py-16">
+    <div className="container-bs flex min-h-[70vh] items-center justify-center py-16 counter-admin-login">
       <div className="w-full max-w-[400px]">
         <div className="card card-flat p-7">
           <div className="mb-6 text-center">
-            <div className="eyebrow mb-2">BharatSource</div>
-            <h1 className="text-h3 font-bold text-ink">Admin Control Center</h1>
+            <div className="counter-workspace-label mb-2">Bharat Navya operations</div>
+            <h1 className="text-h3 font-bold text-ink">Admin control centre</h1>
             <p className="mt-1 text-sm text-muted">
               Sign in with an admin account to manage the platform.
             </p>
