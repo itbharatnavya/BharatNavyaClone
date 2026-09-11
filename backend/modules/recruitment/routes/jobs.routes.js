@@ -37,6 +37,7 @@ const {
   VALID_JOB_STATUSES,
   VALID_EMPLOYMENT_TYPES,
   VALID_EXPERIENCE_LEVELS,
+  VALID_WORKPLACE_TYPES,
   jobsPaginationOf,
   toNumberOrNull,
   toBool,
@@ -70,6 +71,7 @@ router.get("/", async (req, res, next) => {
         city: req.query.city,
         state: req.query.state,
         remote: toBool(req.query.remote),
+        workplaceType: VALID_WORKPLACE_TYPES.has(req.query.workplaceType) ? req.query.workplaceType : "",
         minSalary: toNumberOrNull(req.query.minSalary),
         maxSalary: toNumberOrNull(req.query.maxSalary),
       },
@@ -137,6 +139,9 @@ router.post("/", authGuard, async (req, res, next) => {
     }
     if (b.experienceLevel && !VALID_EXPERIENCE_LEVELS.has(b.experienceLevel)) {
       return res.status(400).json({ success: false, error: "invalid experienceLevel" });
+    }
+    if (b.location && b.location.workplaceType && !VALID_WORKPLACE_TYPES.has(b.location.workplaceType)) {
+      return res.status(400).json({ success: false, error: "invalid location.workplaceType" });
     }
 
     const user = req.user;
@@ -217,6 +222,9 @@ router.put("/:id", authGuard, validateBody(updateJobSchema), async (req, res, ne
     }
     if (patch.experienceLevel !== undefined && patch.experienceLevel !== null && !VALID_EXPERIENCE_LEVELS.has(patch.experienceLevel)) {
       return res.status(400).json({ success: false, error: "invalid experienceLevel" });
+    }
+    if (patch.location && patch.location.workplaceType && !VALID_WORKPLACE_TYPES.has(patch.location.workplaceType)) {
+      return res.status(400).json({ success: false, error: "invalid location.workplaceType" });
     }
     if (patch.location !== undefined) patch.location = buildLocation(patch.location);
     if (patch.salaryRange !== undefined) patch.salaryRange = buildSalaryRange(patch.salaryRange);

@@ -54,6 +54,7 @@ import type {
   EmploymentType,
   ExperienceLevel,
   JobAnswer,
+  WorkplaceType,
 } from "./types";
 
 // Extend the shared AiSearchResult with the optional NEVER-BLANK `message` the AI
@@ -1724,6 +1725,7 @@ export interface JobQuery {
   city?: string;
   state?: string;
   remote?: boolean;
+  workplaceType?: WorkplaceType;
   minSalary?: number;
   maxSalary?: number;
   page?: number;

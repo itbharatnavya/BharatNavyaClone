@@ -333,13 +333,173 @@ plus Admin whenever `isAdmin`. `tsc` clean. Live-verified with 3 fresh throwaway
 | Recruiter on `/recruitment/dashboard` | Recruitment workspace, Sign out |
 | Candidate on `/directory` | Directory workspace, Directory profile, Sign out |
 
-**Still pending:** live-clicking the Admin link itself needs the seeded `admin@bharatsource.in`
-password (env-set, not known) or the owner's approval to reset it — not done. The `isAdmin` flag
-it depends on is the same one already proven correct gating `/admin` itself, so this is low risk.
+**Admin link live-verified 2026-09-11** (owner supplied the `admin@bharatsource.in` password).
+Account menu on `/` → `["My profile", "Admin", "Sign out"]`. `/admin` loads: Control Center, all
+3 sections (Global/Directory/Recruitment), Overview tab shows real live counts (Users 131,
+Sellers 61, Employers 21, Candidates 23, Listings 724 — not mock). 390px: 0px overflow, input
+text dark ink — no repeat of the home white-text bug. **Both owner-reported points fully closed.**
 
 Test accounts left in the local DB for future reference: `9000000011`/`9000000012`/`9000000013`
 (seller/recruiter/candidate, password `TestPass123!`) — harmless demo rows, delete via admin
 Users tab whenever convenient.
+
+---
+
+## Public page-by-page audit (in progress, 2026-09-11 onward)
+
+Owner is checking each redesigned public page one at a time — read-only checks first (findings
+logged here), fixes only after owner picks which bugs to act on. Directory public pages are
+**pending** — the UI dev has not pushed them yet (only login/register + Directory/Recruitment/
+Admin *workspace* pages so far). Recruitment is being checked now, page by page.
+
+### `/recruitment` (home) — checked, not fixed
+
+- **Search suggestions dropped.** Hero uses `RecruitmentSectionSearch`
+  (`components/SectionSearchDock.tsx`) — text input + city `<select>` + workplace `<select>` +
+  submit, **no autocomplete/suggestion dropdown**. Old page used `RoleSearchBar` — live
+  as-you-type suggestions (12 curated searches + job-function chips), full keyboard nav
+  (`role="combobox"`). A static 3-example "Popular searches" row remains below the bar, not an
+  interactive typeahead. `RoleSearchBar` itself still exists, still used on `/recruitment/jobs`.
+- **Workplace dropdown — "On-site"/"Hybrid" are silent no-ops.** City `<select>` options come
+  from the static `ALL_CITIES` list (`lib/indiaGeo.ts`, same list used app-wide) — verified all
+  12 real job cities match verbatim, city filter works correctly end to end. Workplace `<select>`
+  options (`All workplaces`/`On-site`/`Hybrid`/`Remote`) are hardcoded, and the backend has
+  **no "hybrid" concept at all** — only a boolean `remote` column. Live-verified: 47 total jobs,
+  `remote=true` → 5. `jobs/page.tsx` only checks `workplace === "remote"`, so picking "On-site"
+  or "Hybrid" silently returns all 47 jobs unfiltered — same as "All workplaces" — while implying
+  a filter was applied.
+- Already-known from the Pass 2 plan, still open: landing samples only 18 jobs for company role
+  counts (old used 50); 2 unused ad slots (`recruitment_home` 4 ads, `recruitment_search_top` 3
+  ads, both ready, neither called); live "open roles" total dropped; candidate testimonials
+  dropped (`getRecruitmentRecentReviews`, zero callers); literal `✓`/`×` glyphs in 3 spots
+  (`jobs/page.tsx:32,135`, `ApplicationStepper.tsx:11`) instead of inline SVG.
+- **Working correctly, live-verified:** apply gate (candidate-profile-complete — real modal,
+  matches RECRUITMENT.md), post-job gate (employer-profile-complete — real checklist), public
+  employer profile (`/employer/[slug]`, real data, 0px overflow at 390px), `/recruitment/jobs`'s
+  own filter+pagination (already fully wired to real `getJobs`).
+
+**Next:** owner to say whether to fix any of the above now or keep checking pages first
+(`/recruitment/jobs`, `/job/[id]`, `/employer/[slug]` individually, then Directory once pushed).
+
+### `/recruitment` search suggestions + workplace type — done 2026-09-11
+
+Two approved changes, both live-verified. **Correction mid-pass:** first attempt swapped the
+hero to `RoleSearchBar` (a different, already-built component) — owner corrected this: the UI
+dev's actual `RecruitmentSectionSearch` component must stay exactly as built; suggestions get
+added *into* it, not replaced. Reverted the swap, implemented as below.
+
+**1. Suggestion dropdown, added into `RecruitmentSectionSearch` itself**
+(`components/SectionSearchDock.tsx`) — the UI dev's own component, markup/layout/city-select/
+workplace-select/submit-button all untouched. Added: job-function fetch on mount, a shared
+`POPULAR_SEARCHES` list (exported from `RoleSearchBar.tsx` so there's one list, not a fork),
+client-side filtering as you type, full keyboard nav (arrows/enter/escape, `role="combobox"`),
+click-outside-close. Picking a popular search submits through the same city/workplace-aware
+`go()` the form itself uses; picking a job-function suggestion jumps straight to
+`/recruitment/jobs?jobFunction=<slug>` (mirrors `RoleSearchBar`'s existing convention). New CSS
+(`.bn-section-search-wrap/-dropdown/-dropdown-label/-opt`) added to `bharat-navya-home.css`
+next to the existing `.bn-section-search` rules, matching that file's tokens/minified style —
+`npm run validate:design` (the UI dev's own lint) passes. Because `RecruitmentDockedSearch` and
+the mobile drawer reuse this same component, they picked up suggestions too, at no extra cost.
+Live-verified: typing "sof" filters to "Software Engineer" under "Popular searches"; keyboard
+nav + Enter navigates to `/recruitment/jobs?q=...`; 0px overflow at 390px with the dropdown open.
+
+**2. Workplace type (on-site/hybrid/remote) — real field, backend to UI, in one pass:**
+- **Backend:** migration `0015_add_job_workplace_type.sql` adds `jobs.location_workplace_type`
+  (backfilled from the old boolean, indexed). `location_remote` is **kept**, not dropped —
+  `job.service.js`'s `buildLocation()` now derives it FROM `workplaceType` on every write, so
+  every existing boolean-only reader keeps working unmodified. Same free-text convention as
+  Directory's `listings.service_mode` ("onsite"/"hybrid"/"remote"), not a new naming style.
+  Wired through `flat.mappings.js` (one line — the generic repo does the rest), validated on
+  `POST`/`PUT /api/jobs` (400 on an invalid value, mirrors `employmentType`/`experienceLevel`),
+  and added as an independent filter on `GET /api/jobs` (`jobSearch.repository.js`) alongside
+  the untouched `remote` filter. Live-verified end to end via curl: create with `workplaceType`,
+  edit it, invalid value rejected (400), browse filter counts correct (47 total → 42 onsite / 5
+  remote / 0 hybrid, matching backend truth exactly).
+- **Frontend:** `JobFilters.tsx`'s "Remote roles only" checkbox replaced with a native
+  `<select>` (On-site/Hybrid/Remote) — this **closes the earlier-reported bug** where On-site/
+  Hybrid were silent no-ops. `/recruitment/jobs/page.tsx` now parses the `workplace` URL param
+  into the real enum instead of only ever checking `=== "remote"`. `/post-job` (the single
+  create-and-edit form) gets the same native select; city/state fields hide only when Remote is
+  selected (Hybrid still shows them, since a hybrid role has a base office — On-site unchanged).
+  Display formatters updated to surface "Hybrid" distinctly, not just collapse it into
+  non-remote: `lib/recruitmentDesign.ts`'s `jobLocation()`, `MyJobsTab.tsx` (now reuses that
+  same formatter), `JobsAdminTab.tsx`. (`JobCard.tsx`/`RecruitmentJob`/`mapRecruitmentJob` were
+  left alone — confirmed dead code, zero live importers, pre-existing from the redesign merge.)
+  Live-verified: `/recruitment/jobs`'s new Workplace select actually changes the result count
+  (47→42→5); `/post-job`'s select shows/hides city correctly.
+- `npx tsc --noEmit` clean throughout both changes.
+
+### `/recruitment` follow-ups: hero paint-order bug, real suggestion matching — done 2026-09-11
+
+**Hero dropdown hidden under "Hiring updates" section.** Two independent bugs in the shared
+`.le-hero` (`living-evidence.css`), both root-caused via headless-Chrome DOM inspection, not
+guessed:
+1. `.le-hero{overflow:hidden}` clipped the dropdown at the hero's own bottom edge. Fixed by
+   moving the decorative `::before`/`::after` orbit circles onto a new absolutely-positioned
+   `.le-hero-decor` child (its own `overflow:hidden`, sized `inset:0`) so only the decorative
+   circles clip — the hero itself no longer does. Added `<div className="le-hero-decor" />` to
+   all 4 `.le-hero` usages (home, directory, recruitment, `/design-system`).
+2. Even unclipped, the dropdown still painted *under* the "Hiring updates" cards below: `.le-hero`
+   had `isolation:isolate` + `position:relative` but `z-index:auto` — and a later-in-DOM element
+   elsewhere on the page (`.le-update-card-author`, `z-index:1`) won the tie at that stacking
+   bucket. Fixed with an explicit `.le-hero{z-index:2}` (still under the sticky header's `60`).
+   Verified via `elementFromPoint` at the overlap coordinate, both desktop and 390px.
+
+**Suggestion dropdown was fully static — replaced with real matching.** Investigating "is Popular
+Searches real" surfaced that the whole dropdown (`RecruitmentSectionSearch` in
+`SectionSearchDock.tsx`, and the twin implementation in `RoleSearchBar.tsx` used on
+`/recruitment/jobs`) was: a hardcoded `POPULAR_SEARCHES` list shown even on empty focus, plus
+real job-functions as the only genuine data. Per owner direction:
+- Dropdown now opens **only once the visitor types** — empty focus/click shows nothing.
+- `POPULAR_SEARCHES` array deleted outright (was dead static copy, not data) from both files.
+- Three real groups once typing starts: **Matching categories** (job-function catalog,
+  client-filtered, ≤3), **Matching roles** and **Matching companies** — both debounced (250ms)
+  off one shared `GET /api/jobs?q=` fetch (≤8 rows), same pattern as `DirectorySearchBar`'s
+  `getListings` suggestions. Backend: `jobSearch.repository.js`'s free-text OR-match now also
+  includes `e.company_name` (was title+description+jobFunction only) — a company-name query like
+  "TechNova" now surfaces that employer's roles, verified via curl (0→3 results).
+- **Bug found and fixed twice** (owner caught both by testing): the shared job-fetch is OR-matched
+  across title/description/jobFunction/company in one SQL pass, so a job can land in the result
+  set because *either* field matched. Naively deriving "Matching roles" and "Matching companies"
+  from that same list leaked cross-matches (typing "developer" showed the employer of a matching
+  role as a company suggestion; typing "technova" showed that employer's roles as role
+  suggestions even though the role titles didn't contain "technova"). Fixed by re-checking each
+  group's own field client-side (`job.title.includes(term)` for roles, `company.includes(term)`
+  for companies) before including it — confirmed independently correct in both directions via
+  headless Chrome.
+- Selecting a role suggestion goes straight to `/job/:id`; a company suggestion to
+  `/employer/:slug` (mirrors Directory's listing-suggestion → `/listing/:id` convention).
+- `tsc`/`validate:design` clean throughout; live-verified on both `/recruitment` and
+  `/recruitment/jobs`.
+
+**TODO (explicitly deferred by owner, not forgotten):** the static 3-example "Popular searches"
+chip row below the search bar (`app/recruitment/page.tsx:77`, and Directory's matching "Popular
+needs" row at `app/directory/page.tsx:67`) stays hardcoded for now. Real backend support
+(`GET /api/search/trending`/`/popular`) exists but is Directory-only and category-keyed
+(`searchTrends.routes.js` aggregates strictly on `categorySlug` against `categories.json`) — making
+it real for Recruitment needs a parallel `jobFunctionSlug`-keyed aggregation (or a shared
+`product`/`source` field on the search-event) plus wiring Recruitment's search bar to log picks,
+same as `DirectorySearchBar` does via `POST /api/search/log`. Not started.
+
+**Confirmed real, not static:** the "Hiring updates" rail (`UpdateRail`, `resolvePublicUpdates()`
+in `lib/livingEvidence.ts`) merges real `getStories("employer")` (0 groups today — none created
+yet) with real `getBlogs({authorType:"employer"})` (6 real posts, cross-checked via curl against
+the rendered company names — TechNova, FinEdge, NextGen EdTech, Vantage Logistics, Zenith Auto,
+UrbanCart). The static `prototypeCopy` fallback array in that same file only activates when real
+stories are empty AND `NEXT_PUBLIC_DESIGN_CONTENT_PREVIEW=true` — currently `false` in
+`.env.local`, so it never renders today.
+
+**TODO (copy mismatch, found but not fixed):** `UpdateRail`'s subtitle "Fresh company and hiring
+context" (`components/evidence/UpdateRail.tsx:17`) reads as a hiring-activity signal, but on
+`/recruitment` the underlying data is career-advice blog guides ("Write a resume recruiters
+actually read", "Acing a video interview") — not job-opening news. Old frontend never conflated
+these: its "Companies hiring now" rail was 100% jobs-derived (real per-company open-role count),
+matching today's separate `hiringCompanies` section further down the same page ("See the teams
+behind the openings" grid, `recruitment/page.tsx:61-65`, real `getJobs()`-derived) — that section
+is the correct "latest hiring companies" list; `UpdateRail` is a different, newer abstraction
+(shared with Directory) for general company-authored content. Reword `UpdateRail`'s title/subtitle
+when used on `/recruitment` (e.g. "Guides from hiring teams") so it stops reading as a hiring-list.
+Not started — text-only change, no API/data involved.
 
 ---
 

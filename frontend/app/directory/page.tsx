@@ -60,7 +60,7 @@ export default function DirectoryPage() {
   const activeMedia: EvidenceAsset = { src: activeFamily.media, alt: `${activeFamily.name} team at work`, kind: "workplace", source: "prototype", attribution: "Prototype service-family media" };
 
   return <div className="le-page counter-directory-page">
-    <section className="le-hero" aria-labelledby="directory-title"><div className="le-shell">
+    <section className="le-hero" aria-labelledby="directory-title"><div className="le-hero-decor" aria-hidden="true" /><div className="le-shell">
       <h1 id="directory-title">Find the right company for the work ahead.</h1>
       <p>Discover startups, SMEs and service partners through evidence you can inspect—not a catalogue you have to decode.</p>
       <div ref={searchAnchorRef} className="le-hero-search" inert={docked ? true : undefined} aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><DirectorySectionSearch /></div>

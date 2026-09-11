@@ -862,6 +862,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   -- (nestedToRow, the nested-object flattening helper, assigns NULL for an omitted
   -- field rather than substituting a default).
   location_remote       BOOLEAN,
+  -- Added in 0015_add_job_workplace_type.sql — "onsite"/"hybrid"/"remote", same
+  -- free-text convention as listings.service_mode. location_remote is kept in sync
+  -- (derived from this) for every existing boolean-only reader.
+  location_workplace_type TEXT,
   salary_min            NUMERIC(12,2),
   salary_max            NUMERIC(12,2),
   salary_currency       TEXT,
@@ -891,6 +895,7 @@ CREATE INDEX IF NOT EXISTS jobs_experience_level_idx ON jobs(experience_level);
 CREATE INDEX IF NOT EXISTS jobs_city_idx ON jobs(location_city);
 CREATE INDEX IF NOT EXISTS jobs_posted_at_idx ON jobs(posted_at);
 CREATE INDEX IF NOT EXISTS jobs_skills_idx ON jobs USING GIN(skills);
+CREATE INDEX IF NOT EXISTS jobs_workplace_type_idx ON jobs(location_workplace_type);
 
 -- Applications. status_history is a small append-only log of {status, note, changedAt}
 -- entries — never filtered/queried on its own, so it's a plain jsonb column (inline on

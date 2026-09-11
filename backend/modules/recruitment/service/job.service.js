@@ -19,6 +19,8 @@ const MAX_LIMIT = 50;
 const VALID_JOB_STATUSES = new Set(["active", "paused", "closed", "draft"]);
 const VALID_EMPLOYMENT_TYPES = new Set(["full-time", "part-time", "contract", "internship", "freelance"]);
 const VALID_EXPERIENCE_LEVELS = new Set(["entry", "mid", "senior", "lead", "executive"]);
+// Same free-text convention as Directory's listings.serviceMode ("onsite"/"hybrid"/"remote").
+const VALID_WORKPLACE_TYPES = new Set(["onsite", "hybrid", "remote"]);
 
 /** Cap + floor a client-supplied page/limit pair for the job browse. */
 function jobsPaginationOf(query) {
@@ -50,11 +52,23 @@ function normalizeQuestions(input, max = 20) {
   return out;
 }
 
+/** workplaceType is the source of truth going forward; `remote` is derived from it
+ *  so every existing boolean-only reader (jobSearch's remoteOnly filter, admin/
+ *  dashboard job cards) keeps working unmodified. A client that only sends the old
+ *  `remote` boolean (no workplaceType) still gets a sensible value: true -> "remote",
+ *  false/absent -> "onsite" — never "hybrid", since nothing before this migration
+ *  could express that. Caller validates workplaceType against VALID_WORKPLACE_TYPES
+ *  before calling this (same pattern as employmentType/experienceLevel) — an
+ *  already-invalid value here falls back the same way as if none were given. */
 function buildLocation(input = {}) {
+  const workplaceType = VALID_WORKPLACE_TYPES.has(input.workplaceType)
+    ? input.workplaceType
+    : (toBool(input.remote) ? "remote" : "onsite");
   return {
     city: input.city ? String(input.city).trim() : "",
     state: input.state ? String(input.state).trim() : "",
-    remote: toBool(input.remote),
+    remote: workplaceType === "remote",
+    workplaceType,
   };
 }
 
@@ -87,6 +101,7 @@ module.exports = {
   VALID_JOB_STATUSES,
   VALID_EMPLOYMENT_TYPES,
   VALID_EXPERIENCE_LEVELS,
+  VALID_WORKPLACE_TYPES,
   jobsPaginationOf,
   toNumberOrNull,
   toBool,

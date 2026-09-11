@@ -70,7 +70,7 @@ export default function RecruitmentPage() {
   function exampleSearch(query: string) { setRoleQuery(query); markSearchNav(); router.push(`/recruitment/jobs?q=${encodeURIComponent(query)}`); }
 
   return <div className="le-page counter-recruitment-page">
-    <section className="le-hero" aria-labelledby="recruitment-title"><div className="le-shell">
+    <section className="le-hero" aria-labelledby="recruitment-title"><div className="le-hero-decor" aria-hidden="true" /><div className="le-shell">
       <h1 id="recruitment-title">Find work with the context to decide.</h1>
       <p>Explore startup and SME roles with pay, company identity, freshness and hiring context visible before you apply.</p>
       <div ref={searchAnchorRef} className="le-hero-search is-recruitment" inert={docked ? true : undefined} aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>

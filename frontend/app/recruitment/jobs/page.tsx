@@ -14,10 +14,20 @@ import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
 import { getJobFunctions, getJobs } from "@/lib/api";
 import { closingContext, formatSalary, jobFreshness, jobLocation, rolePreviewModel } from "@/lib/recruitmentDesign";
 import { useSearchDock } from "@/lib/searchDock";
-import type { Job, JobFunction, JobsResponse } from "@/lib/types";
+import type { Job, JobFunction, JobsResponse, WorkplaceType } from "@/lib/types";
 
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
 function FilterIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4" /></svg>; }
+
+// The docked/hero search bars (RoleSearchBar, RecruitmentSectionSearch) publish the
+// `workplace` URL param as a display label ("On-site"/"Hybrid"/"Remote") — see their
+// WORKPLACE_OPTIONS. Convert both ways so JobFilters (which stores the lowercase API
+// value) and the searchDock summary text (which shows the label) stay in sync.
+const WORKPLACE_LABELS: Record<WorkplaceType, string> = { onsite: "On-site", hybrid: "Hybrid", remote: "Remote" };
+function parseWorkplaceParam(raw: string | null): WorkplaceType | undefined {
+  const key = raw?.toLowerCase().replace(/[^a-z]/g, "");
+  return key === "onsite" || key === "hybrid" || key === "remote" ? key : undefined;
+}
 
 function ResultRow({ job, selected, expanded, onPreview, onToggle }: { job: Job; selected: boolean; expanded: boolean; onPreview: () => void; onToggle: () => void }) {
   const company = job.employer?.companyName || "Hiring company";
@@ -44,7 +54,7 @@ function JobsBrowseInner() {
   const initialQuery = params.get("q") || "";
   const initialCity = params.get("city") || "";
   const [query, setQuery] = useState(initialQuery);
-  const [filters, setFilters] = useState<JobFilterState>({ city: initialCity || undefined, jobFunction: params.get("jobFunction") || undefined, experienceLevel: (params.get("experienceLevel") || undefined) as JobFilterState["experienceLevel"], remote: params.get("workplace")?.toLowerCase() === "remote" || undefined, minSalary: params.get("salary") === "disclosed" ? 1 : Number(params.get("minSalary") || 0) || undefined });
+  const [filters, setFilters] = useState<JobFilterState>({ city: initialCity || undefined, jobFunction: params.get("jobFunction") || undefined, experienceLevel: (params.get("experienceLevel") || undefined) as JobFilterState["experienceLevel"], workplaceType: parseWorkplaceParam(params.get("workplace")), minSalary: params.get("salary") === "disclosed" ? 1 : Number(params.get("minSalary") || 0) || undefined });
   const [page, setPage] = useState(1);
   const [data, setData] = useState<JobsResponse | null>(null);
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
@@ -59,7 +69,7 @@ function JobsBrowseInner() {
 
   useEffect(() => {
     setQuery(initialQuery);
-    setFilters({ city: initialCity || undefined, jobFunction: params.get("jobFunction") || undefined, experienceLevel: (params.get("experienceLevel") || undefined) as JobFilterState["experienceLevel"], remote: params.get("workplace")?.toLowerCase() === "remote" || undefined, minSalary: params.get("salary") === "disclosed" ? 1 : Number(params.get("minSalary") || 0) || undefined });
+    setFilters({ city: initialCity || undefined, jobFunction: params.get("jobFunction") || undefined, experienceLevel: (params.get("experienceLevel") || undefined) as JobFilterState["experienceLevel"], workplaceType: parseWorkplaceParam(params.get("workplace")), minSalary: params.get("salary") === "disclosed" ? 1 : Number(params.get("minSalary") || 0) || undefined });
     setRoleQuery(initialQuery);
     setRoleCity(initialCity);
     setRoleWorkplace(params.get("workplace") || "All workplaces");
@@ -87,8 +97,8 @@ function JobsBrowseInner() {
   }, [docked]);
   useEffect(() => {
     setRoleCity(filters.city || "");
-    setRoleWorkplace(filters.remote ? "Remote" : "All workplaces");
-  }, [filters.city, filters.remote, setRoleCity, setRoleWorkplace]);
+    setRoleWorkplace(filters.workplaceType ? WORKPLACE_LABELS[filters.workplaceType] : "All workplaces");
+  }, [filters.city, filters.workplaceType, setRoleCity, setRoleWorkplace]);
   useEffect(() => { getJobFunctions().then(setJobFunctions).catch(() => setJobFunctions([])); }, []);
   useEffect(() => {
     let alive = true; setLoading(true); setError(null);

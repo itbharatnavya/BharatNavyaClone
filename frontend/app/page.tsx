@@ -189,7 +189,7 @@ export default function BharatNavyaHome() {
   const recruitmentSignal = recruitmentLive && jobTotal ? `${jobTotal.toLocaleString("en-IN")} roles open now` : "Roles, workplaces and hiring context";
 
   return <div className="le-page counter-home-page">
-    <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
+    <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-hero-decor" aria-hidden="true" /><div className="le-shell">
       <h1 id="home-title"><span>Bharat Navya</span> turns scattered signals into clearer decisions.</h1>
       <p>Understand companies, work and opportunities across India before you contact, shortlist or apply.</p>
       <div ref={searchAnchorRef} className="le-hero-search is-universal" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><UniversalSearch /></div>

@@ -62,10 +62,11 @@ function employerMiniOf(user) {
  * Only active jobs from approved employers are ever returned (public-browse
  * gating, same shape as Directory's approvedSellerIds gate). `filters` accepts
  * the same keys as GET /api/jobs: company, jobFunction, employmentType,
- * experienceLevel, city, state, remote, minSalary, maxSalary. `q` is matched
- * against title + description + jobFunction (a superset of the public route's
- * title+description match, so a natural-language chat query like "developer
- * jobs" also catches a jobFunction of "Software Development").
+ * experienceLevel, city, state, remote, workplaceType, minSalary, maxSalary. `q` is matched
+ * against title + description + jobFunction + employer company name (a superset of
+ * the public route's title+description match, so a natural-language chat query like
+ * "developer jobs" also catches a jobFunction of "Software Development", and a
+ * company-name query like "TechNova" catches that employer's roles).
  */
 async function searchJobs({ q, filters = {}, limit } = {}) {
   const f = filters || {};
@@ -74,6 +75,7 @@ async function searchJobs({ q, filters = {}, limit } = {}) {
   const city = f.city ? String(f.city).trim().toLowerCase() : "";
   const state = f.state ? String(f.state).trim().toLowerCase() : "";
   const remoteOnly = f.remote === true || f.remote === "true";
+  const workplaceType = f.workplaceType ? String(f.workplaceType).trim().toLowerCase() : "";
   const minSalary = f.minSalary != null && f.minSalary !== "" ? Number(f.minSalary) : null;
   const maxSalary = f.maxSalary != null && f.maxSalary !== "" ? Number(f.maxSalary) : null;
 
@@ -86,6 +88,7 @@ async function searchJobs({ q, filters = {}, limit } = {}) {
     city,
     state,
     remoteOnly,
+    workplaceType,
     minSalary,
     maxSalary,
     limit,

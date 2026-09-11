@@ -10,6 +10,7 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import { useToast } from "@/components/Toast";
 import { getMyJobs, updateJob } from "@/lib/api";
+import { jobLocation } from "@/lib/recruitmentDesign";
 import type { Job, JobStatus } from "@/lib/types";
 
 function statusBadge(status: JobStatus): { bg: string; color: string; label: string } {
@@ -87,7 +88,7 @@ export default function MyJobsTab({ onViewApplications }: { onViewApplications: 
                     {job.title}
                   </Link>
                   <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}>
-                    {job.location?.remote ? "Remote" : job.location?.city || "No location"}
+                    {jobLocation(job)}
                   </div>
                 </div>
                 <button

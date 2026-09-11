@@ -103,7 +103,7 @@ export default function JobsAdminTab() {
                   <div className="font-semibold text-ink">{j.title}</div>
                   <div className="text-xs text-faint">
                     {j.location?.city || "—"}
-                    {j.location?.remote ? " · Remote" : ""}
+                    {j.location?.workplaceType === "hybrid" ? " · Hybrid" : (j.location?.workplaceType === "remote" || j.location?.remote) ? " · Remote" : ""}
                   </div>
                 </Td>
                 <Td>

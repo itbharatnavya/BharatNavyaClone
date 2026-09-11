@@ -920,11 +920,14 @@ export interface CandidateProfile {
 export type EmploymentType = "full-time" | "part-time" | "contract" | "internship" | "freelance";
 export type ExperienceLevel = "entry" | "mid" | "senior" | "lead" | "executive";
 export type JobStatus = "active" | "paused" | "closed" | "draft" | "pending";
+// Same convention as ServiceDetail.serviceMode above (Directory listings).
+export type WorkplaceType = "onsite" | "hybrid" | "remote";
 
 export interface JobLocation {
   city?: string;
   state?: string;
   remote?: boolean;
+  workplaceType?: WorkplaceType;
 }
 
 export interface SalaryRange {

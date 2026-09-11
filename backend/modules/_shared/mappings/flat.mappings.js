@@ -301,6 +301,10 @@ function buildFlatConfigs(nextId) {
       nested: [
         { docKey: "location", fields: {
           city: col("location_city", t), state: col("location_state", t), remote: col("location_remote", b),
+          // 0015_add_job_workplace_type.sql — "onsite"/"hybrid"/"remote". `remote`
+          // above stays in sync (job.service.js's buildLocation derives it), so this
+          // is additive: every existing reader of `remote` is unaffected.
+          workplaceType: col("location_workplace_type", t),
         } },
         { docKey: "salaryRange", fields: {
           min: col("salary_min", n), max: col("salary_max", n), currency: col("salary_currency", t),

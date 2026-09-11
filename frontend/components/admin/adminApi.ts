@@ -33,6 +33,7 @@ import type {
   Skill,
   Inquiry,
   SellerDelivery,
+  WorkplaceType,
 } from "@/lib/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -599,7 +600,7 @@ export interface AdminJobRow {
   status: "active" | "paused" | "closed" | "draft";
   employmentType?: string | null;
   experienceLevel?: string | null;
-  location?: { city?: string; state?: string; remote?: boolean } | null;
+  location?: { city?: string; state?: string; remote?: boolean; workplaceType?: WorkplaceType } | null;
   postedAt?: string;
   applicationCount?: number;
   employerId: string;

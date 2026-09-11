@@ -7,14 +7,14 @@
 // than a stack of expandable sections.
 
 import React from "react";
-import type { JobFunction, EmploymentType, ExperienceLevel } from "@/lib/types";
+import type { JobFunction, EmploymentType, ExperienceLevel, WorkplaceType } from "@/lib/types";
 
 export interface JobFilterState {
   jobFunction?: string;
   employmentType?: EmploymentType;
   experienceLevel?: ExperienceLevel;
   city?: string;
-  remote?: boolean;
+  workplaceType?: WorkplaceType;
   minSalary?: number;
   maxSalary?: number;
 }
@@ -42,9 +42,15 @@ const EXPERIENCE_LEVELS: { value: ExperienceLevel; label: string }[] = [
   { value: "executive", label: "Executive" },
 ];
 
+const WORKPLACE_TYPES: { value: WorkplaceType; label: string }[] = [
+  { value: "onsite", label: "On-site" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "remote", label: "Remote" },
+];
+
 function activeCount(v: JobFilterState): number {
-  return [v.jobFunction, v.employmentType, v.experienceLevel, v.city, v.remote, v.minSalary, v.maxSalary].filter(
-    (x) => x !== undefined && x !== "" && x !== false
+  return [v.jobFunction, v.employmentType, v.experienceLevel, v.city, v.workplaceType, v.minSalary, v.maxSalary].filter(
+    (x) => x !== undefined && x !== ""
   ).length;
 }
 
@@ -120,14 +126,20 @@ export default function JobFilters({ value, onChange, jobFunctions, className = 
         />
       </div>
 
-      <label className="jf-checkbox">
-        <input
-          type="checkbox"
-          checked={!!value.remote}
-          onChange={(e) => set({ remote: e.target.checked || undefined })}
-        />
-        Remote roles only
-      </label>
+      <div className="jf-field">
+        <label className="field-label" htmlFor="jf-workplace">Workplace</label>
+        <select
+          id="jf-workplace"
+          className="select"
+          value={value.workplaceType || ""}
+          onChange={(e) => set({ workplaceType: (e.target.value || undefined) as WorkplaceType | undefined })}
+        >
+          <option value="">All workplaces</option>
+          {WORKPLACE_TYPES.map((w) => (
+            <option key={w.value} value={w.value}>{w.label}</option>
+          ))}
+        </select>
+      </div>
 
       <div className="jf-field">
         <span className="field-label">Salary range (₹/yr)</span>
@@ -158,9 +170,6 @@ export default function JobFilters({ value, onChange, jobFunctions, className = 
         .jf-title { font-size: 15px; font-weight: 700; color: var(--ink); }
         .jf-clear { min-height: 44px; background: none; border: none; padding: 0 4px; font-size: 12.5px; font-weight: 700; color: var(--bn-action); cursor: pointer; }
         .jf-field { display: flex; flex-direction: column; gap: 6px; }
-        .jf-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
-        .jf-checkbox { min-height: 44px; }
-        .jf-checkbox input { width: 18px; height: 18px; accent-color: var(--bn-action); }
         .jf-salary-row { display: flex; align-items: center; gap: 8px; }
         .jf-salary-sep { color: var(--faint); flex-shrink: 0; }
       `}</style>

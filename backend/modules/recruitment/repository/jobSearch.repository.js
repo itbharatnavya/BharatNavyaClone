@@ -56,11 +56,18 @@ function employerFromRow(row) {
  * taken before the `.slice(0, limit)`.
  *
  * criteria (all optional; already normalized by the service):
- *   tokens[]         content words, OR-matched against title+description+jobFunction
+ *   tokens[]         content words, OR-matched against title+description+jobFunction+
+ *                     employer company_name (company name folded into the same
+ *                     free-text match so a query like "TechNova" surfaces that
+ *                     employer's roles without needing the separate `company` filter)
  *   company          lowercased substring match on employer company_name
  *   jobFunction / employmentType / experienceLevel   exact match
  *   city / state     lowercased exact match (null column -> "")
  *   remoteOnly       true -> only location_remote = true
+ *   workplaceType    "onsite"|"hybrid"|"remote" -> exact match on
+ *                     location_workplace_type. Independent of remoteOnly (additive,
+ *                     0015_add_job_workplace_type.sql) — a caller can pass either,
+ *                     both, or neither.
  *   minSalary        keep only rows whose salary_max is set and >= minSalary
  *   maxSalary        keep only rows whose salary_min is set and <= maxSalary
  *   limit            number >= 0 -> SQL LIMIT (matches the old jobs.slice(0, limit))
@@ -74,6 +81,7 @@ async function browseActiveJobs({
   city = "",
   state = "",
   remoteOnly = false,
+  workplaceType = "",
   minSalary = null,
   maxSalary = null,
   limit,
@@ -87,6 +95,7 @@ async function browseActiveJobs({
   if (city) { params.push(city); where.push(`lower(coalesce(j.location_city, '')) = $${params.length}`); }
   if (state) { params.push(state); where.push(`lower(coalesce(j.location_state, '')) = $${params.length}`); }
   if (remoteOnly) { where.push("j.location_remote IS TRUE"); }
+  if (workplaceType) { params.push(workplaceType); where.push(`j.location_workplace_type = $${params.length}`); }
   if (minSalary !== null) {
     params.push(minSalary);
     where.push(`j.salary_max IS NOT NULL AND j.salary_max >= $${params.length}`);
@@ -98,7 +107,7 @@ async function browseActiveJobs({
 
   if (tokens.length) {
     const hay =
-      "lower(coalesce(j.title, '') || ' ' || coalesce(j.description, '') || ' ' || coalesce(j.job_function, ''))";
+      "lower(coalesce(j.title, '') || ' ' || coalesce(j.description, '') || ' ' || coalesce(j.job_function, '') || ' ' || coalesce(e.company_name, ''))";
     const ors = tokens.map((tok) => {
       params.push(likeContains(tok));
       return `${hay} LIKE $${params.length} ESCAPE '\\'`;
