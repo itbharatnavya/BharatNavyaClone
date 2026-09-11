@@ -23,7 +23,7 @@ function MenuIcon({ open }: { open: boolean }) {
 
 export default function Navbar() {
   const pathname = usePathname() || "/";
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, isAdmin } = useAuth();
   const { featureFlags } = useConfig();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -38,6 +38,13 @@ export default function Navbar() {
     && !pathname.startsWith("/recruitment/dashboard/");
   const counterPublic = pathname === "/" || pathname === "/about" || pathname === "/pricing" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
   const counterWorkspace = pathname === "/login" || pathname === "/register" || pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/sell" || pathname === "/post-job" || pathname === "/profile" || pathname === "/shortlist";
+  // Account-menu context: which workspace link to offer depends on which product's
+  // pages the visitor is currently on — not on role/profile ownership, since both
+  // dashboards already self-onboard a non-member (Directory: a non-seller sees only
+  // its Profile tab; Recruitment: no recruitmentRole yet shows a role chooser).
+  // Mirrors the pre-redesign Navbar's inDirectoryContext/inRecruitmentContext.
+  const inDirectoryContext = links[1].match(pathname) || pathname === "/dashboard";
+  const inRecruitmentContext = links[2].match(pathname) || pathname === "/recruitment/dashboard";
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {
@@ -69,7 +76,18 @@ export default function Navbar() {
           {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
           {!loading && user && <div className="bn-account" ref={accountRef}>
             <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}><Avatar name={user.name} size={40} /></button>
-            {accountOpen && <div className="bn-account-menu"><strong>{user.name}</strong><Link href="/dashboard">Directory workspace</Link><Link href="/recruitment/dashboard">Recruitment workspace</Link><button type="button" onClick={logout}>Sign out</button></div>}
+            {accountOpen && <div className="bn-account-menu">
+              <strong>{user.name}</strong>
+              {inDirectoryContext ? (
+                <><Link href="/dashboard">Directory workspace</Link><Link href="/dashboard?tab=profile">Directory profile</Link></>
+              ) : inRecruitmentContext ? (
+                <Link href="/recruitment/dashboard">Recruitment workspace</Link>
+              ) : (
+                <Link href="/profile">My profile</Link>
+              )}
+              {isAdmin && <Link href="/admin">Admin</Link>}
+              <button type="button" onClick={logout}>Sign out</button>
+            </div>}
           </div>}
           <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}><MenuIcon open={menuOpen} /></button>
         </div>

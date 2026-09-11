@@ -265,6 +265,84 @@ Ordered by how much they block the design.
 
 ---
 
+## Workspace/dashboard gating audit (owner-reported, 2026-09-11)
+
+Owner spot-checked the merged design against old frontend behaviour for the workspace/
+dashboard side (the UI dev has so far only pushed login/register + Directory/Recruitment/Admin
+*workspace* pages — public Directory pages are still pending on his branch). Scope: functional
+gates only; static/placeholder imagery on these pages is fine for now, subject to client
+sign-off later.
+
+**Confirmed regression — Admin link missing from the account menu.**
+New `Navbar.tsx` destructures `useAuth()` without `isAdmin` and hardcodes exactly two links
+("Directory workspace", "Recruitment workspace") for every logged-in user — no admin branch at
+all. `/admin` itself is still safely gated server-side-equivalent (`useAuth().isAdmin`, redirects
+non-admins) — this was a **nav-discoverability** bug, not a security hole: an admin had no link
+to find their own console.
+
+**Confirmed UX regression — both workspace links always shown, no page-context gating.**
+Old Navbar showed exactly one of Dashboard(+Profile)/Recruitment-Dashboard/My-Profile, chosen by
+**which product's pages you're currently browsing** (`inDirectoryContext`/`inRecruitmentContext`
+in the pre-redesign `Navbar.tsx`), not by role/profile ownership — `DashboardShell.tsx` and
+`RecruitmentDashboardShell.tsx` both self-onboard a non-member (Directory: non-seller sees only
+a Profile tab; Recruitment: no `recruitmentRole` yet shows a role-selection chooser), so linking
+there pre-membership was never actually broken plumbing, just inconsistent with the old UX.
+Verified live with a fresh seller-only test account: account menu showed
+`['Directory workspace', 'Recruitment workspace', 'Sign out']` even though that user has no
+`recruitmentRole` at all.
+
+**Owner decision:** restore the old context-based single-link behaviour (Directory pages →
+Directory workspace; Recruitment pages → Recruitment workspace; elsewhere → My Profile) **and**
+restore the Admin link (shown whenever `isAdmin`, independent of context) — this is exactly the
+pre-redesign `Navbar.tsx` account-menu logic, just re-applied inside the new markup/classes.
+Frontend-only, `components/Navbar.tsx`.
+
+**API-wiring audit of all three workspaces — clean, nothing broken.** The merge touched
+`DashboardShell.tsx`, `RecruitmentDashboardShell.tsx`, `admin/page.tsx`, and
+`admin/users/[id]/page.tsx` **only to add CSS classnames** (`counter-dashboard-page`,
+`counter-admin-page`, `counter-workspace-nav-item`, …) — zero logic changed. Spot-checked every
+tab's data source (`OverviewTab`, `AnalyticsTab`, `ListingsTab`, `LeadsTab`, `ReviewsTab`,
+`ProfileTab`, `MyJobsTab`, `ApplicationsTab`, `MyApplicationsTab`, `CompanyProfileTab`,
+`CandidateProfileTab`, admin `UsersTab`/`EmployersTab` via `./adminApi`, `CategoriesTab`,
+`JobsAdminTab`, `SiteConfigTab`) — all call real `lib/api.ts` / `admin/adminApi.ts` functions,
+none mocked. `counter-workspace.css` (new, 419 lines) explicitly sets `color: var(--counter-ink)`
+on every `.input/.select/.textarea` inside auth/dashboard/admin pages and only uses white text on
+genuinely dark backgrounds (`.counter-auth-aside`, active nav states) — no repeat of the home
+white-on-white bug.
+
+**Live-verified** by registering 3 fresh throwaway accounts (seller via `POST /api/become-seller`,
+recruiter via `POST /api/me/recruitment-role` + `POST /api/become-employer`, candidate via
+`POST /api/me/recruitment-role`) and loading each dashboard with the issued JWT:
+- Seller `/dashboard` → all 16 seller-eligible tabs render, no sign-in false-gate.
+- Recruiter `/recruitment/dashboard` → Overview/My jobs/Applications/Profile/Stories/Blogs/
+  Reviews/Advertise — correct recruiter-only tab set.
+- Candidate `/recruitment/dashboard` → Overview/My applications/Profile only, plus the
+  "switch role before you finish setting up" hint (profile incomplete) — correct.
+
+**Fixed and verified live 2026-09-11** — `components/Navbar.tsx`: pulled `isAdmin` from
+`useAuth()`, added `inDirectoryContext`/`inRecruitmentContext` (reusing the existing `links[]`
+route-match functions + `/dashboard`/`/recruitment/dashboard`), rebuilt the account-menu to show
+exactly one contextual link (Directory workspace+profile / Recruitment workspace / My profile)
+plus Admin whenever `isAdmin`. `tsc` clean. Live-verified with 3 fresh throwaway accounts
+(seller/recruiter/candidate) across 4 contexts — all four matched the pre-redesign behaviour:
+
+| Test | Menu shown |
+|---|---|
+| Seller on `/dashboard` | Directory workspace, Directory profile, Sign out |
+| Seller elsewhere (`/`) | My profile, Sign out |
+| Recruiter on `/recruitment/dashboard` | Recruitment workspace, Sign out |
+| Candidate on `/directory` | Directory workspace, Directory profile, Sign out |
+
+**Still pending:** live-clicking the Admin link itself needs the seeded `admin@bharatsource.in`
+password (env-set, not known) or the owner's approval to reset it — not done. The `isAdmin` flag
+it depends on is the same one already proven correct gating `/admin` itself, so this is low risk.
+
+Test accounts left in the local DB for future reference: `9000000011`/`9000000012`/`9000000013`
+(seller/recruiter/candidate, password `TestPass123!`) — harmless demo rows, delete via admin
+Users tab whenever convenient.
+
+---
+
 ## Daily task log
 
 Append one dated block per working day. Record: what was integrated, what was removed or
@@ -332,6 +410,30 @@ completes, tick its boxes and note it here.
   records section was built then reverted at owner's request (invented UI + CSS, out of scope).
   Scope rule tightened: wire existing UI to APIs, add no new sections/markup/CSS.
   `tsc` clean, `/` 200.
+
+### 2026-09-11
+
+- Committed Pass 1 on `feature/design-integration` (`0de6995`): live gateway counts, mounted
+  `NativePromotionSlot`, the universal-search white-text fix, this doc.
+- Pulled `origin/design` again (`bcd7c74..c98b666`, 6 commits, 26 files, **frontend-only** —
+  first diffed against our own merge commit and it looked like a 268-file/44k-line backend
+  demolition; that was comparing against the wrong base (`feature/backend-phase1`'s modules/
+  architecture that the `design` line never had). Diffed against the correct prior tip
+  (`bcd7c74`) instead — confirmed clean, no backend touched, no history rewrite.
+  - **What the UI dev pushed:** purely visual — "Extend Counter direction to workspaces" (login,
+    register, sell, profile, shortlist, post-job, recruitment/dashboard, admin all get the
+    Counter class/copy treatment), a new `DecisionJourney` stepper component +
+    `counter-workspace.css` (419 lines), a pinned scroll-driven homepage journey section,
+    "Compact status cards to image previews", and **"Fix public search contrast and journey
+    scroll"** — the same white-text search bug I'd just fixed, independently, same day.
+  - **One real conflict:** `counter-direction.css`, both fixing the same bug. Resolved by
+    keeping their broader selector (`:is(.bn-universal-search,.bn-section-search) :is(input,select)`
+    — also covers Directory/Recruitment section-search selects) plus my `caret-color` (theirs
+    didn't set it). `page.tsx` auto-merged clean (their journey-scroll code and my API wiring
+    don't overlap). Committed as `3246241`.
+  - Verified post-merge: `tsc` clean; `/`, `/directory`, `/recruitment`, `/login`, `/register`,
+    `/sell`, `/profile`, `/shortlist`, `/recruitment/dashboard`, `/post-job` all 200; home
+    gateway counts + dark search text both survived the merge; no horizontal overflow at 390px.
 
 - **Next:** Pass 2 (Recruitment) on owner confirmation — landing `getJobs` limit 18→50 for real
   company counts, wire the two dropped ad slots, fix the `/recruitment/jobs` free-text city
