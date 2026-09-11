@@ -313,3 +313,184 @@
     transition: none;
   }
 }
+
+/* Phase 2 — Directory and Recruitment public surfaces */
+:is(.counter-directory-page, .counter-recruitment-page) {
+  padding: var(--counter-section-gap) var(--counter-page-gutter) 0;
+  background: #f3eee3;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) > section {
+  margin-bottom: var(--counter-section-gap);
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-gateways, .le-index-showcase, .le-role-showcase) {
+  gap: var(--counter-space-4);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.bn-universal-search form, .bn-section-search) {
+  border-radius: var(--counter-input-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.bn-universal-search form > button, .bn-section-search-submit) {
+  border-radius: calc(var(--counter-input-radius) - 0.2rem) !important;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-examples, .bn-search-examples, .bn-search-choice) button {
+  border-radius: 999px !important;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index, .le-index-preview, .le-role-list, .recruitment-shortcuts) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index-preview, .recruitment-shortcuts a, .le-company-tile, .le-evidence-record, .le-button) {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index a, .le-evidence-record) {
+  margin-bottom: var(--counter-space-2);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-radius-control);
+  background: var(--counter-ivory);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index a, .le-evidence-record):last-child {
+  margin-bottom: 0;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-gateway,
+:is(.counter-directory-page, .counter-recruitment-page) .le-gateway > span:first-child {
+  border-radius: var(--counter-card-radius);
+}
+
+/* Results pages become workbenches of separated surfaces instead of one long
+   ruled sheet. Filters and behaviour remain owned by their existing routes. */
+:is(.directory-results, .recruitment-core) {
+  background: #f3eee3;
+}
+
+.directory-results-head,
+.recruitment-results-head {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  margin: var(--counter-section-gap) auto 0;
+  overflow: hidden;
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.directory-results, .recruitment-core) :is(.directory-search, .recruitment-results-search form) {
+  border-radius: var(--counter-input-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.directory-results, .recruitment-core) :is(.directory-search button, .recruitment-results-search button) {
+  border-radius: calc(var(--counter-input-radius) - 0.2rem) !important;
+}
+
+:is(.directory-filter-panel, .directory-inspection-pane, .recruitment-results-filters, .recruitment-results-preview > *, .recruitment-inline-preview) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+  background: var(--counter-ivory);
+}
+
+:is(.directory-result-row, .recruitment-result-row) {
+  margin-bottom: var(--counter-space-3);
+  padding-inline: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+  transition: transform var(--counter-motion), box-shadow var(--counter-motion), border-color var(--counter-motion);
+}
+
+:is(.directory-result-row, .recruitment-result-row):is(:hover, :focus-visible) {
+  z-index: 1;
+  border-color: color-mix(in srgb, var(--counter-indigo) 45%, var(--counter-line));
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+:is(.directory-result-list, .recruitment-results-list) {
+  border-top: 0;
+}
+
+:is(.directory-result-scope, .directory-mobile-filters, .recruitment-results-tools, .recruitment-state) {
+  overflow: hidden;
+  border-radius: var(--counter-radius-control);
+}
+
+/* Company, role and employer records */
+.company-profile,
+.employer-careers,
+.recruitment-detail {
+  background: #f3eee3;
+}
+
+.company-profile .company-cover,
+.employer-careers-hero,
+.recruitment-detail-hero {
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-profile .company-cover {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  margin-inline: auto;
+}
+
+.company-trust,
+.recruitment-role-ledger,
+.employer-careers-main > section,
+.employer-careers-aside > section {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-services article,
+.company-gallery figure,
+.company-reviews blockquote,
+.company-inquiry,
+.company-facts,
+.recruitment-detail-title,
+.recruitment-apply-panel {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-secondary,
+.directory-primary,
+.directory-secondary,
+.recruitment-primary,
+.recruitment-secondary,
+.recruitment-filter-input,
+.recruitment-filter-select {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+@media (max-width: 760px) {
+  :is(.counter-directory-page, .counter-recruitment-page) {
+    padding-inline: var(--counter-page-gutter);
+  }
+
+  .directory-results-head,
+  .recruitment-results-head,
+  .company-profile .company-cover {
+    width: calc(100% - (2 * var(--counter-page-gutter)));
+  }
+
+  :is(.directory-result-row, .recruitment-result-row) {
+    padding-inline: var(--counter-space-3);
+  }
+}

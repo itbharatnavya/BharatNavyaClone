@@ -16,8 +16,8 @@ The source of truth is `app/counter-soft-system.css`, loaded after the existing 
 
 ## Phases
 
-1. **Foundation and Home** — shared tokens, header/footer, controls, Home hero, gateways, standard, comparison, journey, and editorial cards.
-2. **Directory and Recruitment** — landing pages, results, filters, cards, status rails, company/employer profiles, and job/listing details.
+1. **Foundation and Home** — complete in `55405d2`: shared tokens, header/footer, controls, Home hero, gateways, standard, comparison, journey, and editorial cards.
+2. **Directory and Recruitment** — complete: landing pages, results, filters, cards, status rails, company/employer profiles, and job/listing details.
 3. **Access and creation** — login, registration, profile, shortlist, sell/add-product, and post-job flows.
 4. **Operational workspaces** — Directory dashboard, Recruitment dashboard, admin, tables, dialogs, and empty/loading/error states.
 5. **Release audit** — desktop/mobile route sweep, keyboard/focus, reduced motion, contrast, overflow, build, and design-system validation.
