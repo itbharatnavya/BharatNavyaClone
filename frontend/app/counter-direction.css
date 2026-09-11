@@ -1205,6 +1205,7 @@
 }
 
 @media (max-width: 620px) {
+  .directory-result-scope { grid-template-columns: 1fr; }
   .counter-products-section .le-section-head { grid-template-columns: 1fr; }
   .counter-product-list,
   .counter-product-loading { grid-template-columns: 1fr; }
@@ -1404,6 +1405,52 @@
 .le-button.is-primary { border-color: var(--counter-ink); background: var(--counter-ink); color: white; }
 
 /* Directory results and company records. */
+.directory-result-scope {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--counter-line);
+  background: var(--counter-line);
+}
+
+.directory-result-scope a {
+  display: grid;
+  gap: 0.3rem;
+  min-height: 4.75rem;
+  align-content: center;
+  padding: 0.85rem 1rem;
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
+  text-decoration: none;
+}
+
+.directory-result-scope a strong { font-family: var(--font-anek-latin), sans-serif; font-size: 1.05rem; }
+.directory-result-scope a span { color: var(--counter-muted); font-size: 0.72rem; }
+.directory-result-scope a.is-active { background: var(--counter-indigo); color: white; }
+.directory-result-scope a.is-active span { color: var(--counter-on-indigo); }
+.directory-result-scope a:focus-visible { outline: 3px solid var(--counter-saffron); outline-offset: -3px; }
+
+.directory-product-results { padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(4rem, 7vw, 7rem); }
+.directory-product-results-engine .dr-pillbar {
+  margin-bottom: 1rem !important;
+  border-radius: 0 !important;
+  border-color: var(--counter-line) !important;
+  background: var(--counter-ivory) !important;
+  box-shadow: none !important;
+}
+.directory-product-results-engine :is(.dr-pill-select, .dr-pill-chip, .dr-view-toggle, .dr-drawer, .card, .btn, .select, .chip) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.directory-product-results-engine .dr-pill-active,
+.directory-product-results-engine .chip-active {
+  border-color: var(--counter-indigo) !important;
+  background: var(--counter-indigo) !important;
+  color: white !important;
+}
+.directory-product-results-engine .dr-enter { animation: none !important; }
+
 .directory-results-head h1,
 .recruitment-results-head h1 {
   font-size: clamp(2.7rem, 5vw, 4.6rem);

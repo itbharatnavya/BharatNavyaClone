@@ -71,6 +71,8 @@ export interface DiscoveryResultsProps {
   near?: string;
   /** Show the category facet in the top filter bar (search page). */
   enableCategoryFilter?: boolean;
+  /** Hide the type selector when the parent surface fixes one listing type. */
+  showTypeFilter?: boolean;
   /** Child categories to show as a drill-down section in the "More filters" drawer. */
   subcategories?: SubcategoryItem[];
   /** Show a sticky right-hand rail (sponsored ad slot + a "post a requirement"
@@ -201,6 +203,7 @@ export default function DiscoveryResults({
   syncUrl = false,
   near,
   enableCategoryFilter = false,
+  showTypeFilter = true,
   subcategories = [],
   adRail = false,
   defaultSort = "relevance",
@@ -518,7 +521,7 @@ export default function DiscoveryResults({
           drawer trigger for everything else (Brand/Rating/Subcategories). */}
       <div className="dr-pillbar">
         <div className="dr-pillbar-scroll no-scrollbar">
-          <select
+          {showTypeFilter && <select
             className={filters.type ? "select dr-pill-select dr-pill-active" : "select dr-pill-select"}
             value={filters.type || ""}
             onChange={(e) => onFiltersChange({ ...filters, type: e.target.value as ListingType | "" })}
@@ -527,7 +530,7 @@ export default function DiscoveryResults({
             <option value="">{t("filters.allTypes", "All types")}</option>
             <option value="product">{t("common.products", "Products")}</option>
             <option value="service">{t("common.services", "Services")}</option>
-          </select>
+          </select>}
 
           {enableCategoryFilter && categoryOptions.length > 0 && (
             <select
