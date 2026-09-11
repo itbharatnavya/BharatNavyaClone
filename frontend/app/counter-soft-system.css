@@ -84,6 +84,49 @@
   border-radius: var(--counter-radius-card) !important;
 }
 
+/* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
+   primary action when a pair is presented together. Tabs and filter controls
+   deliberately remain neutral. */
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button {
+  border-color: var(--counter-saffron);
+  background: var(--counter-saffron);
+  color: var(--counter-ink);
+  box-shadow: 0 8px 20px rgba(18, 20, 27, 0.12);
+  transition: transform var(--counter-motion), box-shadow var(--counter-motion), background-color var(--counter-motion);
+}
+
+.counter-directory-page .le-button {
+  border-color: var(--counter-green);
+  background: var(--counter-green);
+  color: white;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button.is-primary {
+  border-color: var(--counter-ink);
+  background: var(--counter-ink);
+  color: white;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button:is(:hover, :focus-visible) {
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.directory-primary,
+.directory-preview-action {
+  border-color: var(--counter-green) !important;
+  background: var(--counter-green) !important;
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(14, 122, 80, 0.2);
+}
+
+.recruitment-primary {
+  border-color: var(--counter-saffron) !important;
+  background: var(--counter-saffron) !important;
+  color: var(--counter-ink) !important;
+  box-shadow: 0 8px 20px rgba(238, 139, 31, 0.2);
+}
+
 .bn-footer.is-counter-public {
   margin: var(--counter-section-gap) var(--counter-page-gutter) 0;
   border-radius: var(--counter-section-radius) var(--counter-section-radius) 0 0;
