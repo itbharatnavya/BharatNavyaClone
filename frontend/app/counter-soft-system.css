@@ -308,6 +308,118 @@
   }
 }
 
+/* Phase 3 — authentication, profile, shortlist and creation flows */
+.counter-auth-page {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  min-height: calc(100svh - var(--bn-header-height) - (2 * var(--counter-section-gap))) !important;
+  margin: var(--counter-section-gap) auto;
+  overflow: hidden;
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-auth-page .counter-auth-aside {
+  border-radius: 0 var(--counter-section-radius) var(--counter-section-radius) 0;
+}
+
+.counter-auth-page .counter-auth-form-zone {
+  background: #f3eee3;
+}
+
+.counter-auth-page .counter-auth-form {
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-auth-page .counter-auth-tabs {
+  overflow: hidden;
+  border-radius: var(--counter-radius-control) !important;
+  background: #f3eee3;
+}
+
+.counter-auth-page .counter-auth-tabs > button {
+  border-radius: 0 !important;
+}
+
+:is(.counter-auth-page, .counter-workspace-page) :is(.input, .select, .textarea) {
+  border-radius: var(--counter-input-radius) !important;
+  background: var(--counter-ivory);
+}
+
+:is(.counter-auth-page, .counter-workspace-page) .btn {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+.counter-workspace-page .card,
+.counter-workspace-page .card-flat,
+.counter-shortlist-page .card {
+  overflow: hidden;
+  border: 1px solid var(--counter-line) !important;
+  border-radius: var(--counter-card-radius) !important;
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-workspace-page section.card {
+  margin-bottom: var(--counter-space-4) !important;
+  border-bottom: 1px solid var(--counter-line) !important;
+}
+
+.counter-sell-page > div:nth-of-type(2) {
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-listing-type,
+.counter-role-option {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-listing-type:hover,
+.counter-role-option:hover {
+  box-shadow: var(--counter-shadow-lift) !important;
+}
+
+.counter-sell-page ol button > span:first-child {
+  border-radius: var(--counter-radius-sm) !important;
+}
+
+.counter-role-gate {
+  gap: var(--counter-space-4) !important;
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-section-radius);
+  background: #f3eee3;
+}
+
+.counter-role-option {
+  border: 1px solid var(--counter-line) !important;
+}
+
+.counter-profile-page,
+.counter-shortlist-page,
+.counter-sell-page,
+.counter-recruitment-workspace {
+  border-radius: var(--counter-section-radius);
+}
+
+@media (max-width: 900px) {
+  .counter-auth-page {
+    width: calc(100% - (2 * var(--counter-page-gutter)));
+  }
+
+  .counter-auth-page .counter-auth-aside {
+    border-radius: 0 0 var(--counter-section-radius) var(--counter-section-radius);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .counter-home-page .le-gateway {
     transition: none;
