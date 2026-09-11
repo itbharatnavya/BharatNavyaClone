@@ -828,6 +828,10 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
+:is(.counter-directory-page, .counter-recruitment-page) > .le-shell:has(> .le-update-rail) {
+  margin-bottom: clamp(1rem, 2.2vw, 2rem);
+}
+
 :is(.counter-directory-page, .counter-recruitment-page) .le-update-scroller {
   gap: 0.8rem;
   padding: 0.2rem 0.15rem 0.65rem;
