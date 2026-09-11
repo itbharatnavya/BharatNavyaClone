@@ -75,6 +75,15 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
+.bn-header.is-counter-public .bn-wordmark span {
+  font-size: clamp(1.35rem, 2vw, 1.55rem);
+  line-height: 1;
+}
+
+.bn-header.is-counter-public .bn-menu-button {
+  border-radius: var(--counter-radius-card) !important;
+}
+
 .bn-footer.is-counter-public {
   margin: var(--counter-section-gap) var(--counter-page-gutter) 0;
   border-radius: var(--counter-section-radius) var(--counter-section-radius) 0 0;
