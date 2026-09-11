@@ -36,7 +36,7 @@ function RoleGate({ onPicked }: { onPicked: () => void }) {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+    <div className="counter-role-gate" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
       {(
         [
           { role: "candidate" as const, title: "I'm looking for a job", desc: "Build a candidate profile, apply to roles, and track your applications." },
@@ -48,7 +48,7 @@ function RoleGate({ onPicked }: { onPicked: () => void }) {
           type="button"
           onClick={() => pick(opt.role)}
           disabled={picking !== null}
-          className="card"
+          className={`card counter-role-option is-${opt.role}`}
           style={{ textAlign: "left", padding: 20, cursor: picking ? "default" : "pointer", opacity: picking && picking !== opt.role ? 0.6 : 1 }}
         >
           <div style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{opt.title}</div>
@@ -71,8 +71,8 @@ function RecruitmentDashboardBody() {
   const locked = !!user.recruitmentRoleLockedAt;
 
   return (
-    <div className="container-bs section-pad-sm">
-      <span className="rd-eyebrow">Recruitment</span>
+    <div className="container-bs section-pad-sm counter-workspace-page counter-recruitment-workspace">
+      <span className="counter-workspace-label">Recruitment workspace</span>
       <h1 className="rd-h1">{role && !showRoleGate ? "Your Recruitment dashboard" : "Your Recruitment profile"}</h1>
       <p className="rd-sub">
         {role && !showRoleGate ? "Manage jobs, applications, your profile and more." : "Tell us which side of Recruitment you're here for."}

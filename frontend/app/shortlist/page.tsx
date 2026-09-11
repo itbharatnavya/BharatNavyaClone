@@ -18,15 +18,15 @@ export default function ShortlistPage() {
   const crumbs = [{ label: "Directory", href: "/directory" }, { label: "Shortlist" }];
 
   return (
-    <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>
+    <div className="container-bs counter-workspace-page counter-shortlist-page" style={{ paddingTop: 24, paddingBottom: 96 }}>
       <Breadcrumbs items={crumbs} />
       <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--ink)", margin: "12px 0 6px" }}>
         Your shortlist
       </h1>
       <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>
         {user
-          ? "Products you've saved — synced to your account."
-          : "Products you've saved on this device. Sign in to keep them across devices."}
+          ? "Companies, services and products you've saved — synced to your account."
+          : "Companies, services and products saved on this device. Sign in to keep them across devices."}
       </p>
 
       <ShortlistGrid ids={ids} loading={loading} />

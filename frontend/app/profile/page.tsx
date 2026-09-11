@@ -155,7 +155,7 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <div className="container-bs" style={{ paddingTop: 60, paddingBottom: 60 }}>
+      <div className="container-bs counter-workspace-page" style={{ paddingTop: 60, paddingBottom: 60 }}>
         <Loading label={tr("profile.loading", "Loading your profile…")} />
       </div>
     );
@@ -167,7 +167,7 @@ export default function ProfilePage() {
   const topLevelCategories = categories.filter((c) => !c.parentId);
 
   return (
-    <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 64, maxWidth: 720 }}>
+    <div className="container-bs counter-workspace-page counter-profile-page" style={{ paddingTop: 28, paddingBottom: 64, maxWidth: 820 }}>
       <PanelHeader
         title={tr("profile.title", "My Profile")}
         subtitle={tr("profile.subtitle", "Your basic account details.")}

@@ -181,7 +181,7 @@ function PostJobInner() {
   const companyGaps = isEdit ? [] : employerProfileGaps(user);
   if (companyGaps.length) {
     return (
-      <div className="container-bs section-pad-sm" style={{ maxWidth: 620 }}>
+      <div className="container-bs section-pad-sm counter-workspace-page counter-recruitment-workspace" style={{ maxWidth: 720 }}>
         <span
           style={{
             fontSize: 12,
@@ -213,7 +213,7 @@ function PostJobInner() {
 
   if (notOwner) {
     return (
-      <div className="container-bs" style={{ paddingTop: 100, paddingBottom: 100, textAlign: "center" }}>
+      <div className="container-bs counter-workspace-page counter-recruitment-workspace" style={{ paddingTop: 100, paddingBottom: 100, textAlign: "center" }}>
         <h1 style={{ fontSize: 22, fontWeight: 700 }}>You can't edit this job</h1>
         <p style={{ color: "var(--muted)", marginTop: 8 }}>It doesn't belong to your account.</p>
         <Button variant="green" href="/recruitment/dashboard" style={{ marginTop: 16 }}>Back to dashboard</Button>
@@ -222,7 +222,7 @@ function PostJobInner() {
   }
 
   return (
-    <div className="container-bs section-pad-sm" style={{ maxWidth: 780 }}>
+    <div className="container-bs section-pad-sm counter-workspace-page counter-recruitment-workspace" style={{ maxWidth: 920 }}>
       <span className="pj-eyebrow">Recruitment</span>
       <h1 className="pj-h1">{isEdit ? "Edit job" : "Post a job"}</h1>
       <p className="pj-sub">Reach candidates directly — no recruiter fees, no bidding.</p>

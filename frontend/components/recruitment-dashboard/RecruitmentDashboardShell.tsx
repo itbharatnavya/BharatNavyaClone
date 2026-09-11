@@ -123,6 +123,7 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
         return (
           <button
             key={t.id}
+            className={`counter-workspace-nav-item ${isActive ? "is-active" : ""}`}
             onClick={() => setTab(t.id)}
             style={{
               display: "flex",
@@ -146,7 +147,7 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
   );
 
   return (
-    <div>
+    <div className="counter-dashboard-page counter-recruitment-dashboard">
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
         <Avatar name={user.name} src={user.avatarUrl} size={44} />
         <div>

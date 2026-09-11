@@ -7,6 +7,7 @@ import "./recruitment-design.css";
 import "./recruitment-core.css";
 import "./living-evidence.css";
 import "./counter-direction.css";
+import "./counter-workspace.css";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth";
 import { ConfigProvider } from "@/lib/config";

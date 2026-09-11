@@ -8,6 +8,7 @@ import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import EvidenceRecord from "@/components/evidence/EvidenceRecord";
 import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
+import DecisionJourney from "@/components/evidence/DecisionJourney";
 import { useFeaturedSellers } from "@/lib/catalog";
 import { getBlogs, getRecentActivity, getStories } from "@/lib/api";
 import type { Blog, RecentActivityItem, StoryGroup } from "@/lib/types";
@@ -76,7 +77,17 @@ export default function DirectoryPage() {
 
     <AdvertisingSlot kind="external" context="Contextual partner · Directory" title="Useful tools for the work around the work." summary="A dedicated partner placement for business software, logistics, compliance or operational support—shown only after meaningful organic company discovery." media={{ src: "/seed-media/company/company-6.jpg", alt: "A business team using operational tools together", kind: "workplace", source: "prototype", attribution: "Prototype advertising creative" }} />
 
-    <section className="le-journey-wrap" aria-labelledby="directory-journey-title"><div className="le-shell"><h2 id="directory-journey-title">From a need to a useful inquiry.</h2><div className="le-journey">{[["01","Describe","Search by work, context and location."],["02","Inspect","Review identity, capability, media and proof."],["03","Shortlist","Keep credible options together."],["04","Inquire","Share a structured need with the company."]].map(([n,t,b]) => <article key={n}><b>{n}</b><h3>{t}</h3><p>{b}</p></article>)}</div></div></section>
+    <DecisionJourney
+      id="directory-journey-title"
+      title="From a need to a useful inquiry."
+      context="directory"
+      steps={[
+        { label: "Describe", detail: "Search by work, context and location." },
+        { label: "Inspect", detail: "Review identity, capability, media and proof." },
+        { label: "Shortlist", detail: "Keep credible options together." },
+        { label: "Inquire", detail: "Share a structured need with the company." },
+      ]}
+    />
 
     <section className="le-section" aria-labelledby="directory-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="directory-updates-title">Current from companies.</h2></div><p>Work samples, public reviews, stories and company-authored guidance stay connected to the company behind them.</p></header>{updates.length ? <UpdateFeature updates={updates} title="Company updates" /> : <div className="le-empty">Company updates will appear as businesses publish public evidence.</div>}</div></section>
 

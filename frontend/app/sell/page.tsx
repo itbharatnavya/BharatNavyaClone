@@ -308,7 +308,7 @@ export default function SellPage() {
   // ---- gate render ----
   if (loading || !user) {
     return (
-      <div className="container-bs section-pad">
+      <div className="container-bs section-pad counter-workspace-page counter-sell-page">
         <div className="skeleton" style={{ height: 32, width: 220, marginBottom: 16 }} />
         <div className="skeleton" style={{ height: 200, width: "100%" }} />
       </div>
@@ -316,16 +316,16 @@ export default function SellPage() {
   }
 
   return (
-    <div className="container-bs section-pad-sm" style={{ maxWidth: 860 }}>
+    <div className="container-bs section-pad-sm counter-workspace-page counter-sell-page" style={{ maxWidth: 960 }}>
       <div style={{ marginBottom: 8 }}>
-        <span className="eyebrow">Create a listing</span>
+        <span className="counter-workspace-label">Directory workspace</span>
       </div>
       <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em" }}>
-        Sell on BharatSource
+        Create a company or service listing
       </h1>
       <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 24 }}>
-        Reach buyers across India. Your seller profile is created automatically on
-        your first listing.
+        Lead with the work your company does, where it operates and the evidence
+        people need before they contact you.
       </p>
 
       <div style={{ marginBottom: 28 }}>
@@ -352,6 +352,26 @@ export default function SellPage() {
           {(
             [
               {
+                t: "service" as const,
+                icon: (
+                  <svg
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 3 3 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z" />
+                  </svg>
+                ),
+                title: "Company or service",
+                desc: "Present capabilities, service areas, credentials and working terms.",
+              },
+              {
                 t: "product" as const,
                 icon: (
                   <svg
@@ -370,27 +390,7 @@ export default function SellPage() {
                   </svg>
                 ),
                 title: "Product",
-                desc: "Goods you sell — with price, MOQ, specs and photos.",
-              },
-              {
-                t: "service" as const,
-                icon: (
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 3 3 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z" />
-                  </svg>
-                ),
-                title: "Service",
-                desc: "Skills you offer — with a rate-card, areas and credentials.",
+                desc: "Keep the existing goods flow for price, MOQ, specifications and photos.",
               },
             ]
           ).map((opt) => {
@@ -400,7 +400,7 @@ export default function SellPage() {
                 key={opt.t}
                 type="button"
                 onClick={() => chooseType(opt.t)}
-                className="card"
+                className={`card counter-listing-type is-${opt.t} ${active ? "is-active" : ""}`}
                 style={{
                   textAlign: "left",
                   padding: 22,
