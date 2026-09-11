@@ -700,13 +700,18 @@
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   padding-bottom: 0.65rem;
-  scrollbar-color: rgba(255, 255, 255, 0.72) rgba(255, 255, 255, 0.16);
-  scrollbar-width: thin;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 :is(.counter-home-page, .counter-directory-page, .counter-recruitment-page)
   :is(.le-examples, .bn-search-examples, .bn-search-choice) > * {
   flex: 0 0 auto;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page)
+  :is(.le-examples, .bn-search-examples, .bn-search-choice)::-webkit-scrollbar {
+  display: none;
 }
 
 /* Search filters keep their ink and icon contrast on ivory surfaces. */
