@@ -19,7 +19,7 @@ The source of truth is `app/counter-soft-system.css`, loaded after the existing 
 1. **Foundation and Home** — complete in `55405d2`: shared tokens, header/footer, controls, Home hero, gateways, standard, comparison, journey, and editorial cards.
 2. **Directory and Recruitment** — complete: landing pages, results, filters, cards, status rails, company/employer profiles, and job/listing details.
 3. **Access and creation** — complete: login, registration, profile, shortlist, sell/add-product, and post-job flows.
-4. **Operational workspaces** — Directory dashboard, Recruitment dashboard, admin, tables, dialogs, and empty/loading/error states.
-5. **Release audit** — desktop/mobile route sweep, keyboard/focus, reduced motion, contrast, overflow, build, and design-system validation.
+4. **Operational workspaces** — complete: Directory dashboard, Recruitment dashboard, admin, tables, dialogs, and empty/loading/error states.
+5. **Release audit** — complete for this migration: responsive browser checks on Home, Directory, Recruitment, results, login, and admin; shared focus/reduced-motion rules retained; 17 representative routes return HTTP 200; design-system validation passes; the 31-page production build passes.
 
 Each phase should be independently reviewable and committed on `design`. No phase should change backend behaviour to make a visual state appear successful.

@@ -420,6 +420,81 @@
   }
 }
 
+/* Phase 4 — dashboards and admin. Dense workspaces use the same tokens at a
+   quieter scale so operational information stays compact and scannable. */
+:is(.counter-dashboard-page, .counter-admin-page, .counter-admin-login) {
+  --counter-card-radius: 1rem;
+  --counter-button-radius: 0.75rem;
+}
+
+.counter-dashboard-page > div:first-child,
+.counter-dashboard-page .card,
+.counter-dashboard-page .card-flat,
+.counter-admin-page .card,
+.counter-admin-page .card-flat,
+.counter-admin-login .card {
+  overflow: hidden;
+  border: 1px solid var(--counter-line) !important;
+  border-radius: var(--counter-card-radius) !important;
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-dashboard-page > div:first-child {
+  margin-bottom: var(--counter-space-4);
+}
+
+.counter-workspace-nav-item {
+  margin-bottom: var(--counter-space-2);
+  border: 1px solid transparent !important;
+  border-radius: var(--counter-button-radius) !important;
+}
+
+.counter-directory-dashboard .counter-workspace-nav-item.is-active,
+.counter-recruitment-dashboard .counter-workspace-nav-item.is-active {
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-admin-page [role="tablist"] {
+  gap: var(--counter-space-2) !important;
+  padding: var(--counter-space-2) !important;
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  background: #f3eee3 !important;
+}
+
+.counter-admin-page [role="tablist"] [role="tab"],
+.counter-admin-page aside nav button {
+  border: 1px solid transparent !important;
+  border-radius: var(--counter-button-radius) !important;
+}
+
+:is(.counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.btn, button, input, select, textarea, .input, .select, .textarea) {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+:is(.counter-dashboard-page, .counter-admin-page) table {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+}
+
+:is(.counter-dashboard-page, .counter-admin-page) :is([role="dialog"], .modal) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-lift) !important;
+}
+
+.counter-admin-login .card {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28) !important;
+}
+
+@media (max-width: 640px) {
+  .counter-admin-page [role="tablist"] {
+    gap: var(--counter-space-1) !important;
+    padding: var(--counter-space-1) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .counter-home-page .le-gateway {
     transition: none;
