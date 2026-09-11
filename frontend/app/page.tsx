@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import UniversalSearch from "@/components/home/UniversalSearch";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
-import { getBlogs } from "@/lib/api";
+import { getBlogs, getJobs, searchSellers } from "@/lib/api";
 import type { Blog } from "@/lib/types";
 import { useSearchDock } from "@/lib/searchDock";
+import { useConfig } from "@/lib/config";
 
 function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
 function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
@@ -63,13 +64,18 @@ const journey = [
 
 export default function BharatNavyaHome() {
   const { docked, setProgress } = useSearchDock();
+  const { featureFlags } = useConfig();
   const searchAnchorRef = useRef<HTMLDivElement>(null);
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [sellerBlogs, setSellerBlogs] = useState<Blog[]>([]);
   const [employerBlogs, setEmployerBlogs] = useState<Blog[]>([]);
+  const [companyTotal, setCompanyTotal] = useState<number | null>(null);
+  const [jobTotal, setJobTotal] = useState<number | null>(null);
   const [activeStandardId, setActiveStandardId] = useState("identity");
   const [activeJourneyIndex, setActiveJourneyIndex] = useState(0);
+
+  const recruitmentLive = featureFlags.recruitmentLive;
 
   useEffect(() => {
     let active = true;
@@ -81,6 +87,25 @@ export default function BharatNavyaHome() {
     });
     return () => { active = false; };
   }, []);
+
+  // Live counts for the two gateway tiles — real totals from the existing public
+  // endpoints. Roles are only counted when Recruitment is live.
+  useEffect(() => {
+    let active = true;
+    Promise.allSettled([
+      searchSellers({ q: "", limit: 1 }),
+      recruitmentLive ? getJobs({ limit: 1 }) : Promise.resolve(null),
+    ]).then(([companyResult, jobResult]) => {
+      if (!active) return;
+      if (companyResult.status === "fulfilled" && companyResult.value) {
+        setCompanyTotal(Number(companyResult.value.total) || 0);
+      }
+      if (jobResult.status === "fulfilled" && jobResult.value) {
+        setJobTotal(Number(jobResult.value.total) || 0);
+      }
+    });
+    return () => { active = false; };
+  }, [recruitmentLive]);
 
   useEffect(() => {
     const anchor = searchAnchorRef.current;
@@ -107,14 +132,17 @@ export default function BharatNavyaHome() {
   const activeStandard = standards.find((standard) => standard.id === activeStandardId) || standards[0];
   const activeJourney = journey[activeJourneyIndex];
 
+  const directorySignal = companyTotal ? `${companyTotal.toLocaleString("en-IN")} companies with a public record` : "Companies, capabilities and proof";
+  const recruitmentSignal = recruitmentLive && jobTotal ? `${jobTotal.toLocaleString("en-IN")} roles open now` : "Roles, workplaces and hiring context";
+
   return <div className="le-page counter-home-page">
     <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
       <h1 id="home-title"><span>Bharat Navya</span> turns scattered signals into clearer decisions.</h1>
       <p>Understand companies, work and opportunities across India before you contact, shortlist or apply.</p>
       <div ref={searchAnchorRef} className="le-hero-search is-universal" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><UniversalSearch /></div>
       <div className="le-gateways" aria-label="Explore Bharat Navya">
-        <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Companies, capabilities and proof</small></span></Link>
-        <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>Roles, workplaces and hiring context</small></span></Link>
+        <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>{directorySignal}</small></span></Link>
+        <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>{recruitmentSignal}</small></span></Link>
       </div>
       <div className="bn-home-hero-ledger" aria-label="The Bharat Navya standard">
         <span><b>One</b> connected company identity</span>
@@ -159,7 +187,30 @@ export default function BharatNavyaHome() {
       </div>
     </div></section>
 
-    {guides.length > 0 && <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="guides-title">Context worth carrying forward.</h2></div><Link className="le-button" href="/blog">View all guides</Link></header><div className="le-editorial-grid">{guides.map((guide) => <Link href={`/blog/${guide.slug}`} key={guide.id}><EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" /><span className="le-editorial-copy"><small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small><strong>{guide.title}</strong><p>{guide.excerpt || "Practical context for growing companies and applicants."}</p></span></Link>)}</div></div></section>}
+    {guides.length > 0 && 
+      <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title">
+        <div className="le-shell">
+          <header className="le-section-head">
+            <div>
+              <h2 id="guides-title">Context worth carrying forward.</h2>
+            </div>
+            <Link className="le-button" href="/blog">View all guides</Link>
+          </header>
+          <div className="le-editorial-grid">
+            {guides.map((guide) => 
+              <Link href={`/blog/${guide.slug}`} key={guide.id}>
+                <EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" />
+                <span className="le-editorial-copy">
+                  <small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small>
+                  <strong>{guide.title}</strong>
+                  {/* <p>{guide.excerpt || "Practical context for growing companies and applicants."}</p> */}
+                </span>
+              </Link>)
+            }
+          </div>
+        </div>
+      </section>
+    }
 
   </div>;
 }

@@ -451,6 +451,17 @@
   background: var(--counter-ivory);
 }
 
+/* The form sits on an ivory ground inside the white-text .le-hero — the input
+   must not inherit that white or typed text and the caret are invisible. */
+.le-page .bn-universal-search input {
+  color: var(--counter-ink);
+  caret-color: var(--counter-ink);
+}
+
+.le-page .bn-universal-search input::placeholder {
+  color: var(--counter-muted);
+}
+
 .recruitment-core .rsb-submit {
   border-radius: 0 !important;
   background: var(--counter-saffron) !important;
