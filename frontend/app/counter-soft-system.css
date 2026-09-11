@@ -1,0 +1,1124 @@
+/* Bharat Navya — Soft Counter system
+   Loaded last so this file is the single visual contract for shape, spacing,
+   elevation and interaction across public and workspace routes. Page-specific
+   files keep owning layout and product behavior. */
+
+:root {
+  /* Primitives */
+  --counter-space-1: 0.25rem;
+  --counter-space-2: 0.5rem;
+  --counter-space-3: 0.75rem;
+  --counter-space-4: 1rem;
+  --counter-space-5: 1.25rem;
+  --counter-space-6: 1.5rem;
+  --counter-space-8: 2rem;
+  --counter-space-10: 2.5rem;
+  --counter-space-12: 3rem;
+  --counter-radius-sm: 0.75rem;
+  --counter-radius-control: 0.9375rem;
+  --counter-radius-card: 1.375rem;
+  --counter-radius-panel: 1.875rem;
+  --counter-shadow-rest: 0 1px 2px rgba(18, 20, 27, 0.04), 0 12px 32px rgba(18, 20, 27, 0.06);
+  --counter-shadow-lift: 0 4px 10px rgba(18, 20, 27, 0.06), 0 20px 48px rgba(18, 20, 27, 0.12);
+
+  /* Semantics */
+  --counter-page-gutter: clamp(0.75rem, 2.2vw, 2rem);
+  --counter-section-gap: clamp(1rem, 2.2vw, 2rem);
+  --counter-surface-border: color-mix(in srgb, var(--counter-line) 84%, transparent);
+  --counter-surface-raised: var(--counter-ivory);
+  --counter-motion: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Component aliases */
+  --counter-button-radius: var(--counter-radius-control);
+  --counter-input-radius: var(--counter-radius-control);
+  --counter-card-radius: var(--counter-radius-card);
+  --counter-section-radius: var(--counter-radius-panel);
+}
+
+:is(.le-page, .directory-design, .recruitment-design, .recruitment-core, .counter-public-page,
+  .counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) {
+  --bn-radius-small: var(--counter-radius-sm);
+  --bn-radius-control: var(--counter-radius-control);
+  --bn-radius-card: var(--counter-radius-card);
+  --bn-radius-panel: var(--counter-radius-panel);
+  --bn-radius-search: var(--counter-radius-control);
+  --bn-radius-search-stacked: var(--counter-radius-card);
+  --bn-radius-search-action: calc(var(--counter-radius-control) - 0.2rem);
+  --bn-shadow-card: var(--counter-shadow-rest);
+  --bn-shadow-float: var(--counter-shadow-lift);
+  --radius: var(--counter-radius-control);
+}
+
+/* Shared shell and controls */
+.bn-header.is-counter-public .bn-sign-in,
+.bn-header.is-counter-public .bn-menu-button,
+.bn-header.is-counter-public .bn-account > button,
+.bn-header.is-counter-public .bn-account-menu,
+.bn-header.is-counter-public .bn-mobile-nav,
+.bn-header.is-counter-public .bn-search-drawer,
+.bn-header.is-counter-public .bn-section-search,
+.bn-header.is-counter-public .bn-header-search-mobile,
+.bn-header.is-counter-public .bn-universal-compact,
+.bn-header.is-counter-public .bn-section-search-submit,
+.bn-header.is-counter-public .bn-universal-compact button {
+  border-radius: var(--counter-button-radius);
+}
+
+.bn-header.is-counter-public .bn-account-menu,
+.bn-header.is-counter-public .bn-search-drawer {
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.bn-header.is-counter-public .bn-section-search,
+.bn-header.is-counter-public .bn-header-search-mobile,
+.bn-header.is-counter-public .bn-universal-compact {
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.bn-header.is-counter-public .bn-wordmark span {
+  font-size: clamp(1.35rem, 2vw, 1.55rem);
+  line-height: 1;
+}
+
+.bn-header.is-counter-public .bn-menu-button {
+  border-radius: var(--counter-radius-card) !important;
+}
+
+/* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
+   primary action when a pair is presented together. Tabs and filter controls
+   deliberately remain neutral. */
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button {
+  border-color: var(--counter-saffron);
+  background: var(--counter-saffron);
+  color: var(--counter-ink);
+  box-shadow: 0 8px 20px rgba(18, 20, 27, 0.12);
+  transition: transform var(--counter-motion), box-shadow var(--counter-motion), background-color var(--counter-motion);
+}
+
+.counter-directory-page .le-button {
+  border-color: var(--counter-green);
+  background: var(--counter-green);
+  color: white;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button.is-primary {
+  border-color: var(--counter-ink);
+  background: var(--counter-ink);
+  color: white;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button:is(:hover, :focus-visible) {
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.directory-primary,
+.directory-preview-action {
+  border-color: var(--counter-green) !important;
+  background: var(--counter-green) !important;
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(14, 122, 80, 0.2);
+}
+
+.recruitment-primary {
+  border-color: var(--counter-saffron) !important;
+  background: var(--counter-saffron) !important;
+  color: var(--counter-ink) !important;
+  box-shadow: 0 8px 20px rgba(238, 139, 31, 0.2);
+}
+
+.bn-footer.is-counter-public {
+  margin: var(--counter-section-gap) var(--counter-page-gutter) 0;
+  border-radius: var(--counter-section-radius) var(--counter-section-radius) 0 0;
+  overflow: hidden;
+}
+
+/* Generic public and workspace primitives. These selectors intentionally sit
+   after the original square Counter rules so future pages inherit the system. */
+.counter-public-page :is(.card, .vendor-card, .blog-cover, .blog-prose code, .blog-prose pre, .blog-prose img, .skeleton),
+:is(.counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.card, .panel, .modal, .skeleton) {
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-public-page :is(.btn, button, input, select, textarea),
+:is(.counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.btn, button, input, select, textarea) {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+:is(.counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.input, .textarea, .select) {
+  border-radius: var(--counter-input-radius) !important;
+}
+
+/* Home: inset civic canvas */
+.counter-home-page {
+  padding: var(--counter-section-gap) var(--counter-page-gutter) 0;
+  background: #f3eee3;
+}
+
+.counter-home-page > section {
+  margin-bottom: var(--counter-section-gap);
+}
+
+.counter-home-page > section:not(.bn-home-journey) {
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+}
+
+.counter-home-page .bn-home-hero {
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-home-page .bn-universal-search form,
+.counter-home-page .bn-section-search {
+  border-radius: var(--counter-input-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-home-page .bn-universal-search form > button,
+.counter-home-page .bn-section-search-submit {
+  border-radius: calc(var(--counter-input-radius) - 0.2rem);
+}
+
+.counter-home-page :is(.bn-search-examples, .bn-search-choice) button {
+  border-radius: 999px !important;
+}
+
+.counter-home-page .le-gateways {
+  gap: var(--counter-space-5);
+}
+
+.counter-home-page .le-gateway {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  box-shadow: 0 8px 24px rgba(18, 20, 27, 0.12);
+}
+
+.counter-home-page .le-gateway > span:first-child {
+  border-radius: var(--counter-radius-control);
+}
+
+.counter-home-page .le-gateway:is(:hover, :focus-visible) {
+  transform: translateY(-5px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.counter-home-page .bn-home-hero-ledger {
+  gap: var(--counter-space-2);
+  padding: var(--counter-space-2);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: var(--counter-radius-card);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.counter-home-page .bn-home-hero-ledger span {
+  border: 0;
+  border-radius: var(--counter-radius-sm);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.counter-home-page .bn-home-hero-ledger span:first-child {
+  padding-left: 1rem;
+}
+
+.counter-home-page .bn-home-standard {
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-ivory);
+}
+
+.counter-home-page .bn-home-standard-stage {
+  gap: var(--counter-space-4);
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  background: #f3eee3;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-home-page .bn-home-standard-tabs {
+  gap: var(--counter-space-2);
+  padding: var(--counter-space-2);
+  border: 0;
+  border-radius: var(--counter-card-radius);
+  background: color-mix(in srgb, var(--counter-ivory) 72%, transparent);
+}
+
+.counter-home-page .bn-home-standard-tabs button {
+  border: 0;
+  border-radius: var(--counter-radius-control) !important;
+}
+
+.counter-home-page .bn-home-standard-record {
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: 0 1px 0 rgba(18, 20, 27, 0.05);
+}
+
+.counter-home-page .bn-home-standard-record > .bn-evidence-media {
+  border-radius: var(--counter-card-radius) var(--counter-card-radius) 0 0;
+}
+
+.counter-home-page .bn-home-standard-copy ul {
+  gap: var(--counter-space-2);
+  border: 0;
+}
+
+.counter-home-page .bn-home-standard-copy li {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-radius-sm);
+}
+
+.counter-home-page .bn-home-standard-copy li:first-child {
+  padding-left: 0.8rem;
+}
+
+.counter-home-page .bn-home-contrast {
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-home-page .bn-home-contrast-board {
+  gap: var(--counter-space-3);
+  border: 0;
+}
+
+.counter-home-page .bn-home-contrast-board > div {
+  border-radius: var(--counter-card-radius);
+  box-shadow: 0 8px 24px rgba(18, 20, 27, 0.1);
+}
+
+.counter-home-page .bn-home-contrast-board .is-thin b {
+  border-radius: var(--counter-radius-sm);
+}
+
+.counter-home-page .bn-home-journey {
+  border-radius: var(--counter-section-radius);
+  background: transparent;
+}
+
+.counter-home-page .bn-home-journey-sticky {
+  top: calc(var(--bn-header-height) + var(--counter-space-2));
+  height: calc(100svh - var(--bn-header-height) - (2 * var(--counter-space-2)));
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-home-page .bn-home-journey-track button b,
+.counter-home-page .bn-home-journey-map > span:not(.bn-home-journey-map-line) > i {
+  border-radius: var(--counter-radius-sm) !important;
+}
+
+.counter-home-page .bn-home-journey-focus {
+  gap: var(--counter-space-2);
+  border-radius: var(--counter-card-radius);
+}
+
+.counter-home-page .bn-home-journey-focus > div {
+  overflow: hidden;
+}
+
+.counter-home-page .bn-home-journey-focus > div:first-child {
+  border-radius: var(--counter-card-radius) 0 0 var(--counter-card-radius);
+}
+
+.counter-home-page .bn-home-journey-focus > div:last-child {
+  border-radius: 0 var(--counter-card-radius) var(--counter-card-radius) 0;
+}
+
+.counter-home-page .le-editorial-grid > a {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+@media (max-width: 760px) {
+  :root {
+    --counter-page-gutter: 0.5rem;
+    --counter-section-gap: 0.75rem;
+    --counter-radius-panel: 1.25rem;
+    --counter-radius-card: 1rem;
+  }
+
+  .bn-footer.is-counter-public {
+    margin-inline: var(--counter-page-gutter);
+  }
+
+  .counter-home-page .le-gateways,
+  .counter-home-page .bn-home-hero-ledger,
+  .counter-home-page .bn-home-standard-stage,
+  .counter-home-page .bn-home-standard-copy ul,
+  .counter-home-page .bn-home-contrast-board,
+  .counter-home-page .bn-home-journey-focus {
+    gap: var(--counter-space-2);
+  }
+
+  .counter-home-page .bn-home-standard-stage {
+    padding: var(--counter-space-2);
+  }
+
+  .counter-home-page .bn-home-journey-focus > div:first-child,
+  .counter-home-page .bn-home-journey-focus > div:last-child {
+    border-radius: var(--counter-card-radius);
+  }
+}
+
+/* Phase 3 — authentication, profile, shortlist and creation flows */
+.counter-auth-page {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  min-height: calc(100svh - var(--bn-header-height) - (2 * var(--counter-section-gap))) !important;
+  margin: var(--counter-section-gap) auto;
+  overflow: hidden;
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-auth-page .counter-auth-aside {
+  border-radius: 0 var(--counter-section-radius) var(--counter-section-radius) 0;
+}
+
+.counter-auth-page .counter-auth-form-zone {
+  background: #f3eee3;
+}
+
+.counter-auth-page .counter-auth-form {
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-auth-page .counter-auth-tabs {
+  overflow: hidden;
+  border-radius: var(--counter-radius-control) !important;
+  background: #f3eee3;
+}
+
+.counter-auth-page .counter-auth-tabs > button {
+  border-radius: 0 !important;
+}
+
+:is(.counter-auth-page, .counter-workspace-page) :is(.input, .select, .textarea) {
+  border-radius: var(--counter-input-radius) !important;
+  background: var(--counter-ivory);
+}
+
+:is(.counter-auth-page, .counter-workspace-page) .btn {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+.counter-workspace-page .card,
+.counter-workspace-page .card-flat,
+.counter-shortlist-page .card {
+  overflow: hidden;
+  border: 1px solid var(--counter-line) !important;
+  border-radius: var(--counter-card-radius) !important;
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-workspace-page section.card {
+  margin-bottom: var(--counter-space-4) !important;
+  border-bottom: 1px solid var(--counter-line) !important;
+}
+
+.counter-sell-page > div:nth-of-type(2) {
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-listing-type,
+.counter-role-option {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-listing-type:hover,
+.counter-role-option:hover {
+  box-shadow: var(--counter-shadow-lift) !important;
+}
+
+.counter-sell-page ol button > span:first-child {
+  border-radius: var(--counter-radius-sm) !important;
+}
+
+.counter-role-gate {
+  gap: var(--counter-space-4) !important;
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-section-radius);
+  background: #f3eee3;
+}
+
+.counter-role-option {
+  border: 1px solid var(--counter-line) !important;
+}
+
+.counter-profile-page,
+.counter-shortlist-page,
+.counter-sell-page,
+.counter-recruitment-workspace {
+  border-radius: var(--counter-section-radius);
+}
+
+@media (max-width: 900px) {
+  .counter-auth-page {
+    width: calc(100% - (2 * var(--counter-page-gutter)));
+  }
+
+  .counter-auth-page .counter-auth-aside {
+    border-radius: 0 0 var(--counter-section-radius) var(--counter-section-radius);
+  }
+}
+
+/* Phase 4 — dashboards and admin. Dense workspaces use the same tokens at a
+   quieter scale so operational information stays compact and scannable. */
+:is(.counter-dashboard-page, .counter-admin-page, .counter-admin-login) {
+  --counter-card-radius: 1rem;
+  --counter-button-radius: 0.75rem;
+}
+
+.counter-dashboard-page > div:first-child,
+.counter-dashboard-page .card,
+.counter-dashboard-page .card-flat,
+.counter-admin-page .card,
+.counter-admin-page .card-flat,
+.counter-admin-login .card {
+  overflow: hidden;
+  border: 1px solid var(--counter-line) !important;
+  border-radius: var(--counter-card-radius) !important;
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-dashboard-page > div:first-child {
+  margin-bottom: var(--counter-space-4);
+}
+
+.counter-workspace-nav-item {
+  margin-bottom: var(--counter-space-2);
+  border: 1px solid transparent !important;
+  border-radius: var(--counter-button-radius) !important;
+}
+
+.counter-directory-dashboard .counter-workspace-nav-item.is-active,
+.counter-recruitment-dashboard .counter-workspace-nav-item.is-active {
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-admin-page [role="tablist"] {
+  gap: var(--counter-space-2) !important;
+  padding: var(--counter-space-2) !important;
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  background: #f3eee3 !important;
+}
+
+.counter-admin-page [role="tablist"] [role="tab"],
+.counter-admin-page aside nav button {
+  border: 1px solid transparent !important;
+  border-radius: var(--counter-button-radius) !important;
+}
+
+:is(.counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.btn, button, input, select, textarea, .input, .select, .textarea) {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+:is(.counter-dashboard-page, .counter-admin-page) table {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+}
+
+:is(.counter-dashboard-page, .counter-admin-page) :is([role="dialog"], .modal) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-lift) !important;
+}
+
+.counter-admin-login .card {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28) !important;
+}
+
+@media (max-width: 640px) {
+  .counter-admin-page [role="tablist"] {
+    gap: var(--counter-space-1) !important;
+    padding: var(--counter-space-1) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .counter-home-page .le-gateway {
+    transition: none;
+  }
+}
+
+/* Phase 2 — Directory and Recruitment public surfaces */
+:is(.counter-directory-page, .counter-recruitment-page) {
+  padding: var(--counter-section-gap) var(--counter-page-gutter) 0;
+  background: #f3eee3;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) > section {
+  margin-bottom: var(--counter-section-gap);
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-gateways, .le-index-showcase, .le-role-showcase) {
+  gap: var(--counter-space-4);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.bn-universal-search form, .bn-section-search) {
+  border-radius: var(--counter-input-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.bn-universal-search form > button, .bn-section-search-submit) {
+  border-radius: calc(var(--counter-input-radius) - 0.2rem) !important;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-examples, .bn-search-examples, .bn-search-choice) button {
+  border-radius: 999px !important;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index, .le-index-preview, .le-role-list, .recruitment-shortcuts) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index-preview, .recruitment-shortcuts a, .le-company-tile, .le-evidence-record, .le-button) {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index a, .le-evidence-record) {
+  margin-bottom: var(--counter-space-2);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-radius-control);
+  background: var(--counter-ivory);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) :is(.le-index a, .le-evidence-record):last-child {
+  margin-bottom: 0;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-gateway,
+:is(.counter-directory-page, .counter-recruitment-page) .le-gateway > span:first-child {
+  border-radius: var(--counter-card-radius);
+}
+
+/* Results pages become workbenches of separated surfaces instead of one long
+   ruled sheet. Filters and behaviour remain owned by their existing routes. */
+:is(.directory-results, .recruitment-core) {
+  background: #f3eee3;
+}
+
+.directory-results-head,
+.recruitment-results-head {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  margin: var(--counter-section-gap) auto 0;
+  overflow: hidden;
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.directory-results, .recruitment-core) :is(.directory-search, .recruitment-results-search form) {
+  border-radius: var(--counter-input-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.directory-results, .recruitment-core) :is(.directory-search button, .recruitment-results-search button) {
+  border-radius: calc(var(--counter-input-radius) - 0.2rem) !important;
+}
+
+:is(.directory-filter-panel, .directory-inspection-pane, .recruitment-results-filters, .recruitment-results-preview > *, .recruitment-inline-preview) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+  background: var(--counter-ivory);
+}
+
+:is(.directory-result-row, .recruitment-result-row) {
+  margin-bottom: var(--counter-space-3);
+  padding-inline: var(--counter-space-4);
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+  transition: transform var(--counter-motion), box-shadow var(--counter-motion), border-color var(--counter-motion);
+}
+
+:is(.directory-result-row, .recruitment-result-row):is(:hover, :focus-visible) {
+  z-index: 1;
+  border-color: color-mix(in srgb, var(--counter-indigo) 45%, var(--counter-line));
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+:is(.directory-result-list, .recruitment-results-list) {
+  border-top: 0;
+}
+
+:is(.directory-result-scope, .directory-mobile-filters, .recruitment-results-tools, .recruitment-state) {
+  overflow: hidden;
+  border-radius: var(--counter-radius-control);
+}
+
+/* Company, role and employer records */
+.company-profile,
+.employer-careers,
+.recruitment-detail {
+  background: #f3eee3;
+}
+
+.company-profile .company-cover,
+.employer-careers-hero,
+.recruitment-detail-hero {
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-profile .company-cover {
+  width: calc(100% - (2 * var(--counter-page-gutter)));
+  margin-inline: auto;
+}
+
+.company-trust,
+.recruitment-role-ledger,
+.employer-careers-main > section,
+.employer-careers-aside > section {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-services article,
+.company-gallery figure,
+.company-reviews blockquote,
+.company-inquiry,
+.company-facts,
+.recruitment-detail-title,
+.recruitment-apply-panel {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-secondary,
+.directory-primary,
+.directory-secondary,
+.recruitment-primary,
+.recruitment-secondary,
+.recruitment-filter-input,
+.recruitment-filter-select {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+@media (max-width: 760px) {
+  :is(.counter-directory-page, .counter-recruitment-page) {
+    padding-inline: var(--counter-page-gutter);
+  }
+
+  .directory-results-head,
+  .recruitment-results-head,
+  .company-profile .company-cover {
+    width: calc(100% - (2 * var(--counter-page-gutter)));
+  }
+
+  :is(.directory-result-row, .recruitment-result-row) {
+    padding-inline: var(--counter-space-3);
+  }
+}
+
+/* Corrective consistency audit — September 2026
+   These rules resolve legacy Counter media queries that were still overriding
+   the Soft Counter system at tablet and mobile widths. */
+
+/* Search suggestions remain a single, intentionally scrollable row. */
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page)
+  :is(.le-examples, .bn-search-examples, .bn-search-choice) {
+  max-width: 100%;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-bottom: 0.65rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page)
+  :is(.le-examples, .bn-search-examples, .bn-search-choice) > * {
+  flex: 0 0 auto;
+}
+
+:is(.counter-home-page, .counter-directory-page, .counter-recruitment-page)
+  :is(.le-examples, .bn-search-examples, .bn-search-choice)::-webkit-scrollbar {
+  display: none;
+}
+
+/* Search filters keep their ink and icon contrast on ivory surfaces. */
+:is(.bn-section-search-location, .bn-header-search-filters) > svg {
+  color: var(--counter-indigo);
+  opacity: 1;
+  stroke: currentColor;
+}
+
+.bn-section-search-location select {
+  color: var(--counter-ink);
+}
+
+/* Home hero: compact destinations and a properly aligned three-part thesis. */
+.counter-home-page .le-gateways {
+  width: min(calc(100% - 1rem), 70rem);
+  margin-inline: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.counter-home-page .bn-home-hero-ledger span {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 0.1rem;
+  padding: 0.8rem 1rem;
+}
+
+.counter-home-page .bn-home-hero-ledger b {
+  display: block;
+  line-height: 1;
+}
+
+/* "Why Bharat Navya" is a compact selector plus one focused record, not four
+   oversized cards competing with the content. */
+.counter-home-page .bn-home-standard-stage {
+  height: auto;
+  min-height: 0;
+  grid-template-columns: minmax(12rem, 0.42fr) minmax(0, 1.58fr);
+}
+
+.counter-home-page .bn-home-standard-tabs button {
+  min-height: 4.25rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.counter-home-page .bn-home-standard-record {
+  grid-template-rows: minmax(15rem, 44vh) auto;
+}
+
+.counter-home-page .bn-home-standard-copy {
+  padding: 1rem 1.15rem;
+}
+
+/* Stories/statuses use a familiar active-story ring and stay visually separate
+   from the surrounding page canvas. */
+:is(.counter-directory-page, .counter-recruitment-page) .le-update-rail {
+  padding: 1rem;
+  border: 1px solid var(--counter-surface-border);
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) > .le-shell:has(> .le-update-rail) {
+  margin-bottom: clamp(1rem, 2.2vw, 2rem);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-update-scroller {
+  gap: 0.8rem;
+  padding: 0.2rem 0.15rem 0.65rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-update-card {
+  padding: 3px;
+  overflow: hidden;
+  border: 2px solid var(--counter-saffron);
+  border-radius: var(--counter-card-radius) !important;
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-update-card .bn-evidence-media {
+  overflow: hidden;
+  border-radius: calc(var(--counter-card-radius) - 0.35rem);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-update-card-author {
+  right: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  width: auto;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--counter-radius-sm);
+  background: color-mix(in srgb, var(--counter-green) 91%, transparent);
+  color: white;
+  line-height: 1.2;
+}
+
+.counter-recruitment-page .le-update-card-author {
+  background: color-mix(in srgb, var(--counter-ink) 91%, transparent);
+}
+
+/* Trust vocabulary is a raised, softly tinted group rather than three rows
+   disappearing into the page background. */
+:is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger {
+  padding: var(--counter-space-4);
+  border: 1px solid var(--counter-surface-border);
+  background: color-mix(in srgb, var(--counter-indigo) 6%, var(--counter-ivory));
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger .le-shell {
+  width: 100%;
+  gap: var(--counter-space-3);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger article {
+  min-height: 6rem;
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: 0 1px 0 rgba(18, 20, 27, 0.04);
+}
+
+/* Product listings use the same card and spacing primitives as company cards. */
+:is(.counter-directory-page, .counter-recruitment-page) :is(.counter-product-list, .counter-product-loading) {
+  gap: var(--counter-space-4);
+  padding: 0;
+  background: transparent;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-product-list > li {
+  overflow: hidden;
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-product-list > li.is-featured {
+  background: var(--counter-indigo);
+  color: white;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-product-media {
+  overflow: hidden;
+  border-radius: calc(var(--counter-card-radius) - 1px) calc(var(--counter-card-radius) - 1px) 0 0;
+}
+
+.directory-product-results-engine .dr-pillbar {
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.directory-product-results-engine :is(.dr-pill-select, .dr-pill-chip, .dr-view-toggle, .dr-drawer, .card, .btn, .select, .chip) {
+  border-radius: var(--counter-button-radius) !important;
+}
+
+.directory-product-results-engine .card {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius) !important;
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+/* Remaining public-page surfaces follow the same panel/card hierarchy. */
+:is(.counter-directory-page, .counter-recruitment-page)
+  :is(.le-proof-stage, .le-discovery-feature, .le-update-feature, .le-ad-slot, .bn-decision-journey-track, .bn-decision-journey-focus) {
+  overflow: hidden;
+  border-radius: var(--counter-card-radius);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .le-partner > .le-shell {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+/* Selected Directory records must stay readable when their inline inspection
+   opens on the pale green selection surface. */
+.directory-design .directory-result-item.is-expanded > .directory-result-row.is-selected,
+.directory-design .directory-result-item.is-expanded > .directory-result-row.is-selected :is(h2, h3, p, span, b, strong, li) {
+  color: var(--counter-ink);
+}
+
+.directory-design .directory-result-item.is-expanded > .directory-result-row.is-selected {
+  min-height: 0;
+  background: color-mix(in srgb, var(--counter-green) 9%, var(--counter-ivory));
+}
+
+.directory-design .directory-result-item.is-expanded > .directory-result-row.is-selected li {
+  background: var(--counter-ivory);
+}
+
+@media (max-width: 1023px) {
+  :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger .le-shell {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger article {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    border: 1px solid var(--counter-line);
+  }
+}
+
+@media (max-width: 760px) {
+  .counter-home-page .le-gateways {
+    width: calc(100% - 1rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--counter-space-2);
+    margin: 1.25rem auto 0;
+  }
+
+  .counter-home-page .le-gateway {
+    min-height: 7.25rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.65rem;
+    padding: 0.9rem;
+    font-size: clamp(1.05rem, 4.8vw, 1.4rem);
+  }
+
+  .counter-home-page .le-gateway > span:first-child,
+  .counter-home-page .le-gateway.is-directory > span:first-child,
+  .counter-home-page .le-gateway.is-recruitment > span:first-child {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .counter-home-page .le-gateway small {
+    font-size: 0.68rem;
+  }
+
+  .counter-home-page .bn-home-hero-ledger {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .counter-home-page .bn-home-hero-ledger span,
+  .counter-home-page .bn-home-hero-ledger span:first-child {
+    min-height: 4.75rem;
+    padding: 0.65rem;
+    border-right: 0;
+    border-bottom: 0;
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  .counter-home-page .bn-home-hero-ledger b {
+    font-size: 1rem;
+  }
+
+  .counter-home-page .bn-home-standard-stage {
+    grid-template-columns: 1fr;
+    gap: var(--counter-space-2);
+  }
+
+  .counter-home-page .bn-home-standard-tabs {
+    grid-template-columns: repeat(4, minmax(6.75rem, 1fr));
+    grid-template-rows: 1fr;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .counter-home-page .bn-home-standard-tabs button {
+    min-height: 3.75rem;
+    grid-template-columns: 1fr;
+    align-content: center;
+    padding: 0.65rem 0.75rem;
+    border: 0;
+  }
+
+  .counter-home-page .bn-home-standard-tabs button small {
+    display: none;
+  }
+
+  .counter-home-page .bn-home-standard-record {
+    grid-template-rows: auto auto;
+  }
+
+  .counter-home-page .bn-home-standard-record > .bn-evidence-media {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .counter-home-page .bn-home-standard-copy ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .counter-home-page .bn-home-standard-copy li,
+  .counter-home-page .bn-home-standard-copy li:first-child {
+    min-height: 3.25rem;
+    padding: 0.55rem;
+    border: 1px solid var(--counter-line);
+  }
+
+  /* The stage count and explanation share one row; the route map stays below. */
+  .counter-home-page .bn-home-journey-focus {
+    grid-template-columns: minmax(5rem, 0.26fr) minmax(0, 0.74fr);
+    gap: var(--counter-space-2);
+  }
+
+  .counter-home-page .bn-home-journey-count {
+    min-height: 9.5rem;
+    grid-template-columns: 1fr;
+    align-content: space-between;
+    align-items: start;
+    padding: 1rem;
+    border-radius: var(--counter-card-radius) 0 0 var(--counter-card-radius) !important;
+  }
+
+  .counter-home-page .bn-home-journey-count strong {
+    font-size: clamp(3rem, 13vw, 4rem);
+  }
+
+  .counter-home-page .bn-home-journey-copy {
+    min-width: 0;
+    min-height: 9.5rem;
+    padding: 1rem;
+    border-radius: 0 var(--counter-card-radius) var(--counter-card-radius) 0 !important;
+  }
+
+  .counter-home-page .bn-home-journey-copy h3 {
+    margin-top: 0.45rem;
+    font-size: clamp(1.55rem, 7vw, 2.1rem);
+  }
+
+  .counter-home-page .bn-home-journey-copy p {
+    margin-top: 0.45rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .counter-home-page .bn-home-journey-map {
+    grid-column: 1 / -1;
+    min-height: 5.5rem;
+    padding: 0.85rem;
+    border-radius: var(--counter-card-radius) !important;
+  }
+
+  :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger {
+    padding: var(--counter-space-3);
+  }
+
+  :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger .le-shell {
+    grid-template-columns: 1fr;
+  }
+
+  :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger article {
+    min-height: 5.25rem;
+    padding: 0.85rem;
+  }
+
+  :is(.counter-directory-page, .counter-recruitment-page) .counter-product-list {
+    gap: var(--counter-space-3);
+  }
+
+  .directory-design .directory-result-item.is-expanded > .directory-result-row.is-selected {
+    padding: 0.9rem;
+  }
+}
