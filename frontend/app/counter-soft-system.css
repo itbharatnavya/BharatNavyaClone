@@ -620,6 +620,14 @@
   background: #f3eee3;
 }
 
+.recruitment-core {
+  padding-top: var(--counter-section-gap);
+}
+
+.recruitment-core > .recruitment-results-head {
+  margin-top: 0;
+}
+
 .directory-results-head,
 .recruitment-results-head {
   width: calc(100% - (2 * var(--counter-page-gutter)));
