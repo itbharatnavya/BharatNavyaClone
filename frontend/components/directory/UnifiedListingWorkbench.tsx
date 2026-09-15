@@ -125,6 +125,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const didMount = useRef(false);
 
   useEffect(() => {
@@ -235,8 +236,20 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     <div className="directory-listing-detail"><ListingPreview listing={selected} /></div>
 
     <aside className="directory-listing-filter-rail" aria-label="Filter services and products">
-      <div className="directory-listing-filter-intro"><span>Refine</span><h2>Find the right fit</h2><p>Narrow by listing type, category, location, terms and trust.</p></div>
-      <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+      <button
+        className="directory-listing-filter-toggle"
+        type="button"
+        aria-expanded={filtersOpen}
+        aria-controls="directory-listing-filter-content"
+        onClick={() => setFiltersOpen((open) => !open)}
+      >
+        <span><b>Refine listings</b><small>Narrow by type, location, terms and trust</small></span>
+        <strong>{filtersOpen ? "Hide filters" : "Show filters"}</strong>
+      </button>
+      <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
+        <div className="directory-listing-filter-intro"><span>Refine</span><h2>Find the right fit</h2><p>Narrow by listing type, category, location, terms and trust.</p></div>
+        <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+      </div>
     </aside>
   </div>;
 }
