@@ -35,6 +35,8 @@ export default function DirectoryPage() {
   const { sellers, loading } = useFeaturedSellers();
   const { docked, setProgress, setQuery, markSearchNav } = useSearchDock();
   const searchAnchorRef = useRef<HTMLDivElement>(null);
+  const updatesAnchorRef = useRef<HTMLElement>(null);
+  const updatesRequestedRef = useRef(false);
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [stories, setStories] = useState<StoryGroup[]>([]);
@@ -43,7 +45,23 @@ export default function DirectoryPage() {
   const [activeFamily, setActiveFamily] = useState(families[0]);
   const allowPrototype = process.env.NEXT_PUBLIC_DESIGN_CONTENT_PREVIEW === "true";
 
-  useEffect(() => { Promise.allSettled([getStories("seller"), getBlogs({ authorType: "seller" }), getRecentActivity({ limit: 6 })]).then(([storyResult, blogResult, activityResult]) => { if (storyResult.status === "fulfilled") setStories(storyResult.value); if (blogResult.status === "fulfilled") setBlogs(blogResult.value); if (activityResult.status === "fulfilled") setActivity(activityResult.value); }); }, []);
+  useEffect(() => { getStories("seller").then(setStories).catch(() => setStories([])); }, []);
+  useEffect(() => {
+    const anchor = updatesAnchorRef.current;
+    if (!anchor || updatesRequestedRef.current) return;
+    const loadUpdates = () => {
+      if (updatesRequestedRef.current) return;
+      updatesRequestedRef.current = true;
+      Promise.allSettled([getBlogs({ authorType: "seller" }), getRecentActivity({ limit: 6 })]).then(([blogResult, activityResult]) => {
+        if (blogResult.status === "fulfilled") setBlogs(blogResult.value);
+        if (activityResult.status === "fulfilled") setActivity(activityResult.value);
+      });
+    };
+    if (typeof IntersectionObserver === "undefined") { loadUpdates(); return; }
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { loadUpdates(); observer.disconnect(); } }, { rootMargin: "320px 0px" });
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     const anchor = searchAnchorRef.current;
     if (!anchor || typeof IntersectionObserver === "undefined") return;
@@ -98,7 +116,7 @@ export default function DirectoryPage() {
       ]}
     />
 
-    <section className="le-section" aria-labelledby="directory-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="directory-updates-title">Current from companies.</h2></div><p>Work samples, public reviews, stories and company-authored guidance stay connected to the company behind them.</p></header>{updates.length ? <UpdateFeature updates={updates} title="Company updates" /> : <div className="le-empty">Company updates will appear as businesses publish public evidence.</div>}</div></section>
+    <section ref={updatesAnchorRef} className="le-section" aria-labelledby="directory-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="directory-updates-title">Current from companies.</h2></div><p>Work samples, public reviews, stories and company-authored guidance stay connected to the company behind them.</p></header>{updates.length ? <UpdateFeature updates={updates} title="Company updates" /> : <div className="le-empty">Company updates will appear as businesses publish public evidence.</div>}</div></section>
 
     <section className="le-closing"><div className="le-shell"><div><h2>Find useful support—or represent your company accurately.</h2><p>Compare services and products, or publish a listing connected to your company record.</p></div><div className="le-closing-actions"><Link className="le-button is-primary" href="/search">Browse listings</Link><Link className="le-button" href="/sell">List a service or product</Link></div></div></section>
   </div>;
