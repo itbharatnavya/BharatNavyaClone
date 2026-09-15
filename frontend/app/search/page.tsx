@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchContextSwitch from "@/components/SearchContextSwitch";
-import DiscoveryResults from "@/components/discovery/DiscoveryResults";
+import UnifiedListingWorkbench from "@/components/directory/UnifiedListingWorkbench";
 import { parseDiscoverySeed } from "@/components/discovery/hooks";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useSearchDock } from "@/lib/searchDock";
@@ -14,12 +14,6 @@ function Arrow() {
 
 function SearchIcon() {
   return <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></svg>;
-}
-
-function numberParam(value: string | null): number | undefined {
-  if (!value) return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function DirectorySearchResults() {
@@ -91,20 +85,7 @@ function DirectorySearchResults() {
 
     <div className="directory-shell directory-unified-results">
       <SearchContextSwitch destination="recruitment" query={seed.query} city={seed.initialFilters.city || ""} />
-      <div className="directory-unified-results-engine directory-product-results-engine">
-        <DiscoveryResults
-          key={`results-${seed.query}-${seed.initialFilters.city || ""}`}
-          baseQuery={{ minPrice: numberParam(params.get("minPrice")) }}
-          initialFilters={seed.initialFilters}
-          query={seed.query}
-          syncUrl
-          enableCategoryFilter
-          showTypeFilter
-          defaultSort="relevance"
-          emptyTitle="No services or products match"
-          emptyMessage="Try another need, category, location or price range."
-        />
-      </div>
+      <UnifiedListingWorkbench key={`results-${seed.query}-${seed.initialFilters.city || ""}`} query={seed.query} initialFilters={seed.initialFilters} />
     </div>
   </div>;
 }
