@@ -25,8 +25,8 @@ export default function ShortlistPage() {
       </h1>
       <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>
         {user
-          ? "Companies, services and products you've saved — synced to your account."
-          : "Companies, services and products saved on this device. Sign in to keep them across devices."}
+          ? "Services and products you've saved — synced to your account."
+          : "Services and products saved on this device. Sign in to keep them across devices."}
       </p>
 
       <ShortlistGrid ids={ids} loading={loading} />

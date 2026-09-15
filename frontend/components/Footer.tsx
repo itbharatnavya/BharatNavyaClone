@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const destinations = [
-  { name: "Directory", href: "/directory", tagline: "Discover credible companies, services and work evidence.", tone: "var(--bn-green-050)", color: "var(--bn-directory)" },
+  { name: "Directory", href: "/directory", tagline: "Compare services, products and provider evidence.", tone: "var(--bn-green-050)", color: "var(--bn-directory)" },
   { name: "Recruitment", href: "/recruitment", tagline: "Explore transparent roles and hiring context.", tone: "var(--bn-blue-050)", color: "var(--bn-recruitment)" },
 ];
 const companyLinks = [{ label: "About", href: "/about" }, { label: "Updates and guides", href: "/blog" }, { label: "Pricing", href: "/pricing" }];

@@ -50,12 +50,12 @@ export default function UniversalSearch({ onSubmitted }: { onSubmitted?: () => v
     <div className="bn-universal-search">
       <form onSubmit={submit} role="search" aria-label="Search Bharat Navya">
         <SearchIcon />
-        <label className="sr-only" htmlFor={queryId}>Search companies, services or jobs</label>
+        <label className="sr-only" htmlFor={queryId}>Search services, products or jobs</label>
         <input id={queryId} value={query} onChange={(event) => { setQuery(event.target.value); setError(""); setChoiceOpen(false); }} placeholder="Try ‘GST consultant in Ahmedabad’ or ‘operations jobs’" aria-describedby={error ? errorId : undefined} aria-invalid={Boolean(error)} />
         <button type="submit" aria-label="Search"><ArrowIcon /></button>
       </form>
       {error && <p id={errorId} className="bn-search-error" role="alert">{error}</p>}
-      {choiceOpen && <div className="bn-search-choice" role="group" aria-label="Choose where to search"><span>Where should we search?</span><button type="button" onClick={() => navigate("directory")}>Companies &amp; services</button><button type="button" onClick={() => navigate("recruitment")}>Jobs &amp; hiring</button></div>}
+      {choiceOpen && <div className="bn-search-choice" role="group" aria-label="Choose where to search"><span>Where should we search?</span><button type="button" onClick={() => navigate("directory")}>Services &amp; products</button><button type="button" onClick={() => navigate("recruitment")}>Jobs &amp; hiring</button></div>}
       <div className="bn-search-examples" aria-label="Example searches"><span>Try</span>{examples.map((example) => <button key={example} type="button" onClick={() => chooseExample(example)}>{example}</button>)}</div>
     </div>
   );
@@ -95,16 +95,16 @@ export function UniversalDockedSearch() {
       <div className="bn-header-search-desktop">
         <form className="bn-universal-compact" role="search" aria-label="Search Bharat Navya" onSubmit={submit}>
           <SearchIcon />
-          <label className="sr-only" htmlFor={compactId}>Search companies, services or jobs</label>
-          <input id={compactId} value={dock.universalQuery} onChange={(event) => dock.setUniversalQuery(event.target.value)} placeholder="Search companies or jobs" />
+          <label className="sr-only" htmlFor={compactId}>Search services, products or jobs</label>
+          <input id={compactId} value={dock.universalQuery} onChange={(event) => dock.setUniversalQuery(event.target.value)} placeholder="Search services, products or jobs" />
           <button type="submit" aria-label="Search"><ArrowIcon /></button>
         </form>
       </div>
-      <button type="button" className="bn-header-search-mobile" onClick={() => { setNeedsChoice(false); setDrawerOpen(true); }} aria-label={`Edit ${summary}`}><SearchIcon /><span><strong>{summary}</strong><small>Companies and jobs</small></span><ArrowIcon /></button>
+      <button type="button" className="bn-header-search-mobile" onClick={() => { setNeedsChoice(false); setDrawerOpen(true); }} aria-label={`Edit ${summary}`}><SearchIcon /><span><strong>{summary}</strong><small>Services, products and jobs</small></span><ArrowIcon /></button>
     </div>
     <Modal open={drawerOpen} onClose={() => { setDrawerOpen(false); setNeedsChoice(false); }} title="Search Bharat Navya" size="lg" className="bn-universal-search-modal">
       <UniversalSearch onSubmitted={() => setDrawerOpen(false)} />
-      {needsChoice && <div className="bn-search-choice" role="group" aria-label="Choose where to search"><span>Where should we search?</span><button type="button" onClick={() => navigate("directory")}>Companies &amp; services</button><button type="button" onClick={() => navigate("recruitment")}>Jobs &amp; hiring</button></div>}
+      {needsChoice && <div className="bn-search-choice" role="group" aria-label="Choose where to search"><span>Where should we search?</span><button type="button" onClick={() => navigate("directory")}>Services &amp; products</button><button type="button" onClick={() => navigate("recruitment")}>Jobs &amp; hiring</button></div>}
     </Modal>
   </>;
 }

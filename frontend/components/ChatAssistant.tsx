@@ -25,15 +25,15 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Hi! I'm the Bharat Navya assistant. Tell me what kind of company, service, or role you need and I'll point you to Directory or Recruitment.",
+    "Hi! I'm the Bharat Navya assistant. Tell me what service, product, or role you need and I'll point you to Directory or Recruitment.",
 };
 
 // Client-side quick starters (fill + send). API suggestions come back as links.
 const QUICK_PROMPTS = [
   "Find a GST consultant",
-  "Technology companies near me",
+  "Technology services near me",
   "Show remote operations roles",
-  "How do I list my company?",
+  "How do I publish a listing?",
 ];
 
 function AssistantIcon({ size = 16 }: { size?: number }) {

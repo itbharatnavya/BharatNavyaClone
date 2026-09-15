@@ -703,12 +703,28 @@
 }
 
 .company-services article,
+.company-offering-card,
 .company-gallery figure,
 .company-reviews blockquote,
 .company-inquiry,
 .company-facts,
 .recruitment-detail-title,
 .recruitment-apply-panel {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-offering-card:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, var(--counter-indigo) 45%, var(--counter-line));
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.listing-detail-page {
+  background: #f3eee3;
+}
+
+.listing-detail-page :is(.card, .listing-terms-grid) {
   border-radius: var(--counter-card-radius);
   box-shadow: var(--counter-shadow-rest);
 }

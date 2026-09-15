@@ -11,6 +11,10 @@ function formatINR(value: number): string {
   return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
 }
 
+function humanize(value: string): string {
+  return value.replace(/[_-]+/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 function Fact({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
@@ -51,12 +55,9 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
   // ---------------- SERVICE ----------------
   if (listing.type === "service") {
     const svc = listing.service;
-    const rows = svc?.rateCard || [];
+    const rows = (svc?.rateCard || []).filter((row) => row.price > 0);
     return (
-      <div
-        className="card card-flat card-pad"
-        style={{ borderLeft: "3px solid var(--action)" }}
-      >
+      <div className="card card-flat card-pad">
         <div style={{ fontSize: 12, fontWeight: 600, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           Rate card
         </div>
@@ -78,7 +79,7 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
                 <span style={{ fontSize: 14, color: "var(--muted)" }}>{r.label}</span>
                 <span style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
                   ₹{formatINR(r.price)}
-                  {r.unit ? <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 500 }}> / {r.unit}</span> : null}
+                  {r.unit ? <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 500 }}> / {r.unit.replace(/^\s*\/?\s*/, "")}</span> : null}
                 </span>
               </div>
             ))}
@@ -99,7 +100,7 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
           {typeof svc?.experienceYears === "number" && (
             <Fact label="Experience" value={`${svc.experienceYears} yrs`} />
           )}
-          {svc?.serviceMode && <Fact label="Mode" value={svc.serviceMode} />}
+          {svc?.serviceMode && <Fact label="Mode" value={humanize(svc.serviceMode)} />}
         </div>
       </div>
     );
@@ -117,7 +118,7 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
       : null;
 
   return (
-    <div className="card card-flat card-pad" style={{ borderLeft: "3px solid var(--action)" }}>
+    <div className="card card-flat card-pad">
       <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
         {basePrice != null ? (
           <>
@@ -174,7 +175,7 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 16 }}>
         {product?.moq != null && <Fact label="Min. order" value={`${product.moq} ${unit}`} />}
-        {product?.availability && <Fact label="Availability" value={product.availability} />}
+        {product?.availability && <Fact label="Availability" value={humanize(product.availability)} />}
         {product?.leadTime && <Fact label="Lead time" value={product.leadTime} />}
         {product?.sampleAvailable && <Fact label="Sample" value="Available" />}
       </div>

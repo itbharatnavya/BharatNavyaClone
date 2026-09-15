@@ -5,27 +5,127 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import { getSeller } from "@/lib/api";
-import type { SellerPublicProfile } from "@/lib/types";
+import type { Listing, SellerPublicProfile } from "@/lib/types";
 import { mapDirectoryCompany } from "@/lib/productDesign";
 
-function Check(){return <svg aria-hidden viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>}
-function Arrow(){return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>}
+function Check() { return <svg aria-hidden viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg>; }
+function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
 
-export default function CompanyProfilePage(){
-  const {slug}=useParams<{slug:string}>(); const [profile,setProfile]=useState<SellerPublicProfile|null>(null); const [loading,setLoading]=useState(true); const [error,setError]=useState(false);
-  useEffect(()=>{let live=true;getSeller(slug).then(value=>{if(live)setProfile(value)}).catch(()=>{if(live)setError(true)}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[slug]);
-  const company=useMemo(()=>profile?mapDirectoryCompany({id:profile.id,name:profile.seller.companyName,slug:profile.seller.slug,logo:profile.seller.logo,city:profile.seller.location?.city||profile.city,state:profile.seller.location?.state||profile.state,about:profile.seller.about,isVerified:profile.seller.isVerified,trustSealVerified:profile.seller.trustSealVerified,rating:profile.seller.rating,reviewCount:profile.seller.reviewCount,responseRate:profile.seller.responseRate}):null,[profile]);
-  if(loading)return <div className="directory-design company-profile"><div className="directory-shell directory-section"><div className="directory-empty">Loading company evidence…</div></div></div>;
-  if(error||!profile||!company)return <div className="directory-design company-profile"><div className="directory-shell directory-section"><p className="directory-eyebrow">Company profile</p><h1>We could not find this company.</h1><p className="company-muted">The record may be unavailable or the link may have changed.</p><Link className="directory-primary" href="/search">Browse Directory</Link></div></div>;
-  const seller=profile.seller; const services=(profile.listings||[]).filter(listing=>listing.type==="service"); const media=[seller.coverImage,...services.flatMap(service=>service.media.map(item=>item.url))].filter((value,index,array):value is string=>Boolean(value)&&array.indexOf(value)===index).slice(0,4); const approvedReviews=(profile.reviews||[]).filter(review=>review.status==="approved").slice(0,3);
-  const location=[seller.location?.city||profile.city,seller.location?.state||profile.state].filter(Boolean).join(", ")||"India";
-  return <div className="directory-design company-profile"><div className="directory-shell company-crumb"><Link href="/directory">Directory</Link><span>/</span><Link href="/search">Companies</Link><span>/</span><strong>{seller.companyName}</strong></div>
-    <section className="company-cover">{seller.coverImage&&<>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={seller.coverImage} alt={`${seller.companyName} work and workplace`}/></>}<div className="directory-shell company-identity"><Avatar src={seller.logo} name={seller.companyName} size={88}/><div><span className="company-status">{seller.isVerified?"Identity verified":"Claimed company"}</span><h1>{seller.companyName}</h1><p>{location} · {company.serviceFamily}</p></div><div className="company-actions">{seller.contactEmail&&<a className="directory-primary" href={`mailto:${seller.contactEmail}?subject=${encodeURIComponent(`Inquiry via Bharat Navya for ${seller.companyName}`)}`}>Send inquiry</a>}{seller.website&&<a className="company-secondary" href={seller.website} target="_blank" rel="noreferrer">Visit website <Arrow/></a>}</div></div></section>
-    <section className="directory-shell company-trust" aria-label="Company trust summary"><div><strong>{seller.rating?`${seller.rating.toFixed(1)} / 5`:"New"}</strong><span>{seller.reviewCount||0} public reviews</span></div><div><strong>{seller.responseRate?`${seller.responseRate}%`:"Not available"}</strong><span>Response rate</span></div><div><strong>{seller.yearEstablished||"Not listed"}</strong><span>Year established</span></div><div><strong>{seller.employeeCount||"Not listed"}</strong><span>Team size</span></div></section>
-    <div className="directory-shell company-layout"><div><section className="company-block"><p className="directory-eyebrow">Company overview</p><h2>What this company does</h2><p className="company-lead">{seller.about||"This company has not added a detailed overview yet."}</p><div className="company-capabilities">{company.capabilities.map(capability=><span key={capability}><Check/>{capability}</span>)}</div></section>
-      <section className="company-block"><p className="directory-eyebrow">Services and capabilities</p><h2>Ways they can support the work</h2>{services.length?<div className="company-services">{services.map(service=><article key={service.id}><div>{service.media[0]&&<>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={service.media[0].url} alt=""/></>}</div><span>{service.service?.serviceMode||"Service"}</span><h3>{service.title}</h3><p>{service.description}</p><dl><div><dt>Availability</dt><dd>{service.service?.availabilitySchedule||"Ask company"}</dd></div><div><dt>Response</dt><dd>{service.service?.sla||"Ask company"}</dd></div></dl></article>)}</div>:<div className="directory-empty">No structured services have been published yet. The company overview remains available.</div>}</section>
-      <section className="company-block"><p className="directory-eyebrow">Work evidence</p><h2>Media you can inspect</h2>{media.length?<div className="company-gallery">{media.map((image,index)=><figure key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index===0?`${seller.companyName} workplace or work sample`:`Work sample ${index+1} from ${seller.companyName}`}/></figure>)}</div>:<div className="directory-empty">No work media has been added. This missing evidence is shown intentionally.</div>}</section>
-      <section className="company-block"><p className="directory-eyebrow">Public reviews</p><h2>What clients have shared</h2>{approvedReviews.length?<div className="company-reviews">{approvedReviews.map(review=><blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div>:<div className="directory-empty">No approved public reviews are available yet.</div>}</section>
-    </div><aside><div className="company-inquiry"><p className="directory-eyebrow">Structured next step</p><h2>Discuss the work with {seller.companyName}</h2><p>Share the need, timeline and location directly. Bharat Navya does not turn this into a quotation or purchase order.</p>{seller.contactEmail?<a className="directory-primary" href={`mailto:${seller.contactEmail}?subject=${encodeURIComponent(`Inquiry via Bharat Navya for ${seller.companyName}`)}`}>Start an inquiry</a>:<Link className="directory-primary" href={`/login?next=${encodeURIComponent(`/seller/${slug}`)}`}>Sign in to inquire</Link>}<small>Contact details and response expectations come from the company record.</small></div><div className="company-facts"><h2>Company facts</h2><dl><div><dt>Verification</dt><dd>{seller.isVerified?"Identity verified":"Not verified"}</dd></div><div><dt>GST</dt><dd>{seller.gstNumber||"Not disclosed"}</dd></div><div><dt>Service area</dt><dd>{seller.serviceAreas?.map(area=>area.city||area.state).filter(Boolean).join(", ")||location}</dd></div><div><dt>Certifications</dt><dd>{seller.certifications?.join(", ")||"Not listed"}</dd></div></dl></div></aside></div>
+function formatPrice(listing: Listing) {
+  if (listing.type === "product") {
+    const price = listing.product?.price;
+    if (typeof price !== "number") return "Price on request";
+    const unit = listing.product?.unitOfMeasure ? ` / ${listing.product.unitOfMeasure}` : "";
+    return `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(price)}${unit}`;
+  }
+  const rate = listing.service?.rateCard?.find((item) => item.price > 0);
+  if (!rate) return listing.service?.pricingModel === "quote" ? "Quote based" : "Rate on request";
+  return `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(rate.price)}${rate.unit || ""}`;
+}
+
+function listingTerms(listing: Listing) {
+  if (listing.type === "product") {
+    return [
+      ["Minimum order", listing.product?.moq ? `${listing.product.moq} ${listing.product.unitOfMeasure || "units"}` : "Ask company"],
+      ["Availability", listing.product?.availability?.replaceAll("_", " ") || "Ask company"],
+    ];
+  }
+  return [
+    ["Availability", listing.service?.availabilitySchedule || "Ask company"],
+    ["Response", listing.service?.sla || "Ask company"],
+  ];
+}
+
+export default function CompanyProfilePage() {
+  const { slug } = useParams<{ slug: string }>();
+  const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    getSeller(slug)
+      .then((value) => { if (live) setProfile(value); })
+      .catch(() => { if (live) setError(true); })
+      .finally(() => { if (live) setLoading(false); });
+    return () => { live = false; };
+  }, [slug]);
+
+  const company = useMemo(() => profile ? mapDirectoryCompany({
+    id: profile.id,
+    name: profile.seller.companyName,
+    slug: profile.seller.slug,
+    logo: profile.seller.logo,
+    city: profile.seller.location?.city || profile.city,
+    state: profile.seller.location?.state || profile.state,
+    about: profile.seller.about,
+    isVerified: profile.seller.isVerified,
+    trustSealVerified: profile.seller.trustSealVerified,
+    rating: profile.seller.rating,
+    reviewCount: profile.seller.reviewCount,
+    responseRate: profile.seller.responseRate,
+  }) : null, [profile]);
+
+  if (loading) return <div className="directory-design company-profile"><div className="directory-shell directory-section"><div className="directory-empty">Loading company evidence…</div></div></div>;
+  if (error || !profile || !company) return <div className="directory-design company-profile"><div className="directory-shell directory-section"><h1>We could not find this company.</h1><p className="company-muted">The record may be unavailable or the link may have changed.</p><Link className="directory-primary" href="/search">Browse services and products</Link></div></div>;
+
+  const seller = profile.seller;
+  const listings = (profile.listings || []).filter((listing) => listing.status === "active");
+  const media = [seller.coverImage, ...listings.flatMap((listing) => listing.media.map((item) => item.url))]
+    .filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index)
+    .slice(0, 4);
+  const approvedReviews = (profile.reviews || []).filter((review) => review.status === "approved").slice(0, 3);
+  const location = [seller.location?.city || profile.city, seller.location?.state || profile.state].filter(Boolean).join(", ") || "India";
+
+  return <div className="directory-design company-profile">
+    <div className="directory-shell company-crumb"><Link href="/directory">Directory</Link><span>/</span><Link href="/search">Services &amp; products</Link><span>/</span><strong>{seller.companyName}</strong></div>
+
+    <section className="company-cover">
+      {seller.coverImage && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={seller.coverImage} alt={`${seller.companyName} work and workplace`} /></>}
+      <div className="directory-shell company-identity">
+        <Avatar src={seller.logo} name={seller.companyName} size={88} />
+        <div><span className="company-status">{seller.isVerified ? "Identity verified" : "Claimed company"}</span><h1>{seller.companyName}</h1><p>{location} · {company.serviceFamily}</p></div>
+        <div className="company-actions">{seller.contactEmail && <a className="directory-primary" href={`mailto:${seller.contactEmail}?subject=${encodeURIComponent(`Inquiry via Bharat Navya for ${seller.companyName}`)}`}>Send inquiry</a>}{seller.website && <a className="company-secondary" href={seller.website} target="_blank" rel="noreferrer">Visit website <Arrow /></a>}</div>
+      </div>
+    </section>
+
+    <section className="directory-shell company-trust" aria-label="Company trust summary">
+      <div><strong>{seller.rating ? `${seller.rating.toFixed(1)} / 5` : "New"}</strong><span>{seller.reviewCount || 0} public reviews</span></div>
+      <div><strong>{seller.responseRate ? `${seller.responseRate}%` : "Not available"}</strong><span>Response rate</span></div>
+      <div><strong>{seller.yearEstablished || "Not listed"}</strong><span>Year established</span></div>
+      <div><strong>{seller.employeeCount || "Not listed"}</strong><span>Team size</span></div>
+    </section>
+
+    <div className="directory-shell company-layout">
+      <div>
+        <section className="company-block"><h2>What this company does</h2><p className="company-lead">{seller.about || "This company has not added a detailed overview yet."}</p><div className="company-capabilities">{company.capabilities.map((capability) => <span key={capability}><Check />{capability}</span>)}</div></section>
+
+        <section className="company-block" aria-labelledby="company-listings-title">
+          <h2 id="company-listings-title">Services and products</h2>
+          <p className="company-block-intro">Every listing stays connected to this company’s identity and public record.</p>
+          {listings.length ? <div className="company-services">{listings.map((listing) => {
+            const terms = listingTerms(listing);
+            return <Link className="company-offering-card" href={`/listing/${listing.id}`} key={listing.id}>
+              <div>{listing.media[0] && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={listing.media[0].url} alt={listing.media[0].alt || listing.title} /></>}</div>
+              <span>{listing.type === "service" ? "Service" : "Product"}</span>
+              <h3>{listing.title}</h3>
+              <p>{listing.description}</p>
+              <strong className="company-offering-price">{formatPrice(listing)}</strong>
+              <dl>{terms.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+              <b>Inspect listing <Arrow /></b>
+            </Link>;
+          })}</div> : <div className="directory-empty">No active services or products have been published yet. The company record remains available.</div>}
+        </section>
+
+        <section className="company-block"><h2>Work evidence</h2>{media.length ? <div className="company-gallery">{media.map((image, index) => <figure key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} /></figure>)}</div> : <div className="directory-empty">No work media has been added. This missing evidence is shown intentionally.</div>}</section>
+
+        <section className="company-block"><h2>What clients have shared</h2>{approvedReviews.length ? <div className="company-reviews">{approvedReviews.map((review) => <blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div> : <div className="directory-empty">No approved public reviews are available yet.</div>}</section>
+      </div>
+
+      <aside>
+        <div className="company-inquiry"><h2>Discuss the work with {seller.companyName}</h2><p>Share the need, timeline and location directly. Bharat Navya does not turn this into a purchase order.</p>{seller.contactEmail ? <a className="directory-primary" href={`mailto:${seller.contactEmail}?subject=${encodeURIComponent(`Inquiry via Bharat Navya for ${seller.companyName}`)}`}>Start an inquiry</a> : <Link className="directory-primary" href={`/login?next=${encodeURIComponent(`/seller/${slug}`)}`}>Sign in to inquire</Link>}<small>Contact details and response expectations come from the company record.</small></div>
+        <div className="company-facts"><h2>Company facts</h2><dl><div><dt>Verification</dt><dd>{seller.isVerified ? "Identity verified" : "Not verified"}</dd></div><div><dt>GST</dt><dd>{seller.gstNumber || "Not disclosed"}</dd></div><div><dt>Service area</dt><dd>{seller.serviceAreas?.map((area) => area.city || area.state).filter(Boolean).join(", ") || location}</dd></div><div><dt>Certifications</dt><dd>{seller.certifications?.join(", ") || "Not listed"}</dd></div></dl></div>
+      </aside>
+    </div>
   </div>;
 }

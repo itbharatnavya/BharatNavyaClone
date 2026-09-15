@@ -34,6 +34,10 @@ function prettifySlug(slug: string): string {
   return slug.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function humanize(value?: string | null): string {
+  return value ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+}
+
 // Icon-chip section label — same visual language as the category page's
 // "Shop by category" / "Top brands" (SubcategoryTiles.tsx / BrandRail.tsx):
 // a tinted icon chip + bold heading, alternating blue/green down the page so
@@ -216,8 +220,8 @@ export default function ListingDetailPage() {
 
   useEffect(() => {
     document.title = listing
-      ? `${listing.title} | BharatSource`
-      : "Listing | BharatSource";
+      ? `${listing.title} | Bharat Navya`
+      : "Listing | Bharat Navya";
   }, [listing]);
 
   // Re-fetch the seller profile after a logged-out visitor completes the
@@ -277,7 +281,7 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <div>
+      <div className="directory-design listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 32, paddingBottom: 80 }}>
           <div className="ld-skel">
             <div style={{ minWidth: 0 }}>
@@ -306,7 +310,7 @@ export default function ListingDetailPage() {
 
   if (notFound || !listing || !contact) {
     return (
-      <div>
+      <div className="directory-design listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
           <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
@@ -345,8 +349,28 @@ export default function ListingDetailPage() {
     panIndia: isPanIndia,
   });
 
+  const decisionTerms = listing.type === "product"
+    ? [
+        ["Availability", humanize(listing.product?.availability)],
+        ["Minimum order", listing.product?.moq != null ? `${listing.product.moq} ${listing.product.unitOfMeasure || "units"}` : ""],
+        ["Lead time", listing.product?.leadTime || ""],
+        ["Sample", listing.product?.sampleAvailable ? "Available" : ""],
+      ]
+    : [
+        ["Pricing", humanize(listing.service?.pricingModel)],
+        ["Delivery mode", humanize(listing.service?.serviceMode)],
+        ["Availability", listing.service?.availabilitySchedule || ""],
+        ["Service area", listing.service?.serviceArea?.join(", ") || ""],
+        ["Typical timeline", listing.service?.timeline || ""],
+        ["Response commitment", listing.service?.sla || ""],
+      ];
+  const visibleDecisionTerms = decisionTerms.filter((term) => term[1]);
+  const supportingDetails = listing.type === "product"
+    ? listing.product?.certifications || []
+    : [...(listing.service?.deliverables || []), ...(listing.service?.credentials || [])];
+
   return (
-    <div>
+    <div className="directory-design listing-detail-page">
       <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>
         {(listing.status === "pending" || listing.status === "rejected") && (
           <div
@@ -379,9 +403,9 @@ export default function ListingDetailPage() {
           {/* MAIN */}
           <div style={{ minWidth: 0 }}>
             <div className="ld-top">
-              <Gallery media={listing.media} title={listing.title} />
+              <div className="ld-gallery-wrap"><Gallery media={listing.media} title={listing.title} /></div>
 
-              <div style={{ minWidth: 0 }}>
+              <div className="ld-summary" style={{ minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
                   {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
@@ -474,29 +498,28 @@ export default function ListingDetailPage() {
                 </section>
               )}
 
-              {listing.type === "service" && (listing.service?.serviceArea?.length ||
-                listing.service?.credentials?.length) ? (
-                <section>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
-                    {t("listing.serviceDetails", "Service details")}
-                  </h2>
-                  {listing.service?.serviceArea && listing.service.serviceArea.length > 0 && (
-                    <div style={{ marginBottom: 10, fontSize: 14, color: "var(--muted)" }}>
-                      <strong style={{ color: "var(--ink)", fontWeight: 600 }}>{t("listing.serves", "Serves:")}</strong>{" "}
-                      {listing.service.serviceArea.join(", ")}
-                    </div>
-                  )}
-                  {listing.service?.credentials && listing.service.credentials.length > 0 && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {listing.service.credentials.map((c, i) => (
-                        <Badge key={i} variant="neutral">
-                          {c}
-                        </Badge>
+              {(visibleDecisionTerms.length > 0 || supportingDetails.length > 0) && (
+                <section className="card card-flat card-pad listing-terms">
+                  <SectionLabel icon={<GridGlyphIcon />} tone="blue">
+                    {listing.type === "product" ? "Product terms" : t("listing.serviceDetails", "Service details")}
+                  </SectionLabel>
+                  {visibleDecisionTerms.length > 0 && (
+                    <dl className="listing-terms-grid">
+                      {visibleDecisionTerms.map(([label, value]) => (
+                        <div key={label}>
+                          <dt>{label}</dt>
+                          <dd>{value}</dd>
+                        </div>
                       ))}
+                    </dl>
+                  )}
+                  {supportingDetails.length > 0 && (
+                    <div className="listing-supporting-details" aria-label={listing.type === "product" ? "Certifications" : "Deliverables and credentials"}>
+                      {supportingDetails.map((detail) => <Badge key={detail} variant="neutral">{detail}</Badge>)}
                     </div>
                   )}
                 </section>
-              ) : null}
+              )}
 
               {listing.keywords && listing.keywords.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -517,14 +540,14 @@ export default function ListingDetailPage() {
         </div>
 
         {/* OTHER SELLERS OFFERING THIS PRODUCT (multi-vendor) — hides itself when none */}
-        <OtherSellers offers={offers} offerCount={offers.length} minPrice={minPrice} />
+        {listing.type === "product" && <OtherSellers offers={offers} offerCount={offers.length} minPrice={minPrice} />}
 
         {/* MORE FROM THIS SELLER */}
         {sellerListings.length > 0 && (
           <section style={{ marginTop: 48 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
               <SectionLabel icon={<StorefrontIcon />} tone="blue" style={{ marginBottom: 0 }}>
-                {t("listing.moreFromSeller", "More from this seller")}
+                {listing.type === "service" ? "More services from this company" : t("listing.moreFromSeller", "More products from this company")}
               </SectionLabel>
               {contact.slug && (
                 <Link
@@ -547,7 +570,7 @@ export default function ListingDetailPage() {
         {similar.length > 0 && (
           <section style={{ marginTop: 48 }}>
             <SectionLabel icon={<GridGlyphIcon />} tone="green">
-              {t("listing.similar", "Similar products")}
+              {listing.type === "service" ? "Similar services" : t("listing.similar", "Similar products")}
             </SectionLabel>
             <div className="ld-grid">
               {similar.map((l) => (
@@ -590,6 +613,40 @@ export default function ListingDetailPage() {
           grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
           gap: 20px;
         }
+        .listing-terms-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 1px;
+          overflow: hidden;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          background: var(--border);
+        }
+        .listing-terms-grid > div {
+          min-width: 0;
+          padding: 16px;
+          background: var(--surface, #fff);
+        }
+        .listing-terms-grid dt {
+          color: var(--faint);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .listing-terms-grid dd {
+          margin-top: 5px;
+          color: var(--ink);
+          font-size: 14px;
+          font-weight: 650;
+          line-height: 1.45;
+        }
+        .listing-supporting-details {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 16px;
+        }
         @media (max-width: 980px) {
           .ld-layout {
             grid-template-columns: minmax(0, 1fr);
@@ -600,6 +657,12 @@ export default function ListingDetailPage() {
         }
         @media (max-width: 720px) {
           .ld-top {
+            grid-template-columns: minmax(0, 1fr);
+          }
+          .ld-summary {
+            order: -1;
+          }
+          .listing-terms-grid {
             grid-template-columns: minmax(0, 1fr);
           }
         }
