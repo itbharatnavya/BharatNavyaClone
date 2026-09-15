@@ -663,6 +663,33 @@
   box-shadow: var(--counter-shadow-lift);
 }
 
+.recruitment-result-row.is-selected {
+  z-index: 1;
+  border-color: color-mix(in srgb, var(--counter-indigo) 68%, var(--counter-line));
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.recruitment-result-row.is-selected :is(h2, strong) {
+  color: var(--counter-ink);
+}
+
+.recruitment-result-row.is-selected :is(p, span, small) {
+  color: var(--counter-muted);
+}
+
+.recruitment-result-row.is-selected .recruitment-result-skills span {
+  border: 1px solid color-mix(in srgb, var(--counter-indigo) 24%, var(--counter-line));
+  background: color-mix(in srgb, var(--counter-indigo) 8%, var(--counter-ivory));
+  color: var(--counter-indigo) !important;
+}
+
+.recruitment-result-row.is-selected :is(.recruitment-result-company b, .recruitment-result-side a, .recruitment-result-side button) {
+  color: var(--counter-indigo) !important;
+}
+
 :is(.directory-result-list, .recruitment-results-list) {
   border-top: 0;
 }
