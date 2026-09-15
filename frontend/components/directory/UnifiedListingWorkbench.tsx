@@ -82,7 +82,7 @@ function brandOptions(listings: Listing[]): FilterOption[] {
   return [...counts.entries()].map(([value, count]) => ({ value, label: value, count }));
 }
 
-function ListingPreview({ listing }: { listing?: Listing }) {
+function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () => void }) {
   if (!listing) {
     return <section className="directory-listing-preview is-empty" aria-live="polite"><strong>Select a listing</strong><p>Its scope, terms and company context will appear here.</p></section>;
   }
@@ -93,6 +93,7 @@ function ListingPreview({ listing }: { listing?: Listing }) {
     <div className="directory-listing-preview-media">
       {media ? <img src={media.url} alt={media.alt || `${listing.title} preview`} /> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
       <b>{listing.type}</b>
+      {onClose && <button className="directory-listing-preview-close" type="button" onClick={onClose} aria-label="Close selected listing">Close ×</button>}
     </div>
     <div className="directory-listing-preview-body">
       <span className="directory-listing-kicker">Selected {listing.type}</span>
@@ -163,7 +164,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
       .then((result) => {
         if (!active) return;
         setData(result);
-        setSelectedId((current) => result.listings.some((listing) => listing.id === current) ? current : result.listings[0]?.id || null);
+        setSelectedId((current) => current && result.listings.some((listing) => listing.id === current) ? current : null);
       })
       .catch((reason) => {
         if (!active) return;
@@ -197,7 +198,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     if (filters.minRating && (listing.seller?.rating || 0) < filters.minRating) return false;
     return true;
   }), [listings, filters.brands, filters.minRating]);
-  const selected = visibleListings.find((listing) => listing.id === selectedId) || visibleListings[0];
+  const selected = visibleListings.find((listing) => listing.id === selectedId);
   const categories = facetOptions(data?.facets?.categories);
   const cities = facetOptions(data?.facets?.cities);
   const shownTotal = filters.brands?.length || filters.minRating ? visibleListings.length : data?.total || 0;
@@ -207,7 +208,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     setPage(1);
   }
 
-  return <div className="directory-listing-workbench">
+  return <div className={`directory-listing-workbench${selected ? " has-selection" : ""}`}>
     <main className="directory-listing-master" aria-label="Service and product results">
       <div className="directory-listing-toolbar">
         <span><strong aria-live="polite">{loading ? "Finding listings…" : `${shownTotal} ${shownTotal === 1 ? "listing" : "listings"}`}</strong><small>Services and products together</small></span>
@@ -220,12 +221,12 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
           const media = listingImage(listing);
           const active = listing.id === selected?.id;
           return <article className="directory-listing-item" key={listing.id}>
-            <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={() => setSelectedId(listing.id)} onMouseEnter={() => setSelectedId(listing.id)} aria-pressed={active}>
+            <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={() => setSelectedId(listing.id)} aria-pressed={active}>
               <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" /> : listing.type.slice(0, 1).toUpperCase()}</span>
               <span className="directory-listing-row-copy"><small>{listing.type}</small><strong>{listing.title}</strong><span>{sellerName(listing)}</span><b>{priceLabel(listing)}</b></span>
               <Arrow />
             </button>
-            {active && <div className="directory-listing-preview-inline"><ListingPreview listing={listing} /></div>}
+            {active && <div className="directory-listing-preview-inline"><ListingPreview listing={listing} onClose={() => setSelectedId(null)} /></div>}
           </article>;
         })}
       </div>
@@ -233,7 +234,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
       {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
     </main>
 
-    <div className="directory-listing-detail"><ListingPreview listing={selected} /></div>
+    {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
 
     <aside className="directory-listing-filter-rail" aria-label="Filter services and products">
       <button
