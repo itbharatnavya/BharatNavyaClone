@@ -702,6 +702,10 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
+.company-profile .company-trust {
+  margin-top: var(--counter-section-gap);
+}
+
 .company-services article,
 .company-offering-card,
 .company-gallery figure,
