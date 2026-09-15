@@ -834,8 +834,39 @@
   padding: 1rem 1.15rem;
 }
 
-/* Stories/statuses use a familiar active-story ring and stay visually separate
-   from the surrounding page canvas. */
+/* API-backed stories/statuses use the developer build's viewer and stay
+   visually separate from permanent blogs, guides and reviews. */
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail {
+  margin-bottom: clamp(1rem, 2.2vw, 2rem);
+  padding: 1rem;
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.15rem 0.15rem 0.35rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head strong {
+  font-size: 1rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head span {
+  color: var(--counter-muted);
+  font-size: 0.82rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail .story-card:focus-visible {
+  outline: 3px solid var(--counter-indigo);
+  outline-offset: 2px;
+}
+
+/* Legacy mixed-update rail styling remains available for non-status surfaces. */
 :is(.counter-directory-page, .counter-recruitment-page) .le-update-rail {
   padding: 1rem;
   border: 1px solid var(--counter-surface-border);
@@ -881,6 +912,14 @@
 
 .counter-recruitment-page .le-update-card-author {
   background: color-mix(in srgb, var(--counter-ink) 91%, transparent);
+}
+
+@media (max-width: 640px) {
+  :is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
 }
 
 /* Trust vocabulary is a raised, softly tinted group rather than three rows

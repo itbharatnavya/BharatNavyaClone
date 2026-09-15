@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import UpdateRail from "@/components/evidence/UpdateRail";
+import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import EvidenceRecord from "@/components/evidence/EvidenceRecord";
@@ -68,7 +68,13 @@ export default function DirectoryPage() {
       <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>
     </div></section>
 
-    <div className="le-shell"><UpdateRail updates={updates} title="Fresh from companies" /></div>
+    <div className="le-shell">
+      <StoryRail
+        groups={stories}
+        className="counter-story-rail"
+        heading={<div className="counter-story-rail-head"><strong>Company statuses</strong><span>Recent updates, available for 24 hours</span></div>}
+      />
+    </div>
 
     <section className="le-trust-ledger" aria-label="Company trust vocabulary"><div className="le-shell">{[["01","Claimed company","A representative manages the record."],["02","Identity verified","Core business identity has been checked."],["03","Evidence verified","Selected work or credentials have been reviewed."]].map(([n,title,body]) => <article key={n}><b>{n}</b><span><strong>{title}</strong><small>{body}</small></span></article>)}</div></section>
 

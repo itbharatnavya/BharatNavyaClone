@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
-import UpdateRail from "@/components/evidence/UpdateRail";
+import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
@@ -77,7 +77,13 @@ export default function RecruitmentPage() {
       <div className="le-examples"><span>Popular searches</span>{["Operations jobs in Ahmedabad","Remote product design roles","Entry-level sales jobs"].map((item) => <button type="button" key={item} onClick={() => exampleSearch(item)}>{item}</button>)}</div>
     </div></section>
 
-    <div className="le-shell"><UpdateRail updates={updates} title="Hiring updates" /></div>
+    <div className="le-shell">
+      <StoryRail
+        groups={stories}
+        className="counter-story-rail"
+        heading={<div className="counter-story-rail-head"><strong>Hiring statuses</strong><span>Recent workplace and hiring updates, available for 24 hours</span></div>}
+      />
+    </div>
 
     <section className="le-trust-ledger" aria-label="Job trust contract"><div className="le-shell">{[["01","Salary context","A visible band—or an honest absence."],["02","Hiring identity","Named company and recruiter when provided."],["03","Freshness and closure","Published, closing and final outcomes stay explicit."]].map(([n,title,body]) => <article key={n}><b>{n}</b><span><strong>{title}</strong><small>{body}</small></span></article>)}</div></section>
 
