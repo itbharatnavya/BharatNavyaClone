@@ -113,8 +113,12 @@
   border-radius: var(--counter-radius-control) !important;
 }
 
+.directory-listing-results {
+  padding-top: var(--counter-space-6);
+}
+
 .directory-listing-results > .directory-results-head {
-  margin-top: var(--counter-space-4);
+  margin-top: 0;
 }
 
 /* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
