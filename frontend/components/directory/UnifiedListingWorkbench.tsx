@@ -188,8 +188,26 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     if (sort !== "relevance") next.set("sort", sort);
     if (page > 1) next.set("page", String(page));
     const nextQuery = next.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
-  }, [filters, sort, page, pathname, router, searchParams]);
+    const target = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+    // Skip the replace entirely when it would be a no-op (target === current URL) —
+    // this effect otherwise still fires once around mount even when filters/sort/page
+    // haven't actually changed from the URL they were seeded from, and a same-URL
+    // replace() racing a genuine navigation elsewhere on this page (e.g. the search
+    // bar's own router.push to /seller/:slug or /listing/:id) is enough to win that
+    // race and silently cancel the real navigation.
+    const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    if (target === current) return;
+    router.replace(target, { scroll: false });
+    // Only the user's own filter/sort/page picks should re-run this sync. pathname/
+    // searchParams/router are read here, not reacted to — this component only ever
+    // renders on /search, so pathname never actually changes while it's mounted, but
+    // searchParams gets a new object identity on ANY navigation (including one this
+    // page's search bar is trying to make elsewhere, e.g. to /seller/:slug or
+    // /listing/:id) — including it in deps re-fires this effect mid-navigation and its
+    // router.replace(pathname) wins the race, silently cancelling that navigation back
+    // to /search.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, page]);
 
   const listings = data?.listings || [];
   const brands = useMemo(() => brandOptions(listings), [listings]);

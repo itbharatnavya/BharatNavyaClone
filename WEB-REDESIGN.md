@@ -601,6 +601,172 @@ completes, tick its boxes and note it here.
 
 ---
 
+### Pulled `origin/design` again (`c98b666..7790b50`) — merged 2026-09-11
+
+11 new commits from the UI dev, merged into `feature/design-integration` as `54394f7`. One
+conflict (`app/directory/page.tsx` hero copy vs. this session's `.le-hero-decor` fix — kept both).
+`tsc`/`validate:design` clean; 10 spot-checked routes (incl. `/search?scope=products`, `/job/:id`,
+`/post-job`) all 200; 0px horizontal overflow at 390px on Directory/Search/Recruitment.
+
+**1. "Soft Counter" design system — new shared visual layer, sitewide, mostly CSS-only.**
+New `app/counter-soft-system.css` (1124 lines, loaded last in `layout.tsx`) redefines the shared
+`--bn-radius-*`/`--bn-shadow-*` tokens (radius: 15px controls / 22px cards / 30px sections;
+two shadow levels) scoped to every `.le-page`/`.counter-*` page wrapper — this reskins Directory,
+Recruitment, dashboards, admin, and auth/profile/sell/post-job flows **without touching their
+JSX**, since it overrides variables those pages' existing CSS already consumes. This session's own
+new dropdown CSS (`.bn-section-search-dropdown`, added for the suggestion-box work) inherits these
+tokens automatically — confirmed no conflict. Per the UI dev's own `docs/SOFT_COUNTER_MIGRATION.md`,
+all 5 phases (Foundation+Home, Directory+Recruitment, Access+creation, Operational workspaces,
+Release audit) are marked complete on `design`.
+
+**2. Directory gets real product listings back** (`app/search/page.tsx`, `app/directory/page.tsx`,
+new `components/directory/ProductListingRail.tsx`, `DiscoveryResults.tsx` +`showTypeFilter` prop):
+- `/search` now has a **Companies ↔ Products scope switch** (`?scope=products`) — product mode
+  renders the existing `DiscoveryResults` component (the full listing search UI) instead of the
+  company-card grid. This is a real functional addition, not copy-only — reintroduces
+  product/listing search into Directory's primary journey after the redesign had deliberately
+  narrowed it out.
+- Company results also gained an **"Order by" sort** (Best fit / Highest rated / Best response
+  rate / Company name) — client-side over the already-fetched `searchSellers` result set, same
+  as the existing filtering.
+- `/directory`'s landing page gained a new **"Products with terms you can compare"** section
+  (`ProductListingRail`) linking to `/search?scope=products`, plus updated hero copy ("Find the
+  right company, service or product") reflecting the scope broadening.
+
+**Next (pages to review before touching further):** with this pull, walk `/search` (both scopes),
+`/directory` (new product rail), and re-check Recruitment/admin/dashboard pages for the Soft
+Counter re-skin — same routes already covered this session (`/recruitment`, `/recruitment/jobs`,
+`/job/:id`, `/post-job`) render 200 post-merge but haven't been visually inspected against the new
+radius/shadow tokens yet.
+
+**Regression from this pull, found and fixed same session:** the hero search-suggestion dropdown
+(fixed earlier today) went back to being clipped/hidden under "Hiring updates" after this merge.
+Root cause, confirmed via CDP's `CSS.getMatchedStylesForNode` (not guessed): a new Soft Counter
+rule, `:is(.counter-directory-page,.counter-recruitment-page) > section { overflow: hidden; ... }`
+(`counter-soft-system.css:567`) — a generic "every top-level section is a rounded card" treatment
+— matches `.le-hero` too (it's a direct-child `<section>`), reintroducing the exact clip removed
+earlier. The earlier `z-index:2` fix was untouched and still correct; only `overflow` regressed.
+Fixed with one additive, higher-specificity rule in `living-evidence.css` (the file that owns
+`.le-hero`, not the UI dev's file): `:is(.counter-directory-page,.counter-recruitment-page)>.le-hero
+{overflow:visible}` — class+class beats class+element, no `!important`, touches only `overflow`.
+Re-verified via CDP on both desktop and 390px: dropdown paints correctly again.
+
+---
+
+### 2026-09-16
+
+**1. Suggestion-dropdown border-radius parity fix** (`app/bharat-navya-home.css`) — the
+Recruitment/Directory suggestion dropdown's corners didn't match the rest of the theme. First
+attempt wrongly assumed "cornered" meant literal `border-radius:0` (based on the pervasive
+`border-radius:0` rules elsewhere in `counter-direction.css`); before reporting it done, checked
+the actual winning radius on the neighbouring search bar via CDP and found `15px`, not `0` — so
+that fix was an overcorrection. Corrected to match the real sitewide reference,
+`RoleSearchBar.tsx`'s pre-existing `.rsb-dropdown`/`.rsb-opt`: removed the dropdown's own
+`border-radius` override so it inherits `.card`'s base 12px, and changed the option radius from
+`.6rem` to `8px`. Verified via CDP against `.rsb-dropdown` directly.
+
+**2. Directory home: real story rail, old-frontend parity — superseded by the designer's own fix,
+see below.** Originally implemented here as: Directory's top-of-page rail was showing blogs/reviews
+mixed in with stories (via the shared `UpdateRail`/`resolvePublicUpdates`), unlike old frontend's
+stories-only, uncapped, hide-if-empty behaviour, so it was switched to mount the pre-existing
+`components/StoryRail.tsx` directly. Before this was committed, a fresh `origin/design` pull showed
+the UI dev had independently made the **exact same change**, for **both** Directory and Recruitment
+(commit "Restore API-backed status stories": `UpdateRail` → `StoryRail` on both `app/directory/page.tsx`
+and `app/recruitment/page.tsx`, new `.counter-story-rail` styling, headings "Company statuses" /
+"Hiring statuses"). Per instruction, this session's own version was **reverted** (`git checkout --`
+on `app/directory/page.tsx` and `components/evidence/UpdateRail.tsx`) before pulling, so the merge
+took the designer's version cleanly with no conflict on that part. User confirmed the designer's
+story rail "is working nice as it is, no need to change anything."
+
+**3. Directory home search: real suggestion dropdown, matching Recruitment's pattern**
+(`components/SectionSearchDock.tsx`'s `DirectorySectionSearch`) — Directory's hero/header search
+had no suggestions at all (plain query + city, submit-only). Brought it in line with the
+Recruitment dropdown built earlier this project (real data, closed until typing, grouped +
+labelled with icons) using old frontend's `DirectorySearchBar.tsx` as the API reference:
+- Dropdown stays closed until `query` is non-empty; no static/curated list.
+- Debounced (250ms) `Promise.allSettled([searchSellers({q,limit:5}), getListings({q,limit:5})])`
+  populates two real groups — **Matching companies** (`GET /api/sellers?q=`, already matches on
+  `companyName` only server-side, so no cross-contamination filtering needed unlike Recruitment's
+  shared OR-matched job query) and **Matching products & services** (`GET /api/listings?q=`).
+- Picking a company goes to `/seller/:slug`; picking a listing goes to `/listing/:id`; picking
+  neither and hitting Enter/submit goes to `/search?q=...&city=...` as before.
+- Reuses the same `bn-section-search-dropdown`/`bn-section-search-opt` CSS classes (and therefore
+  the just-fixed border-radius) and the same keyboard/outside-click handling as Recruitment's
+  dropdown — no new CSS needed.
+Verified live via CDP: dropdown closed on focus before typing; typing "textile" showed real
+grouped results (2 companies, 4 listings) from the live DB; clicking a company suggestion
+navigated to its real `/seller/:slug` page; 0px horizontal overflow at 390px with the dropdown
+open; `tsc`/`validate:design` clean.
+
+---
+
+### Pulled `origin/design` again (`7790b50..276a6c1`) — merged 2026-09-16
+
+11 new commits from the UI dev, merged as `219ed8f` (`git merge --no-commit` first so conflicts
+could be reviewed before committing anything, then a plain one-line commit — no push). Two
+conflicts, both resolved: `Navbar.tsx` (non-overlapping additions on adjacent lines — kept both
+`inDirectoryContext`/`inRecruitmentContext` and the new `searchResultsRoute`), and
+`app/directory/page.tsx`'s hero (kept this session's `.le-hero-decor` overflow-fix div, took the
+UI dev's new hero copy "Find the right service or product."). `tsc`/`validate:design` clean;
+`/directory`, `/recruitment`, `/search` all 200 post-merge.
+
+**What the UI dev changed, for reference:**
+1. **Story rail parity** — see the superseded note above; both Directory and Recruitment now show
+   real, uncapped stories via `StoryRail` instead of the mixed `UpdateRail` feed.
+2. **Directory repositioned listing-first, not company-first** — hero copy dropped "company" from
+   the headline; family links and the product rail now use `/search?type=service` / `?type=product`
+   instead of the previous `/search?family=` / `?scope=products`.
+3. **`/search` fully rewritten** — the old company-card grid + product-scope-switch is gone,
+   replaced by one new component, `components/directory/UnifiedListingWorkbench.tsx`.
+4. Smaller polish: `seller/[slug]/page.tsx` (company cover/metrics split), `listing/[id]/page.tsx`
+   (progressive preview, toolbar overflow fix), recruitment card selection/header spacing, `Footer`,
+   `ChatAssistant`, `ListingCard`, `PriceBlock`.
+
+**4. `/search` page: suggestion dropdown + native city select, brought to full parity with
+Directory home and old frontend** (`app/search/page.tsx`, `app/directory-design.css`,
+`components/directory/UnifiedListingWorkbench.tsx`) — with the new `UnifiedListingWorkbench`
+in place, `/search`'s own search bar (`.directory-search`, distinct chrome from the home bar) had
+no suggestions and a free-text city `<input>` instead of a `<select>`. Brought fully in line:
+- City input replaced with a native `<select>` over `ALL_CITIES` (matches home/Recruitment).
+- Added the same real suggestion dropdown contract as Directory home and old frontend's
+  `DirectorySearchBar` exactly: **Matching categories** (client-filtered from the session-wide
+  catalog), **Matching companies** (`GET /api/sellers?q=`), **Matching products & services**
+  (`GET /api/listings?q=`), and a pinned **"Search for '...'"** row always last — gated closed
+  until 2+ characters (old frontend's threshold). Applied the same categories + pinned-row
+  additions to Directory home's own dropdown (`components/SectionSearchDock.tsx`) for consistency
+  between the two surfaces.
+- **Bug found and fixed — dropdown was clipped.** `counter-soft-system.css` gives
+  `.directory-results-head`/`.recruitment-results-head` `overflow:hidden` (a generic rounded-card
+  treatment), which cut off the dropdown since it's `position:absolute` and taller than that
+  header section — same bug class as the earlier home-hero dropdown clip. Fixed with one additive,
+  higher-specificity override in `directory-design.css`:
+  `.directory-listing-results > .directory-results-head{overflow:visible}`.
+- **Bug found and fixed — suggestion clicks (and the pre-existing "Update results" submit button)
+  silently didn't navigate at all**, confirmed via CDP `history.pushState`/`replaceState` logging
+  (real target route fetched successfully — 200 — but the browser URL never updated). Root cause:
+  `UnifiedListingWorkbench`'s own URL-sync `useEffect` calls `router.replace()` on every fire, even
+  when the computed target URL is identical to the current one (a no-op) — and that no-op replace,
+  firing around component mount, was winning the race against this page's own `router.push()` to
+  `/seller/:slug`, `/listing/:id`, `/{category}`, or `/search?q=`, silently discarding it. Fixed
+  with two changes in `UnifiedListingWorkbench.tsx`: (a) removed `pathname`/`searchParams`/`router`
+  from that effect's dependency array — only the user's own filter/sort/page picks should re-run
+  it, not the identity of hooks it merely reads; (b) added a guard to skip `router.replace()`
+  entirely when the computed target URL already equals the current one. This was a pre-existing
+  bug in the UI dev's newly-merged component, not something introduced by the dropdown work, but
+  it blocked the dropdown (and that button) from working at all, so it was fixed with the owner's
+  explicit go-ahead.
+Verified live via CDP after the fix: all four suggestion kinds navigate correctly (category →
+`/{slug}`, company → `/seller/{slug}`, listing → `/listing/{id}`, pinned row → `/search?q=...`);
+native city `<select>` renders with all cities; 0px horizontal overflow at 390px with the dropdown
+open; `tsc`/`validate:design` clean.
+
+**Still outstanding / not yet committed:** the border-radius fix, the post-merge overflow
+regression fix (2026-09-11 entry above), and this `/search` page suggestion-dropdown + city-select
++ `UnifiedListingWorkbench` race-condition fix are all uncommitted on `feature/design-integration`,
+pending explicit go-ahead to commit.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).

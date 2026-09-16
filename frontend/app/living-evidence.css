@@ -9,6 +9,11 @@
 .le-destination-label{display:inline-flex;align-items:center;gap:.5rem;color:var(--bn-action);font-size:.8rem;font-weight:800}
 .le-destination-label::before{content:"";width:.65rem;height:.65rem;border-radius:50%;background:currentColor;box-shadow:0 0 0 .3rem color-mix(in srgb,currentColor 12%,transparent)}
 .le-hero{position:relative;isolation:isolate;z-index:2;padding:4rem 0 3rem;text-align:center;background:linear-gradient(180deg,var(--bn-section-hero-start),var(--bn-section-hero-end))}
+/* counter-soft-system.css's ":is(.counter-directory-page,.counter-recruitment-page) > section"
+   card treatment sets overflow:hidden on every top-level section, including this one — that
+   reintroduces the search-suggestion-dropdown clipping bug fixed above via .le-hero-decor.
+   Higher specificity (class+class beats class+element), no !important, only overrides overflow. */
+:is(.counter-directory-page,.counter-recruitment-page)>.le-hero{overflow:visible}
 .le-hero-decor{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .le-hero-decor::before,.le-hero-decor::after{content:"";position:absolute;z-index:0;width:30rem;aspect-ratio:1;border:4.5rem solid color-mix(in srgb,var(--bn-action) 8%,transparent);border-radius:50%;pointer-events:none;animation:le-orbit-drift 10s var(--bn-ease) infinite alternate}
 .le-hero-decor::before{left:-21rem;top:8%}

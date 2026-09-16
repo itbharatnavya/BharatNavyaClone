@@ -4,8 +4,9 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useSearchDock } from "@/lib/searchDock";
-import { getJobFunctions, getJobs } from "@/lib/api";
-import type { Job, JobFunction } from "@/lib/types";
+import { getJobFunctions, getJobs, getListings, searchSellers } from "@/lib/api";
+import { useCategories, flattenCategories } from "@/lib/catalog";
+import type { Job, JobFunction, Listing } from "@/lib/types";
 
 function SearchIcon() {
   return <svg aria-hidden viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></svg>;
@@ -28,11 +29,22 @@ function TagIcon() {
 function BuildingIcon() {
   return <svg aria-hidden viewBox="0 0 24 24"><rect x="4" y="3" width="12" height="18" rx="1" /><path d="M16 8h4v13h-4M8 7h1M8 11h1M8 15h1M12 7h1M12 11h1M12 15h1" /></svg>;
 }
+function BoxIcon() {
+  return <svg aria-hidden viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" /><path d="M3 8l9 5 9-5M12 13v8" /></svg>;
+}
 
 type RoleSuggestion =
   | { kind: "function"; label: string; slug: string }
   | { kind: "job"; label: string; jobId: string; company?: string | null }
   | { kind: "company"; label: string; slug: string | null };
+
+type DirectorySuggestion =
+  | { kind: "category"; label: string; slug: string }
+  | { kind: "company"; label: string; slug: string | null; city?: string | null }
+  | { kind: "listing"; label: string; id: string; seller?: string | null }
+  | { kind: "search" };
+
+interface SellerSearchResult { name: string; slug: string | null; city?: string | null }
 
 export type DirectorySearchVariant = "hero" | "compact" | "drawer";
 
@@ -40,34 +52,164 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
   const router = useRouter();
   const queryId = useId();
   const cityId = useId();
+  const listboxId = useId();
   const { query, setQuery, city, setCity, markSearchNav } = useSearchDock();
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
+  // Suggestions: same real-data contract as old frontend's DirectorySearchBar
+  // (categories filtered client-side from the session-wide catalog + listings
+  // fetched from the API, plus a pinned "Search for…" row always last) — just
+  // grouped/styled with this new dropdown's chrome instead of the old bar's
+  // inline-styled rows. Two more real groups added on top of the old bar's
+  // (companies via GET /api/sellers?q=, since this Directory is company-first)
+  // and gated closed until 2+ characters, matching the old bar's threshold.
+  const { categories: catalogCategories } = useCategories();
+  const allCategories = useMemo(() => flattenCategories(catalogCategories), [catalogCategories]);
+  const [matchedSellers, setMatchedSellers] = useState<SellerSearchResult[]>([]);
+  const [matchedListings, setMatchedListings] = useState<Listing[]>([]);
+  const reqIdRef = useRef(0);
+
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  const term = query.trim().toLowerCase();
+
+  useEffect(() => {
+    if (term.length < 2) { setMatchedSellers([]); setMatchedListings([]); return; }
+    const id = ++reqIdRef.current;
+    const timer = window.setTimeout(() => {
+      Promise.allSettled([searchSellers({ q: term, limit: 5 }), getListings({ q: term, limit: 5 })]).then(([sellerResult, listingResult]) => {
+        if (id !== reqIdRef.current) return;
+        setMatchedSellers(sellerResult.status === "fulfilled" ? sellerResult.value.sellers || [] : []);
+        setMatchedListings(listingResult.status === "fulfilled" ? listingResult.value.listings || [] : []);
+      });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [term]);
+
+  const items: DirectorySuggestion[] = useMemo(() => {
+    if (term.length < 2) return [];
+    const categories: DirectorySuggestion[] = allCategories
+      .filter((c) => c.name.toLowerCase().includes(term))
+      .slice(0, 5)
+      .map((c) => ({ kind: "category", label: c.name, slug: c.slug }));
+    const companies: DirectorySuggestion[] = matchedSellers.slice(0, 4).map((s) => ({ kind: "company", label: s.name, slug: s.slug || null, city: s.city }));
+    const listings: DirectorySuggestion[] = matchedListings.slice(0, 4).map((l) => ({ kind: "listing", label: l.title, id: l.id, seller: l.seller?.companyName || l.seller?.name || l.sellerName }));
+    return [...categories, ...companies, ...listings, { kind: "search" }];
+  }, [term, allCategories, matchedSellers, matchedListings]);
+  const showDropdown = open && items.length > 0;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (event: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) { setOpen(false); setActive(-1); }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  function go(text: string) {
+    setOpen(false);
+    setActive(-1);
     const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
+    if (text.trim()) params.set("q", text.trim());
     if (city && city !== PAN_INDIA_LABEL) params.set("city", city);
     markSearchNav();
     onSubmitted?.();
     router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
   }
 
-  return <form className={`bn-section-search bn-section-search--${variant}`} onSubmit={submit} aria-label="Search companies">
-    <label className="bn-section-search-query" htmlFor={queryId}>
-      <SearchIcon />
-      <span className="sr-only">Company or service</span>
-      <input id={queryId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="What company or support do you need?" autoComplete="off" />
-    </label>
-    <label className="bn-section-search-location" htmlFor={cityId}>
-      <LocationIcon />
-      <span className="sr-only">Company location</span>
-      <select id={cityId} value={city} onChange={(event) => setCity(event.target.value)}>
-        <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
-        {ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}
-      </select>
-    </label>
-    <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search companies"}</span><ArrowIcon /></button>
-  </form>;
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    go(query);
+  }
+
+  function selectItem(item: DirectorySuggestion) {
+    setOpen(false);
+    setActive(-1);
+    markSearchNav();
+    onSubmitted?.();
+    if (item.kind === "category") {
+      router.push(`/${item.slug}`);
+    } else if (item.kind === "company") {
+      if (item.slug) router.push(`/seller/${item.slug}`);
+      else go(item.label);
+    } else if (item.kind === "listing") {
+      router.push(`/listing/${item.id}`);
+    } else {
+      go(query);
+    }
+  }
+
+  function onQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (!open) { setOpen(true); return; }
+      setActive((i) => Math.min(i + 1, items.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActive((i) => Math.max(i - 1, -1));
+    } else if (event.key === "Enter") {
+      if (showDropdown && active >= 0 && active < items.length) {
+        event.preventDefault();
+        selectItem(items[active]);
+      }
+    } else if (event.key === "Escape") {
+      setOpen(false);
+      setActive(-1);
+    }
+  }
+
+  const optionId = (i: number) => `${listboxId}-opt-${i}`;
+
+  return <div ref={wrapRef} className="bn-section-search-wrap">
+    <form className={`bn-section-search bn-section-search--${variant}`} onSubmit={submit} aria-label="Search companies">
+      <label className="bn-section-search-query" htmlFor={queryId}>
+        <SearchIcon />
+        <span className="sr-only">Company or service</span>
+        <input
+          id={queryId}
+          value={query}
+          onChange={(event) => { setQuery(event.target.value); setOpen(true); setActive(-1); }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onQueryKeyDown}
+          placeholder="What company or support do you need?"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={showDropdown}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
+          aria-activedescendant={active >= 0 ? optionId(active) : undefined}
+        />
+      </label>
+      <label className="bn-section-search-location" htmlFor={cityId}>
+        <LocationIcon />
+        <span className="sr-only">Company location</span>
+        <select id={cityId} value={city} onChange={(event) => setCity(event.target.value)}>
+          <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
+          {ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}
+        </select>
+      </label>
+      <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search companies"}</span><ArrowIcon /></button>
+    </form>
+    {showDropdown && <div id={listboxId} role="listbox" aria-label="Search suggestions" className="card bn-section-search-dropdown">
+      {items.some((i) => i.kind === "category") && <div className="bn-section-search-dropdown-label"><TagIcon /> Matching categories</div>}
+      {items.map((item, i) => item.kind !== "category" ? null : (
+        <button key={`cat-${item.slug}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}</button>
+      ))}
+      {items.some((i) => i.kind === "company") && <div className="bn-section-search-dropdown-label"><BuildingIcon /> Matching companies</div>}
+      {items.map((item, i) => item.kind !== "company" ? null : (
+        <button key={`c-${item.slug || item.label}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.city ? ` · ${item.city}` : ""}</button>
+      ))}
+      {items.some((i) => i.kind === "listing") && <div className="bn-section-search-dropdown-label"><BoxIcon /> Matching products &amp; services</div>}
+      {items.map((item, i) => item.kind !== "listing" ? null : (
+        <button key={`l-${item.id}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.seller ? ` · ${item.seller}` : ""}</button>
+      ))}
+      {items.map((item, i) => item.kind !== "search" ? null : (
+        <button key="pinned-search" id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`} style={{ display: "flex", alignItems: "center", gap: ".5rem" }}><SearchIcon /> Search for &quot;{query.trim()}&quot;</button>
+      ))}
+    </div>}
+  </div>;
 }
 
 export function DirectoryMobileSearchDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
