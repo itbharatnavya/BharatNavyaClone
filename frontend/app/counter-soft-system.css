@@ -85,38 +85,36 @@
 }
 
 /* Search is a working results view rather than a destination landing. Keep its
-   tablet header compact and connect the results hero directly to it. */
-@media (max-width: 899px) {
-  .bn-header.is-counter-public.is-search-results {
-    height: 3rem;
-  }
+   header compact at every width and connect the results hero directly to it. */
+.bn-header.is-counter-public.is-search-results {
+  height: 3rem;
+}
 
-  .bn-header.is-counter-public.is-search-results .bn-header-inner {
-    padding-inline: var(--counter-space-4);
-  }
+.bn-header.is-counter-public.is-search-results .bn-header-inner {
+  padding-inline: var(--counter-space-4);
+}
 
-  .bn-header.is-counter-public.is-search-results .bn-wordmark {
-    gap: var(--counter-space-2);
-  }
+.bn-header.is-counter-public.is-search-results .bn-wordmark {
+  gap: var(--counter-space-2);
+}
 
-  .bn-header.is-counter-public.is-search-results .bn-wordmark img {
-    width: 1.625rem;
-    height: 1.625rem;
-  }
+.bn-header.is-counter-public.is-search-results .bn-wordmark img {
+  width: 1.625rem;
+  height: 1.625rem;
+}
 
-  .bn-header.is-counter-public.is-search-results .bn-wordmark span {
-    font-size: 1rem;
-  }
+.bn-header.is-counter-public.is-search-results .bn-wordmark span {
+  font-size: 1rem;
+}
 
-  .bn-header.is-counter-public.is-search-results .bn-menu-button {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: var(--counter-radius-control) !important;
-  }
+.bn-header.is-counter-public.is-search-results .bn-menu-button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--counter-radius-control) !important;
+}
 
-  .directory-listing-results > .directory-results-head {
-    margin-top: 0;
-  }
+.directory-listing-results > .directory-results-head {
+  margin-top: 0;
 }
 
 /* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
