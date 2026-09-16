@@ -38,6 +38,7 @@ export default function Navbar() {
     && !pathname.startsWith("/recruitment/dashboard/");
   const counterPublic = pathname === "/" || pathname === "/about" || pathname === "/pricing" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
   const counterWorkspace = pathname === "/login" || pathname === "/register" || pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/sell" || pathname === "/post-job" || pathname === "/profile" || pathname === "/shortlist";
+  const searchResultsRoute = pathname === "/search";
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function Navbar() {
   }, [searchDocked]);
 
   return (
-    <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
+    <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchResultsRoute ? "is-search-results" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" />
