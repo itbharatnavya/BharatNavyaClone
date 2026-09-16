@@ -312,13 +312,13 @@ export default function ListingCard({
   const priceUnit =
     product?.price != null && product?.unitOfMeasure ? ` / ${product.unitOfMeasure}` : "";
 
-  const rate = service?.rateCard?.[0];
+  const rate = service?.rateCard?.find((item) => item.price > 0);
   const rateLabel = rate
     ? `₹${formatINR(rate.price)}`
     : service?.pricingModel === "quote"
-    ? "On quote"
-    : "Ask rate";
-  const rateUnit = rate?.unit ? ` / ${rate.unit}` : "";
+    ? "Quote based"
+    : "Rate on request";
+  const rateUnit = rate?.unit ? ` / ${rate.unit.replace(/^\s*\/?\s*/, "")}` : "";
 
   const priceBlockLabel = isService ? rateLabel : priceLabel;
   const priceBlockUnit = isService ? rateUnit : priceUnit;
@@ -350,7 +350,7 @@ export default function ListingCard({
         </Link>
 
         <div className="lc-row-body">
-          {accent && <span className="lc-eyebrow" style={{ color: accent.color }}>{accent.label}</span>}
+          <span className="lc-eyebrow" style={{ color: accent?.color || "var(--brand)" }}>{accent?.label || (isService ? "Service" : "Product")}</span>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
             <Link href={detailHref} style={{ minWidth: 0, flex: 1 }}>
               <h3 className="line-clamp-1 lc-row-title">{listing.title}</h3>
@@ -485,7 +485,7 @@ export default function ListingCard({
       </Link>
 
       <div className="lc-grid-body">
-        {accent && <span className="lc-eyebrow" style={{ color: accent.color }}>{accent.label}</span>}
+        <span className="lc-eyebrow" style={{ color: accent?.color || "var(--brand)" }}>{accent?.label || (isService ? "Service" : "Product")}</span>
         <Link href={detailHref}>
           <h3 className="line-clamp-1 lc-grid-title">{listing.title}</h3>
         </Link>

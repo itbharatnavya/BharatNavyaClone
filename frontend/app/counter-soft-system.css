@@ -84,6 +84,41 @@
   border-radius: var(--counter-radius-card) !important;
 }
 
+/* Search is a working results view rather than a destination landing. Keep its
+   tablet header compact, then give the results hero its own visible gutter. */
+@media (max-width: 899px) {
+  .bn-header.is-counter-public.is-search-results {
+    height: 3.5rem;
+  }
+
+  .bn-header.is-counter-public.is-search-results .bn-header-inner {
+    padding-inline: var(--counter-space-4);
+  }
+
+  .bn-header.is-counter-public.is-search-results .bn-wordmark {
+    gap: var(--counter-space-2);
+  }
+
+  .bn-header.is-counter-public.is-search-results .bn-wordmark img {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
+
+  .bn-header.is-counter-public.is-search-results .bn-wordmark span {
+    font-size: 1.15rem;
+  }
+
+  .bn-header.is-counter-public.is-search-results .bn-menu-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--counter-radius-control) !important;
+  }
+
+  .directory-listing-results > .directory-results-head {
+    margin-top: var(--counter-space-6);
+  }
+}
+
 /* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
    primary action when a pair is presented together. Tabs and filter controls
    deliberately remain neutral. */
@@ -620,6 +655,14 @@
   background: #f3eee3;
 }
 
+.recruitment-core {
+  padding-top: var(--counter-section-gap);
+}
+
+.recruitment-core > .recruitment-results-head {
+  margin-top: 0;
+}
+
 .directory-results-head,
 .recruitment-results-head {
   width: calc(100% - (2 * var(--counter-page-gutter)));
@@ -663,6 +706,33 @@
   box-shadow: var(--counter-shadow-lift);
 }
 
+.recruitment-result-row.is-selected {
+  z-index: 1;
+  border-color: color-mix(in srgb, var(--counter-indigo) 68%, var(--counter-line));
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.recruitment-result-row.is-selected :is(h2, strong) {
+  color: var(--counter-ink);
+}
+
+.recruitment-result-row.is-selected :is(p, span, small) {
+  color: var(--counter-muted);
+}
+
+.recruitment-result-row.is-selected .recruitment-result-skills span {
+  border: 1px solid color-mix(in srgb, var(--counter-indigo) 24%, var(--counter-line));
+  background: color-mix(in srgb, var(--counter-indigo) 8%, var(--counter-ivory));
+  color: var(--counter-indigo) !important;
+}
+
+.recruitment-result-row.is-selected :is(.recruitment-result-company b, .recruitment-result-side a, .recruitment-result-side button) {
+  color: var(--counter-indigo) !important;
+}
+
 :is(.directory-result-list, .recruitment-results-list) {
   border-top: 0;
 }
@@ -702,13 +772,33 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
+.company-profile .company-trust {
+  margin-top: var(--counter-section-gap);
+}
+
 .company-services article,
+.company-offering-card,
 .company-gallery figure,
 .company-reviews blockquote,
 .company-inquiry,
 .company-facts,
 .recruitment-detail-title,
 .recruitment-apply-panel {
+  border-radius: var(--counter-card-radius);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.company-offering-card:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, var(--counter-indigo) 45%, var(--counter-line));
+  transform: translateY(-2px);
+  box-shadow: var(--counter-shadow-lift);
+}
+
+.listing-detail-page {
+  background: #f3eee3;
+}
+
+.listing-detail-page :is(.card, .listing-terms-grid) {
   border-radius: var(--counter-card-radius);
   box-shadow: var(--counter-shadow-rest);
 }
@@ -818,8 +908,39 @@
   padding: 1rem 1.15rem;
 }
 
-/* Stories/statuses use a familiar active-story ring and stay visually separate
-   from the surrounding page canvas. */
+/* API-backed stories/statuses use the developer build's viewer and stay
+   visually separate from permanent blogs, guides and reviews. */
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail {
+  margin-bottom: clamp(1rem, 2.2vw, 2rem);
+  padding: 1rem;
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-ivory);
+  box-shadow: var(--counter-shadow-rest);
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.15rem 0.15rem 0.35rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head strong {
+  font-size: 1rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head span {
+  color: var(--counter-muted);
+  font-size: 0.82rem;
+}
+
+:is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail .story-card:focus-visible {
+  outline: 3px solid var(--counter-indigo);
+  outline-offset: 2px;
+}
+
+/* Legacy mixed-update rail styling remains available for non-status surfaces. */
 :is(.counter-directory-page, .counter-recruitment-page) .le-update-rail {
   padding: 1rem;
   border: 1px solid var(--counter-surface-border);
@@ -865,6 +986,14 @@
 
 .counter-recruitment-page .le-update-card-author {
   background: color-mix(in srgb, var(--counter-ink) 91%, transparent);
+}
+
+@media (max-width: 640px) {
+  :is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
 }
 
 /* Trust vocabulary is a raised, softly tinted group rather than three rows

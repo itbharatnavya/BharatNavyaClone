@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
-import UpdateRail from "@/components/evidence/UpdateRail";
+import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
@@ -33,6 +33,8 @@ export default function RecruitmentPage() {
   const router = useRouter();
   const { docked, setProgress, setRoleQuery, markSearchNav } = useSearchDock();
   const searchAnchorRef = useRef<HTMLDivElement>(null);
+  const updatesAnchorRef = useRef<HTMLElement>(null);
+  const updatesRequestedRef = useRef(false);
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -44,7 +46,21 @@ export default function RecruitmentPage() {
   const [activeFamilyIndex, setActiveFamilyIndex] = useState(0);
   const allowPrototype = process.env.NEXT_PUBLIC_DESIGN_CONTENT_PREVIEW === "true";
 
-  useEffect(() => { Promise.allSettled([getJobs({ limit: 18 }), getJobFunctions(), getBlogs({ authorType: "employer" }), getStories("employer")]).then(([jobResult, functionResult, blogResult, storyResult]) => { if (jobResult.status === "fulfilled") { setJobs(jobResult.value.jobs); setSelectedJobId(jobResult.value.jobs[0]?.id || null); } if (functionResult.status === "fulfilled") setJobFunctions(functionResult.value.filter((item) => item.isActive)); if (blogResult.status === "fulfilled") setBlogs(blogResult.value); if (storyResult.status === "fulfilled") setStories(storyResult.value); setLoading(false); }); }, []);
+  useEffect(() => { getStories("employer").then(setStories).catch(() => setStories([])); }, []);
+  useEffect(() => { Promise.allSettled([getJobs({ limit: 18 }), getJobFunctions()]).then(([jobResult, functionResult]) => { if (jobResult.status === "fulfilled") { setJobs(jobResult.value.jobs); setSelectedJobId(jobResult.value.jobs[0]?.id || null); } if (functionResult.status === "fulfilled") setJobFunctions(functionResult.value.filter((item) => item.isActive)); setLoading(false); }); }, []);
+  useEffect(() => {
+    const anchor = updatesAnchorRef.current;
+    if (!anchor || updatesRequestedRef.current) return;
+    const loadUpdates = () => {
+      if (updatesRequestedRef.current) return;
+      updatesRequestedRef.current = true;
+      getBlogs({ authorType: "employer" }).then(setBlogs).catch(() => setBlogs([]));
+    };
+    if (typeof IntersectionObserver === "undefined") { loadUpdates(); return; }
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { loadUpdates(); observer.disconnect(); } }, { rootMargin: "320px 0px" });
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     const anchor = searchAnchorRef.current;
     if (!anchor || typeof IntersectionObserver === "undefined") return;
@@ -77,7 +93,13 @@ export default function RecruitmentPage() {
       <div className="le-examples"><span>Popular searches</span>{["Operations jobs in Ahmedabad","Remote product design roles","Entry-level sales jobs"].map((item) => <button type="button" key={item} onClick={() => exampleSearch(item)}>{item}</button>)}</div>
     </div></section>
 
-    <div className="le-shell"><UpdateRail updates={updates} title="Hiring updates" /></div>
+    <div className="le-shell">
+      <StoryRail
+        groups={stories}
+        className="counter-story-rail"
+        heading={<div className="counter-story-rail-head"><strong>Hiring statuses</strong><span>Recent workplace and hiring updates, available for 24 hours</span></div>}
+      />
+    </div>
 
     <section className="le-trust-ledger" aria-label="Job trust contract"><div className="le-shell">{[["01","Salary context","A visible band—or an honest absence."],["02","Hiring identity","Named company and recruiter when provided."],["03","Freshness and closure","Published, closing and final outcomes stay explicit."]].map(([n,title,body]) => <article key={n}><b>{n}</b><span><strong>{title}</strong><small>{body}</small></span></article>)}</div></section>
 
@@ -101,7 +123,7 @@ export default function RecruitmentPage() {
       ]}
     />
 
-    <section className="le-section" aria-labelledby="hiring-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-updates-title">Know more before you apply.</h2></div><Link className="le-button" href="/recruitment/blog">View career guides</Link></header>{updates.length ? <UpdateFeature updates={updates} title="Hiring updates and guides" /> : <div className="le-empty">Recruiter updates and workplace media will appear here when published.</div>}</div></section>
+    <section ref={updatesAnchorRef} className="le-section" aria-labelledby="hiring-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-updates-title">Know more before you apply.</h2></div><Link className="le-button" href="/recruitment/blog">View career guides</Link></header>{updates.length ? <UpdateFeature updates={updates} title="Hiring updates and guides" /> : <div className="le-empty">Recruiter updates and workplace media will appear here when published.</div>}</div></section>
 
     <section className="le-closing"><div className="le-shell"><div><h2>Build a complete applicant profile—or start hiring clearly.</h2><p>Keep your experience ready for applications or publish a role with accountable context.</p></div><div className="le-closing-actions"><Link className="le-button is-primary" href="/profile">Build applicant profile</Link><Link className="le-button" href="/post-job">Post a job</Link></div></div></section>
   </div>;

@@ -246,6 +246,8 @@ export interface ServiceDetail {
   sla?: string | null;
   warranty?: string | null;
   bookingType: BookingType;
+  timeline?: string | null;
+  deliverables?: string[];
 }
 
 // Lightweight seller info the backend may denormalize onto a listing (for cards).
