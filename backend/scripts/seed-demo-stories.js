@@ -12,6 +12,9 @@
  * the local /demo/*.jpg set matching that seller's industry (CLAUDE.md §1: local
  * images only, no hot-linking).
  *
+ *   • 1 active employer story for selected recruitment employers — shows in the
+ *     Recruitment homepage StoryRail through the same Stories API.
+ *
  * Additive/idempotent: fixed ids, store.insert() upserts in place on re-run.
  * Run:  node scripts/seed-demo-stories.js
  */
@@ -111,13 +114,34 @@ const SELLERS = [
   },
 ];
 
+const EMPLOYERS = [
+  { id: "usr_emp1", img: "/seed-media/company/company-2.jpg", caption: "Engineering and product roles are now open in Bengaluru." },
+  { id: "usr_emp2", img: "/seed-media/company/company-1.jpg", caption: "Meet the team behind our growing western sales operation." },
+  { id: "usr_emp3", img: "/seed-media/work/work-4.jpg", caption: "Operations hiring day announced for this week." },
+  { id: "usr_emp5", img: "/seed-media/company/company-5.jpg", caption: "Site and project teams are expanding across two locations." },
+  { id: "usr_emp7", img: "/seed-media/people/person-2.jpg", caption: "Recruiter Q&A for support and diagnostics applicants." },
+];
+
+// Current design-branch Directory fixtures. The older usr_cat_* rows above are
+// kept for compatibility with the developer dataset; these IDs power the
+// active frontend dataset used by the Counter visual direction.
+const DIRECTORY_SELLERS = [
+  { id: "usr_s001", img: "/seed-media/company/company-1.jpg", caption: "A new textile production run is ready for review." },
+  { id: "usr_s002", img: "/seed-media/company/company-3.jpg", caption: "Food-safe packaging samples are available this week." },
+  { id: "usr_s003", img: "/seed-media/work/work-3.jpg", caption: "Fresh component capacity opened for the next dispatch cycle." },
+  { id: "usr_s005", img: "/seed-media/work/work-2.jpg", caption: "Electrical and electronics inventory has been refreshed." },
+  { id: "usr_s010", img: "/seed-media/company/company-5.jpg", caption: "Construction supply slots are open for upcoming projects." },
+  { id: "usr_svc2", img: "/seed-media/work/work-5.jpg", caption: "Founder compliance clinic scheduled for this week." },
+  { id: "usr_svc3", img: "/seed-media/company/company-2.jpg", caption: "Product discovery and delivery consultations are now open." },
+];
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function storyDoc({ id, sellerId, img, caption, listingId, isHighlight, createdAt }) {
+function storyDoc({ id, sellerId, authorType = "seller", img, caption, listingId, isHighlight, createdAt }) {
   return {
     id,
     sellerId,
-    authorType: "seller", // Directory stories (schema-migrations/0007 — column is NOT NULL)
+    authorType,
     media: { type: "image", url: img },
     caption,
     linkListingId: listingId || null,
@@ -172,7 +196,50 @@ async function main() {
     console.log(`✓ ${s.id} — 1 active + 1 highlight story`);
   }
 
-  console.log(`\nDone. ${created} demo stories created for ${SELLERS.length} sellers.`);
+  for (const seller of DIRECTORY_SELLERS) {
+    if (!byId.has(seller.id)) {
+      console.log(`skip ${seller.id} — seller not found`);
+      continue;
+    }
+    await store.insert(
+      "stories.json",
+      storyDoc({
+        id: `story_demo_${seller.id}_active`,
+        sellerId: seller.id,
+        img: seller.img,
+        caption: seller.caption,
+        listingId: null,
+        isHighlight: false,
+        createdAt: now,
+      })
+    );
+    created++;
+    console.log(`✓ ${seller.id} — 1 active seller story`);
+  }
+
+  for (const employer of EMPLOYERS) {
+    if (!byId.has(employer.id)) {
+      console.log(`skip ${employer.id} — employer not found`);
+      continue;
+    }
+    await store.insert(
+      "stories.json",
+      storyDoc({
+        id: `story_demo_${employer.id}_active`,
+        sellerId: employer.id,
+        authorType: "employer",
+        img: employer.img,
+        caption: employer.caption,
+        listingId: null,
+        isHighlight: false,
+        createdAt: now,
+      })
+    );
+    created++;
+    console.log(`✓ ${employer.id} — 1 active employer story`);
+  }
+
+  console.log(`\nDone. ${created} demo stories created across the available Directory and Recruitment fixtures.`);
 }
 
 main().catch((e) => {
