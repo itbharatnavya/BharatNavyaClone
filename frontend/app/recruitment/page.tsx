@@ -7,7 +7,7 @@ import Avatar from "@/components/Avatar";
 import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
-import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import DecisionJourney from "@/components/evidence/DecisionJourney";
 import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
 import { RecruitmentSectionSearch } from "@/components/SectionSearchDock";
@@ -109,7 +109,7 @@ export default function RecruitmentPage() {
 
     <section className="le-section" aria-labelledby="hiring-companies-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-companies-title">See the teams behind the openings.</h2></div><p>Company identity and workplace context stay connected to every role.</p></header><div className="le-company-media-grid">{hiringCompanies.map((company, index) => <Link className="le-company-tile" href={company.slug ? `/employer/${company.slug}` : "/recruitment/jobs"} key={company.name}><EvidenceMedia asset={{ src: `/seed-media/company/company-${index + 1}.jpg`, alt: `Workplace at ${company.name}`, kind: "workplace", source: "prototype", attribution: "Prototype workplace media" }} ratio="wide" /><div><Avatar src={company.logo || undefined} name={company.name} size={44} /><span><strong>{company.name}</strong><small>{company.location} · {company.verified ? "Verified employer" : "Employer profile"}</small></span><b>{company.count} role{company.count === 1 ? "" : "s"}</b></div></Link>)}{!loading && hiringCompanies.length === 0 && <div className="le-empty">Hiring-company evidence will appear as employers publish aligned roles.</div>}</div></div></section>
 
-    <AdvertisingSlot kind="native" context="Recruitment promotion" title="Hiring for a growing team? Show candidates the context that matters." summary="Publish a role with clear salary, workplace, process and closure expectations. The placement remains separate from organic role ranking." href="/post-job" action="Post a transparent role" media={{ src: "/seed-media/company/company-5.jpg", alt: "A hiring team discussing an open role", kind: "team", source: "prototype", attribution: "Prototype sponsored creative" }} />
+    <ApiAdvertisingSlot placement="recruitment_home" kind="external" context="Advertisement · Recruitment" summary="A clearly labelled hiring placement, separate from organic role ranking and trust signals." action="View opportunity" />
 
     <DecisionJourney
       id="application-journey-title"

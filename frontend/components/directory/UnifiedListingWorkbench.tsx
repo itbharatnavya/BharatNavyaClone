@@ -220,7 +220,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
         {!loading && !error && visibleListings.map((listing) => {
           const media = listingImage(listing);
           const active = listing.id === selected?.id;
-          return <article className="directory-listing-item" key={listing.id}>
+          return <article className={`directory-listing-item${active ? " is-expanded" : ""}`} key={listing.id}>
             <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={() => setSelectedId(listing.id)} aria-pressed={active}>
               <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" /> : listing.type.slice(0, 1).toUpperCase()}</span>
               <span className="directory-listing-row-copy"><small>{listing.type}</small><strong>{listing.title}</strong><span>{sellerName(listing)}</span><b>{priceLabel(listing)}</b></span>
@@ -237,18 +237,18 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
 
     <aside className="directory-listing-filter-rail" aria-label="Filter services and products">
-      <button
-        className="directory-listing-filter-toggle"
-        type="button"
-        aria-expanded={filtersOpen}
-        aria-controls="directory-listing-filter-content"
-        onClick={() => setFiltersOpen((open) => !open)}
-      >
-        <span><b>Refine listings</b><small>Narrow by type, location, terms and trust</small></span>
-        <strong>{filtersOpen ? "Hide filters" : "Show filters"}</strong>
-      </button>
+      <div className="directory-listing-filter-quick" aria-label="Quick listing filters">
+        <strong>Filters</strong>
+        <div>
+          <button type="button" aria-pressed={!filters.type} onClick={() => updateFilters({ ...filters, type: undefined })}>All</button>
+          <button type="button" aria-pressed={filters.type === "service"} onClick={() => updateFilters({ ...filters, type: "service" })}>Services</button>
+          <button type="button" aria-pressed={filters.type === "product"} onClick={() => updateFilters({ ...filters, type: "product" })}>Products</button>
+          <button type="button" aria-pressed={!!filters.verified} onClick={() => updateFilters({ ...filters, verified: !filters.verified })}>Verified</button>
+          <button type="button" className="is-more" aria-expanded={filtersOpen} aria-controls="directory-listing-filter-content" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? "Hide more" : "More filters"}</button>
+        </div>
+      </div>
       <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
-        <div className="directory-listing-filter-intro"><span>Refine</span><h2>Find the right fit</h2><p>Narrow by listing type, category, location, terms and trust.</p></div>
+        <div className="directory-listing-filter-intro"><h2>Filters</h2></div>
         <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
       </div>
     </aside>

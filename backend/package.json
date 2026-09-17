@@ -12,6 +12,7 @@
     "migrate-schema": "node scripts/migrate-schema.js",
     "migrate-schema:status": "node scripts/migrate-schema.js --status",
     "seed-recruitment-demo": "node scripts/seed-recruitment-demo.js",
+    "seed-demo-stories": "node scripts/seed-demo-stories.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

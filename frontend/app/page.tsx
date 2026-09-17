@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import UniversalSearch from "@/components/home/UniversalSearch";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getBlogs } from "@/lib/api";
 import type { Blog } from "@/lib/types";
 import { useSearchDock } from "@/lib/searchDock";
@@ -203,14 +204,12 @@ export default function BharatNavyaHome() {
         </div>
         <article id="journey-focus" className="bn-home-journey-focus" aria-live="polite">
           <div className="bn-home-journey-count"><strong>{String(activeJourneyIndex + 1).padStart(2, "0")}</strong><span>of 04</span></div>
-          <div className="bn-home-journey-copy"><small>Current stage · {activeJourney.label}</small><h3>{activeJourney.title}</h3><p>{activeJourney.body}</p></div>
-          <div className="bn-home-journey-map" aria-hidden="true">
-            <span className="bn-home-journey-map-line"><i /></span>
-            {journey.map((step, index) => <span key={step.label} className={index < activeJourneyIndex ? "is-past" : index === activeJourneyIndex ? "is-active" : undefined}><i />{step.label}</span>)}
-          </div>
+          <div className="bn-home-journey-copy"><small>{activeJourney.label}</small><h3>{activeJourney.title}</h3><p>{activeJourney.body}</p></div>
         </article>
       </div>
     </div></div></section>
+
+    <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
 
     {guides.length > 0 && <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="guides-title">Context worth carrying forward.</h2></div><Link className="le-button" href="/blog">View all guides</Link></header><div className="le-editorial-grid">{guides.map((guide) => <Link href={`/blog/${guide.slug}`} key={guide.id}><EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" /><span className="le-editorial-copy"><small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small><strong>{guide.title}</strong><p>{guide.excerpt || "Practical context for growing companies and applicants."}</p></span></Link>)}</div></div></section>}
 

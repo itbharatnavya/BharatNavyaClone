@@ -7,7 +7,7 @@ import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import EvidenceRecord from "@/components/evidence/EvidenceRecord";
-import AdvertisingSlot from "@/components/evidence/AdvertisingSlot";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import DecisionJourney from "@/components/evidence/DecisionJourney";
 import { useFeaturedSellers } from "@/lib/catalog";
 import { getBlogs, getRecentActivity, getStories } from "@/lib/api";
@@ -102,7 +102,7 @@ export default function DirectoryPage() {
 
     <section className="le-section counter-products-section" aria-labelledby="products-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="products-title">Products with terms you can compare.</h2></div><p>Inspect the seller, price, minimum order and listing details before making contact.</p><Link className="le-button" href="/search?type=product">Browse and filter products</Link></header><ProductListingRail /></div></section>
 
-    <AdvertisingSlot kind="external" context="Contextual partner · Directory" title="Useful tools for the work around the work." summary="A dedicated partner placement for business software, logistics, compliance or operational support—shown only after meaningful organic company discovery." media={{ src: "/seed-media/company/company-6.jpg", alt: "A business team using operational tools together", kind: "workplace", source: "prototype", attribution: "Prototype advertising creative" }} />
+    <ApiAdvertisingSlot placement="category_top" kind="external" context="Advertisement · Directory" summary="A contextual partner placement shown separately from organic listings and company evidence." action="Visit partner" />
 
     <DecisionJourney
       id="directory-journey-title"

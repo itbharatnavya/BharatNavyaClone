@@ -306,13 +306,12 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
-.counter-home-page .bn-home-journey-track button b,
-.counter-home-page .bn-home-journey-map > span:not(.bn-home-journey-map-line) > i {
+.counter-home-page .bn-home-journey-track button b {
   border-radius: var(--counter-radius-sm) !important;
 }
 
 .counter-home-page .bn-home-journey-focus {
-  gap: var(--counter-space-2);
+  gap: 0;
   border-radius: var(--counter-card-radius);
 }
 
@@ -359,10 +358,8 @@
     padding: var(--counter-space-2);
   }
 
-  .counter-home-page .bn-home-journey-focus > div:first-child,
-  .counter-home-page .bn-home-journey-focus > div:last-child {
-    border-radius: var(--counter-card-radius);
-  }
+  .counter-home-page .bn-home-journey-focus > div:first-child { border-radius: var(--counter-card-radius) var(--counter-card-radius) 0 0; }
+  .counter-home-page .bn-home-journey-focus > div:last-child { border-radius: 0 0 var(--counter-card-radius) var(--counter-card-radius); }
 }
 
 /* Phase 3 — authentication, profile, shortlist and creation flows */
@@ -884,6 +881,11 @@
   box-shadow: var(--counter-shadow-rest);
 }
 
+/* The search hero is a distinct surface inside the warm page canvas. */
+.directory-listing-results > .directory-results-head {
+  background: var(--counter-ivory);
+}
+
 :is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {
   display: flex;
   align-items: baseline;
@@ -1186,13 +1188,6 @@
     margin-top: 0.45rem;
     font-size: 0.82rem;
     line-height: 1.4;
-  }
-
-  .counter-home-page .bn-home-journey-map {
-    grid-column: 1 / -1;
-    min-height: 5.5rem;
-    padding: 0.85rem;
-    border-radius: var(--counter-card-radius) !important;
   }
 
   :is(.counter-directory-page, .counter-recruitment-page) .le-trust-ledger {
