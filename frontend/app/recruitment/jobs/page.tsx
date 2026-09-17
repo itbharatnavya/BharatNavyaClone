@@ -110,7 +110,7 @@ function JobsBrowseInner() {
   const filterPanel = <JobFilters value={filters} onChange={setFilters} jobFunctions={jobFunctions} />;
   function changePage(next: number) { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }
 
-  return <div className="recruitment-core">
+  return <div className="recruitment-core counter-results-page">
     <header className="recruitment-results-head"><div className="recruitment-core-shell"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Recruitment", href: "/recruitment" }, { label: "Browse roles" }]} /><h1>Roles with the context to decide.</h1><p>Compare transparent job facts alongside the company and workplace behind the role.</p><div ref={searchAnchorRef} className="recruitment-results-search" aria-hidden={docked || undefined}><RoleSearchBar query={query} onQueryChange={(value) => { setQuery(value); setRoleQuery(value); }} city={filters.city || ""} onCityChange={(city) => { setFilters((current) => ({ ...current, city: city || undefined })); setRoleCity(city); }} /></div></div></header>
     <div className="recruitment-core-shell">
       <SearchContextSwitch destination="directory" query={query} city={filters.city} />

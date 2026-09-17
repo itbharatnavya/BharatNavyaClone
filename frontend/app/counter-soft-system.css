@@ -617,12 +617,16 @@
   background: #f3eee3;
 }
 
-.recruitment-core {
+/* Directory and Recruitment results use the same page rhythm. The gap belongs
+   to the page shell—not the shared header—and the hero is a visibly raised,
+   cool surface against the warm canvas. */
+.counter-results-page {
   padding-top: var(--counter-section-gap);
 }
 
-.recruitment-core > .recruitment-results-head {
+.counter-results-page > :is(.directory-results-head, .recruitment-results-head) {
   margin-top: 0;
+  background: color-mix(in srgb, var(--counter-indigo) 7%, white);
 }
 
 .directory-results-head,
@@ -879,11 +883,6 @@
   border-radius: var(--counter-section-radius);
   background: var(--counter-ivory);
   box-shadow: var(--counter-shadow-rest);
-}
-
-/* The search hero is a distinct surface inside the warm page canvas. */
-.directory-listing-results > .directory-results-head {
-  background: var(--counter-ivory);
 }
 
 :is(.counter-directory-page, .counter-recruitment-page) .counter-story-rail-head {

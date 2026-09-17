@@ -69,7 +69,7 @@ function DirectorySearchResults() {
 
   const heading = seed.query ? <>Services &amp; products for “{seed.query}”</> : "Browse services & products";
 
-  return <div className="directory-design directory-results directory-listing-results">
+  return <div className="directory-design directory-results directory-listing-results counter-results-page">
     <section className="directory-results-head">
       <div className="directory-shell">
         <h1>{heading}</h1>
