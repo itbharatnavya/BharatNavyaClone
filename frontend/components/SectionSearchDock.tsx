@@ -130,7 +130,10 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
     markSearchNav();
     onSubmitted?.();
     if (item.kind === "category") {
-      router.push(`/${item.slug}`);
+      // /search's own category filter (parseDiscoverySeed → UnifiedListingWorkbench →
+      // GET /api/listings?category=) is the live Directory results flow now — the
+      // standalone /<slug> category-landing route is a separate, older page.
+      router.push(`/search?category=${encodeURIComponent(item.slug)}`);
     } else if (item.kind === "company") {
       if (item.slug) router.push(`/seller/${item.slug}`);
       else go(item.label);

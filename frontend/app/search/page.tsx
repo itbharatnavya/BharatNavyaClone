@@ -114,7 +114,17 @@ function DirectorySearchResults() {
     setOpen(false);
     setActive(-1);
     markSearchNav();
-    if (item.kind === "category") router.push(`/${item.slug}`);
+    if (item.kind === "category") {
+      // Stay on /search's own category filter (parseDiscoverySeed →
+      // UnifiedListingWorkbench → GET /api/listings?category=) rather than the
+      // separate /<slug> category-landing route — a fresh, category-only browse,
+      // so the free-text query is cleared the same way old frontend's category
+      // pick replaced the typed text.
+      const next = new URLSearchParams(params.toString());
+      next.delete("q");
+      next.set("category", item.slug);
+      router.push(`/search?${next}`);
+    }
     else if (item.kind === "company") { if (item.slug) router.push(`/seller/${item.slug}`); }
     else if (item.kind === "listing") router.push(`/listing/${item.id}`);
     else submitFreeText(query);
