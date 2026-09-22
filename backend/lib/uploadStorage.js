@@ -3,13 +3,19 @@
  * photos, ad creatives, logos — anything that goes through routes/uploads.js).
  *
  * Local (default, dev): writes into frontend/public/uploads/, served by Next as a
- * static asset — zero setup, works out of the box.
+ * static asset — zero setup, works out of the box. Only valid on a machine/host with
+ * a writable, persistent, Next-servable disk — NOT on Vercel serverless (read-only FS
+ * except /tmp, and the backend + frontend are separate deployments there anyway).
  *
  * S3 (production-ready): uploads to an S3 bucket instead. Switching is a single env
  * var (config.UPLOAD_STORAGE=s3) plus AWS_REGION/AWS_S3_BUCKET — no code change, no
  * redeploy of app logic. See HANDOVER.md "File storage" for the full checklist
  * (bucket creation, public-read access or a CloudFront distribution in front of it,
  * IAM permissions).
+ *
+ * vercel-blob (UPLOAD_STORAGE=vercel-blob): Vercel's own object storage — used on the
+ * Vercel demo deploy in place of S3 (no separate bucket/account needed). Reads
+ * BLOB_READ_WRITE_TOKEN, auto-injected once a Blob store is linked to the project.
  *
  * Callers only ever see `saveFile(buffer, ext, mime) -> Promise<url>` — which backend
  * is active is invisible above this module.
@@ -84,6 +90,24 @@ async function saveS3(buffer, name, mime) {
   return `${base.replace(/\/$/, "")}/${key}`;
 }
 
+async function saveVercelBlob(buffer, name, mime) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "UPLOAD_STORAGE=vercel-blob but BLOB_READ_WRITE_TOKEN is not set — link a Blob store to the project."
+    );
+  }
+  let put;
+  try {
+    ({ put } = require("@vercel/blob"));
+  } catch {
+    throw new Error(
+      "UPLOAD_STORAGE=vercel-blob but @vercel/blob isn't installed — run `npm install` in backend/."
+    );
+  }
+  const blob = await put(`uploads/${name}`, buffer, { access: "public", contentType: mime });
+  return blob.url;
+}
+
 /**
  * Store a decoded file buffer under a server-generated name and return its public URL.
  * `ext` is the file extension (no dot, e.g. "pdf"), `mime` the content type.
@@ -92,6 +116,9 @@ async function saveFile(buffer, ext, mime) {
   const name = `up_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
   if (config.UPLOAD_STORAGE === "s3") {
     return saveS3(buffer, name, mime);
+  }
+  if (config.UPLOAD_STORAGE === "vercel-blob") {
+    return saveVercelBlob(buffer, name, mime);
   }
   return saveLocal(buffer, name);
 }

@@ -760,10 +760,92 @@ Verified live via CDP after the fix: all four suggestion kinds navigate correctl
 native city `<select>` renders with all cities; 0px horizontal overflow at 390px with the dropdown
 open; `tsc`/`validate:design` clean.
 
-**Still outstanding / not yet committed:** the border-radius fix, the post-merge overflow
-regression fix (2026-09-11 entry above), and this `/search` page suggestion-dropdown + city-select
-+ `UnifiedListingWorkbench` race-condition fix are all uncommitted on `feature/design-integration`,
-pending explicit go-ahead to commit.
+All of the above (border-radius fix, post-merge overflow regression fix, `/search` page
+suggestion-dropdown + city-select + `UnifiedListingWorkbench` race-condition fix) committed and
+pushed to `feature/design-integration` as `c77ff8f`.
+
+---
+
+### Category suggestion routing fix — 2026-09-17
+
+Picking a category from the suggestion dropdown (Directory home and `/search`) landed on the
+standalone `/{slug}` category-landing route instead of staying on the new listing-first `/search`
+flow. Confirmed `/search?category=<slug>` is a real, fully wired param end to end
+(`parseDiscoverySeed` → `UnifiedListingWorkbench` → `GET /api/listings?category=`, backend matches
+by slug at any category depth). Fixed both dropdowns (`SectionSearchDock.tsx`,
+`app/search/page.tsx`) to route to `/search?category=<slug>` instead — on `/search` itself, also
+clears the free-text `q` param, same as old frontend's category pick replacing typed text.
+Verified live: Directory home and `/search` category clicks both land on
+`/search?category=technical-textiles` with real filtered listings rendering. Committed as
+`93e6bab`.
+
+---
+
+### Pulled `origin/design` again (`276a6c1..7827120`) — merged 2026-09-16/17
+
+11 new commits. No backend files touched. What the UI dev changed:
+- New `ApiAdvertisingSlot.tsx` — real, API-backed ad placements (`GET /api/ads?placement=`),
+  replacing the static `AdvertisingSlot` on Home, Directory and Recruitment.
+- `UnifiedListingWorkbench.tsx` — quick filter pills (All/Services/Products/Verified) replacing
+  the old single "Refine listings" toggle button; expanded-listing-row styling. Merged clean, no
+  conflict with this session's own fix in that file (different region of the effect/JSX).
+- "Restore universal public header on search" — reverted an earlier compact-header-on-search
+  experiment; `/search` now shares the same header as every other page.
+- Backend: real bug fix in `seed-demo-stories.js` — `authorType` was hardcoded to `"seller"`
+  regardless of the caller, silently breaking employer story seeding (confirmed the EMPLOYERS loop
+  explicitly passes `authorType: "employer"`, which the hardcoded version ignored). Took their fix.
+- Visual: Recruitment's brand colour switched from near-black to indigo sitewide; the home
+  decision-journey's decorative step-map stepper removed (simplified to just the copy card).
+
+Four conflicts, all resolved: `Navbar.tsx` (they removed `searchResultsRoute`, a dead var after
+the header-restore; kept our `inDirectoryContext`/`inRecruitmentContext` block), `app/page.tsx`
+(combined their new `ApiAdvertisingSlot` with our existing live-count feature, kept our multi-line
+guides JSX), `backend/package.json` (combined their new `seed-demo-stories` script with our
+existing test scripts), `backend/scripts/seed-demo-stories.js` (took their `authorType` fix, see
+above). Committed as `8e576ee`, pushed.
+
+---
+
+### Pulled `origin/design` again (`7827120..aace218`) — merged 2026-09-22
+
+2 new commits, "polish Bharat Navya frontend experience" (~1900 lines, 45 files) + "unify search
+page hero spacing". No backend files touched — the one new feature that talks to the backend
+(`HomeAgent.tsx`) calls `assistantChat()` → `POST /api/assistant/chat`, an endpoint that already
+existed and was already used by `ChatAssistant.tsx`, so no new backend work required.
+
+**Direct collision with this session's own work:** the UI dev independently rewrote
+`SectionSearchDock.tsx`'s suggestion dropdowns from scratch for both Directory and Recruitment —
+their own `SearchSuggestionMenu` component, response caching, starters, keyboard nav, pinned
+"Search for…" row. Functionally close to what this session built earlier, but **their Directory
+version has no company/seller matching at all** (only categories + listings — no `searchSellers`
+call), a regression against the old-frontend contract this session specifically restored. Per
+owner's explicit instruction ("keep our company matching feature"), resolved by keeping this
+session's entire `SectionSearchDock.tsx` as-is (`git checkout --ours`) rather than adopting their
+rewrite — their new dropdown UI was discarded for this file, not merged piecemeal.
+
+Other changes taken as-is (no functional overlap):
+- New `HomeAgent.tsx` (192 lines) — redesigned AI chat widget, now the home hero's primary entry
+  point in place of `UniversalSearch`, plus a new third "Growth OS" (coming soon) gateway tile.
+  `app/page.tsx` conflict resolved by taking this new layout but keeping our live company/role
+  count strings (`directorySignal`/`recruitmentSignal`) in the Directory/Recruitment tile copy
+  instead of their static text.
+- New `lib/routePresentation.ts` — centralises the route-matching booleans (`isDirectoryRoute`,
+  `isCounterPublicRoute`, etc.) that `Navbar.tsx` used to compute inline. `Navbar.tsx` conflict
+  resolved by adopting these new helpers, keeping our `inDirectoryContext`/`inRecruitmentContext`
+  account-menu logic (unrelated concern, no overlap).
+- Large CSS pass (`counter-soft-system.css` alone +~1200 lines): search-hero spacing, workspace
+  styling, listing-card polish.
+- `app/design-system/page.tsx` (dev-only gallery page) — trivial conflict, took their updated
+  copy, kept our `.le-hero-decor` overflow-fix div.
+
+`tsc` clean. Committed as `b3bbe41`, pushed. `/`, `/directory`, `/recruitment`, `/search` all 200
+post-merge with both servers running locally for owner review.
+
+**Known gap left open:** Recruitment's suggestion dropdown still runs on this session's older,
+pre-existing implementation (unaffected by this collision either way, since we kept our file
+entirely) — worth a future pass to see if the UI dev's Recruitment-side rewrite (job functions +
+jobs + pinned row, same file) has anything worth adopting once Directory's own dropdown direction
+is settled.
 
 ---
 
