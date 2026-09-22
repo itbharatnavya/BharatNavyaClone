@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Button from "@/components/Button";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import EmployerReviewsSection from "@/components/employer/EmployerReviewsSection";
 import EvidenceMedia from "@/components/recruitment/EvidenceMedia";
 import MediaMosaic from "@/components/recruitment/MediaMosaic";
@@ -68,7 +69,9 @@ function EmployerProfileInner() {
         <section><header><h2>Hiring updates</h2><p>Employer-authored updates and career articles.</p></header>{blogs.length ? <div className="employer-careers-roles">{blogs.map((blog) => <Link href={`/blog/${blog.slug}`} key={blog.id}><strong>{blog.title}</strong><small>{blog.excerpt || "Read employer update"}</small></Link>)}</div> : <div className="recruitment-state"><strong>No hiring updates yet.</strong><p>Published employer stories and articles will appear here.</p></div>}</section>
       </aside>
     </div>
-  </div></div>;
+  </div>
+  <ApiAdvertisingSlot compact placement={["employer_profile", "recruitment_home"]} kind="native" context="Sponsored near employer profiles" summary="A relevant promoted employer or role, kept separate from this employer’s workplace evidence and open roles." action="View opportunity" />
+  </div>;
 }
 
 export default function EmployerProfilePage() { return <RecruitmentGate><EmployerProfileInner /></RecruitmentGate>; }

@@ -92,13 +92,13 @@ export default function ShortlistGrid({ ids, loading }: ShortlistGridProps) {
             </svg>
           </div>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>
-            No saved products yet
+            No saved services or products yet
           </h2>
           <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20 }}>
-            Tap the heart on any product to save it here for later.
+            Save any service or product to compare it here later.
           </p>
-          <Link href="/categories" className="btn btn-primary">
-            Browse categories
+          <Link href="/search" className="btn btn-primary">
+            Browse listings
           </Link>
         </div>
       ) : (

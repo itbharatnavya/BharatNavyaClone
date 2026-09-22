@@ -86,23 +86,23 @@ export default function DirectoryPage() {
       <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>
     </div></section>
 
-    <div className="le-shell">
+    <section className="le-shell counter-status-promotion-grid" aria-label="Company statuses and sponsored company">
       <StoryRail
         groups={stories}
         className="counter-story-rail"
         heading={<div className="counter-story-rail-head"><strong>Company statuses</strong><span>Recent updates, available for 24 hours</span></div>}
+        emptyState={<p>No active company statuses right now. New 24-hour updates will appear here.</p>}
       />
-    </div>
-
-    <section className="le-trust-ledger" aria-label="Company trust vocabulary"><div className="le-shell">{[["01","Claimed company","A representative manages the record."],["02","Identity verified","Core business identity has been checked."],["03","Evidence verified","Selected work or credentials have been reviewed."]].map(([n,title,body]) => <article key={n}><b>{n}</b><span><strong>{title}</strong><small>{body}</small></span></article>)}</div></section>
+      <div className="counter-status-promotion">
+        <ApiAdvertisingSlot placement="category_top" kind="native" context="Boosted company · Directory" summary="A clearly labelled company placement, kept separate from verification and organic ranking." action="View company" compact />
+      </div>
+    </section>
 
     <section className="le-section" aria-labelledby="families-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="families-title">Start with the work you need.</h2></div><p>Six service families open directly into relevant listings. Each result keeps the provider, scope and decision terms together.</p></header><div className="le-index-showcase"><div className="le-index">{families.map((family) => <Link href={`/search?type=service&q=${encodeURIComponent(family.query)}`} className={family.name === activeFamily.name ? "is-active" : undefined} key={family.name} onMouseEnter={() => setActiveFamily(family)} onFocus={() => setActiveFamily(family)}><FamilyIcon /><span><strong>{family.name}</strong><small>{family.outcome}</small></span><Arrow /></Link>)}</div><aside className="le-index-preview"><EvidenceMedia key={activeFamily.name} asset={activeMedia} ratio="wide" /><div><span className="le-update-context is-directory">Service family</span><h3>{activeFamily.name}</h3><p>{activeFamily.outcome}. Compare service scope, provider identity and evidence together.</p><Link href={`/search?type=service&q=${encodeURIComponent(activeFamily.query)}`}>View matching services →</Link></div></aside></div></div></section>
 
     <section className="le-section is-tinted" aria-labelledby="companies-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="companies-title">The provider behind every listing.</h2></div><p>Company identity, location and work evidence stay attached to the service or product being presented.</p><Link className="le-button" href="/search">Browse all listings</Link></header><div className="le-discovery-grid"><article className="le-discovery-feature"><EvidenceMedia asset={{ src: "/seed-media/company/company-4.jpg", alt: "A company team sharing its work", kind: "work-sample", source: "prototype", attribution: "Prototype company media" }} ratio="wide" /><div className="le-discovery-feature-copy"><span><small>Provider evidence</small><strong>{companies[0]?.name || "Featured provider"}</strong><p>{companies[0] ? `${companies[0].location} · ${companies[0].serviceFamily}` : "Aligned provider evidence will appear here."}</p></span><Link href={companies[0] ? `/seller/${companies[0].slug}` : "/search"}>Inspect provider record →</Link></div></article><div className="le-record-stack">{(loading ? [] : companies.slice(1, 5)).map((company, index) => <EvidenceRecord key={company.id} href={`/seller/${company.slug}`} title={company.name} meta={`${company.location} · ${company.verified ? "Identity verified" : "Profile available"}`} detail={company.capabilities.slice(0, 2).join(" · ")} logo={company.logo} media={index < 2 ? { src: `/seed-media/work/work-${index + 2}.jpg`, alt: `Work evidence from ${company.name}`, kind: "work-sample", source: "prototype", attribution: "Prototype company media" } : undefined} label={company.serviceFamily} />)}{!loading && companies.length === 0 && <div className="le-empty">Aligned provider records are temporarily unavailable. Search remains ready.</div>}</div></div></div></section>
 
     <section className="le-section counter-products-section" aria-labelledby="products-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="products-title">Products with terms you can compare.</h2></div><p>Inspect the seller, price, minimum order and listing details before making contact.</p><Link className="le-button" href="/search?type=product">Browse and filter products</Link></header><ProductListingRail /></div></section>
-
-    <ApiAdvertisingSlot placement="category_top" kind="external" context="Advertisement · Directory" summary="A contextual partner placement shown separately from organic listings and company evidence." action="Visit partner" />
 
     <DecisionJourney
       id="directory-journey-title"

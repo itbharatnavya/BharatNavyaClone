@@ -169,7 +169,7 @@ function RfqInner() {
 
   // ---------- main ----------
   return (
-    <div className="container-bs section-pad-sm" style={{ maxWidth: 760 }}>
+    <div className="counter-public-page counter-rfq-page container-bs section-pad-sm" style={{ maxWidth: 760 }}>
       {/* Hero */}
       <div style={{ marginBottom: 8 }}>
         <span className="eyebrow">{t("cta.postRfq")}</span>

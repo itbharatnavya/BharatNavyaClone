@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchContextSwitch from "@/components/SearchContextSwitch";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import UnifiedListingWorkbench from "@/components/directory/UnifiedListingWorkbench";
 import { parseDiscoverySeed } from "@/components/discovery/hooks";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
@@ -83,8 +84,9 @@ function DirectorySearchResults() {
       </div>
     </section>
 
-    <div className="directory-shell directory-unified-results">
+    <div className="directory-shell directory-unified-results counter-results-stack">
       <SearchContextSwitch destination="recruitment" query={seed.query} city={seed.initialFilters.city || ""} />
+      <ApiAdvertisingSlot compact placement={["search_top", "category_top"]} kind="native" context="Sponsored in Directory results" summary="A relevant promoted listing, clearly separated from organic results and verification signals." action="View promoted record" />
       <UnifiedListingWorkbench key={`results-${seed.query}-${seed.initialFilters.city || ""}`} query={seed.query} initialFilters={seed.initialFilters} />
     </div>
   </div>;

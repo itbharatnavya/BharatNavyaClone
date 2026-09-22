@@ -13,6 +13,9 @@ export interface StoryRailProps {
   // an empty/hidden rail. While still loading, both render together (we
   // don't yet know the outcome); once resolved to zero groups, both hide.
   heading?: React.ReactNode;
+  // Optional truthful fallback for surfaces that need to preserve their
+  // layout even when there are currently no active 24-hour statuses.
+  emptyState?: React.ReactNode;
 }
 
 // The backend groups stories under a nested `seller` object
@@ -79,7 +82,7 @@ function gradientFor(key: string): string {
 const CARD_W = 108;
 const CARD_RADIUS = 16;
 
-export default function StoryRail({ groups: provided, className = "", heading }: StoryRailProps) {
+export default function StoryRail({ groups: provided, className = "", heading, emptyState }: StoryRailProps) {
   const [groups, setGroups] = useState<StoryGroup[]>(
     provided ? normalizeGroups(provided) : []
   );
@@ -101,7 +104,15 @@ export default function StoryRail({ groups: provided, className = "", heading }:
     };
   }, [provided]);
 
-  if (!loading && groups.length === 0) return null;
+  if (!loading && groups.length === 0) {
+    if (!emptyState) return null;
+    return (
+      <div className={className}>
+        {heading}
+        <div className="counter-story-empty">{emptyState}</div>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

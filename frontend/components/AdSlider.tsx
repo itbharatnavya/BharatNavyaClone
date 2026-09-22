@@ -185,6 +185,8 @@ export default function AdSlider({
               <img
                 src={ad.creativeImageUrl}
                 alt={ad.headline || ""}
+                loading={isActive ? "eager" : "lazy"}
+                decoding="async"
                 style={{
                   width: "100%",
                   height: "100%",
@@ -292,17 +294,30 @@ export default function AdSlider({
                   aria-current={i === active}
                   onClick={() => goTo(i)}
                   style={{
-                    width: i === active ? 18 : 7,
-                    height: 7,
+                    width: 44,
+                    height: 44,
                     padding: 0,
                     borderRadius: 999,
                     border: "none",
                     cursor: "pointer",
-                    background:
-                      i === active ? "#fff" : "rgba(255,255,255,0.55)",
-                    transition: "width 0.3s ease, background 0.3s ease",
+                    background: "transparent",
+                    display: "grid",
+                    placeItems: "center",
                   }}
-                />
+                >
+                  <span
+                    className="ad-slider-indicator"
+                    aria-hidden
+                    style={{
+                      width: 18,
+                      height: 7,
+                      borderRadius: 999,
+                      background: i === active ? "#fff" : "rgba(255,255,255,0.55)",
+                      transform: `scaleX(${i === active ? 1 : 0.39})`,
+                      transition: "transform 0.3s ease, background-color 0.3s ease",
+                    }}
+                  />
+                </button>
               ))}
             </div>
           </>

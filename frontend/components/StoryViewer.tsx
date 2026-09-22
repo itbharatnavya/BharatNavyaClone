@@ -231,7 +231,7 @@ export default function StoryViewer({
             <video src={story.media.url} autoPlay muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={story.media.url} alt={story.caption || group.sellerName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={story.media.url} alt={story.caption || group.sellerName} decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           )}
         </div>
 

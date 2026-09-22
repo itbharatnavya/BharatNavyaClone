@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export interface ModalProps {
   open: boolean;
@@ -10,6 +11,7 @@ export interface ModalProps {
   footer?: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  bodyClassName?: string;
 }
 
 const WIDTH: Record<NonNullable<ModalProps["size"]>, number> = {
@@ -27,8 +29,10 @@ export default function Modal({
   footer,
   size = "md",
   className = "",
+  bodyClassName = "",
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   useEffect(() => {
     if (!open) return;
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -56,23 +60,28 @@ export default function Modal({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby={title ? titleId : undefined}
+      aria-label={title ? undefined : "Dialog"}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 150,
+        zIndex: 2000,
+        isolation: "isolate",
         background: "rgba(15,23,42,.66)",
         backdropFilter: "blur(6px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 20,
+        overflow: "auto",
+        overscrollBehavior: "contain",
       }}
       className="animate-fade-in"
     >
@@ -102,7 +111,7 @@ export default function Modal({
           }}
         >
           {title && (
-            <div style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
+            <div id={titleId} style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
               {title}
             </div>
           )}
@@ -129,7 +138,7 @@ export default function Modal({
             </svg>
           </button>
         </div>
-        <div style={{ padding: 22, overflowY: "auto" }}>{children}</div>
+        <div className={bodyClassName} style={{ padding: 22, overflowY: "auto" }}>{children}</div>
         {footer && (
           <div
             style={{
@@ -145,6 +154,7 @@ export default function Modal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

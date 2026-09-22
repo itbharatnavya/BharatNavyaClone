@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import UniversalSearch from "@/components/home/UniversalSearch";
+import HomeAgent from "@/components/home/HomeAgent";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getBlogs } from "@/lib/api";
@@ -11,6 +11,7 @@ import { useSearchDock } from "@/lib/searchDock";
 
 function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
 function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
+function GrowthIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2M4 9l6-4 6 7 4-5" /></svg>; }
 
 const standards = [
   {
@@ -65,7 +66,6 @@ const journey = [
 export default function BharatNavyaHome() {
   const { docked, setProgress } = useSearchDock();
   const searchAnchorRef = useRef<HTMLDivElement>(null);
-  const journeyScrollRef = useRef<HTMLElement>(null);
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [sellerBlogs, setSellerBlogs] = useState<Blog[]>([]);
@@ -105,58 +105,6 @@ export default function BharatNavyaHome() {
     else searchField?.removeAttribute("aria-hidden");
   }, [docked]);
 
-  useEffect(() => {
-    const section = journeyScrollRef.current;
-    if (!section) return;
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let frame = 0;
-
-    const updateJourney = () => {
-      frame = 0;
-      if (reducedMotion.matches) return;
-
-      const headerOffset = document.querySelector<HTMLElement>(".bn-header")?.getBoundingClientRect().height || 68;
-      const stickyHeight = Math.max(window.innerHeight - headerOffset, 1);
-      const travel = Math.max(section.offsetHeight - stickyHeight, 1);
-      const progress = Math.min(Math.max((headerOffset - section.getBoundingClientRect().top) / travel, 0), 1);
-      const nextIndex = Math.min(journey.length - 1, Math.floor(progress * journey.length));
-
-      section.style.setProperty("--journey-scroll-progress", String(progress));
-      setActiveJourneyIndex((current) => current === nextIndex ? current : nextIndex);
-    };
-
-    const scheduleUpdate = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateJourney);
-    };
-
-    scheduleUpdate();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-    reducedMotion.addEventListener("change", scheduleUpdate);
-
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-      reducedMotion.removeEventListener("change", scheduleUpdate);
-      section.style.removeProperty("--journey-scroll-progress");
-    };
-  }, []);
-
-  const selectJourneyStep = (index: number) => {
-    setActiveJourneyIndex(index);
-    const section = journeyScrollRef.current;
-    if (!section || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const headerOffset = document.querySelector<HTMLElement>(".bn-header")?.getBoundingClientRect().height || 68;
-    const stickyHeight = Math.max(window.innerHeight - headerOffset, 1);
-    const travel = Math.max(section.offsetHeight - stickyHeight, 1);
-    const targetProgress = (index + 0.5) / journey.length;
-    const sectionTop = window.scrollY + section.getBoundingClientRect().top;
-    window.scrollTo({ top: sectionTop - headerOffset + travel * targetProgress, behavior: "smooth" });
-  };
-
   const guides = [...sellerBlogs, ...employerBlogs].filter((blog) => blog.coverImage).slice(0, 3);
   const activeStandard = standards.find((standard) => standard.id === activeStandardId) || standards[0];
   const activeJourney = journey[activeJourneyIndex];
@@ -165,10 +113,13 @@ export default function BharatNavyaHome() {
     <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
       <h1 id="home-title"><span>Bharat Navya</span> turns scattered signals into clearer decisions.</h1>
       <p>Understand companies, work and opportunities across India before you contact, shortlist or apply.</p>
-      <div ref={searchAnchorRef} className="le-hero-search is-universal" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><UniversalSearch /></div>
-      <div className="le-gateways" aria-label="Explore Bharat Navya">
-        <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Companies, capabilities and proof</small></span></Link>
-        <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>Roles, workplaces and hiring context</small></span></Link>
+      <div ref={searchAnchorRef} className="bn-home-suite" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}>
+        <HomeAgent variant="feature" />
+        <div className="le-gateways" aria-label="Explore Bharat Navya">
+          <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Services, products and company proof</small></span><b aria-hidden>→</b></Link>
+          <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>Roles, workplaces and hiring context</small></span><b aria-hidden>→</b></Link>
+          <div className="le-gateway is-growth" aria-disabled="true"><span><GrowthIcon /></span><span><em>Coming soon</em><strong>Growth OS</strong><small>Guided decisions for growing a business</small></span></div>
+        </div>
       </div>
       <div className="bn-home-hero-ledger" aria-label="The Bharat Navya standard">
         <span><b>One</b> connected company identity</span>
@@ -196,18 +147,17 @@ export default function BharatNavyaHome() {
       </div>
     </div></section>
 
-    <section ref={journeyScrollRef} className="le-journey-wrap bn-home-journey" aria-labelledby="journey-title"><div className="bn-home-journey-sticky"><div className="le-shell">
-      <header className="bn-home-journey-head"><h2 id="journey-title">Clarity follows the whole decision.</h2><p>Select a stage to see how useful context carries forward instead of disappearing between steps.</p></header>
+    <section className="bn-home-journey" aria-labelledby="journey-title"><div className="le-shell">
+      <header className="bn-home-journey-head"><h2 id="journey-title">From intent to action.</h2><p>Four simple stages. The context you need stays visible as you move forward.</p></header>
       <div className="bn-home-journey-experience" data-step={activeJourneyIndex}>
-        <div className="bn-home-journey-track" aria-label="Explore the Bharat Navya decision journey">
-          {journey.map((step, index) => <button key={step.label} type="button" aria-pressed={index === activeJourneyIndex} aria-controls="journey-focus" onClick={() => selectJourneyStep(index)} onMouseEnter={() => setActiveJourneyIndex(index)} onFocus={() => setActiveJourneyIndex(index)}><b>{String(index + 1).padStart(2, "0")}</b><span>{step.label}</span></button>)}
+        <div className="bn-home-journey-track" role="tablist" aria-label="Decision stages">
+          {journey.map((step, index) => <button key={step.label} type="button" role="tab" aria-selected={index === activeJourneyIndex} aria-controls="journey-focus" id={`journey-tab-${index}`} onClick={() => setActiveJourneyIndex(index)}><span>{step.label}</span></button>)}
         </div>
-        <article id="journey-focus" className="bn-home-journey-focus" aria-live="polite">
-          <div className="bn-home-journey-count"><strong>{String(activeJourneyIndex + 1).padStart(2, "0")}</strong><span>of 04</span></div>
-          <div className="bn-home-journey-copy"><small>{activeJourney.label}</small><h3>{activeJourney.title}</h3><p>{activeJourney.body}</p></div>
+        <article key={activeJourney.label} id="journey-focus" className="bn-home-journey-focus" role="tabpanel" aria-labelledby={`journey-tab-${activeJourneyIndex}`}>
+          <div className="bn-home-journey-copy"><span>Step {activeJourneyIndex + 1} of {journey.length}</span><h3>{activeJourney.title}</h3><p>{activeJourney.body}</p></div>
         </article>
       </div>
-    </div></div></section>
+    </div></section>
 
     <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
 

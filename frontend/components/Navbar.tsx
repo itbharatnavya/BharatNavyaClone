@@ -10,11 +10,17 @@ import Avatar from "./Avatar";
 import { useSearchDock } from "@/lib/searchDock";
 import { DirectoryDockedSearch, RecruitmentDockedSearch } from "./SectionSearchDock";
 import { UniversalDockedSearch } from "./home/UniversalSearch";
+import {
+  isCounterPublicRoute,
+  isCounterWorkspaceRoute,
+  isDirectoryRoute,
+  isRecruitmentPublicRoute,
+} from "@/lib/routePresentation";
 
 const links = [
   { href: "/", label: "Home", match: (path: string) => path === "/" },
-  { href: "/directory", label: "Directory", match: (path: string) => path.startsWith("/directory") || path.startsWith("/search") || path.startsWith("/seller/") },
-  { href: "/recruitment", label: "Recruitment", match: (path: string) => path.startsWith("/recruitment") || path.startsWith("/job/") || path.startsWith("/employer/") },
+  { href: "/directory", label: "Directory", match: isDirectoryRoute },
+  { href: "/recruitment", label: "Recruitment", match: (path: string) => isRecruitmentPublicRoute(path) || path.startsWith("/job/") || path.startsWith("/employer/") },
 ];
 
 function MenuIcon({ open }: { open: boolean }) {
@@ -33,11 +39,8 @@ export default function Navbar() {
   const directoryDocked = (pathname === "/directory" || pathname === "/search") && progress > 0;
   const recruitmentDocked = (pathname === "/recruitment" || pathname === "/recruitment/jobs") && progress > 0;
   const searchDocked = homeDocked || directoryDocked || recruitmentDocked;
-  const recruitmentPublic = (pathname === "/recruitment" || pathname.startsWith("/recruitment/"))
-    && pathname !== "/recruitment/dashboard"
-    && !pathname.startsWith("/recruitment/dashboard/");
-  const counterPublic = pathname === "/" || pathname === "/about" || pathname === "/pricing" || pathname === "/blog" || pathname.startsWith("/blog/") || pathname.startsWith("/directory") || pathname.startsWith("/search") || pathname.startsWith("/seller/") || recruitmentPublic || pathname.startsWith("/job/") || pathname.startsWith("/employer/");
-  const counterWorkspace = pathname === "/login" || pathname === "/register" || pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/sell" || pathname === "/post-job" || pathname === "/profile" || pathname === "/shortlist";
+  const counterPublic = isCounterPublicRoute(pathname);
+  const counterWorkspace = isCounterWorkspaceRoute(pathname);
 
   useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
   useEffect(() => {

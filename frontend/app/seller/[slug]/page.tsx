@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getSeller } from "@/lib/api";
 import type { Listing, SellerPublicProfile } from "@/lib/types";
 import { mapDirectoryCompany } from "@/lib/productDesign";
@@ -81,7 +82,7 @@ export default function CompanyProfilePage() {
     <div className="directory-shell company-crumb"><Link href="/directory">Directory</Link><span>/</span><Link href="/search">Services &amp; products</Link><span>/</span><strong>{seller.companyName}</strong></div>
 
     <section className="company-cover">
-      {seller.coverImage && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={seller.coverImage} alt={`${seller.companyName} work and workplace`} /></>}
+      {seller.coverImage && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={seller.coverImage} alt={`${seller.companyName} work and workplace`} decoding="async" /></>}
       <div className="directory-shell company-identity">
         <Avatar src={seller.logo} name={seller.companyName} size={88} />
         <div><span className="company-status">{seller.isVerified ? "Identity verified" : "Claimed company"}</span><h1>{seller.companyName}</h1><p>{location} · {company.serviceFamily}</p></div>
@@ -96,6 +97,8 @@ export default function CompanyProfilePage() {
       <div><strong>{seller.employeeCount || "Not listed"}</strong><span>Team size</span></div>
     </section>
 
+    <ApiAdvertisingSlot compact placement={["seller_profile", "category_top"]} kind="native" context="Sponsored near company profiles" summary="A relevant promoted company or service, kept separate from this company’s own evidence and reviews." action="View promoted record" />
+
     <div className="directory-shell company-layout">
       <div>
         <section className="company-block"><h2>What this company does</h2><p className="company-lead">{seller.about || "This company has not added a detailed overview yet."}</p><div className="company-capabilities">{company.capabilities.map((capability) => <span key={capability}><Check />{capability}</span>)}</div></section>
@@ -106,7 +109,7 @@ export default function CompanyProfilePage() {
           {listings.length ? <div className="company-services">{listings.map((listing) => {
             const terms = listingTerms(listing);
             return <Link className="company-offering-card" href={`/listing/${listing.id}`} key={listing.id}>
-              <div>{listing.media[0] && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={listing.media[0].url} alt={listing.media[0].alt || listing.title} /></>}</div>
+              <div>{listing.media[0] && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={listing.media[0].url} alt={listing.media[0].alt || listing.title} loading="lazy" decoding="async" /></>}</div>
               <span>{listing.type === "service" ? "Service" : "Product"}</span>
               <h3>{listing.title}</h3>
               <p>{listing.description}</p>
@@ -117,7 +120,7 @@ export default function CompanyProfilePage() {
           })}</div> : <div className="directory-empty">No active services or products have been published yet. The company record remains available.</div>}
         </section>
 
-        <section className="company-block"><h2>Work evidence</h2>{media.length ? <div className="company-gallery">{media.map((image, index) => <figure key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} /></figure>)}</div> : <div className="directory-empty">No work media has been added. This missing evidence is shown intentionally.</div>}</section>
+        <section className="company-block"><h2>Work evidence</h2>{media.length ? <div className="company-gallery">{media.map((image, index) => <figure key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} loading="lazy" decoding="async" /></figure>)}</div> : <div className="directory-empty">No work media has been added. This missing evidence is shown intentionally.</div>}</section>
 
         <section className="company-block"><h2>What clients have shared</h2>{approvedReviews.length ? <div className="company-reviews">{approvedReviews.map((review) => <blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div> : <div className="directory-empty">No approved public reviews are available yet.</div>}</section>
       </div>

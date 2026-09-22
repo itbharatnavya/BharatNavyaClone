@@ -352,7 +352,7 @@ p {
   min-width: 0;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--counter-button-radius, 1.25rem);
   background: var(--bg-subtle);
   transition: background-color 120ms ease, border-color 120ms ease;
 }
@@ -469,6 +469,7 @@ p {
    Buttons
    ============================================================ */
 .btn {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -483,7 +484,9 @@ p {
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease,
     color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
   user-select: none;
 }
 .btn:active:not(:disabled) {
@@ -567,11 +570,24 @@ p {
 }
 
 .btn-sm {
+  min-height: 44px;
   padding: 7px 12px;
   font-size: 13px;
-  border-radius: 8px;
+  border-radius: var(--counter-button-radius, 1.25rem);
   gap: 6px;
 }
+
+.bn-toast {
+  border: 1px solid var(--counter-line, #d8d0be);
+  border-radius: var(--counter-radius-control, 1.25rem);
+  background: var(--counter-ivory, #fffdf7);
+  color: var(--counter-ink, #12141b);
+  box-shadow: var(--counter-shadow-lift, 0 16px 40px rgba(18, 20, 27, 0.16));
+}
+
+.bn-toast-success { border-color: color-mix(in srgb, #16a34a 40%, var(--counter-line, #d8d0be)); }
+.bn-toast-error { border-color: color-mix(in srgb, #dc2626 40%, var(--counter-line, #d8d0be)); }
+.bn-toast-info { border-color: color-mix(in srgb, var(--counter-indigo, #1b3fa0) 40%, var(--counter-line, #d8d0be)); }
 .btn-lg {
   padding: 13px 22px;
   font-size: 15px;
@@ -614,6 +630,10 @@ p {
     transition: none;
     display: none;
   }
+
+  .ad-slider-indicator {
+    transition: none !important;
+  }
 }
 
 /* ============================================================
@@ -622,7 +642,7 @@ p {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--counter-card-radius, 1.25rem);
   box-shadow: var(--shadow-card);
   transition: box-shadow 160ms ease, transform 160ms ease,
     border-color 160ms ease;
@@ -724,7 +744,7 @@ p {
   width: 100%;
   background: #ffffff;
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
+  border-radius: var(--counter-input-radius, 1.25rem);
   padding: 10px 14px;
   font-family: inherit;
   font-size: 14px;
@@ -835,7 +855,7 @@ p {
     #eef1f4 100%
   );
   background-size: 640px 100%;
-  border-radius: 8px;
+  border-radius: var(--counter-card-radius, 1.25rem);
   animation: shimmer 1.4s infinite linear;
 }
 

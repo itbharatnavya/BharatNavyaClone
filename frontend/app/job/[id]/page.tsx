@@ -7,6 +7,7 @@ import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Button from "@/components/Button";
 import ContactAuthModal from "@/components/auth/ContactAuthModal";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import ApplyModal from "@/components/recruitment/ApplyModal";
 import EvidenceMedia from "@/components/recruitment/EvidenceMedia";
 import RecruitmentGate from "@/components/recruitment/RecruitmentGate";
@@ -85,6 +86,7 @@ function JobDetailInner() {
       <aside className="recruitment-apply-panel"><strong>{formatSalary(job, true)}</strong><small>{job.openings} {job.openings === 1 ? "opening" : "openings"} · {closingContext(job.expiresAt)}</small>{isOwner ? <Button variant="secondary" block href="/recruitment/dashboard">Manage this role</Button> : user?.recruitmentRole === "recruiter" ? <p>Recruiter accounts can inspect roles but cannot apply.</p> : alreadyApplied ? <div className="recruitment-state"><strong>Application sent</strong><p>Track it from your applicant dashboard.</p></div> : <Button variant="brand" block onClick={startApply}>Apply now</Button>}<small>{job.applicationCount} {job.applicationCount === 1 ? "application" : "applications"} recorded</small></aside>
     </div>
   </div>
+  <ApiAdvertisingSlot compact placement={["job_detail", "recruitment_home"]} kind="native" context="Sponsored near role details" summary="A clearly labelled hiring placement, separate from the role’s employer facts and application path." action="View opportunity" />
   <ContactAuthModal purpose="apply" open={authOpen} onClose={() => setAuthOpen(false)} onSuccess={() => setApplyOpen(true)} />
   {applyOpen && <ApplyModal open={applyOpen} job={job} onClose={() => setApplyOpen(false)} onApplied={() => setAlreadyApplied(true)} />}
   </div>;

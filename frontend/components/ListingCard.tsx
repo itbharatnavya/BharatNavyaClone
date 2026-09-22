@@ -474,7 +474,7 @@ export default function ListingCard({
       <div style={{ position: "absolute", top: 10, right: 10, zIndex: 2 }}>
         <CardToggles listing={listing} />
       </div>
-      <Link href={detailHref} className="lc-grid-media">
+      <Link href={detailHref} className="lc-grid-media" aria-label={`View ${listing.title}`}>
         {image ? (
           <div className="lc-grid-img" style={{ backgroundImage: `url(${image})` }} />
         ) : (

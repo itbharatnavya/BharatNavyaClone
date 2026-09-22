@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useSearchDock } from "@/lib/searchDock";
+import { flattenCategories, useCategories } from "@/lib/catalog";
+import { getJobFunctions, getJobs, getListings } from "@/lib/api";
+import type { Job, JobFunction, Listing } from "@/lib/types";
 
 function SearchIcon() {
   return <svg aria-hidden viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5" /></svg>;
@@ -20,11 +23,104 @@ function CloseIcon() {
 
 export type DirectorySearchVariant = "hero" | "compact" | "drawer";
 
+const DIRECTORY_STARTERS = ["GST and compliance", "Website development", "Packaging supplier", "Marketing partner"];
+const RECRUITMENT_STARTERS = ["Software Engineer", "Operations Manager", "Sales Executive", "Remote product roles"];
+
+type SearchSuggestion = {
+  id: string;
+  label: string;
+  meta: string;
+  href: string;
+};
+
+const directorySuggestionCache = new Map<string, Promise<Listing[]>>();
+const recruitmentSuggestionCache = new Map<string, Promise<Job[]>>();
+let jobFunctionsPromise: Promise<JobFunction[]> | null = null;
+
+function cachedDirectoryListings(term: string) {
+  const key = term.trim().toLowerCase();
+  if (!directorySuggestionCache.has(key)) {
+    directorySuggestionCache.set(key, getListings({ q: term, limit: 4 }).then((result) => result.listings || []).catch(() => []));
+  }
+  return directorySuggestionCache.get(key)!;
+}
+
+function cachedRecruitmentJobs(term: string) {
+  const key = term.trim().toLowerCase();
+  if (!recruitmentSuggestionCache.has(key)) {
+    recruitmentSuggestionCache.set(key, getJobs({ q: term, limit: 4 }).then((result) => result.jobs || []).catch(() => []));
+  }
+  return recruitmentSuggestionCache.get(key)!;
+}
+
+function cachedJobFunctions() {
+  jobFunctionsPromise ||= getJobFunctions().catch(() => []);
+  return jobFunctionsPromise;
+}
+
+function SearchSuggestionMenu({ id, items, active, onActive, onSelect, label }: { id: string; items: SearchSuggestion[]; active: number; onActive: (index: number) => void; onSelect: (item: SearchSuggestion) => void; label: string }) {
+  if (!items.length) return null;
+  return <div id={id} className="bn-section-search-suggestions" role="listbox" aria-label={label}>
+    <span className="bn-section-search-suggestions-label">Suggested for you</span>
+    {items.map((item, index) => <button key={item.id} id={`${id}-${index}`} type="button" role="option" aria-selected={active === index} className={active === index ? "is-active" : undefined} onMouseEnter={() => onActive(index)} onClick={() => onSelect(item)}>
+      <span><strong>{item.label}</strong><small>{item.meta}</small></span><ArrowIcon />
+    </button>)}
+  </div>;
+}
+
 export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { variant?: DirectorySearchVariant; onSubmitted?: () => void }) {
   const router = useRouter();
   const queryId = useId();
   const cityId = useId();
+  const listId = useId();
+  const formRef = useRef<HTMLFormElement>(null);
   const { query, setQuery, city, setCity, markSearchNav } = useSearchDock();
+  const { categories } = useCategories();
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const term = query.trim();
+
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    let live = true;
+    const timer = window.setTimeout(async () => {
+      if (!term) {
+        if (live) setSuggestions(DIRECTORY_STARTERS.map((label) => ({ id: `starter-${label}`, label, meta: "Popular need", href: `/search?q=${encodeURIComponent(label)}` })));
+        return;
+      }
+      const normalized = term.toLowerCase();
+      const categoryMatches = flattenCategories(categories).filter((category) => category.name.toLowerCase().includes(normalized)).slice(0, 3).map((category) => ({ id: `category-${category.slug}`, label: category.name, meta: "Browse category", href: `/search?category=${encodeURIComponent(category.slug)}&q=${encodeURIComponent(category.name)}` }));
+      const listings = term.length >= 2 ? await cachedDirectoryListings(term) : [];
+      const listingMatches = listings.slice(0, 4).map((listing) => ({ id: `listing-${listing.id}`, label: listing.title, meta: `${listing.type === "product" ? "Product" : "Service"} · ${listing.seller?.companyName || listing.sellerName || "Provider"}`, href: `/listing/${listing.id}` }));
+      const searchAll = { id: `search-${normalized}`, label: `Search for “${term}”`, meta: "All services and products", href: `/search?q=${encodeURIComponent(term)}` };
+      if (live) setSuggestions([...categoryMatches, ...listingMatches, searchAll].slice(0, 6));
+    }, term ? 220 : 0);
+    return () => { live = false; window.clearTimeout(timer); };
+  }, [categories, suggestionsOpen, term]);
+
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    const close = (event: MouseEvent) => { if (!formRef.current?.contains(event.target as Node)) { setSuggestionsOpen(false); setActiveSuggestion(-1); } };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [suggestionsOpen]);
+
+  function chooseSuggestion(item: SearchSuggestion) {
+    setSuggestionsOpen(false);
+    setActiveSuggestion(-1);
+    setQuery(item.label);
+    markSearchNav();
+    onSubmitted?.();
+    router.push(item.href);
+  }
+
+  function handleQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") { event.preventDefault(); setSuggestionsOpen(true); setActiveSuggestion((value) => Math.min(value + 1, suggestions.length - 1)); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActiveSuggestion((value) => Math.max(value - 1, 0)); }
+    else if (event.key === "Escape") { setSuggestionsOpen(false); setActiveSuggestion(-1); }
+    else if (event.key === "Enter" && suggestionsOpen && activeSuggestion >= 0) { event.preventDefault(); chooseSuggestion(suggestions[activeSuggestion]); }
+  }
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -36,11 +132,11 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
     router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
   }
 
-  return <form className={`bn-section-search bn-section-search--${variant}`} onSubmit={submit} aria-label="Search companies">
+  return <form ref={formRef} className={`bn-section-search bn-section-search--${variant}`} onSubmit={submit} aria-label="Search companies">
     <label className="bn-section-search-query" htmlFor={queryId}>
       <SearchIcon />
       <span className="sr-only">Company or service</span>
-      <input id={queryId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="What company or support do you need?" autoComplete="off" />
+      <input id={queryId} value={query} onChange={(event) => { setQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1); }} onFocus={() => setSuggestionsOpen(true)} onKeyDown={handleQueryKeyDown} placeholder="What company or support do you need?" role="combobox" aria-expanded={suggestionsOpen && suggestions.length > 0} aria-controls={listId} aria-autocomplete="list" aria-activedescendant={activeSuggestion >= 0 ? `${listId}-${activeSuggestion}` : undefined} autoComplete="off" />
     </label>
     <label className="bn-section-search-location" htmlFor={cityId}>
       <LocationIcon />
@@ -51,6 +147,7 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
       </select>
     </label>
     <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search companies"}</span><ArrowIcon /></button>
+    {suggestionsOpen && <SearchSuggestionMenu id={listId} items={suggestions} active={activeSuggestion} onActive={setActiveSuggestion} onSelect={chooseSuggestion} label="Service and product suggestions" />}
   </form>;
 }
 
@@ -115,7 +212,45 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
   const queryId = useId();
   const cityId = useId();
   const workplaceId = useId();
+  const listId = useId();
+  const formRef = useRef<HTMLFormElement>(null);
   const { roleQuery, setRoleQuery, roleCity, setRoleCity, roleWorkplace, setRoleWorkplace, markSearchNav } = useSearchDock();
+  const [functions, setFunctions] = useState<JobFunction[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const term = roleQuery.trim();
+  useEffect(() => { cachedJobFunctions().then(setFunctions); }, []);
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    let live = true;
+    const timer = window.setTimeout(async () => {
+      if (!term) {
+        if (live) setSuggestions(RECRUITMENT_STARTERS.map((label) => ({ id: `starter-${label}`, label, meta: "Popular role search", href: `/recruitment/jobs?q=${encodeURIComponent(label)}` })));
+        return;
+      }
+      const normalized = term.toLowerCase();
+      const functionMatches = functions.filter((item) => item.name.toLowerCase().includes(normalized)).slice(0, 3).map((item) => ({ id: `function-${item.slug}`, label: item.name, meta: "Role family", href: `/recruitment/jobs?jobFunction=${encodeURIComponent(item.slug)}` }));
+      const jobs = term.length >= 2 ? await cachedRecruitmentJobs(term) : [];
+      const jobMatches = jobs.slice(0, 4).map((job) => ({ id: `job-${job.id}`, label: job.title, meta: `${job.employer?.companyName || "Hiring company"} · ${job.location?.city || "India"}`, href: `/job/${job.id}` }));
+      const searchAll = { id: `search-${normalized}`, label: `Search roles for “${term}”`, meta: "All matching roles", href: `/recruitment/jobs?q=${encodeURIComponent(term)}` };
+      if (live) setSuggestions([...functionMatches, ...jobMatches, searchAll].slice(0, 6));
+    }, term ? 220 : 0);
+    return () => { live = false; window.clearTimeout(timer); };
+  }, [functions, suggestionsOpen, term]);
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    const close = (event: MouseEvent) => { if (!formRef.current?.contains(event.target as Node)) { setSuggestionsOpen(false); setActiveSuggestion(-1); } };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [suggestionsOpen]);
+  function chooseSuggestion(item: SearchSuggestion) { setSuggestionsOpen(false); setActiveSuggestion(-1); setRoleQuery(item.label); markSearchNav(); onSubmitted?.(); router.push(item.href); }
+  function handleQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") { event.preventDefault(); setSuggestionsOpen(true); setActiveSuggestion((value) => Math.min(value + 1, suggestions.length - 1)); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActiveSuggestion((value) => Math.max(value - 1, 0)); }
+    else if (event.key === "Escape") { setSuggestionsOpen(false); setActiveSuggestion(-1); }
+    else if (event.key === "Enter" && suggestionsOpen && activeSuggestion >= 0) { event.preventDefault(); chooseSuggestion(suggestions[activeSuggestion]); }
+  }
   function submit(event: React.FormEvent) {
     event.preventDefault();
     const params = new URLSearchParams();
@@ -126,11 +261,12 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
     onSubmitted?.();
     router.push(`/recruitment/jobs${params.size ? `?${params.toString()}` : ""}`);
   }
-  return <form className={`bn-section-search bn-section-search--${variant} bn-section-search--recruitment`} onSubmit={submit} aria-label="Search jobs">
-    <label className="bn-section-search-query" htmlFor={queryId}><SearchIcon /><span className="sr-only">Role, skill or company</span><input id={queryId} value={roleQuery} onChange={(event) => setRoleQuery(event.target.value)} placeholder="Role, skill, or company" autoComplete="off" /></label>
+  return <form ref={formRef} className={`bn-section-search bn-section-search--${variant} bn-section-search--recruitment`} onSubmit={submit} aria-label="Search jobs">
+    <label className="bn-section-search-query" htmlFor={queryId}><SearchIcon /><span className="sr-only">Role, skill or company</span><input id={queryId} value={roleQuery} onChange={(event) => { setRoleQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1); }} onFocus={() => setSuggestionsOpen(true)} onKeyDown={handleQueryKeyDown} placeholder="Role, skill, or company" role="combobox" aria-expanded={suggestionsOpen && suggestions.length > 0} aria-controls={listId} aria-autocomplete="list" aria-activedescendant={activeSuggestion >= 0 ? `${listId}-${activeSuggestion}` : undefined} autoComplete="off" /></label>
     <label className="bn-section-search-location" htmlFor={cityId}><LocationIcon /><span className="sr-only">Job location</span><select id={cityId} value={roleCity} onChange={(event) => setRoleCity(event.target.value)}><option value="">All locations</option>{ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
     <label className="bn-section-search-workplace" htmlFor={workplaceId}><span className="sr-only">Workplace preference</span><select id={workplaceId} value={roleWorkplace} onChange={(event) => setRoleWorkplace(event.target.value)}>{["All workplaces","On-site","Hybrid","Remote"].map((item) => <option key={item}>{item}</option>)}</select></label>
     <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search jobs"}</span><ArrowIcon /></button>
+    {suggestionsOpen && <SearchSuggestionMenu id={listId} items={suggestions} active={activeSuggestion} onActive={setActiveSuggestion} onSelect={chooseSuggestion} label="Role and company suggestions" />}
   </form>;
 }
 

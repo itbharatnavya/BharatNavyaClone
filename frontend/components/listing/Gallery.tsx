@@ -51,6 +51,7 @@ export default function Gallery({ media, title }: GalleryProps) {
             <img
               src={current.url}
               alt={current.alt || title}
+              decoding="async"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           )
@@ -108,6 +109,8 @@ export default function Gallery({ media, title }: GalleryProps) {
                     <img
                       src={img.url}
                       alt={img.alt || `${title} ${i + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                   )

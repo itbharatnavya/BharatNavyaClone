@@ -183,7 +183,7 @@ export default function NotificationBell() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={t("common.notifications")}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink transition-colors"
+        className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink transition-colors"
       >
         <BellIcon />
         {unread > 0 && (

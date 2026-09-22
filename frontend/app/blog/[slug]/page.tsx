@@ -170,6 +170,7 @@ export default function BlogArticlePage({
           <img
             src={blog.coverImage}
             alt={blog.title}
+            decoding="async"
             style={{ width: "100%", maxWidth: "100%", display: "block" }}
           />
         </div>
@@ -177,7 +178,9 @@ export default function BlogArticlePage({
 
       {/* Body */}
       <div className="blog-prose" style={{ marginTop: 28 }}>
-        <ReactMarkdown>{blog.body || ""}</ReactMarkdown>
+        <ReactMarkdown components={{ h1: ({ children }) => <h2>{children}</h2> }}>
+          {blog.body || ""}
+        </ReactMarkdown>
       </div>
 
       {/* About the vendor — promotional mini-card linking to profile + listings */}
