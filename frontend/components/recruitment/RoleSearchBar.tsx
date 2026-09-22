@@ -14,16 +14,14 @@
 //     sharing lib/searchDock.tsx's `roleQuery`/`roleCity` so typed text survives the
 //     hero-to-navbar handoff on scroll, the same handoff Directory's search already does.
 //
-// Suggestions dropdown: a curated "Popular searches" list + the fetched job-function
-// catalog, filtered client-side as the visitor types — no per-keystroke network call
-// (the demo job dataset is far too small for live title matching to be useful, and
-// CLAUDE.md steers away from adding requests a static list already avoids).
+// Suggestions combine the job-function catalog with live role and employer matches.
+// Calls are debounced and use the existing jobs API; no new backend contract is added.
 
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
-import { getJobFunctions } from "@/lib/api";
-import type { JobFunction } from "@/lib/types";
+import { getJobFunctions, getJobs } from "@/lib/api";
+import type { Job, JobFunction } from "@/lib/types";
 
 export interface RoleSearchBarProps {
   className?: string;
@@ -34,21 +32,6 @@ export interface RoleSearchBarProps {
   onCityChange?: (city: string) => void;
   dockStyle?: React.CSSProperties;
 }
-
-const POPULAR_SEARCHES = [
-  "Software Engineer",
-  "Sales Executive",
-  "Data Analyst",
-  "Graphic Designer",
-  "Digital Marketing Executive",
-  "HR Manager",
-  "Customer Support Executive",
-  "Business Development Executive",
-  "Accountant",
-  "React Developer",
-  "DevOps Engineer",
-  "Content Writer",
-];
 
 function SearchIcon() {
   return (
@@ -73,16 +56,18 @@ function BriefcaseIcon() {
     </svg>
   );
 }
-function TrendIcon() {
+function BuildingIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 17l6-6 4 4 8-8" />
-      <path d="M15 7h6v6" />
+      <path d="M4 21V4h12v17M16 9h4v12M8 8h4M8 12h4M8 16h4" />
     </svg>
   );
 }
 
-type SugItem = { kind: "popular" | "function"; label: string; slug?: string };
+type SugItem =
+  | { kind: "function"; label: string; slug: string }
+  | { kind: "job"; label: string; jobId: string; company?: string }
+  | { kind: "company"; label: string; slug?: string | null };
 
 export default function RoleSearchBar({
   className = "",
@@ -110,21 +95,57 @@ export default function RoleSearchBar({
     getJobFunctions().then(setJobFunctions).catch(() => {});
   }, []);
 
+  const [matchedJobs, setMatchedJobs] = useState<Job[]>([]);
+  const [matchedCompanyJobs, setMatchedCompanyJobs] = useState<Job[]>([]);
+  const requestIdRef = useRef(0);
+
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   const term = q.trim().toLowerCase();
+
+  useEffect(() => {
+    if (term.length < 2) {
+      setMatchedJobs([]);
+      setMatchedCompanyJobs([]);
+      return;
+    }
+    const requestId = ++requestIdRef.current;
+    const timer = window.setTimeout(() => {
+      Promise.allSettled([
+        getJobs({ q: term, limit: 8 }),
+        getJobs({ company: term, limit: 8 }),
+      ]).then(([jobResult, companyResult]) => {
+        if (requestId !== requestIdRef.current) return;
+        setMatchedJobs(jobResult.status === "fulfilled" ? jobResult.value.jobs || [] : []);
+        setMatchedCompanyJobs(companyResult.status === "fulfilled" ? companyResult.value.jobs || [] : []);
+      });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [term]);
+
   const items: SugItem[] = useMemo(() => {
-    const popular = POPULAR_SEARCHES.filter((s) => !term || s.toLowerCase().includes(term)).slice(0, 6).map(
-      (label): SugItem => ({ kind: "popular", label })
-    );
-    const functions = jobFunctions
-      .filter((f) => !term || f.name.toLowerCase().includes(term))
-      .slice(0, 5)
-      .map((f): SugItem => ({ kind: "function", label: f.name, slug: f.slug }));
-    return [...popular, ...functions];
-  }, [term, jobFunctions]);
+    if (term.length < 2) return [];
+    const functions: SugItem[] = jobFunctions
+      .filter((item) => item.name.toLowerCase().includes(term))
+      .slice(0, 3)
+      .map((item) => ({ kind: "function", label: item.name, slug: item.slug }));
+    const roles: SugItem[] = matchedJobs
+      .filter((job) => job.title.toLowerCase().includes(term))
+      .slice(0, 4)
+      .map((job) => ({ kind: "job", label: job.title, jobId: job.id, company: job.employer?.companyName || undefined }));
+    const seenCompanies = new Set<string>();
+    const companies: SugItem[] = [];
+    for (const job of matchedCompanyJobs) {
+      const name = job.employer?.companyName;
+      if (!name || seenCompanies.has(name)) continue;
+      seenCompanies.add(name);
+      companies.push({ kind: "company", label: name, slug: job.employer?.slug });
+      if (companies.length >= 3) break;
+    }
+    return [...functions, ...roles, ...companies];
+  }, [term, jobFunctions, matchedJobs, matchedCompanyJobs]);
   const showDropdown = open && items.length > 0;
 
   useEffect(() => {
@@ -156,10 +177,18 @@ export default function RoleSearchBar({
 
   function selectItem(item: SugItem) {
     setQ(item.label);
-    if (item.kind === "function" && item.slug) {
-      setOpen(false);
-      setActive(-1);
+    setOpen(false);
+    setActive(-1);
+    if (item.kind === "function") {
       router.push(`/recruitment/jobs?jobFunction=${item.slug}`);
+      return;
+    }
+    if (item.kind === "job") {
+      router.push(`/job/${item.jobId}`);
+      return;
+    }
+    if (item.slug) {
+      router.push(`/employer/${item.slug}`);
       return;
     }
     go(item.label);
@@ -246,36 +275,12 @@ export default function RoleSearchBar({
           aria-label="Search suggestions"
           className="card rsb-dropdown"
         >
-          {items.some((i) => i.kind === "popular") && (
-            <div className="rsb-dropdown-label">
-              <TrendIcon /> Popular searches
-            </div>
-          )}
-          {items.map((item, i) => {
-            if (item.kind !== "popular") return null;
-            return (
-              <button
-                key={`p-${item.label}`}
-                id={optionId(i)}
-                role="option"
-                aria-selected={i === active}
-                type="button"
-                onMouseEnter={() => setActive(i)}
-                onClick={() => selectItem(item)}
-                className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
           {items.some((i) => i.kind === "function") && (
             <div className="rsb-dropdown-label">
-              <BriefcaseIcon /> Browse by category
+              <BriefcaseIcon /> Matching categories
             </div>
           )}
-          {items.map((item, i) => {
-            if (item.kind !== "function") return null;
-            return (
+          {items.map((item, i) => item.kind !== "function" ? null : (
               <button
                 key={`f-${item.slug}`}
                 id={optionId(i)}
@@ -288,8 +293,45 @@ export default function RoleSearchBar({
               >
                 {item.label}
               </button>
-            );
-          })}
+          ))}
+          {items.some((i) => i.kind === "job") && (
+            <div className="rsb-dropdown-label">
+              <BriefcaseIcon /> Matching roles
+            </div>
+          )}
+          {items.map((item, i) => item.kind !== "job" ? null : (
+              <button
+                key={`j-${item.jobId}`}
+                id={optionId(i)}
+                role="option"
+                aria-selected={i === active}
+                type="button"
+                onMouseEnter={() => setActive(i)}
+                onClick={() => selectItem(item)}
+                className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
+              >
+                <span>{item.label}{item.company ? <small>{item.company}</small> : null}</span>
+              </button>
+          ))}
+          {items.some((i) => i.kind === "company") && (
+            <div className="rsb-dropdown-label">
+              <BuildingIcon /> Matching companies
+            </div>
+          )}
+          {items.map((item, i) => item.kind !== "company" ? null : (
+            <button
+              key={`c-${item.slug || item.label}`}
+              id={optionId(i)}
+              role="option"
+              aria-selected={i === active}
+              type="button"
+              onMouseEnter={() => setActive(i)}
+              onClick={() => selectItem(item)}
+              className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       )}
 
@@ -327,7 +369,6 @@ export default function RoleSearchBar({
           font-size: 15px;
           color: var(--ink);
           padding: 10px 8px;
-        }
         .rsb-compact .rsb-input {
           font-size: 14px;
           padding: 7px 6px;
@@ -473,6 +514,15 @@ export default function RoleSearchBar({
           font-family: inherit;
           color: var(--ink);
           cursor: pointer;
+        }
+        .rsb-opt > span {
+          display: grid;
+          gap: 2px;
+        }
+        .rsb-opt small {
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 500;
         }
         .rsb-opt-active {
           background: var(--bn-blue-050);
