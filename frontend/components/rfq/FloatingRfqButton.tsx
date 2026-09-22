@@ -203,8 +203,8 @@ export default function FloatingRfqButton() {
           aria-label="Post a requirement — tell us what you need"
           title="Post a requirement"
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-[5.25rem] z-[119] inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full text-white shadow-pop transition-transform hover:scale-105 active:scale-95 sm:w-auto sm:px-5"
-          style={{ background: "var(--brand)" }}
+          className="fixed bottom-4 right-[5.25rem] z-[119] inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full shadow-pop transition-transform hover:scale-105 active:scale-95 sm:w-auto sm:px-5"
+          style={{ background: "var(--counter-saffron, var(--action))", color: "var(--counter-ink, var(--ink))" }}
         >
           <RequirementIcon />
           <span className="hidden text-sm font-semibold sm:inline">Post Requirement</span>
@@ -223,7 +223,7 @@ export default function FloatingRfqButton() {
                      sm:inset-x-auto sm:bottom-5 sm:right-[5.25rem] sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:max-h-[calc(100vh-2.5rem)]"
         >
           {/* Header */}
-          <div className="flex flex-shrink-0 items-center gap-2.5 px-4 py-3 text-white" style={{ background: "var(--brand)" }}>
+          <div className="flex flex-shrink-0 items-center gap-2.5 px-4 py-3 text-white" style={{ background: "var(--counter-green, var(--brand))" }}>
             <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/20">
               <RequirementIcon size={17} />
             </span>

@@ -68,7 +68,7 @@ export default function ProductListingRail() {
           <li key={listing.id} className={index === 0 ? "is-featured" : undefined}>
             <Link className="counter-product-card" href={`/listing/${listing.id}`}>
               <div className="counter-product-media">
-                {image ? <img src={image} alt="" loading="lazy" /> : <span aria-hidden>Product</span>}
+                {image ? <img src={image} alt="" loading="lazy" decoding="async" /> : <span aria-hidden>Product</span>}
                 <span className="counter-product-type">Product listing</span>
               </div>
               <div className="counter-product-copy">

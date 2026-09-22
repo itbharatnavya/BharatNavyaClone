@@ -162,7 +162,7 @@
 .counter-admin-login :is(.input, .select, .textarea) {
   min-height: 3rem;
   border-color: var(--counter-line);
-  border-radius: 0 !important;
+  border-radius: var(--counter-input-radius, 1.25rem) !important;
   background: var(--counter-ivory);
   color: var(--counter-ink);
   box-shadow: none !important;
@@ -190,7 +190,7 @@
 .counter-admin-page .btn,
 .counter-admin-login .btn {
   min-height: 2.75rem;
-  border-radius: 0 !important;
+  border-radius: var(--counter-button-radius, 1.25rem) !important;
   box-shadow: none !important;
   font-weight: 800;
 }
@@ -235,7 +235,7 @@
 .counter-admin-page .card-flat,
 .counter-admin-login .card {
   border-color: var(--counter-line) !important;
-  border-radius: 0 !important;
+  border-radius: var(--counter-card-radius, 1.25rem) !important;
   background: var(--counter-ivory);
   box-shadow: none !important;
 }
@@ -321,7 +321,7 @@
 
 .counter-workspace-nav-item {
   min-height: 2.9rem;
-  border-radius: 0 !important;
+  border-radius: var(--counter-button-radius, 1.25rem) !important;
   border-bottom: 1px solid var(--counter-line) !important;
   background: transparent !important;
   color: var(--counter-muted) !important;
@@ -355,7 +355,7 @@
   gap: 0 !important;
   padding: 0 !important;
   border: 1px solid var(--counter-line);
-  border-radius: 0 !important;
+  border-radius: var(--counter-button-radius, 1.25rem) !important;
   background: transparent !important;
 }
 
@@ -367,7 +367,7 @@
 }
 
 .counter-admin-page [role="tablist"] [aria-selected="true"] { background: var(--counter-ink) !important; color: white !important; }
-.counter-admin-page aside nav button { min-height: 2.8rem; border-radius: 0 !important; border-bottom: 1px solid var(--counter-line); }
+.counter-admin-page aside nav button { min-height: 2.8rem; border-radius: var(--counter-button-radius, 1.25rem) !important; border-bottom: 1px solid var(--counter-line); }
 .counter-admin-page aside nav button[aria-current="page"] { background: var(--counter-indigo) !important; color: white !important; }
 
 .counter-admin-login { max-width: none; background: var(--counter-ink); }

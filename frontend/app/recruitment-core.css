@@ -9,7 +9,17 @@
 .recruitment-filter-toggle{display:none;min-height:2.75rem;padding:.6rem .9rem;border:1px solid var(--bn-border);border-radius:var(--bn-radius-control);background:var(--bn-surface);font-weight:800}
 .recruitment-results-count{display:grid;gap:.15rem;color:var(--bn-text-secondary);font-size:.8rem}.recruitment-results-count strong{color:var(--bn-text-primary);font-size:.95rem}
 .recruitment-results-layout{display:grid;grid-template-columns:15rem minmax(28rem,1fr) minmax(18rem,22rem);gap:1.25rem;align-items:start;padding:1rem 0 5rem}
-.recruitment-results-filters,.recruitment-results-preview{position:sticky;top:calc(var(--bn-header-height) + 1rem)}
+.recruitment-results-filter-rail,.recruitment-results-preview{position:sticky;top:calc(var(--bn-header-height) + 1rem)}
+.recruitment-results-filter-rail{height:calc(100vh - var(--bn-header-height) - 2rem);display:grid;grid-template-rows:minmax(0,2fr) minmax(0,1fr);gap:var(--counter-section-gap);overflow:hidden}
+.recruitment-results-filters{position:static;min-height:0;overflow:auto;scrollbar-width:thin}
+.recruitment-results-filter-ad{overflow:hidden;border-radius:var(--bn-radius-card)}
+.recruitment-results-filter-ad :is(.le-ad-slot,.le-shell,.le-ad-slot-card){height:100%}
+.recruitment-results-filter-ad .le-ad-slot-card{grid-template-columns:1fr;grid-template-rows:minmax(5rem,1fr) auto}
+.recruitment-results-filter-ad .le-ad-slot.is-compact .le-ad-slot-media{min-height:0}
+.recruitment-results-filter-ad .le-ad-slot-copy{align-content:start;gap:.4rem;padding:.75rem}
+.recruitment-results-filter-ad .le-ad-slot-copy h2{font-size:.92rem;line-height:1.2}
+.recruitment-results-filter-ad .le-ad-slot-copy p{display:none}
+.recruitment-results-filter-ad .le-ad-slot-copy .le-button{width:100%;min-height:2.75rem;margin-top:.15rem;justify-content:center}
 .recruitment-results-list{display:grid;gap:.7rem}
 .recruitment-result-item{display:contents}
 .recruitment-result-row{position:relative;display:grid;grid-template-columns:3.25rem minmax(0,1fr) auto;gap:1rem;align-items:start;padding:1rem;border:1px solid var(--bn-border);border-radius:var(--bn-radius-card);background:var(--bn-surface);transition:border-color var(--bn-motion-base) var(--bn-ease),box-shadow var(--bn-motion-base) var(--bn-ease),transform var(--bn-motion-fast) var(--bn-ease)}
@@ -37,7 +47,7 @@
 
 @keyframes bn-drawer-in{from{transform:translateX(1.5rem);opacity:.7}to{transform:none;opacity:1}}
 @media(max-width:1199px){.recruitment-results-layout{grid-template-columns:15rem minmax(0,1fr)}.recruitment-results-preview{grid-column:2;position:static}.bn-role-preview{display:grid;grid-template-columns:minmax(13rem,.7fr) 1fr}.bn-role-preview .bn-evidence-media{height:100%}.recruitment-result-side button{display:inline-flex}}
-@media(max-width:850px){.recruitment-filter-toggle{display:inline-flex;align-items:center}.recruitment-results-layout{grid-template-columns:1fr}.recruitment-results-filters{display:none}.recruitment-results-preview{grid-column:auto}.recruitment-detail-hero,.recruitment-detail-layout,.employer-careers-grid{grid-template-columns:1fr}.recruitment-apply-panel{position:static}.recruitment-role-ledger{grid-template-columns:repeat(2,1fr)}.employer-careers-aside{grid-template-columns:1fr 1fr}.employer-careers-identity{grid-template-columns:auto 1fr}.employer-careers-identity>a{grid-column:2}}
+@media(max-width:850px){.recruitment-filter-toggle{display:inline-flex;align-items:center}.recruitment-results-layout{grid-template-columns:1fr}.recruitment-results-filter-rail{display:none}.recruitment-results-preview{grid-column:auto}.recruitment-detail-hero,.recruitment-detail-layout,.employer-careers-grid{grid-template-columns:1fr}.recruitment-apply-panel{position:static}.recruitment-role-ledger{grid-template-columns:repeat(2,1fr)}.employer-careers-aside{grid-template-columns:1fr 1fr}.employer-careers-identity{grid-template-columns:auto 1fr}.employer-careers-identity>a{grid-column:2}}
 @media(max-width:640px){.recruitment-core-shell{width:min(calc(100% - 2rem),var(--bn-container))}.recruitment-results-head{padding-top:1.5rem}.recruitment-results-layout{padding-bottom:3rem}.recruitment-result-row{grid-template-columns:2.75rem 1fr}.recruitment-result-side{grid-column:2;justify-items:start;text-align:left}.recruitment-result-side>a{display:none}.recruitment-result-side button{display:inline-flex}.bn-role-preview{grid-template-columns:1fr}.recruitment-role-ledger{grid-template-columns:1fr 1fr}.recruitment-detail-title h1{font-size:2.25rem}.bn-media-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto}.bn-media-mosaic>.bn-evidence-media:first-child{grid-column:1/-1;grid-row:auto}.employer-careers-identity{margin-top:-2.5rem;grid-template-columns:1fr;text-align:center;justify-items:center}.employer-careers-identity>a{grid-column:auto}.employer-careers-meta{justify-content:center}.employer-careers-aside{grid-template-columns:1fr}.bn-application-stepper li b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.bn-application-stepper li{justify-content:center}.recruitment-filter-sheet>div{width:100%}}
 @media(prefers-reduced-motion:reduce){.recruitment-result-row,.bn-evidence-media img{transition:none}.recruitment-result-row:hover,.recruitment-result-row:focus-within{transform:none}.bn-evidence-media:hover img{transform:none}.recruitment-filter-sheet>div,.recruitment-skeleton{animation:none}}
 

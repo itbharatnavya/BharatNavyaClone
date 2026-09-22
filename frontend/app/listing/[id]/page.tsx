@@ -17,6 +17,7 @@ import PriceBlock from "@/components/listing/PriceBlock";
 import SpecTable from "@/components/listing/SpecTable";
 import SellerContactCard, { ContactSeller } from "@/components/listing/SellerContactCard";
 import OtherSellers from "@/components/listing/OtherSellers";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 
 // Robust i18n wrapper: tolerant of the useT() return shape and missing keys,
 // always falling back to a clean English string.
@@ -281,7 +282,7 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <div className="directory-design listing-detail-page">
+      <div className="directory-design counter-public-page listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 32, paddingBottom: 80 }}>
           <div className="ld-skel">
             <div style={{ minWidth: 0 }}>
@@ -310,7 +311,7 @@ export default function ListingDetailPage() {
 
   if (notFound || !listing || !contact) {
     return (
-      <div className="directory-design listing-detail-page">
+      <div className="directory-design counter-public-page listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
           <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
@@ -370,7 +371,7 @@ export default function ListingDetailPage() {
     : [...(listing.service?.deliverables || []), ...(listing.service?.credentials || [])];
 
   return (
-    <div className="directory-design listing-detail-page">
+    <div className="directory-design counter-public-page listing-detail-page">
       <div className="container-bs" style={{ paddingTop: 24, paddingBottom: 96 }}>
         {(listing.status === "pending" || listing.status === "rejected") && (
           <div
@@ -539,6 +540,8 @@ export default function ListingDetailPage() {
           </aside>
         </div>
 
+        <ApiAdvertisingSlot compact placement={["listing_detail", "category_top"]} kind="native" context="Sponsored near listing details" summary="A related promoted service or product, kept separate from this listing’s seller evidence and terms." action="View promoted record" />
+
         {/* OTHER SELLERS OFFERING THIS PRODUCT (multi-vendor) — hides itself when none */}
         {listing.type === "product" && <OtherSellers offers={offers} offerCount={offers.length} minPrice={minPrice} />}
 
@@ -552,7 +555,7 @@ export default function ListingDetailPage() {
               {contact.slug && (
                 <Link
                   href={`/seller/${contact.slug}`}
-                  style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap" }}
+                  style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
                 >
                   {t("listing.viewAllSeller", "View all")} →
                 </Link>

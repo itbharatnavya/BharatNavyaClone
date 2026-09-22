@@ -17,11 +17,14 @@ interface ApiAdvertisingSlotProps {
   context: string;
   summary: string;
   action: string;
+  compact?: boolean;
+  showFallback?: boolean;
 }
 
-export default function ApiAdvertisingSlot({ placement, kind, context, summary, action }: ApiAdvertisingSlotProps) {
+export default function ApiAdvertisingSlot({ placement, kind, context, summary, action, compact = false, showFallback = true }: ApiAdvertisingSlotProps) {
   const [ad, setAd] = useState<ApiAd | null>(null);
   const placementKey = Array.isArray(placement) ? placement.join("|") : placement;
+  const recruitmentPlacement = /(recruitment|job|employer)/.test(placementKey);
 
   useEffect(() => {
     let active = true;
@@ -36,9 +39,22 @@ export default function ApiAdvertisingSlot({ placement, kind, context, summary, 
     return () => { active = false; };
   }, [placementKey]);
 
-  if (!ad?.headline || !ad.creativeImageUrl || !ad.targetUrl) return null;
+  if (!ad?.headline || !ad.creativeImageUrl || !ad.targetUrl) {
+    if (!showFallback) return null;
+    return <AdvertisingSlot
+      compact={compact}
+      kind="native"
+      context="Promote on Bharat Navya"
+      title={recruitmentPlacement ? "Reach candidates with a transparent employer or role profile." : "Put a credible company or listing in front of the right audience."}
+      summary="Sponsored placements stay clearly labelled and separate from verification, editorial judgment and organic ranking."
+      href="/pricing"
+      action="Explore placements"
+      media={{ src: recruitmentPlacement ? "/seed-media/company/company-2.jpg" : "/seed-media/work/work-6.jpg", alt: recruitmentPlacement ? "A team working together" : "A team presenting its work", kind: recruitmentPlacement ? "workplace" : "work-sample", source: "prototype", attribution: "Bharat Navya promotional placement" }}
+    />;
+  }
 
   return <AdvertisingSlot
+    compact={compact}
     kind={kind}
     context={context}
     title={ad.headline}

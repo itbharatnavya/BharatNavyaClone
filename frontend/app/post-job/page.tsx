@@ -199,10 +199,10 @@ function PostJobInner() {
           Recruitment
         </span>
         <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)", marginTop: 6 }}>
-          {user.employerProfile ? "Complete your company profile first" : "Create your company profile first"}
+          {user.employerProfile ? "Complete your employer profile first" : "Create your employer profile first"}
         </h1>
         <p style={{ fontSize: 14.5, color: "var(--muted)", marginTop: 6 }}>
-          Candidates see your company details on every job you post. Add these before publishing a role:
+          Candidates see this hiring profile on every role you publish. Add these details before posting:
         </p>
         <ul style={{ margin: "16px 0 0", paddingLeft: 20, color: "var(--ink)", fontSize: 14, lineHeight: 1.9 }}>
           {companyGaps.map((g) => (
@@ -210,7 +210,7 @@ function PostJobInner() {
           ))}
         </ul>
         <Button variant="green" href="/recruitment/dashboard?tab=profile" style={{ marginTop: 20 }}>
-          Go to company profile
+          Go to employer profile
         </Button>
       </div>
     );

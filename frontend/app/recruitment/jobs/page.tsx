@@ -7,6 +7,7 @@ import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Pagination from "@/components/Pagination";
 import SearchContextSwitch from "@/components/SearchContextSwitch";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import RoleSearchBar from "@/components/recruitment/RoleSearchBar";
 import JobFilters, { type JobFilterState } from "@/components/recruitment/JobFilters";
 import RecruitmentGate from "@/components/recruitment/RecruitmentGate";
@@ -120,13 +121,19 @@ function JobsBrowseInner() {
   const filterPanel = <JobFilters value={filters} onChange={setFilters} jobFunctions={jobFunctions} />;
   function changePage(next: number) { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }
 
-  return <div className="recruitment-core">
+  return <div className="recruitment-core counter-results-page">
     <header className="recruitment-results-head"><div className="recruitment-core-shell"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Recruitment", href: "/recruitment" }, { label: "Browse roles" }]} /><h1>Roles with the context to decide.</h1><p>Compare transparent job facts alongside the company and workplace behind the role.</p><div ref={searchAnchorRef} className="recruitment-results-search" aria-hidden={docked || undefined}><RoleSearchBar query={query} onQueryChange={(value) => { setQuery(value); setRoleQuery(value); }} city={filters.city || ""} onCityChange={(city) => { setFilters((current) => ({ ...current, city: city || undefined })); setRoleCity(city); }} /></div></div></header>
-    <div className="recruitment-core-shell">
+    <div className="recruitment-core-shell counter-results-stack">
       <SearchContextSwitch destination="directory" query={query} city={filters.city} />
+      <ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" />
       <div className="recruitment-results-tools"><div className="recruitment-results-count"><strong aria-live="polite">{loading ? "Finding current roles…" : `${data?.total || 0} ${(data?.total || 0) === 1 ? "role" : "roles"}`}</strong><span>Real roles, ordered by current API results</span></div><button className="recruitment-filter-toggle" type="button" onClick={() => setFiltersOpen(true)}><FilterIcon /> Refine roles</button></div>
       <div className="recruitment-results-layout">
-        <aside className="recruitment-results-filters" aria-label="Filter roles">{filterPanel}</aside>
+        <div className="recruitment-results-filter-rail">
+          <aside className="recruitment-results-filters" aria-label="Filter roles">{filterPanel}</aside>
+          <div className="recruitment-results-filter-ad">
+            <ApiAdvertisingSlot compact placement={["recruitment_search_top", "recruitment_home"]} kind="native" context="Sponsored in Recruitment" summary="A clearly labelled employer or role placement, separate from organic results and filter choices." action="View opportunity" />
+          </div>
+        </div>
         <section aria-label="Role results"><div className="recruitment-results-list">
           {loading && Array.from({ length: 5 }, (_, index) => <div className="recruitment-skeleton" key={index} />)}
           {!loading && error && <div className="recruitment-state" role="status"><strong>Roles could not be loaded.</strong><p>{error}</p><button type="button" onClick={() => setRetry((value) => value + 1)}>Try again</button></div>}

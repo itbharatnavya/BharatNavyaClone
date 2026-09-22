@@ -81,7 +81,7 @@ export default function BlogIndexPage() {
                   <div className="blog-cover">
                     {b.coverImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={b.coverImage} alt={b.title} className="blog-cover-img" />
+                      <img src={b.coverImage} alt={b.title} className="blog-cover-img" loading="lazy" decoding="async" />
                     ) : (
                       <div className="blog-cover-fallback" aria-hidden>
                         <svg

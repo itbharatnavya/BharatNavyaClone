@@ -35,8 +35,8 @@ export default function Pagination({
   const pages = pageList(page, totalPages);
 
   const cellStyle = (active: boolean): React.CSSProperties => ({
-    minWidth: 38,
-    height: 38,
+    minWidth: 44,
+    height: 44,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",

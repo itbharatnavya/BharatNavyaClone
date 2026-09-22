@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import Filters, { type FilterOption, type ListingFilterState } from "@/components/Filters";
 import Pagination from "@/components/Pagination";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getListings, type ListingQuery } from "@/lib/api";
 import type { Listing, ListingsResponse } from "@/lib/types";
 
@@ -91,7 +92,7 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   const verified = listing.isVerifiedSeller || listing.seller?.isVerified;
   return <section className="directory-listing-preview" aria-label={`${listing.title} preview`}>
     <div className="directory-listing-preview-media">
-      {media ? <img src={media.url} alt={media.alt || `${listing.title} preview`} /> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
+      {media ? <img src={media.url} alt={media.alt || `${listing.title} preview`} loading="lazy" decoding="async" /> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
       <b>{listing.type}</b>
       {onClose && <button className="directory-listing-preview-close" type="button" onClick={onClose} aria-label="Close selected listing">Close ×</button>}
     </div>
@@ -227,7 +228,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
   }
 
   return <div className={`directory-listing-workbench${selected ? " has-selection" : ""}`}>
-    <main className="directory-listing-master" aria-label="Service and product results">
+    <section className="directory-listing-master" aria-label="Service and product results">
       <div className="directory-listing-toolbar">
         <span><strong aria-live="polite">{loading ? "Finding listings…" : `${shownTotal} ${shownTotal === 1 ? "listing" : "listings"}`}</strong><small>Services and products together</small></span>
         <label><span className="sr-only">Sort listings</span><select value={sort} onChange={(event) => { setSort(event.target.value as ListingSort); setPage(1); }}>{SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
@@ -240,7 +241,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
           const active = listing.id === selected?.id;
           return <article className={`directory-listing-item${active ? " is-expanded" : ""}`} key={listing.id}>
             <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={() => setSelectedId(listing.id)} aria-pressed={active}>
-              <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" /> : listing.type.slice(0, 1).toUpperCase()}</span>
+              <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" loading="lazy" decoding="async" /> : listing.type.slice(0, 1).toUpperCase()}</span>
               <span className="directory-listing-row-copy"><small>{listing.type}</small><strong>{listing.title}</strong><span>{sellerName(listing)}</span><b>{priceLabel(listing)}</b></span>
               <Arrow />
             </button>
@@ -250,25 +251,29 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
       </div>
       {!loading && !error && visibleListings.length === 0 && <div className="directory-listing-state"><strong>No services or products match.</strong><p>Try another need, category, location or price range.</p></div>}
       {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
-    </main>
+    </section>
 
     {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
 
-    <aside className="directory-listing-filter-rail" aria-label="Filter services and products">
-      <div className="directory-listing-filter-quick" aria-label="Quick listing filters">
-        <strong>Filters</strong>
-        <div>
-          <button type="button" aria-pressed={!filters.type} onClick={() => updateFilters({ ...filters, type: undefined })}>All</button>
-          <button type="button" aria-pressed={filters.type === "service"} onClick={() => updateFilters({ ...filters, type: "service" })}>Services</button>
-          <button type="button" aria-pressed={filters.type === "product"} onClick={() => updateFilters({ ...filters, type: "product" })}>Products</button>
-          <button type="button" aria-pressed={!!filters.verified} onClick={() => updateFilters({ ...filters, verified: !filters.verified })}>Verified</button>
-          <button type="button" className="is-more" aria-expanded={filtersOpen} aria-controls="directory-listing-filter-content" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? "Hide more" : "More filters"}</button>
+    <div className="directory-listing-filter-rail">
+      <aside className="directory-listing-filter-panel" aria-label="Filter services and products">
+        <div className="directory-listing-filter-quick" aria-label="Quick listing filters">
+          <strong>Filters</strong>
+          <div>
+            <button type="button" aria-pressed={!filters.type} onClick={() => updateFilters({ ...filters, type: undefined })}>All</button>
+            <button type="button" aria-pressed={filters.type === "service"} onClick={() => updateFilters({ ...filters, type: "service" })}>Services</button>
+            <button type="button" aria-pressed={filters.type === "product"} onClick={() => updateFilters({ ...filters, type: "product" })}>Products</button>
+            <button type="button" aria-pressed={!!filters.verified} onClick={() => updateFilters({ ...filters, verified: !filters.verified })}>Verified</button>
+            <button type="button" className="is-more" aria-expanded={filtersOpen} aria-controls="directory-listing-filter-content" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? "Hide more" : "More filters"}</button>
+          </div>
         </div>
+        <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
+          <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+        </div>
+      </aside>
+      <div className="directory-listing-filter-ad">
+        <ApiAdvertisingSlot compact placement={["listing_sidebar", "search_sponsored_row"]} kind="native" context="Sponsored in Directory" summary="A clearly labelled placement, separate from organic results and filter choices." action="View promotion" />
       </div>
-      <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
-        <div className="directory-listing-filter-intro"><h2>Filters</h2></div>
-        <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
-      </div>
-    </aside>
+    </div>
   </div>;
 }

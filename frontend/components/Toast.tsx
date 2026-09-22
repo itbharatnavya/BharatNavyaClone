@@ -23,9 +23,9 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const ACCENT: Record<ToastType, string> = {
-  success: "#16A34A",
-  error: "#DC2626",
-  info: "#2563EB",
+  success: "var(--counter-success, #16834f)",
+  error: "var(--counter-error, #b42318)",
+  info: "var(--counter-indigo, #1b3fa0)",
 };
 
 const ICON: Record<ToastType, string> = {
@@ -78,7 +78,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={t.exiting ? "toast-exit" : "toast-enter"}
+            className={`bn-toast bn-toast-${t.type} ${t.exiting ? "toast-exit" : "toast-enter"}`}
             role="status"
             style={{
               display: "flex",
@@ -86,16 +86,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               gap: 10,
               width: 340,
               maxWidth: "calc(100vw - 40px)",
-              background: "#ffffff",
-              border: "1px solid #E5E7EB",
-              borderLeft: `3px solid ${ACCENT[t.type]}`,
               padding: "13px 16px",
-              borderRadius: 10,
-              boxShadow:
-                "0 8px 24px rgba(16,24,40,.12), 0 1px 3px rgba(16,24,40,.08)",
               fontSize: 14,
               lineHeight: 1.4,
-              color: "#0F172A",
               pointerEvents: "auto",
             }}
           >
