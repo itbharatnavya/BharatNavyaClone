@@ -31,7 +31,7 @@ const BOOST_OPTIONS: { value: BoostType; label: string; desc: string }[] = [
   {
     value: "feature",
     label: "Feature listing",
-    desc: "Highlighted, featured placement across the marketplace for the chosen period.",
+    desc: "Highlighted, featured placement across the Directory for the chosen period.",
   },
   {
     value: "category_top",

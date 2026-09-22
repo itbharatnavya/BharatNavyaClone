@@ -79,7 +79,7 @@ export default function BrandsPage() {
             Brands
           </h1>
           <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
-            Discover the manufacturers and makers behind the marketplace. Filter by store to see
+            Discover the manufacturers and makers behind the platform. Filter by store to see
             the brands that supply each category.
           </p>
 

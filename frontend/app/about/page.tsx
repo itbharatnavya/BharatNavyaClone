@@ -2,16 +2,16 @@ import Link from "next/link";
 
 const principles = [
   {
-    title: "Evidence before action",
-    body: "Company identity, work evidence, role terms and visible next steps should appear before someone is asked to contact or apply.",
+    title: "Discover the businesses behind the market",
+    body: "Explore companies across industries, understand what they offer, and find the products, services, and capabilities that match your search.",
   },
   {
-    title: "One connected company identity",
-    body: "Directory and Recruitment stay distinct, while the company behind the service or role remains recognisable across both journeys.",
+    title: "Give businesses a stronger presence",
+    body: "Create a meaningful company presence with space to showcase offerings, capabilities, and business identity to a wider B2B audience.",
   },
   {
-    title: "Context that stays visible",
-    body: "Freshness, workplace, salary and decision details remain attached to the record instead of disappearing between search and action.",
+    title: "Keep business and talent connected",
+    body: "Move between business discovery and recruitment without losing sight of the company behind the opportunity.",
   },
 ];
 
@@ -21,9 +21,9 @@ export default function AboutPage() {
       <section className="counter-support-hero is-green">
         <div className="counter-support-shell counter-about-hero-grid">
           <div>
-            <h1>Bharat Navya makes company and work decisions easier to inspect.</h1>
+            <h1>Building a better way to navigate the business market.</h1>
             <p>
-              Explore credible companies, useful services and transparent roles across India with the context needed to choose a sensible next step.
+              Bharat Navya brings businesses, products, services, roles, and opportunities into one connected B2B platform—making it easier to discover what exists, understand what matters, and choose the right next step.
             </p>
           </div>
           <nav className="counter-route-board" aria-label="Explore Bharat Navya">
@@ -44,8 +44,8 @@ export default function AboutPage() {
       <section className="counter-support-section" aria-labelledby="about-principles-title">
         <div className="counter-support-shell">
           <header className="counter-support-heading">
-            <h2 id="about-principles-title">What the platform protects.</h2>
-            <p>Three principles keep discovery useful without turning Bharat Navya into another thin listing catalogue.</p>
+            <h2 id="about-principles-title">Designed for a more connected business platform.</h2>
+            <p>Discover what’s available. Understand who’s behind it. Find what fits. Take the next step.</p>
           </header>
           <div className="counter-principles">
             {principles.map((principle) => (
@@ -61,8 +61,8 @@ export default function AboutPage() {
       <section className="counter-about-close">
         <div className="counter-support-shell">
           <div>
-            <h2>Start with the decision in front of you.</h2>
-            <p>Find a company for the work ahead, or inspect roles with their hiring context intact.</p>
+            <h2>Explore what comes next.</h2>
+            <p>Whether you need a business, product, service, or professional opportunity, Bharat Navya gives you clear ways to continue.</p>
           </div>
           <div className="counter-support-actions">
             <Link href="/directory">Explore Directory <span aria-hidden>→</span></Link>

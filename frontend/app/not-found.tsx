@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | BharatSource — India's B2B Marketplace",
+  title: "Page Not Found | Bharat Navya — India’s B2B Platform",
 };
 
 export default function NotFound() {

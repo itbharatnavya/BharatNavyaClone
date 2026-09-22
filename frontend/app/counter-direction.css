@@ -231,7 +231,8 @@
 .counter-support-actions > a:first-child { background: var(--counter-saffron); border-color: var(--counter-saffron); color: var(--counter-ink); }
 
 .counter-pricing-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.6fr); gap: 4rem; align-items: end; }
-.counter-pricing-hero p { justify-self: end; }
+.counter-pricing-hero-copy { display: grid; justify-items: start; gap: 1.25rem; }
+.counter-pricing-hero p { justify-self: start; }
 .counter-pricing-body { padding-block: clamp(4rem, 8vw, 7rem); }
 .counter-pricing-plans { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--counter-line); border-left: 1px solid var(--counter-line); }
 .counter-price-plan { min-height: 26rem; display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 2.5rem); border-right: 1px solid var(--counter-line); border-bottom: 1px solid var(--counter-line); background: var(--counter-ivory); }
