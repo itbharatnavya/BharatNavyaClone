@@ -5,10 +5,9 @@ import Link from "next/link";
 import HomeAgent from "@/components/home/HomeAgent";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
-import { getBlogs, getJobs, searchSellers } from "@/lib/api";
+import { getBlogs } from "@/lib/api";
 import type { Blog } from "@/lib/types";
 import { useSearchDock } from "@/lib/searchDock";
-import { useConfig } from "@/lib/config";
 
 function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
 function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
@@ -18,8 +17,8 @@ const standards = [
   {
     id: "identity",
     label: "Identity",
-    title: "Know who is behind the record.",
-    body: "Company ownership, location and verification context stay connected to the work or opportunity being presented.",
+    title: "Know who you’re dealing with.",
+    body: "Understand who is behind every listing—the company, supplier, manufacturer, service provider, or employer—and what the organisation represents.",
     signal: "Source named",
     facts: ["Company identity", "Location context", "Verification status"],
     media: "/seed-media/company/company-4.jpg",
@@ -28,8 +27,8 @@ const standards = [
   {
     id: "evidence",
     label: "Evidence",
-    title: "See more than a polished claim.",
-    body: "Capabilities, work samples, reviews and public updates help people assess substance before making contact.",
+    title: "See the substance behind the offer.",
+    body: "Look beyond a name or headline. Explore the products, services, capabilities, work samples, and details that show what a business actually offers.",
     signal: "Proof visible",
     facts: ["Capabilities", "Recent work", "Public reviews"],
     media: "/seed-media/work/work-1.jpg",
@@ -38,8 +37,8 @@ const standards = [
   {
     id: "context",
     label: "Context",
-    title: "Understand the terms before acting.",
-    body: "Useful details such as working scope, salary, workplace and freshness appear where a decision is being made.",
+    title: "Understand the meaning behind the information.",
+    body: "Bring the relevant details together so you can understand an offering, role, category, and business context before making a decision.",
     signal: "Terms clear",
     facts: ["Working terms", "Current context", "Decision details"],
     media: "/seed-media/company/company-2.jpg",
@@ -48,8 +47,8 @@ const standards = [
   {
     id: "closure",
     label: "Next step",
-    title: "Know what happens after the click.",
-    body: "Structured inquiries and applications are designed around visible progress, communication and an explicit outcome.",
+    title: "See the move that follows.",
+    body: "Compare options, shortlist businesses, send enquiries, apply for roles, or continue exploring with a clearer path from information to opportunity.",
     signal: "Path visible",
     facts: ["Clear action", "Progress state", "Terminal outcome"],
     media: "/seed-media/work/work-4.jpg",
@@ -58,26 +57,21 @@ const standards = [
 ];
 
 const journey = [
-  { label: "Intent", title: "Arrive with intent", body: "Describe a business need, company or role in plain language." },
-  { label: "Record", title: "Inspect the record", body: "Read identity, evidence, terms and recent public context together." },
-  { label: "Compare", title: "Compare with clarity", body: "Keep the signals that matter visible before choosing a next step." },
-  { label: "Action", title: "Move with context", body: "Contact or apply through the existing structured flow." },
+  { label: "Intent", title: "Start with what you need", body: "Define the product, supplier, service, company, role, or business opportunity you are looking for." },
+  { label: "Record", title: "See the business behind it", body: "Explore structured records with company details, offerings, capabilities, and relevant information in one place." },
+  { label: "Compare", title: "Understand your options", body: "Review and shortlist businesses, products, services, or roles against the details that matter to you." },
+  { label: "Action", title: "Turn discovery into action", body: "Send an enquiry, apply for a role, or take the next step directly from what you have explored." },
 ];
 
 export default function BharatNavyaHome() {
   const { docked, setProgress } = useSearchDock();
-  const { featureFlags } = useConfig();
   const searchAnchorRef = useRef<HTMLDivElement>(null);
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [sellerBlogs, setSellerBlogs] = useState<Blog[]>([]);
   const [employerBlogs, setEmployerBlogs] = useState<Blog[]>([]);
-  const [companyTotal, setCompanyTotal] = useState<number | null>(null);
-  const [jobTotal, setJobTotal] = useState<number | null>(null);
   const [activeStandardId, setActiveStandardId] = useState("identity");
   const [activeJourneyIndex, setActiveJourneyIndex] = useState(0);
-
-  const recruitmentLive = featureFlags.recruitmentLive;
 
   useEffect(() => {
     let active = true;
@@ -89,25 +83,6 @@ export default function BharatNavyaHome() {
     });
     return () => { active = false; };
   }, []);
-
-  // Live counts for the two gateway tiles — real totals from the existing public
-  // endpoints. Roles are only counted when Recruitment is live.
-  useEffect(() => {
-    let active = true;
-    Promise.allSettled([
-      searchSellers({ q: "", limit: 1 }),
-      recruitmentLive ? getJobs({ limit: 1 }) : Promise.resolve(null),
-    ]).then(([companyResult, jobResult]) => {
-      if (!active) return;
-      if (companyResult.status === "fulfilled" && companyResult.value) {
-        setCompanyTotal(Number(companyResult.value.total) || 0);
-      }
-      if (jobResult.status === "fulfilled" && jobResult.value) {
-        setJobTotal(Number(jobResult.value.total) || 0);
-      }
-    });
-    return () => { active = false; };
-  }, [recruitmentLive]);
 
   useEffect(() => {
     const anchor = searchAnchorRef.current;
@@ -134,19 +109,16 @@ export default function BharatNavyaHome() {
   const activeStandard = standards.find((standard) => standard.id === activeStandardId) || standards[0];
   const activeJourney = journey[activeJourneyIndex];
 
-  const directorySignal = companyTotal ? `${companyTotal.toLocaleString("en-IN")} companies with a public record` : "Companies, capabilities and proof";
-  const recruitmentSignal = recruitmentLive && jobTotal ? `${jobTotal.toLocaleString("en-IN")} roles open now` : "Roles, workplaces and hiring context";
-
   return <div className="le-page counter-home-page">
-    <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-hero-decor" aria-hidden="true" /><div className="le-shell">
-      <h1 id="home-title"><span>Bharat Navya</span> turns scattered signals into clearer decisions.</h1>
-      <p>Understand companies, work and opportunities across India before you contact, shortlist or apply.</p>
-      <div ref={searchAnchorRef} className="bn-home-suite" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}>
+    <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
+      <h1 id="home-title"><span>The B2B platform</span> built for what’s next.</h1>
+      <p>Discover products, evaluate suppliers, explore roles, and turn everyday business requirements into new opportunities.</p>
+      <div id="ask-navya" ref={searchAnchorRef} className="bn-home-suite" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}>
         <HomeAgent variant="feature" />
         <div className="le-gateways" aria-label="Explore Bharat Navya">
-          <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>{directorySignal}</small></span><b aria-hidden>→</b></Link>
-          <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>{recruitmentSignal}</small></span><b aria-hidden>→</b></Link>
-          <div className="le-gateway is-growth" aria-disabled="true"><span><GrowthIcon /></span><span><em>Coming soon</em><strong>Growth OS</strong><small>Guided decisions for growing a business</small></span></div>
+          <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Businesses, products, services and company information</small></span><b aria-hidden>→</b></Link>
+          <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>Roles, employers and workplace information</small></span><b aria-hidden>→</b></Link>
+          <div className="le-gateway is-growth" aria-disabled="true"><span><GrowthIcon /></span><span><em>Coming soon</em><strong>Growth OS</strong><small>Business intelligence designed to support better decisions</small></span></div>
         </div>
       </div>
       <div className="bn-home-hero-ledger" aria-label="The Bharat Navya standard">
@@ -157,7 +129,7 @@ export default function BharatNavyaHome() {
     </div></section>
 
     <section className="le-section bn-home-standard" aria-labelledby="standard-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="standard-title">Why Bharat Navya exists.</h2></div><p>Most listings ask for action too early. Bharat Navya makes the record more useful first.</p></header>
+      <header className="le-section-head"><div><h2 id="standard-title">Why Bharat Navya?</h2></div><p>Bharat Navya brings companies, products, services, professionals, and opportunities into one structured ecosystem.</p></header>
       <div className="bn-home-standard-stage">
         <div className="bn-home-standard-tabs" aria-label="Explore the Bharat Navya record standard">{standards.map((standard) => <button key={standard.id} type="button" aria-pressed={standard.id === activeStandard.id} onClick={() => setActiveStandardId(standard.id)} onMouseEnter={() => setActiveStandardId(standard.id)} onFocus={() => setActiveStandardId(standard.id)}><strong>{standard.label}</strong><small>{standard.signal}</small></button>)}</div>
         <div className="bn-home-standard-record" key={activeStandard.id} aria-live="polite">
@@ -168,7 +140,7 @@ export default function BharatNavyaHome() {
     </div></section>
 
     <section className="bn-home-contrast" aria-labelledby="contrast-title"><div className="le-shell">
-      <div className="bn-home-contrast-heading"><h2 id="contrast-title">A listing tells you what exists. A Bharat Navya record helps you decide.</h2><p>The difference is not more noise. It is the right context, attached to the right source, at the right moment.</p></div>
+      <div className="bn-home-contrast-heading"><h2 id="contrast-title">The value is in what a listing doesn’t show at first glance.</h2><p>Bharat Navya brings important details closer to the surface, giving businesses, products, services, and roles more substance than a name, category, and contact point.</p></div>
       <div className="bn-home-contrast-board">
         <div className="is-thin"><span>Thin listing</span><strong>Company or role name</strong><p>Category · Location</p><b>Contact now</b></div>
         <div className="is-navya"><span>Bharat Navya record</span><strong>Identity connected to evidence</strong><ul><li>Who is behind it</li><li>What supports it</li><li>Which terms matter</li><li>What happens next</li></ul></div>
@@ -176,7 +148,7 @@ export default function BharatNavyaHome() {
     </div></section>
 
     <section className="bn-home-journey" aria-labelledby="journey-title"><div className="le-shell">
-      <header className="bn-home-journey-head"><h2 id="journey-title">From intent to action.</h2><p>Four simple stages. The context you need stays visible as you move forward.</p></header>
+      <header className="bn-home-journey-head"><h2 id="journey-title">From intent to action.</h2><p>Move from a clear need to a useful next step without losing the context behind each option.</p></header>
       <div className="bn-home-journey-experience" data-step={activeJourneyIndex}>
         <div className="bn-home-journey-track" role="tablist" aria-label="Decision stages">
           {journey.map((step, index) => <button key={step.label} type="button" role="tab" aria-selected={index === activeJourneyIndex} aria-controls="journey-focus" id={`journey-tab-${index}`} onClick={() => setActiveJourneyIndex(index)}><span>{step.label}</span></button>)}
@@ -187,32 +159,9 @@ export default function BharatNavyaHome() {
       </div>
     </div></section>
 
-    <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
+    <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" fallbackTitle="Put your business in front of people looking for what you do." fallbackSummary="Feature your business where relevant users are exploring products, services, and suppliers—without changing organic ranking or verification." fallbackAction="Explore placements" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
 
-    {guides.length > 0 &&
-      <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title">
-        <div className="le-shell">
-          <header className="le-section-head">
-            <div>
-              <h2 id="guides-title">Context worth carrying forward.</h2>
-            </div>
-            <Link className="le-button" href="/blog">View all guides</Link>
-          </header>
-          <div className="le-editorial-grid">
-            {guides.map((guide) =>
-              <Link href={`/blog/${guide.slug}`} key={guide.id}>
-                <EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" />
-                <span className="le-editorial-copy">
-                  <small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small>
-                  <strong>{guide.title}</strong>
-                  {/* <p>{guide.excerpt || "Practical context for growing companies and applicants."}</p> */}
-                </span>
-              </Link>)
-            }
-          </div>
-        </div>
-      </section>
-    }
+    {guides.length > 0 && <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="guides-title">Navya Blog</h2></div><Link className="le-button" href="/blog">View all updates</Link></header><div className="le-editorial-grid">{guides.map((guide) => <Link href={`/blog/${guide.slug}`} key={guide.id}><EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" /><span className="le-editorial-copy"><small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small><strong>{guide.title}</strong><p>{guide.excerpt || "Practical context for growing companies and applicants."}</p></span></Link>)}</div></div></section>}
 
   </div>;
 }

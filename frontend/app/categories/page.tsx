@@ -45,7 +45,7 @@ export default function CategoriesPage() {
             All Categories
           </h1>
           <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
-            Browse every industry on the marketplace — from raw materials to finished goods and
+            Browse every industry on the platform — from raw materials to finished goods and
             professional services.
             {loaded && tops.length > 0 && (
               <>

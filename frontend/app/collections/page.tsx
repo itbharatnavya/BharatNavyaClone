@@ -54,7 +54,7 @@ export default function CollectionsPage() {
             Collections
           </h1>
           <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
-            Handpicked themes across the marketplace — seasonal gear, top-rated makers, made-in-India
+            Handpicked themes across the platform — seasonal gear, top-rated makers, made-in-India
             picks and more. Each collection gathers listings worth exploring together.
             {!loading && collections.length > 0 && (
               <>
@@ -86,7 +86,7 @@ export default function CollectionsPage() {
         ) : collections.length === 0 ? (
           <EmptyState
             title="No collections yet"
-            message="Curated collections will appear here soon. In the meantime, browse categories or search the whole marketplace."
+            message="Curated collections will appear here soon. In the meantime, browse categories or search the full Directory."
             actionLabel="Browse categories"
             actionHref="/categories"
           />

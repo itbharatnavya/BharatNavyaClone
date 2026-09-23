@@ -148,12 +148,12 @@ export default function RegisterPage() {
               color: "var(--ink)",
             }}
           >
-            {t("auth.register.asideTitle", "One account. Two working spaces.")}
+            {t("auth.register.asideTitle", "Start building your place on Bharat Navya.")}
           </h2>
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
             {t(
               "auth.register.asideCopy",
-              "Build a company or service presence, manage inquiries, and participate in transparent hiring."
+              "Create one account to represent your business or professional profile, manage activity, and access opportunities across the platform."
             )}
           </p>
         </div>
@@ -175,7 +175,7 @@ export default function RegisterPage() {
             {t("auth.register.title", "Create your account")}
           </h1>
           <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
-            {t("auth.register.subtitle", "Start with the details needed for a useful account.")}
+            {t("auth.register.subtitle", "Create your account to access more of Bharat Navya.")}
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
@@ -286,7 +286,7 @@ export default function RegisterPage() {
 
             <div style={{ marginTop: 20 }}>
               <Button block variant="primary" type="submit" disabled={submitting}>
-                {submitting ? t("auth.creating", "Creating…") : t("auth.createAccount", "Create account")}
+                {submitting ? t("auth.creating", "Creating…") : t("auth.createAccount", "Sign up")}
               </Button>
             </div>
           </form>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
               const validated = safeNext(next, DEFAULT_NEXT);
               return validated !== DEFAULT_NEXT ? `/login?next=${encodeURIComponent(validated)}` : "/login";
             })()} style={{ color: "var(--brand)", fontWeight: 600 }}>
-              {t("auth.login", "Log in")}
+              {t("auth.login", "Sign in")}
             </Link>
           </div>
         </div>

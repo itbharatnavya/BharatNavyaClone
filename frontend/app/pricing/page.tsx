@@ -70,14 +70,17 @@ export default function PricingPage() {
     <div className="counter-public-page counter-pricing">
       <section className="counter-support-hero is-indigo">
         <div className="counter-support-shell counter-pricing-hero">
-          <h1>{tr("pricing.title", "Simple, honest pricing")}</h1>
-          <p>{tr("pricing.subtitle", "Start free and get found. Upgrade for more reach, leads and placement. Paid plans are activated by our team — no card needed.")}</p>
+          <h1>{tr("pricing.title", "More visibility. More business possibilities.")}</h1>
+          <div className="counter-pricing-hero-copy">
+            <p>{tr("pricing.subtitle", "Build your business profile for free, then explore added visibility, premium placement, and promotional opportunities with an upgraded plan.")}</p>
+            <Button href="#pricing-plans" variant="primary">{tr("pricing.explorePlans", "Explore upgrade plans")}</Button>
+          </div>
         </div>
       </section>
 
       <section className="counter-pricing-body">
         <div className="counter-support-shell">
-          <div className="counter-pricing-plans">
+          <div className="counter-pricing-plans" id="pricing-plans">
             {tiers.map((tier) => (
               <article className={`counter-price-plan ${tier.highlight ? "is-highlighted" : ""}`} key={tier.tier}>
                 <header>

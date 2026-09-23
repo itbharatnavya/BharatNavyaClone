@@ -125,11 +125,11 @@ export default function HomeAgent({ variant = "default" }: HomeAgentProps) {
     {variant === "feature" ? <article className="bn-home-agent is-feature">
       <div className="bn-home-agent-intro">
         <span className="bn-home-agent-mark"><AgentIcon /></span>
-        <span><small>AI guide</small><strong>Navya</strong></span>
+        <span><small>AI guide</small><strong>Ask Navya</strong></span>
       </div>
-      <p>Ask about a business idea, a supplier, or your next hire.</p>
+      <p>Start with a question. Get closer to the right answer about a company, supplier, product, or your next business move.</p>
       <button className="bn-home-agent-launch" type="button" onClick={() => setOpen(true)}>
-        <span>Ask anything</span><SendIcon />
+        <span>Ask Navya</span><SendIcon />
       </button>
     </article> : <div className="bn-home-agent">
         <div className="bn-home-agent-intro">

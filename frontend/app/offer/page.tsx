@@ -602,7 +602,7 @@ export default function OfferPage() {
           <SectionHeading
             eyebrow="Plans & tiers"
             title="Simple subscription plans"
-            subtitle="Start free and upgrade for more reach, leads and placement. Paid plans are activated by our team — this is a lead & directory marketplace, so there's no checkout."
+            subtitle="Start free and upgrade for more reach, leads and placement. Paid plans are activated by our team, and there is no checkout."
             align="center"
           />
 

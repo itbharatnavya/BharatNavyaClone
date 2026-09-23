@@ -42,8 +42,8 @@ export default function BlogIndexPage() {
     <div className="counter-public-page counter-editorial">
       <header className="counter-support-hero is-ivory">
         <div className="counter-support-shell counter-editorial-heading">
-          <h1>Context worth carrying forward.</h1>
-          <p>Practical guides and public updates connected to the companies and people behind them on Bharat Navya.</p>
+          <h1>Business updates worth keeping in view.</h1>
+          <p>Practical insights, company developments, and timely updates that help you understand businesses and make more informed decisions across Bharat Navya.</p>
         </div>
       </header>
 

@@ -127,7 +127,7 @@ export default function LoginPage() {
     setVerifying(true);
     try {
       await loginOtp(mobile.trim(), code);
-      addToast("Logged in. Welcome back.", "success");
+      addToast("Signed in. Welcome back.", "success");
       goNext();
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to verify OTP.", "error");
@@ -160,7 +160,7 @@ export default function LoginPage() {
     setLoggingIn(true);
     try {
       await login(email.trim(), password);
-      addToast("Logged in. Welcome back.", "success");
+      addToast("Signed in. Welcome back.", "success");
       goNext();
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Login failed.", "error");
@@ -200,11 +200,10 @@ export default function LoginPage() {
               color: "var(--ink)",
             }}
           >
-            {t("auth.login.welcome", "Return to clearer decisions.")}
+            {t("auth.login.welcome", "Welcome back to Bharat Navya.")}
           </h2>
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
-            {branding.tagline ||
-              t("auth.login.asideCopy", "Manage company listings, inquiries, jobs and applications through one connected account.")}
+            {t("auth.login.asideCopy", "Companies, careers, and opportunities—all in one place.")}
           </p>
         </div>
       </div>
@@ -221,9 +220,9 @@ export default function LoginPage() {
         }}
       >
         <div className="counter-auth-form" style={{ width: "100%", maxWidth: 400 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Log in to Bharat Navya")}</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Sign in")}</h1>
           <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
-            {t("auth.login.subtitle", "One account for Directory and Recruitment.")}
+            {t("auth.login.subtitle", "One account to access Directory and Recruitment.")}
           </p>
 
           {/* Tabs */}
@@ -389,12 +388,12 @@ export default function LoginPage() {
 
           <div className="divider" style={{ margin: "24px 0" }} />
           <div style={{ textAlign: "center", fontSize: 14, color: "var(--muted)" }}>
-            {t("auth.newHere", "New to")} {branding.siteName}?{" "}
+            {t("auth.newHere", "New to Bharat Navya?")}{" "}
             <Link href={(() => {
               const validated = safeNext(next, DEFAULT_NEXT);
               return validated !== DEFAULT_NEXT ? `/register?next=${encodeURIComponent(validated)}` : "/register";
             })()} className="hover:text-brand" style={{ color: "var(--brand)", fontWeight: 600 }}>
-              {t("auth.createAccountLink", "Join us")}
+              {t("auth.createAccountLink", "Create an account")}
             </Link>
           </div>
         </div>

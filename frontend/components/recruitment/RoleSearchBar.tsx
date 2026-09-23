@@ -14,12 +14,8 @@
 //     sharing lib/searchDock.tsx's `roleQuery`/`roleCity` so typed text survives the
 //     hero-to-navbar handoff on scroll, the same handoff Directory's search already does.
 //
-// Suggestions dropdown: closed entirely on an empty query — no "popular searches"
-// here, that list was static/curated copy, not real data. Once typing starts,
-// three real groups: matching categories (the job-function catalog, filtered
-// client-side) plus matching roles and matching companies, both debounce-fetched
-// from GET /api/jobs?q= (same pattern as DirectorySearchBar's getListings), which
-// folds employer company name into its free-text match.
+// Suggestions combine the job-function catalog with live role and employer matches.
+// Calls are debounced and use the existing jobs API; no new backend contract is added.
 
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -60,27 +56,18 @@ function BriefcaseIcon() {
     </svg>
   );
 }
-function TagIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M20.6 13.4L13.4 20.6a2 2 0 01-2.8 0l-7.2-7.2A2 2 0 012.8 12V4h8a2 2 0 011.4.6l8.4 8.4a2 2 0 010 2.8z" />
-      <circle cx="7" cy="8" r="1.4" />
-    </svg>
-  );
-}
 function BuildingIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="4" y="3" width="12" height="18" rx="1" />
-      <path d="M16 8h4v13h-4M8 7h1M8 11h1M8 15h1M12 7h1M12 11h1M12 15h1" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M4 21V4h12v17M16 9h4v12M8 8h4M8 12h4M8 16h4" />
     </svg>
   );
 }
 
 type SugItem =
   | { kind: "function"; label: string; slug: string }
-  | { kind: "job"; label: string; jobId: string; company?: string | null }
-  | { kind: "company"; label: string; slug: string | null };
+  | { kind: "job"; label: string; jobId: string; company?: string }
+  | { kind: "company"; label: string; slug?: string | null };
 
 export default function RoleSearchBar({
   className = "",
@@ -109,7 +96,8 @@ export default function RoleSearchBar({
   }, []);
 
   const [matchedJobs, setMatchedJobs] = useState<Job[]>([]);
-  const jobsReqIdRef = useRef(0);
+  const [matchedCompanyJobs, setMatchedCompanyJobs] = useState<Job[]>([]);
+  const requestIdRef = useRef(0);
 
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
@@ -118,44 +106,46 @@ export default function RoleSearchBar({
   const term = q.trim().toLowerCase();
 
   useEffect(() => {
-    if (!term) { setMatchedJobs([]); return; }
-    const id = ++jobsReqIdRef.current;
+    if (term.length < 2) {
+      setMatchedJobs([]);
+      setMatchedCompanyJobs([]);
+      return;
+    }
+    const requestId = ++requestIdRef.current;
     const timer = window.setTimeout(() => {
-      getJobs({ q: term, limit: 8 })
-        .then((r) => { if (id === jobsReqIdRef.current) setMatchedJobs(r.jobs || []); })
-        .catch(() => { if (id === jobsReqIdRef.current) setMatchedJobs([]); });
+      Promise.allSettled([
+        getJobs({ q: term, limit: 8 }),
+        getJobs({ company: term, limit: 8 }),
+      ]).then(([jobResult, companyResult]) => {
+        if (requestId !== requestIdRef.current) return;
+        setMatchedJobs(jobResult.status === "fulfilled" ? jobResult.value.jobs || [] : []);
+        setMatchedCompanyJobs(companyResult.status === "fulfilled" ? companyResult.value.jobs || [] : []);
+      });
     }, 250);
     return () => window.clearTimeout(timer);
   }, [term]);
 
   const items: SugItem[] = useMemo(() => {
-    if (!term) return [];
-    const categories: SugItem[] = jobFunctions
-      .filter((f) => f.name.toLowerCase().includes(term))
+    if (term.length < 2) return [];
+    const functions: SugItem[] = jobFunctions
+      .filter((item) => item.name.toLowerCase().includes(term))
       .slice(0, 3)
-      .map((f) => ({ kind: "function", label: f.name, slug: f.slug }));
-    // Same reasoning as the company filter below: only surface a job as a "role"
-    // suggestion when its own title matched the term, not merely because it came
-    // back in the same OR-matched batch (e.g. its employer's name matched instead).
+      .map((item) => ({ kind: "function", label: item.name, slug: item.slug }));
     const roles: SugItem[] = matchedJobs
-      .filter((j) => j.title.toLowerCase().includes(term))
+      .filter((job) => job.title.toLowerCase().includes(term))
       .slice(0, 4)
-      .map((j) => ({ kind: "job", label: j.title, jobId: j.id, company: j.employer?.companyName }));
+      .map((job) => ({ kind: "job", label: job.title, jobId: job.id, company: job.employer?.companyName || undefined }));
     const seenCompanies = new Set<string>();
     const companies: SugItem[] = [];
-    for (const j of matchedJobs) {
-      const name = j.employer?.companyName;
-      // The backend OR-matches title/description/jobFunction/company in one pass, so
-      // a job can appear here purely because its ROLE matched (e.g. "developer") even
-      // when the company name didn't — only surface a company suggestion when the
-      // company name itself contains the typed term.
-      if (!name || !name.toLowerCase().includes(term) || seenCompanies.has(name)) continue;
+    for (const job of matchedCompanyJobs) {
+      const name = job.employer?.companyName;
+      if (!name || seenCompanies.has(name)) continue;
       seenCompanies.add(name);
-      companies.push({ kind: "company", label: name, slug: j.employer?.slug || null });
+      companies.push({ kind: "company", label: name, slug: job.employer?.slug });
       if (companies.length >= 3) break;
     }
-    return [...categories, ...roles, ...companies];
-  }, [term, jobFunctions, matchedJobs]);
+    return [...functions, ...roles, ...companies];
+  }, [term, jobFunctions, matchedJobs, matchedCompanyJobs]);
   const showDropdown = open && items.length > 0;
 
   useEffect(() => {
@@ -186,18 +176,22 @@ export default function RoleSearchBar({
   }
 
   function selectItem(item: SugItem) {
+    setQ(item.label);
     setOpen(false);
     setActive(-1);
     if (item.kind === "function") {
-      setQ(item.label);
       router.push(`/recruitment/jobs?jobFunction=${item.slug}`);
-    } else if (item.kind === "job") {
-      router.push(`/job/${item.jobId}`);
-    } else if (item.slug) {
-      router.push(`/employer/${item.slug}`);
-    } else {
-      go(item.label);
+      return;
     }
+    if (item.kind === "job") {
+      router.push(`/job/${item.jobId}`);
+      return;
+    }
+    if (item.slug) {
+      router.push(`/employer/${item.slug}`);
+      return;
+    }
+    go(item.label);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -283,22 +277,22 @@ export default function RoleSearchBar({
         >
           {items.some((i) => i.kind === "function") && (
             <div className="rsb-dropdown-label">
-              <TagIcon /> Matching categories
+              <BriefcaseIcon /> Matching categories
             </div>
           )}
           {items.map((item, i) => item.kind !== "function" ? null : (
-            <button
-              key={`f-${item.slug}`}
-              id={optionId(i)}
-              role="option"
-              aria-selected={i === active}
-              type="button"
-              onMouseEnter={() => setActive(i)}
-              onClick={() => selectItem(item)}
-              className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
-            >
-              {item.label}
-            </button>
+              <button
+                key={`f-${item.slug}`}
+                id={optionId(i)}
+                role="option"
+                aria-selected={i === active}
+                type="button"
+                onMouseEnter={() => setActive(i)}
+                onClick={() => selectItem(item)}
+                className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
+              >
+                {item.label}
+              </button>
           ))}
           {items.some((i) => i.kind === "job") && (
             <div className="rsb-dropdown-label">
@@ -306,18 +300,18 @@ export default function RoleSearchBar({
             </div>
           )}
           {items.map((item, i) => item.kind !== "job" ? null : (
-            <button
-              key={`j-${item.jobId}`}
-              id={optionId(i)}
-              role="option"
-              aria-selected={i === active}
-              type="button"
-              onMouseEnter={() => setActive(i)}
-              onClick={() => selectItem(item)}
-              className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
-            >
-              {item.label}{item.company ? ` · ${item.company}` : ""}
-            </button>
+              <button
+                key={`j-${item.jobId}`}
+                id={optionId(i)}
+                role="option"
+                aria-selected={i === active}
+                type="button"
+                onMouseEnter={() => setActive(i)}
+                onClick={() => selectItem(item)}
+                className={`rsb-opt ${i === active ? "rsb-opt-active" : ""}`}
+              >
+                <span>{item.label}{item.company ? <small>{item.company}</small> : null}</span>
+              </button>
           ))}
           {items.some((i) => i.kind === "company") && (
             <div className="rsb-dropdown-label">
@@ -326,7 +320,7 @@ export default function RoleSearchBar({
           )}
           {items.map((item, i) => item.kind !== "company" ? null : (
             <button
-              key={`c-${item.label}`}
+              key={`c-${item.slug || item.label}`}
               id={optionId(i)}
               role="option"
               aria-selected={i === active}
@@ -375,7 +369,6 @@ export default function RoleSearchBar({
           font-size: 15px;
           color: var(--ink);
           padding: 10px 8px;
-        }
         .rsb-compact .rsb-input {
           font-size: 14px;
           padding: 7px 6px;
@@ -521,6 +514,15 @@ export default function RoleSearchBar({
           font-family: inherit;
           color: var(--ink);
           cursor: pointer;
+        }
+        .rsb-opt > span {
+          display: grid;
+          gap: 2px;
+        }
+        .rsb-opt small {
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 500;
         }
         .rsb-opt-active {
           background: var(--bn-blue-050);
