@@ -14,6 +14,19 @@
    reintroduces the search-suggestion-dropdown clipping bug fixed above via .le-hero-decor.
    Higher specificity (class+class beats class+element), no !important, only overrides overflow. */
 :is(.counter-directory-page,.counter-recruitment-page)>.le-hero{overflow:visible}
+/* Recurring bug, fixed narrowly at least three times across past merges (.le-hero, then
+   .directory-results-head, but never its sibling .recruitment-results-head): the Soft Counter
+   system keeps giving hero/head sections a generic "rounded card" overflow:hidden treatment,
+   which clips any position:absolute suggestion dropdown growing out of a search bar inside it.
+   Patching each newly-affected container by name every time it happens is exactly how
+   .recruitment-results-head got missed. This rule is keyed on the DROPDOWN's own class instead
+   of the container's — so it self-applies to whichever header/section currently wraps one of
+   our search bars, including one a future merge introduces, without needing another patch here.
+   :has() only matches while a dropdown is actually open/mounted, so a closed search bar's
+   container still clips normally. !important because a future CSS reorder must not silently
+   defeat this again. */
+:is(section,header):has(.bn-section-search-dropdown),
+:is(section,header):has(.rsb-dropdown){overflow:visible!important}
 .le-hero-decor{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .le-hero-decor::before,.le-hero-decor::after{content:"";position:absolute;z-index:0;width:30rem;aspect-ratio:1;border:4.5rem solid color-mix(in srgb,var(--bn-action) 8%,transparent);border-radius:50%;pointer-events:none;animation:le-orbit-drift 10s var(--bn-ease) infinite alternate}
 .le-hero-decor::before{left:-21rem;top:8%}
