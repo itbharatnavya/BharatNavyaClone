@@ -521,7 +521,7 @@ export default function DirectorySearchBar({
           id={`${baseId}-listbox`}
           role="listbox"
           aria-label="Search suggestions"
-          className="card"
+          className="card directory-search-suggestions"
           style={{
             position: "absolute",
             top: "calc(100% + 8px)",
@@ -536,7 +536,7 @@ export default function DirectorySearchBar({
           }}
         >
           {catSug.length > 0 && (
-            <div style={{ padding: "6px 10px 4px", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div className="directory-search-suggestions-label">
               Category
             </div>
           )}
@@ -552,6 +552,7 @@ export default function DirectorySearchBar({
                 type="button"
                 onMouseEnter={() => setActive(i)}
                 onClick={() => selectItem(item)}
+                className="directory-search-suggestion"
                 style={rowStyle(activeRow)}
               >
                 <span style={{ ...iconWrap, color: "var(--brand-hover)", background: "var(--brand-tint)" }}>
@@ -566,7 +567,7 @@ export default function DirectorySearchBar({
           })}
 
           {listSug.length > 0 && (
-            <div style={{ padding: "8px 10px 4px", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div className="directory-search-suggestions-label">
               Products &amp; services
             </div>
           )}
@@ -584,6 +585,7 @@ export default function DirectorySearchBar({
                 type="button"
                 onMouseEnter={() => setActive(i)}
                 onClick={() => selectItem(item)}
+                className="directory-search-suggestion"
                 style={rowStyle(activeRow)}
               >
                 <span
@@ -621,6 +623,7 @@ export default function DirectorySearchBar({
                 type="button"
                 onMouseEnter={() => setActive(i)}
                 onClick={submit}
+                className="directory-search-suggestion directory-search-suggestion-submit"
                 style={{ ...rowStyle(activeRow), marginTop: items.length > 1 ? 4 : 0, borderTop: items.length > 1 ? "1px solid var(--border)" : undefined, borderRadius: 8 }}
               >
                 <span style={{ ...iconWrap, color: "var(--brand)", background: "var(--brand-tint)" }}>

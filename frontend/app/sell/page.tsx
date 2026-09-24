@@ -317,18 +317,20 @@ export default function SellPage() {
 
   return (
     <div className="container-bs section-pad-sm counter-workspace-page counter-sell-page" style={{ maxWidth: 960 }}>
+      <header className="counter-workspace-intro">
       <div style={{ marginBottom: 8 }}>
         <span className="counter-workspace-label">Directory workspace</span>
       </div>
       <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em" }}>
-        Create a company or service listing
+        Create a service or product listing
       </h1>
       <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 24 }}>
-        Lead with the work your company does, where it operates and the evidence
-        people need before they contact you.
+        Show what your company offers, where it operates, and the evidence people
+        need before they make contact.
       </p>
+      </header>
 
-      <div style={{ marginBottom: 28 }}>
+      <div className="counter-listing-stepper" style={{ marginBottom: 28 }}>
         <Stepper
           steps={STEPS}
           current={step}
@@ -342,7 +344,7 @@ export default function SellPage() {
 
       {/* ---------- Step 1: type ---------- */}
       {step === 0 && (
-        <div
+        <div className="counter-listing-type-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
@@ -368,7 +370,7 @@ export default function SellPage() {
                     <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 3 3 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z" />
                   </svg>
                 ),
-                title: "Company or service",
+                title: "Service",
                 desc: "Present capabilities, service areas, credentials and working terms.",
               },
               {

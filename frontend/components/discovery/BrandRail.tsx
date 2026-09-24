@@ -40,7 +40,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
   if (!ready || brands.length === 0) return null;
 
   return (
-    <section className="card card-flat card-pad" style={{ marginBottom: 32 }}>
+    <section className="card card-flat card-pad counter-category-module counter-brand-module">
       <div
         style={{
           display: "flex",
@@ -68,7 +68,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
             <TagGlyphIcon />
           </span>
           <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
-            Top brands
+            Brands in this category
           </h2>
         </div>
         <Link
@@ -106,7 +106,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
           <Link
             key={b.slug}
             href={`/brand/${b.slug}`}
-            className="card group"
+            className="card group counter-brand-card"
             style={{
               display: "inline-flex",
               alignItems: "center",

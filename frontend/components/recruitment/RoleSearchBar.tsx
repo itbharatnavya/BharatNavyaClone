@@ -369,6 +369,7 @@ export default function RoleSearchBar({
           font-size: 15px;
           color: var(--ink);
           padding: 10px 8px;
+        }
         .rsb-compact .rsb-input {
           font-size: 14px;
           padding: 7px 6px;

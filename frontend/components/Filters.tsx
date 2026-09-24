@@ -48,6 +48,8 @@ export interface FiltersProps {
   hidePrice?: boolean;
   hideVerified?: boolean;
   hideFeatured?: boolean;
+  /** Suppress the internal title when a parent panel already labels the controls. */
+  hideHeading?: boolean;
 }
 
 const PRICE_TIERS: { display: string; value: number }[] = [
@@ -255,6 +257,7 @@ export default function Filters({
   hidePrice = false,
   hideVerified = false,
   hideFeatured = false,
+  hideHeading = false,
 }: FiltersProps) {
   const { t: rawT, lang } = useT();
   const tr = (key: string, fallback: string) => {
@@ -313,18 +316,18 @@ export default function Filters({
   return (
     <aside className={className} style={{ width: "100%", minWidth: 0 }}>
       {/* Header */}
-      <div
+      {(!hideHeading || hasAny) && <div
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: hideHeading ? "flex-end" : "space-between",
           marginBottom: 12,
         }}
       >
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 800, color: "var(--ink)" }}>
+        {!hideHeading && <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 800, color: "var(--ink)" }}>
           <span style={{ color: "var(--brand)" }}><FilterIcon /></span>
           {tr("filters.title", "Filters")}
-        </span>
+        </span>}
         {hasAny && (
           <button
             type="button"
@@ -334,7 +337,7 @@ export default function Filters({
             {tr("filters.clearAll", "Clear all")}
           </button>
         )}
-      </div>
+      </div>}
 
       {/* Quick search */}
       <div style={{ position: "relative", marginBottom: 6 }}>

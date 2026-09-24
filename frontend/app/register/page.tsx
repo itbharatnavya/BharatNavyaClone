@@ -179,7 +179,7 @@ export default function RegisterPage() {
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
-            <div style={{ display: "grid", gap: 16 }}>
+            <div className="counter-register-fields" style={{ display: "grid", gap: 16 }}>
               <Input
                 id="register-name"
                 name="name"
