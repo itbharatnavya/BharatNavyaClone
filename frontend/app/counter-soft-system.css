@@ -89,6 +89,12 @@
   border-radius: var(--counter-radius-card) !important;
 }
 
+.bn-header.is-counter-public .bn-sign-in {
+  border-color: var(--counter-saffron) !important;
+  background: var(--counter-saffron) !important;
+  color: var(--counter-ink) !important;
+}
+
 /* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
    primary action when a pair is presented together. Tabs and filter controls
    deliberately remain neutral. */
@@ -1490,6 +1496,192 @@
   .counter-home-page .le-gateway {
     transition: none;
   }
+}
+
+/* Universal type contract. Older catalogue and utility routes used Inter or
+   Manrope because they predate the Counter direction; keeping the font choice
+   here prevents individual pages from silently drifting again. */
+body,
+.bn-header,
+.bn-footer,
+main {
+  font-family: var(--font-work-sans), system-ui, sans-serif;
+}
+
+main :is(h1, h2, h3, h4),
+.bn-header .bn-wordmark {
+  font-family: var(--font-anek-latin), var(--font-work-sans), sans-serif;
+}
+
+/* Compatibility layer for the secondary catalogue routes. Their data and
+   interactions remain untouched; only their pre-Counter surface language is
+   brought into the active green/ivory visual system. */
+.counter-support-page {
+  min-width: 0;
+  padding: var(--counter-section-gap) var(--counter-page-gutter);
+  background: #f3eee3;
+}
+
+.counter-support-page > .counter-catalog-hero {
+  overflow: hidden;
+  margin-bottom: var(--counter-section-gap);
+  border: 0 !important;
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-green) !important;
+  color: white;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-catalog-hero > .container-bs {
+  padding: clamp(2rem, 5vw, 4.75rem) clamp(1.25rem, 4vw, 4rem) !important;
+}
+
+.counter-catalog-hero :is(h1, p, a, span) {
+  color: white !important;
+}
+
+.counter-catalog-hero h1 {
+  max-width: 16ch;
+  margin-top: 1.25rem !important;
+  font-size: clamp(2.75rem, 6vw, 5.5rem) !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.05em !important;
+  line-height: 0.94 !important;
+  text-wrap: balance;
+}
+
+.counter-catalog-hero p {
+  max-width: 60ch !important;
+  font-size: clamp(1rem, 1.5vw, 1.2rem) !important;
+  line-height: 1.55 !important;
+  opacity: 0.82;
+}
+
+.counter-catalog-hero :is(select, input) {
+  min-height: 3.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background: var(--counter-ivory) !important;
+  color: var(--counter-ink) !important;
+}
+
+.counter-support-page > .container-bs,
+.counter-catalog-detail > .container-bs {
+  padding-block: var(--counter-section-gap) !important;
+}
+
+.counter-catalog-index .card,
+.counter-catalog-detail .card,
+.counter-feature-page .card,
+.counter-offer-page .card {
+  border: 1px solid var(--counter-line) !important;
+  background: var(--counter-ivory) !important;
+  box-shadow: var(--counter-shadow-rest) !important;
+}
+
+.counter-catalog-index :is(a, button, select),
+.counter-catalog-detail :is(a, button, select) {
+  min-height: 2.75rem;
+}
+
+.counter-feature-page {
+  margin-block: var(--counter-section-gap);
+  padding: var(--counter-section-gap) !important;
+  border-radius: var(--counter-section-radius);
+  background: #f3eee3;
+}
+
+.counter-feature-page > div:first-child {
+  max-width: none !important;
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(1.25rem, 4vw, 4rem);
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-indigo);
+  color: white;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-feature-page > div:first-child :is(h1, p, .eyebrow) {
+  color: white !important;
+}
+
+.counter-feature-page > div:first-child h1 {
+  max-width: 14ch;
+  margin-inline: auto;
+  font-size: clamp(2.75rem, 6vw, 5.5rem) !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.05em !important;
+  line-height: 0.94 !important;
+}
+
+.counter-offer-page {
+  padding: var(--counter-section-gap) var(--counter-page-gutter);
+  background: #f3eee3;
+}
+
+.counter-offer-page > section {
+  margin-bottom: var(--counter-section-gap);
+  border-radius: var(--counter-section-radius);
+}
+
+.counter-offer-page > section:first-child {
+  overflow: hidden;
+  border: 0 !important;
+  background: var(--counter-indigo) !important;
+  color: white;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-offer-page > section:first-child :is(h1, p, a, span) {
+  color: white !important;
+}
+
+.counter-offer-page > section:first-child h1 {
+  max-width: 14ch;
+  font-size: clamp(2.75rem, 6vw, 5.5rem) !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.05em !important;
+  line-height: 0.94 !important;
+}
+
+.counter-offer-page > section:first-child .btn-primary {
+  border-color: var(--counter-saffron) !important;
+  background: var(--counter-saffron) !important;
+  color: var(--counter-ink) !important;
+}
+
+.counter-coming-soon {
+  min-height: clamp(34rem, 70vh, 48rem);
+  margin: var(--counter-section-gap) var(--counter-page-gutter);
+  overflow: hidden;
+  border-radius: var(--counter-section-radius);
+  background: var(--counter-indigo) !important;
+  color: white;
+  box-shadow: var(--counter-shadow-rest);
+}
+
+.counter-coming-soon :is(h1, p, a, span) { color: white !important; }
+.counter-coming-soon .counter-coming-soon-icon {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+.counter-coming-soon .btn-brand {
+  border-color: var(--counter-saffron) !important;
+  background: var(--counter-saffron) !important;
+  color: var(--counter-ink) !important;
+}
+.counter-coming-soon .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: transparent !important;
+}
+
+@media (max-width: 700px) {
+  .counter-support-page,
+  .counter-offer-page { padding: var(--counter-section-gap) var(--counter-page-gutter); }
+  .counter-feature-page { width: calc(100% - (2 * var(--counter-page-gutter))); }
+  .counter-catalog-index .section-pad-sm { padding-inline: 0 !important; }
+  .counter-coming-soon { margin-inline: var(--counter-page-gutter); }
+  .counter-coming-soon-content { padding-inline: 1rem !important; }
 }
 
 /* Phase 2 — Directory and Recruitment public surfaces */

@@ -118,7 +118,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
       return {
         eyebrow: `Welcome back, ${who}`,
         headline: "Buyers are searching right now",
-        sub: "Keep your listings fresh and reply fast to stay ahead of other sellers on BharatSource.",
+        sub: "Keep your listings fresh and reply fast to stay ahead of other sellers on Bharat Navya.",
         primary: { label: "Go to your dashboard", href: "/dashboard" },
         secondary: { label: "Add a new listing", href: "/sell" },
       };

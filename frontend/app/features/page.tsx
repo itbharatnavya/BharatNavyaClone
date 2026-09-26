@@ -46,7 +46,7 @@ export default function FeaturesPage() {
   }, [features]);
 
   return (
-    <div className="container-bs section-pad-sm">
+    <div className="counter-public-page counter-support-page counter-feature-page container-bs section-pad-sm">
       {/* Hero */}
       <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto" }}>
         <span className="eyebrow">{t("features.eyebrow", "Platform")}</span>
@@ -58,7 +58,7 @@ export default function FeaturesPage() {
             marginTop: 10,
           }}
         >
-          {t("features.title", "Everything you need to buy and sell across India")}
+          {t("features.title", "Everything you need to discover, represent and grow across India")}
         </h1>
         <p style={{ color: "var(--muted)", marginTop: 10, fontSize: 16 }}>
           {t(

@@ -180,7 +180,7 @@ function RfqInner() {
       <p style={{ color: "var(--muted)", marginTop: 8, marginBottom: 26, lineHeight: 1.55 }}>
         Describe your requirement in plain language and let AI turn it into a clear
         request. We&apos;ll send it to matching suppliers on{" "}
-        {branding.siteName || "BharatSource"} so they can reach out with quotes.
+        {branding.siteName || "Bharat Navya"} so they can reach out with quotes.
       </p>
 
       {/* Describe what you need */}

@@ -59,7 +59,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   // ---- Unknown collection ----
   if (!loading && (notFound || !data)) {
     return (
-      <div>
+      <div className="counter-public-page counter-support-page counter-catalog-detail">
         <section style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
           <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
             <Breadcrumbs
@@ -86,7 +86,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   // ---- Loading ----
   if (loading || !data) {
     return (
-      <div>
+      <div className="counter-public-page counter-support-page counter-catalog-detail">
         <HeroSkeleton />
         <div className="container-bs section-pad-sm">
           <div style={GRID}>
@@ -115,9 +115,10 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   ];
 
   return (
-    <div>
+    <div className="counter-public-page counter-support-page counter-catalog-detail">
       {/* Hero band */}
       <section
+        className="counter-catalog-hero"
         style={{
           position: "relative",
           background: cover

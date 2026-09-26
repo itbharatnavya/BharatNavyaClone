@@ -329,8 +329,8 @@ const DICT: Record<string, { en: string; hi: string }> = {
   // ---- features page ----
   "features.eyebrow": { en: "Platform", hi: "प्लेटफ़ॉर्म" },
   "features.title": {
-    en: "Everything you need to buy and sell across India",
-    hi: "पूरे भारत में ख़रीदने और बेचने के लिए वह सब जो आपको चाहिए",
+    en: "Everything you need to discover, represent and grow across India",
+    hi: "पूरे भारत में खोजने, अपनी पहचान बनाने और आगे बढ़ने के लिए ज़रूरी साधन",
   },
   "features.subtitle": {
     en: "One catalog for products and services, AI-powered vendor search, secure chat, seller reach tools, and honest, transparent placement.",

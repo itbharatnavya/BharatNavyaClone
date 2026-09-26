@@ -1,6 +1,6 @@
 "use client";
 
-// BharatSource — Bulk catalog upload.
+// Bharat Navya — Bulk catalog upload.
 // A non-technical seller adds many products at once: download a CSV template, fill it
 // in (Excel users "Save As CSV"), upload it, preview + validate every row in the
 // browser, then create them all in one call. CSV is parsed by a small hand-written

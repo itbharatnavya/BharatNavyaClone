@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { adminPlans, getFeatures, type Feature } from "@/lib/api";
-import type { SubscriptionPlan, PlanTier } from "@/lib/types";
+import { getFeatures, type Feature } from "@/lib/api";
+import type { PlanTier } from "@/lib/types";
 import Button from "@/components/Button";
 import { useTr } from "@/components/discovery/hooks";
 
@@ -28,32 +28,23 @@ const money = (value: number, currency = "INR") => currency === "INR" ? `₹${va
 export default function PricingPage() {
   const tr = useTr();
   const [features, setFeatures] = useState<Feature[]>([]);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.allSettled([getFeatures(), adminPlans()]).then((results) => {
+    getFeatures().then((result) => {
       if (!active) return;
-      if (results[0].status === "fulfilled") setFeatures(results[0].value);
-      if (results[1].status === "fulfilled") setPlans(results[1].value);
+      setFeatures(result);
+    }).catch(() => {
+      if (active) setFeatures([]);
+    }).finally(() => {
+      if (!active) return;
       setLoading(false);
     });
     return () => { active = false; };
   }, []);
 
-  const tiers = useMemo<TierMeta[]>(() => DEFAULT_TIERS.map((fallback) => {
-    const plan = plans.find((item) => item.tier === fallback.tier);
-    if (!plan) return fallback;
-    return {
-      ...fallback,
-      name: plan.name || fallback.name,
-      price: typeof plan.price === "number" ? plan.price : fallback.price,
-      currency: plan.currency || fallback.currency,
-      cycle: plan.billingCycle || fallback.cycle,
-      highlight: plan.highlighted ?? fallback.highlight,
-    };
-  }), [plans]);
+  const tiers = DEFAULT_TIERS;
 
   const grouped = useMemo(() => {
     const groups = new Map<string, Feature[]>();

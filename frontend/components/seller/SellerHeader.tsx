@@ -129,7 +129,7 @@ export default function SellerHeader(props: SellerHeaderProps) {
   // General profile-level enquiry (not tied to one listing) — pre-filled on wa.me.
   const waHref = waLink({
     phone: contactMobile,
-    text: `Hi ${companyName}, I found you on BharatSource and would like to enquire about your products/services.`,
+    text: `Hi ${companyName}, I found you on Bharat Navya and would like to enquire about your products/services.`,
   });
 
   useEffect(() => {

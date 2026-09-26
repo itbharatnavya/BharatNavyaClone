@@ -114,7 +114,7 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
       className={narrow ? "no-scrollbar" : undefined}
       style={
         narrow
-          ? { display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4, borderBottom: "1px solid var(--border)", marginBottom: 20 }
+          ? { alignSelf: "stretch", width: "100%", maxWidth: "100%", minWidth: 0, display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", overscrollBehaviorX: "contain", paddingBottom: 4, borderBottom: "1px solid var(--border)", marginBottom: 20 }
           : { width: 200, flexShrink: 0, position: "sticky", top: 84, display: "flex", flexDirection: "column", gap: 2 }
       }
     >

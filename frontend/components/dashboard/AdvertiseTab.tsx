@@ -265,7 +265,7 @@ export default function AdvertiseTab({ user }: Props) {
         title={tr("dashboard.advertise.title", "Advertise")}
         subtitle={tr(
           "dashboard.advertise.subtitle",
-          "Promote a listing or a custom banner across BharatSource. Campaigns go live once an admin approves them."
+          "Promote a listing or a custom banner across Bharat Navya. Campaigns go live once an admin approves them."
         )}
       />
 

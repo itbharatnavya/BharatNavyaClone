@@ -76,7 +76,7 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
         {expert.reviewCount > 0 ? (
           <Rating value={expert.rating} count={expert.reviewCount} size={14} />
         ) : (
-          <span style={{ color: "var(--faint)" }}>New on BharatSource</span>
+          <span style={{ color: "var(--faint)" }}>New on Bharat Navya</span>
         )}
         <span
           style={{ display: "inline-flex", alignItems: "center", gap: 4, minWidth: 0 }}

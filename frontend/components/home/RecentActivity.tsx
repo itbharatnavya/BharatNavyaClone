@@ -56,7 +56,7 @@ export default function RecentActivity({ limit = 6, className = "" }: { limit?: 
             </div>
           ))
         : items.map((it) => {
-            const wa = waLink({ phone: it.whatsappNumber, text: `Hi ${it.sellerName}, I found you on BharatSource.` });
+            const wa = waLink({ phone: it.whatsappNumber, text: `Hi ${it.sellerName}, I found you on Bharat Navya.` });
             return (
               <div key={it.reviewId} className="card card-flat" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "14px 16px 0" }}>

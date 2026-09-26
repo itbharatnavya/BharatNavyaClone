@@ -109,7 +109,7 @@ export default function RegisterPage() {
         }
       }
 
-      addToast("Account created. Welcome to BharatSource.", "success");
+      addToast("Account created. Welcome to Bharat Navya.", "success");
       router.push(safeNext(next, DEFAULT_NEXT));
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to create account.", "error");

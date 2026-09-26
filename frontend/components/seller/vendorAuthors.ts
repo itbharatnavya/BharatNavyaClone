@@ -133,7 +133,7 @@ export function vendorFor(
     b.seller?.companyName,
     b.seller?.name,
     b.authorName,
-    "BharatSource Seller"
+    "Bharat Navya Seller"
   );
   const slug = fromMap?.slug || b.sellerSlug || b.seller?.slug;
   const logo = fromMap?.logo ?? b.seller?.logo ?? null;

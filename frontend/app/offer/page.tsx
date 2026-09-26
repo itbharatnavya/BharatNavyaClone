@@ -317,7 +317,7 @@ export default function OfferPage() {
   ];
 
   return (
-    <div>
+    <div className="counter-public-page counter-support-page counter-offer-page">
       {/* ============================================================
           1. Hero band
           ============================================================ */}
@@ -343,7 +343,7 @@ export default function OfferPage() {
                 color: "var(--ink)",
               }}
             >
-              Everything on BharatSource, in one place
+              Everything on Bharat Navya, in one place
             </h1>
             <p
               style={{
@@ -353,7 +353,7 @@ export default function OfferPage() {
                 lineHeight: 1.6,
               }}
             >
-              A single, always-current catalogue of what BharatSource does — every
+              A single, always-current guide to what Bharat Navya does — every
               platform capability, every plan, and every way to grow. Built so our
               sales team knows exactly what they're selling and buyers can see the
               full offering at a glance.
@@ -950,7 +950,7 @@ export default function OfferPage() {
               color: "var(--ink)",
             }}
           >
-            Ready to put BharatSource to work?
+            Ready to put Bharat Navya to work?
           </h2>
           <p
             style={{

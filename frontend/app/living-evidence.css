@@ -60,7 +60,7 @@
 /* A complete sequence at every breakpoint: each step owns its visual boundary. */
 .le-journey{gap:1rem;margin-top:2rem;border-top:0}
 .le-journey article{min-height:12.5rem;overflow:hidden;padding:1.25rem;border:1px solid color-mix(in srgb,var(--bn-action) 24%,var(--bn-border));border-radius:var(--bn-radius-card);background:var(--bn-surface);box-shadow:var(--bn-shadow-card)}
-.le-journey article::before{content:"";position:absolute;inset:0 0 auto;width:auto;height:.28rem;border:0;border-radius:0;background:linear-gradient(90deg,var(--bn-action),color-mix(in srgb,var(--bn-action) 28%,transparent))}
+.le-journey article::before{display:none}
 .le-journey b{width:2.75rem;height:2.75rem;display:grid;place-items:center;border-radius:var(--bn-radius-control);background:var(--bn-blue-050);color:var(--bn-action)}
 .le-journey h3{margin-top:1.25rem}
 .le-journey p{font-size:.86rem}

@@ -24,7 +24,7 @@ export default function TopBrands({ max = 12 }: TopBrandsProps) {
     <section className="container-bs section-pad-sm">
       <SectionHeading
         eyebrow="Trusted names"
-        title="Top brands on BharatSource"
+        title="Top brands on Bharat Navya"
         subtitle="Genuine products from brands buyers know — sourced through verified sellers."
         actionLabel="View all brands"
         actionHref="/brands"

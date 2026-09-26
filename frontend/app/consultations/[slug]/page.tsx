@@ -315,7 +315,7 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
                 )}
                 {expert.isVerified && (
                   <TrustRow icon={<ShieldCheckIcon size={16} />} label="Identity verified"
-                    value="KYC completed on BharatSource" />
+                    value="KYC completed on Bharat Navya" />
                 )}
                 {expert.gstNumber && (
                   <TrustRow icon={<CheckIcon size={16} />} label="GST" value={expert.gstNumber} />
