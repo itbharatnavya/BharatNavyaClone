@@ -10,7 +10,7 @@ Official UI implementation checkpoint: `2c01e52` (the parent checkpoint for this
 
 Git identity: `itbharatnavya <314251907+itbharatnavya@users.noreply.github.com>`
 
-This is the single continuation source of truth for current Bharat Navya product and visual work. Read it after `AGENTS.md`. `HANDOVER.md` is legacy engineering/setup context only; older UI experiments are archived under `archive/legacy-ui/` and must not be used as the implementation target.
+This is the single continuation source of truth for current Bharat Navya product and visual work. Read it after `AGENTS.md`. `HANDOVER.md` is legacy engineering/setup context only; the tracked `Design/` Vite tree is a frozen reference and must not be used as the implementation target.
 
 ## 1. Start here in a new session
 
@@ -29,11 +29,11 @@ This is the single continuation source of truth for current Bharat Navya product
 | `frontend/` | **Official / active** | Next.js 14 application. All current product-design implementation belongs here. |
 | `backend/` | Active contract, normally out of scope | Express API and data contracts. Preserve unless backend work is explicitly requested. |
 | `Website content (Feni)/` | Source material | Approved content PDFs. Do not edit or commit them as part of frontend work. |
-| `archive/legacy-ui/vite-design-reference/` | **Frozen archive** | Former `Design/` Vite prototype, retained only for historical comparison. Never run, import, or implement product work here. |
-| `archive/legacy-ui/root-vite-artifacts/` | Local ignored archive | Old root `dist/` and `node_modules/` artifacts moved out of the working root. Not a source tree. |
+| `Design/` | **Frozen tracked reference** | Legacy Vite prototype retained at its original Git path for historical comparison. Never run, import, or implement product work here. |
+| `archive/legacy-ui/root-vite-artifacts/` | Local-only ignored archive | Old root `dist/` and `node_modules/` artifacts moved out of the working root in this checkout. It is not committed or a source tree. |
 | `HANDOVER.md` | Legacy reference | Older setup/backend notes. It does not override this handoff. |
 
-The current product is not the archived prototype. If an archived document conflicts with `frontend/`, `AGENTS.md`, or this handoff, the active `frontend/` code and this handoff win.
+The current product is not the frozen Vite prototype. If a legacy document conflicts with `frontend/`, `AGENTS.md`, or this handoff, the active `frontend/` code and this handoff win.
 
 ## 3. Git and working-tree state
 
@@ -214,7 +214,7 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 ## 11. Non-negotiable hygiene
 
 - Never use destructive Git commands or discard dirty files to obtain a clean tree.
-- Never work from or import the archived Vite prototype.
+- Never work from or import the frozen `Design/` Vite prototype.
 - Never update old UI and active UI in parallel.
 - Never solve a shared-system inconsistency with a private page fork unless a real product reason exists.
 - Never call a build-only check proof of responsive correctness.
