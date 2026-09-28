@@ -1,5 +1,9 @@
 # BharatSource
 
+> **Current Bharat Navya work:** the official application is `frontend/` on the `design`
+> branch. Read [AGENTS.md](AGENTS.md) and then [HANDOFF.md](HANDOFF.md) before editing.
+> `HANDOVER.md` is legacy setup context, and archived UI implementations are not active code.
+
 A multi-product **suite** for India — an umbrella brand over several products that share
 one account. Built with **Next.js 14 (App Router) + TypeScript** on the frontend and
 **Node.js + Express with file-based JSON storage** on the backend (no external database).
@@ -9,8 +13,9 @@ action accent (`#F97316`), a token-based design system, inline-SVG icons (no emo
 native form controls. AI search runs through the local **`claude` CLI** — the app's own
 Claude Code subscription, not a paid API key.
 
-> **New here? Read the docs in this order:** [CLAUDE.md](CLAUDE.md) (architecture + conventions,
-> for humans and AI agents) → [HANDOVER.md](HANDOVER.md) (setup & run) → [DIRECTORY.md](DIRECTORY.md)
+> **New here? Read the docs in this order:** [AGENTS.md](AGENTS.md) (branch/workspace guardrails)
+> → [HANDOFF.md](HANDOFF.md) (current product and progress) → [CLAUDE.md](CLAUDE.md)
+> (architecture + conventions) → [HANDOVER.md](HANDOVER.md) (legacy setup & backend context) → [DIRECTORY.md](DIRECTORY.md)
 > (the flagship product's flows + roadmap) → [SECURITY.md](SECURITY.md) (**read before deploying**).
 
 ---
