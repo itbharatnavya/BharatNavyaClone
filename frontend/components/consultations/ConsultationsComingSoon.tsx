@@ -23,11 +23,12 @@ function ConsultationsIcon({ size = 34 }: { size?: number }) {
 }
 
 export default function ConsultationsComingSoon() {
-  const subject = encodeURIComponent("Notify me about BharatSource Consultations");
+  const subject = encodeURIComponent("Notify me about Bharat Navya Consultations");
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${subject}`;
 
   return (
     <div
+      className="counter-public-page counter-coming-soon"
       style={{
         position: "relative",
         overflow: "hidden",
@@ -36,12 +37,12 @@ export default function ConsultationsComingSoon() {
           "var(--canvas)",
       }}
     >
-      <div className="container-bs" style={{ paddingTop: 28 }}>
+      <div className="container-bs counter-coming-soon-crumbs" style={{ paddingTop: 28 }}>
         <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Consultations" }]} />
       </div>
 
       <div
-        className="container-bs"
+        className="container-bs counter-coming-soon-content"
         style={{
           textAlign: "center",
           paddingTop: "clamp(36px, 6vw, 60px)",
@@ -50,6 +51,7 @@ export default function ConsultationsComingSoon() {
         }}
       >
         <span
+          className="counter-coming-soon-icon"
           aria-hidden
           style={{
             width: 72,
@@ -84,7 +86,7 @@ export default function ConsultationsComingSoon() {
             marginTop: 16,
           }}
         >
-          BharatSource Consultations
+          Bharat Navya Consultations
         </h1>
         <p
           style={{
@@ -95,8 +97,8 @@ export default function ConsultationsComingSoon() {
             lineHeight: 1.6,
           }}
         >
-          Book time with verified experts. We&apos;re building it as part of the
-          BharatSource suite — leave your details and we&apos;ll tell you the moment it goes live.
+          Book time with verified experts. This service is being prepared as part of
+          Bharat Navya. Leave your details and we will tell you when it is ready.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 30 }}>
@@ -109,7 +111,7 @@ export default function ConsultationsComingSoon() {
         </div>
 
         <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 18 }}>
-          One BharatSource account will work across every product.
+          One Bharat Navya account will connect the available products.
         </p>
       </div>
     </div>

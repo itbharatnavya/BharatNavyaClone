@@ -33,9 +33,9 @@ const DOT_COLOR: Record<ActivityItem["dot"], string> = {
 export default function ActivityFeed() {
   return (
     <Reveal delay={160} className="home-activity-sidebar">
-      <aside className="card card-flat" style={{ padding: "clamp(18px, 2.6vw, 22px)", minWidth: 0 }} aria-label="Recent activity across BharatSource">
+      <aside className="card card-flat" style={{ padding: "clamp(18px, 2.6vw, 22px)", minWidth: 0 }} aria-label="Recent activity across Bharat Navya">
         <div className="eyebrow" style={{ marginBottom: 4 }}>Activity</div>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>Across BharatSource</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>Across Bharat Navya</h3>
 
         <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "flex", flexDirection: "column", gap: 14 }}>
           {ACTIVITY.map((item) => (

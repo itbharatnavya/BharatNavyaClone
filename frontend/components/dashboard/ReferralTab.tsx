@@ -56,7 +56,7 @@ export default function ReferralTab({ user }: Props) {
   function share() {
     const text = tr(
       "dashboard.referral.shareText",
-      `Join me on BharatSource — use my code ${code}`
+      `Join me on Bharat Navya — use my code ${code}`
     );
     const wa = `https://wa.me/?text=${encodeURIComponent(`${text} ${shareUrl}`)}`;
     window.open(wa, "_blank", "noopener,noreferrer");

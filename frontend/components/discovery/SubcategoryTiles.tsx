@@ -68,7 +68,7 @@ export default function SubcategoryTiles({ items }: { items: Category[] }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="card card-flat card-pad" style={{ marginBottom: 24 }}>
+    <section className="card card-flat card-pad counter-category-module counter-subcategory-module">
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <span
           aria-hidden
@@ -87,7 +87,7 @@ export default function SubcategoryTiles({ items }: { items: Category[] }) {
           <GridGlyphIcon />
         </span>
         <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
-          Shop by category
+          Browse related categories
         </h2>
       </div>
       <div
@@ -103,7 +103,7 @@ export default function SubcategoryTiles({ items }: { items: Category[] }) {
             <Link
               key={c.id || c.slug}
               href={`/${c.slug}`}
-              className="card group"
+              className="card group counter-subcategory-card"
               style={{ overflow: "hidden", display: "flex", flexDirection: "column", minWidth: 0 }}
             >
               <div

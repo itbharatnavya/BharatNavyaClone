@@ -109,7 +109,7 @@ export default function RegisterPage() {
         }
       }
 
-      addToast("Account created. Welcome to BharatSource.", "success");
+      addToast("Account created. Welcome to Bharat Navya.", "success");
       router.push(safeNext(next, DEFAULT_NEXT));
     } catch (err) {
       addToast(err instanceof Error ? err.message : "Failed to create account.", "error");
@@ -179,7 +179,7 @@ export default function RegisterPage() {
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
-            <div style={{ display: "grid", gap: 16 }}>
+            <div className="counter-register-fields" style={{ display: "grid", gap: 16 }}>
               <Input
                 id="register-name"
                 name="name"

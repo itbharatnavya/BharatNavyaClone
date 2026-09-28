@@ -268,7 +268,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
           </div>
         </div>
         <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
-          <Filters value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+          <Filters hideHeading value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
         </div>
       </aside>
       <div className="directory-listing-filter-ad">

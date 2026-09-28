@@ -294,7 +294,7 @@ export default function AdminPage() {
         </div>
         <div className="flex items-center gap-3 text-sm">
           <span className="text-muted">
-            Signed in as <b className="text-ink">{user.name}</b>
+            Signed in as <b className="text-ink">{user.name === "BharatSource Admin" ? "Bharat Navya Admin" : user.name}</b>
           </span>
           <button
             type="button"

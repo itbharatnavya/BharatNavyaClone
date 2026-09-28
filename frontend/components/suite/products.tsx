@@ -74,7 +74,7 @@ export const PRODUCTS: SuiteProduct[] = [
   {
     key: "directory",
     name: "Directory",
-    fullName: "BharatSource Directory",
+    fullName: "Bharat Navya Directory",
     href: "/directory",
     tagline: "Source products & raw materials from verified vendors across India.",
     status: "live",
@@ -83,7 +83,7 @@ export const PRODUCTS: SuiteProduct[] = [
   {
     key: "credit-card",
     name: "Credit Card",
-    fullName: "BharatSource Credit Card",
+    fullName: "Bharat Navya Credit Card",
     href: "/credit-card",
     tagline: "Business credit cards for your company.",
     status: "soon",
@@ -92,7 +92,7 @@ export const PRODUCTS: SuiteProduct[] = [
   {
     key: "mutual",
     name: "Mutual",
-    fullName: "BharatSource Mutual",
+    fullName: "Bharat Navya Mutual",
     href: "/mutual",
     tagline: "Grow surplus with curated mutual funds.",
     status: "soon",

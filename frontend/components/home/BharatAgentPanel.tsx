@@ -70,7 +70,7 @@ export default function BharatAgentPanel() {
             One assistant for the whole suite. Tell it what you&apos;re trying to get done and it works out whether that&apos;s a supplier to source, a role to fill, or an expert to hire — then takes you straight there.
           </p>
           <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 16 }}>
-            Launching in stages across BharatSource.
+            Launching in stages across Bharat Navya.
           </p>
         </div>
 

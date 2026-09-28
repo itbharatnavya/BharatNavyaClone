@@ -15,7 +15,7 @@ import { RecruitmentIcon } from "@/components/home/icons";
 const CONTACT_EMAIL = "hello@bharatsource.in";
 
 export default function RecruitmentComingSoon() {
-  const subject = encodeURIComponent("Notify me about BharatSource Recruitment");
+  const subject = encodeURIComponent("Notify me about Bharat Navya Recruitment");
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${subject}`;
 
   return (
@@ -76,7 +76,7 @@ export default function RecruitmentComingSoon() {
             marginTop: 16,
           }}
         >
-          BharatSource Recruitment
+          Bharat Navya Recruitment
         </h1>
         <p
           style={{
@@ -88,7 +88,7 @@ export default function RecruitmentComingSoon() {
           }}
         >
           Post roles and connect with vetted candidates. We&apos;re building it as part of the
-          BharatSource suite — leave your details and we&apos;ll tell you the moment it goes live.
+          Bharat Navya platform — leave your details and we&apos;ll tell you the moment it goes live.
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 30 }}>
@@ -101,7 +101,7 @@ export default function RecruitmentComingSoon() {
         </div>
 
         <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 18 }}>
-          One BharatSource account will work across every product.
+          One Bharat Navya account will connect the available products.
         </p>
       </div>
     </div>

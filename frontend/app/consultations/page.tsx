@@ -129,7 +129,7 @@ export default function ConsultationsPage() {
             textAlign: "center",
           }}
         >
-          <div className="eyebrow" style={{ marginBottom: 14 }}>BharatSource Consultations</div>
+          <div className="eyebrow" style={{ marginBottom: 14 }}>Bharat Navya Consultations</div>
           <h1
             style={{
               fontSize: "clamp(34px, 5.4vw, 56px)",

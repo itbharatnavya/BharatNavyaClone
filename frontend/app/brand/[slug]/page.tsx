@@ -170,7 +170,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   // ---- Unknown brand ----
   if (!loading && (notFound || !data)) {
     return (
-      <div>
+      <div className="counter-public-page counter-support-page counter-catalog-detail">
         <section style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
           <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
             <Breadcrumbs
@@ -197,7 +197,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   // ---- Loading ----
   if (loading || !data) {
     return (
-      <div>
+      <div className="counter-public-page counter-support-page counter-catalog-detail">
         <HeroSkeleton />
         <div className="container-bs section-pad-sm">
           <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))" }}>
@@ -229,9 +229,10 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
       : `${brand.count} ${brand.count === 1 ? "product" : "products"}`;
 
   return (
-    <div>
+    <div className="counter-public-page counter-support-page counter-catalog-detail">
       {/* Hero band */}
       <section
+        className="counter-catalog-hero"
         style={{
           background: "linear-gradient(180deg, var(--brand-tint), var(--bg-subtle))",
           borderBottom: "1px solid var(--border)",

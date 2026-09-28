@@ -140,7 +140,7 @@ export default function ConsultationsTab({ user }: Props) {
         title={tr("dashboard.consultations.title", "Consultation requests")}
         subtitle={tr(
           "dashboard.consultations.subtitle",
-          "People who asked to book you through BharatSource Consultations. Reach out to confirm — there's no payment step."
+          "People who asked to book you through Bharat Navya Consultations. Reach out to confirm — there's no payment step."
         )}
       />
 

@@ -27,18 +27,10 @@ export interface CategoryLandingProps {
   query?: string;
 }
 
-// Soft brand-tint wash fading into the plain canvas — gives the store header
-// a distinct "front of shop" identity instead of the flat grey band it used
-// to be, without introducing a new hue (still just --brand-tint → --canvas).
 function HeaderBand({ children }: { children: React.ReactNode }) {
   return (
-    <section
-      style={{
-        background: "linear-gradient(180deg, var(--brand-tint) 0%, var(--bg-subtle) 60%, var(--canvas) 100%)",
-        borderBottom: "1px solid var(--border)",
-      }}
-    >
-      <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
+    <section className="counter-category-hero">
+      <div className="container-bs counter-category-hero-inner">
         {children}
       </div>
     </section>
@@ -112,7 +104,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
   // ---- Loading header ----
   if (loading || !node) {
     return (
-      <div>
+      <div className="counter-public-page counter-category-page">
         <HeaderBand>
           <span className="skeleton" style={{ display: "block", height: 12, width: 220, marginBottom: 16 }} />
           <span className="skeleton" style={{ display: "block", height: 30, width: 320, marginBottom: 12 }} />
@@ -146,53 +138,33 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
   const heading = city ? `${category.name} in ${city}` : category.name;
 
   return (
-    <div>
+    <div className="counter-public-page counter-category-page">
       <HeaderBand>
         <Breadcrumbs items={crumbs} />
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
-          <CategoryIcon slug={category.slug} name={category.name} size={52} />
-          <div style={{ minWidth: 0 }}>
-            <h1
-              style={{
-                fontSize: 30,
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-                color: "var(--ink)",
-              }}
-            >
+        <div className="counter-category-title-row">
+          <span className="counter-category-icon"><CategoryIcon slug={category.slug} name={category.name} size={52} /></span>
+          <div>
+            <p className="counter-category-eyebrow">Directory category</p>
+            <h1>
               {heading}
             </h1>
             {/* Category-wide count (not city-scoped) — only shown when the heading
                 itself isn't already narrowed to a city, so the number never implies
                 more precision than it has. */}
             {!city && typeof category.listingCount === "number" && category.listingCount > 0 && (
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  marginTop: 8,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  color: "var(--brand-hover)",
-                  background: "#ffffff",
-                  border: "1px solid var(--brand-tint)",
-                  borderRadius: 999,
-                  padding: "3px 11px",
-                }}
-              >
+              <span className="counter-category-count">
                 {category.listingCount.toLocaleString("en-IN")} listings
               </span>
             )}
           </div>
         </div>
         {category.description && (
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 12, maxWidth: 720 }}>
+          <p className="counter-category-description">
             {category.description}
           </p>
         )}
         {children && children.length > 0 && (
-          <div style={{ marginTop: 18 }}>
+          <div className="counter-category-chips">
             <SubcategoryChips items={children} />
           </div>
         )}
@@ -203,7 +175,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
           page, category pages included; a second bar here was redundant.
           The category chip it shows while you're here still comes from the
           self-pinning effect above. */}
-      <div className="container-bs section-pad-sm">
+      <div className="container-bs section-pad-sm counter-category-content">
         {/* Category-top ad slider (rotates all active bookings; hidden when none). */}
         <AdSlider placement="category_top" categorySlug={slug} />
 

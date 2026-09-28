@@ -37,9 +37,9 @@ export default function CollectionsPage() {
   const crumbs: Crumb[] = [{ label: "Directory", href: "/directory" }, { label: "Collections" }];
 
   return (
-    <div>
+    <div className="counter-public-page counter-support-page counter-catalog-index">
       {/* Header band */}
-      <section style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
+      <section className="counter-catalog-hero" style={{ background: "var(--bg-subtle)", borderBottom: "1px solid var(--border)" }}>
         <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
           <Breadcrumbs items={crumbs} />
           <h1

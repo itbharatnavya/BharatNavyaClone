@@ -134,7 +134,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
   const showCall = !isOwnListing && flagOn("call", true) && (user ? !!seller.contactMobile : true);
   const showShare = flagOn("share", true);
 
-  const shareText = `Check out "${listing.title}" on BharatSource`;
+  const shareText = `Check out "${listing.title}" on Bharat Navya`;
   const shareUrl = () =>
     typeof window !== "undefined" ? window.location.href : `/listing/${listing.id}`;
 

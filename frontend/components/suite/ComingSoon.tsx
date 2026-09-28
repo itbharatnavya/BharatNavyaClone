@@ -17,6 +17,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
 
   return (
     <div
+      className="counter-public-page counter-coming-soon"
       style={{
         position: "relative",
         overflow: "hidden",
@@ -26,7 +27,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
           "var(--canvas)",
       }}
     >
-      <div className="container-bs" style={{ paddingTop: 28 }}>
+      <div className="container-bs counter-coming-soon-crumbs" style={{ paddingTop: 28 }}>
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
@@ -36,7 +37,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
       </div>
 
       <div
-        className="container-bs"
+        className="container-bs counter-coming-soon-content"
         style={{
           textAlign: "center",
           paddingTop: "clamp(36px, 6vw, 60px)",
@@ -45,6 +46,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
         }}
       >
         <span
+          className="counter-coming-soon-icon"
           aria-hidden
           style={{
             width: 72,
@@ -90,7 +92,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
             lineHeight: 1.6,
           }}
         >
-          {product.tagline} We&apos;re building it as part of the BharatSource suite — leave your details and we&apos;ll tell you the moment it goes live.
+          {product.tagline} It is being prepared as part of Bharat Navya. Leave your details and we will tell you when it is ready.
         </p>
 
         <div
@@ -111,7 +113,7 @@ export default function ComingSoon({ product }: { product: SuiteProduct }) {
         </div>
 
         <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 18 }}>
-          One BharatSource account will work across every product.
+          One Bharat Navya account will connect the available products.
         </p>
       </div>
     </div>
