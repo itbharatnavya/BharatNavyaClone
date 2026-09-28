@@ -39,6 +39,7 @@
 .bn-section-search-dropdown{position:absolute;top:calc(100% + .5rem);left:0;right:0;z-index:40;padding:.4rem;max-height:22rem;overflow-y:auto;background:#fff;border:1px solid var(--bn-border);box-shadow:var(--bn-shadow-float)}
 .bn-section-search-dropdown-label{display:flex;align-items:center;gap:.4rem;padding:.5rem .65rem .25rem;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--bn-text-secondary)}
 .bn-section-search-dropdown-label svg{width:.85rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
+.bn-section-search-dropdown-loading{padding:.6rem .65rem;font-size:.78rem;color:var(--bn-text-secondary)}
 .bn-section-search-opt{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:.6rem .65rem;font:inherit;font-size:.85rem;color:var(--bn-text-primary);cursor:pointer}
 .bn-section-search-opt svg{width:.85rem;height:.85rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
 .bn-section-search-opt.is-active{background:var(--bn-blue-050);color:var(--bn-action)}

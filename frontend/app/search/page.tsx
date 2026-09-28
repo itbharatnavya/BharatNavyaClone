@@ -215,7 +215,7 @@ function DirectorySearchResults() {
                 onChange={(event) => { setQuery(event.target.value); setDockQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1); }}
                 onFocus={() => setSuggestionsOpen(true)}
                 onKeyDown={handleSuggestionKeys}
-                placeholder="Service, product or business need"
+                placeholder="Search companies, products or services"
                 autoComplete="off"
                 role="combobox"
                 aria-expanded={showSuggestions}

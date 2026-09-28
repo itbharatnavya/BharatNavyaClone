@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useSearchDock } from "@/lib/searchDock";
 import { getJobFunctions, getJobs, getListings, searchSellers } from "@/lib/api";
@@ -50,10 +50,23 @@ export type DirectorySearchVariant = "hero" | "compact" | "drawer";
 
 export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { variant?: DirectorySearchVariant; onSubmitted?: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
   const queryId = useId();
   const cityId = useId();
   const listboxId = useId();
   const { query, setQuery, city, setCity, markSearchNav } = useSearchDock();
+
+  // Local, uncommitted draft — only a genuine search action (submit, or picking a
+  // suggestion) ever writes back to the shared `query`. Typing alone never does,
+  // so half-typed text can't leak onto another page via an unrelated navigation
+  // (e.g. clicking a category tile mid-type) — matches old frontend's
+  // DirectorySearchBar (WORKFLOW.md 2026-08-18). Resyncs to the committed query on
+  // every route change, or whenever `query` itself changes (e.g. the docked
+  // compact copy committing a new value, or Back restoring a prior one) — both
+  // this hero instance and the docked compact instance mount at once while
+  // docked, each with its own independent draft.
+  const [draft, setDraft] = useState(query);
+  useEffect(() => { setDraft(query); }, [pathname, query]);
 
   // Suggestions: same real-data contract as old frontend's DirectorySearchBar
   // (categories filtered client-side from the session-wide catalog + listings
@@ -70,18 +83,21 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
 
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
-  const term = query.trim().toLowerCase();
+  const term = draft.trim().toLowerCase();
 
   useEffect(() => {
-    if (term.length < 2) { setMatchedSellers([]); setMatchedListings([]); return; }
+    if (term.length < 2) { setMatchedSellers([]); setMatchedListings([]); setSuggestionsLoading(false); return; }
     const id = ++reqIdRef.current;
+    setSuggestionsLoading(true);
     const timer = window.setTimeout(() => {
       Promise.allSettled([searchSellers({ q: term, limit: 5 }), getListings({ q: term, limit: 5 })]).then(([sellerResult, listingResult]) => {
         if (id !== reqIdRef.current) return;
         setMatchedSellers(sellerResult.status === "fulfilled" ? sellerResult.value.sellers || [] : []);
         setMatchedListings(listingResult.status === "fulfilled" ? listingResult.value.listings || [] : []);
+        setSuggestionsLoading(false);
       });
     }, 250);
     return () => window.clearTimeout(timer);
@@ -111,8 +127,10 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
   function go(text: string) {
     setOpen(false);
     setActive(-1);
+    const trimmed = text.trim();
+    setQuery(trimmed);
     const params = new URLSearchParams();
-    if (text.trim()) params.set("q", text.trim());
+    if (trimmed) params.set("q", trimmed);
     if (city && city !== PAN_INDIA_LABEL) params.set("city", city);
     markSearchNav();
     onSubmitted?.();
@@ -121,9 +139,12 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
-    go(query);
+    go(draft);
   }
 
+  // Picking a suggestion clears the draft (and the shared committed query) rather
+  // than leaving the partial typed word behind, since this query is shared with
+  // other docked copies of this bar that stay visible after navigating away.
   function selectItem(item: DirectorySuggestion) {
     setOpen(false);
     setActive(-1);
@@ -133,14 +154,18 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
       // /search's own category filter (parseDiscoverySeed → UnifiedListingWorkbench →
       // GET /api/listings?category=) is the live Directory results flow now — the
       // standalone /<slug> category-landing route is a separate, older page.
+      setDraft("");
+      setQuery("");
       router.push(`/search?category=${encodeURIComponent(item.slug)}`);
     } else if (item.kind === "company") {
-      if (item.slug) router.push(`/seller/${item.slug}`);
+      if (item.slug) { setDraft(""); setQuery(""); router.push(`/seller/${item.slug}`); }
       else go(item.label);
     } else if (item.kind === "listing") {
+      setDraft("");
+      setQuery("");
       router.push(`/listing/${item.id}`);
     } else {
-      go(query);
+      go(draft);
     }
   }
 
@@ -172,11 +197,11 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
         <span className="sr-only">Company or service</span>
         <input
           id={queryId}
-          value={query}
-          onChange={(event) => { setQuery(event.target.value); setOpen(true); setActive(-1); }}
+          value={draft}
+          onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => setOpen(true)}
           onKeyDown={onQueryKeyDown}
-          placeholder="What company or support do you need?"
+          placeholder="Search companies, products or services"
           autoComplete="off"
           role="combobox"
           aria-expanded={showDropdown}
@@ -208,8 +233,9 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
       {items.map((item, i) => item.kind !== "listing" ? null : (
         <button key={`l-${item.id}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.seller ? ` · ${item.seller}` : ""}</button>
       ))}
+      {suggestionsLoading && <div className="bn-section-search-dropdown-loading" role="status" aria-live="polite">Searching companies &amp; products…</div>}
       {items.map((item, i) => item.kind !== "search" ? null : (
-        <button key="pinned-search" id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`} style={{ display: "flex", alignItems: "center", gap: ".5rem" }}><SearchIcon /> Search for &quot;{query.trim()}&quot;</button>
+        <button key="pinned-search" id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`} style={{ display: "flex", alignItems: "center", gap: ".5rem" }}><SearchIcon /> Search for &quot;{draft.trim()}&quot;</button>
       ))}
     </div>}
   </div>;
@@ -273,11 +299,18 @@ export function DirectoryDockedSearch() {
 
 export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { variant?: DirectorySearchVariant; onSubmitted?: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
   const queryId = useId();
   const cityId = useId();
   const workplaceId = useId();
   const listboxId = useId();
   const { roleQuery, setRoleQuery, roleCity, setRoleCity, roleWorkplace, setRoleWorkplace, markSearchNav } = useSearchDock();
+
+  // Local, uncommitted draft — same commit-on-submit pattern as
+  // DirectorySectionSearch above, kept entirely on Recruitment's own
+  // `roleQuery` field so Directory's and Recruitment's typed text never mix.
+  const [draft, setDraft] = useState(roleQuery);
+  useEffect(() => { setDraft(roleQuery); }, [pathname, roleQuery]);
 
   // Suggestions: closed entirely on an empty query — no "popular searches" here,
   // that list was static/curated copy, not real data. Once typing starts, three
@@ -294,17 +327,20 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
 
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
-  const term = roleQuery.trim().toLowerCase();
+  const term = draft.trim().toLowerCase();
 
   useEffect(() => {
-    if (!term) { setMatchedJobs([]); return; }
+    if (!term) { setMatchedJobs([]); setSuggestionsLoading(false); return; }
     const id = ++jobsReqIdRef.current;
+    setSuggestionsLoading(true);
     const timer = window.setTimeout(() => {
       getJobs({ q: term, limit: 8 })
         .then((r) => { if (id === jobsReqIdRef.current) setMatchedJobs(r.jobs || []); })
-        .catch(() => { if (id === jobsReqIdRef.current) setMatchedJobs([]); });
+        .catch(() => { if (id === jobsReqIdRef.current) setMatchedJobs([]); })
+        .finally(() => { if (id === jobsReqIdRef.current) setSuggestionsLoading(false); });
     }, 250);
     return () => window.clearTimeout(timer);
   }, [term]);
@@ -337,7 +373,7 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
     }
     return [...categories, ...roles, ...companies];
   }, [term, jobFunctions, matchedJobs]);
-  const showDropdown = open && items.length > 0;
+  const showDropdown = open && (items.length > 0 || suggestionsLoading);
 
   useEffect(() => {
     if (!open) return;
@@ -351,8 +387,10 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
   function go(text: string) {
     setOpen(false);
     setActive(-1);
+    const trimmed = text.trim();
+    setRoleQuery(trimmed);
     const params = new URLSearchParams();
-    if (text.trim()) params.set("q", text.trim());
+    if (trimmed) params.set("q", trimmed);
     if (roleCity) params.set("city", roleCity);
     if (roleWorkplace !== "All workplaces") params.set("workplace", roleWorkplace);
     markSearchNav();
@@ -362,7 +400,7 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
-    go(roleQuery);
+    go(draft);
   }
 
   function selectItem(item: RoleSuggestion) {
@@ -373,14 +411,17 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
     if (item.kind === "function") {
       // A category pick is a fresh, broad browse — jumps straight to the
       // category rather than carrying the free-text query along.
+      setDraft(item.label);
       setRoleQuery(item.label);
       router.push(`/recruitment/jobs?jobFunction=${item.slug}`);
     } else if (item.kind === "job") {
       // A specific role pick goes straight to that role, same as Directory's
       // listing suggestions jumping to /listing/:id.
+      setDraft("");
+      setRoleQuery("");
       router.push(`/job/${item.jobId}`);
     } else {
-      if (item.slug) router.push(`/employer/${item.slug}`);
+      if (item.slug) { setDraft(""); setRoleQuery(""); router.push(`/employer/${item.slug}`); }
       else go(item.label);
     }
   }
@@ -413,8 +454,8 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
         <span className="sr-only">Role, skill or company</span>
         <input
           id={queryId}
-          value={roleQuery}
-          onChange={(event) => { setRoleQuery(event.target.value); setOpen(true); setActive(-1); }}
+          value={draft}
+          onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => setOpen(true)}
           onKeyDown={onQueryKeyDown}
           placeholder="Role, skill, or company"
@@ -443,6 +484,7 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
       {items.map((item, i) => item.kind !== "company" ? null : (
         <button key={`c-${item.label}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}</button>
       ))}
+      {suggestionsLoading && <div className="bn-section-search-dropdown-loading" role="status" aria-live="polite">Searching roles &amp; companies…</div>}
     </div>}
   </div>;
 }

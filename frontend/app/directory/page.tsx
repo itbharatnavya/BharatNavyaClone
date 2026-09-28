@@ -16,6 +16,7 @@ import { isAlignedDirectoryCompany, mapDirectoryCompany } from "@/lib/productDes
 import { resolvePublicUpdates, type EvidenceAsset } from "@/lib/livingEvidence";
 import { DirectorySectionSearch } from "@/components/SectionSearchDock";
 import { useSearchDock } from "@/lib/searchDock";
+import { useDockOnScroll } from "@/lib/useDockOnScroll";
 import ProductListingRail from "@/components/directory/ProductListingRail";
 
 const families = [
@@ -34,11 +35,9 @@ export default function DirectoryPage() {
   const router = useRouter();
   const { sellers, loading } = useFeaturedSellers();
   const { docked, setProgress, setQuery, markSearchNav } = useSearchDock();
-  const searchAnchorRef = useRef<HTMLDivElement>(null);
+  const { anchorRef: searchAnchorRef, focusHandlers } = useDockOnScroll<HTMLDivElement>(setProgress);
   const updatesAnchorRef = useRef<HTMLElement>(null);
   const updatesRequestedRef = useRef(false);
-  const heroFocusedRef = useRef(false);
-  const pendingDockRef = useRef<boolean | null>(null);
   const [stories, setStories] = useState<StoryGroup[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [activity, setActivity] = useState<RecentActivityItem[]>([]);
@@ -63,15 +62,8 @@ export default function DirectoryPage() {
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    const anchor = searchAnchorRef.current;
-    if (!anchor || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(([entry]) => { const shouldDock = !entry.isIntersecting && entry.boundingClientRect.bottom <= 72; if (heroFocusedRef.current && shouldDock) { pendingDockRef.current = true; return; } pendingDockRef.current = null; setProgress(shouldDock ? 1 : 0); }, { threshold: 0.08, rootMargin: "-72px 0px 0px 0px" });
-    observer.observe(anchor);
-    return () => { observer.disconnect(); setProgress(0); };
-  }, [setProgress]);
-  useEffect(() => {
     searchAnchorRef.current?.toggleAttribute("inert", docked);
-  }, [docked]);
+  }, [docked, searchAnchorRef]);
 
   const companies = useMemo(() => sellers.filter(isAlignedDirectoryCompany).map(mapDirectoryCompany).filter((company): company is NonNullable<typeof company> => Boolean(company)).slice(0, 6), [sellers]);
   const updates = useMemo(() => resolvePublicUpdates({ context: "directory", stories, blogs, reviews: activity, allowPrototype }), [stories, blogs, activity, allowPrototype]);
@@ -82,7 +74,7 @@ export default function DirectoryPage() {
     <section className="le-hero" aria-labelledby="directory-title"><div className="le-shell">
       <h1 id="directory-title">Turn business search into business action.</h1>
       <p>Find companies, suppliers, manufacturers, products, and services in one structured B2B platform. Review what matters, understand your options, and move forward with greater clarity.</p>
-      <div ref={searchAnchorRef} className="le-hero-search" inert={docked ? true : undefined} aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><DirectorySectionSearch /></div>
+      <div ref={searchAnchorRef} className="le-hero-search" aria-hidden={docked || undefined} {...focusHandlers}><DirectorySectionSearch /></div>
       <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>
     </div></section>
 

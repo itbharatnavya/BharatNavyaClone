@@ -501,6 +501,28 @@ is the correct "latest hiring companies" list; `UpdateRail` is a different, newe
 when used on `/recruitment` (e.g. "Guides from hiring teams") so it stops reading as a hiring-list.
 Not started — text-only change, no API/data involved.
 
+### Directory public pages (category browse, listing detail, company profile) — checked, punch-list sent to UI dev — 2026-09-28
+
+Owner reviewed the merged build locally and found regressions/gaps against the old pre-redesign
+pages. Not fixed in-session — written up as screenshots + a page-by-page punch-list and sent
+directly to the UI dev to action on their next pass.
+
+- **Category browse pages** (e.g. `/education-training-events`): still the old list-view UI with a
+  List/Grid toggle — should match the new Directory `/search` results UI instead (same cards,
+  same layout). Possible duplicate/repeated filter bars too.
+- **Category landing banner** pages: an old floating chat bubble / "Need help navigating?" widget
+  is still live and overlaps page content on some pages — needs removing or repositioning.
+- **Listing/service detail page**: empty gap above the Share/Report sidebar box; "More services
+  from this company" grid reuses the same stock photo across cards; Post Requirement button +
+  chat bubble overlap the last card's View button (z-index/positioning).
+- **Company/seller profile page**: breadcrumb → cover → identity → stats spacing inconsistent;
+  sponsored-company ad card sits almost touching the stats row above it; sidebar CTA card text
+  overlaps the "Sign in to inquire" button; an inner section has an unwanted scroll that only
+  shows partial data; **Reviews and Products sections are missing entirely** from the new page —
+  UI dev asked to reference the old company page and rebuild those sections in the new UI style.
+
+**Next:** waiting on UI dev's next pass; re-check against this list once pushed.
+
 ---
 
 ## Daily task log
@@ -846,6 +868,60 @@ pre-existing implementation (unaffected by this collision either way, since we k
 entirely) — worth a future pass to see if the UI dev's Recruitment-side rewrite (job functions +
 jobs + pinned row, same file) has anything worth adopting once Directory's own dropdown direction
 is settled.
+
+---
+
+### Pulled `origin/design` again (`aace218..3d404fc`) — merged 2026-09-22/23
+
+2 new commits: "integrate live search suggestions" (`72b9fa4`), "Integrate Feni content across
+public frontend" (`3d404fc`). Closes the gap noted above.
+
+**Suggestion dropdowns — took the UI dev's version wholesale this time.** Both `RoleSearchBar.tsx`
+(Recruitment) and `search/page.tsx` (Directory results page) had two independently-built, fully
+parallel implementations of the same suggestion feature sitting in the same file after the
+text-merge — on `search/page.tsx` git's line-merge left two conflicting `type ResultsSuggestion`
+declarations *outside* any conflict marker (a duplicate-identifier bug invisible until you read
+past the markers; `tsc` only runs once markers are gone). Rather than hand-blend two untested
+debounce/filter algorithms, took the UI dev's finished version whole (`git checkout --theirs`) for
+both files — it's the actively-developed feature this merge exists to pull in, and this session's
+own CSS overflow fix in `living-evidence.css` targets shared class names/structure, not either
+side's specific markup, so it still applies either way.
+
+**Post-merge bug found in the UI dev's own file:** their `RoleSearchBar.tsx` had a genuine CSS
+syntax bug — `.rsb-input { ... }` was missing its closing brace before `.rsb-compact .rsb-input`,
+which corrupts the rest of that `<style jsx>` block's parse. Effect: the suggestion dropdown fell
+back to global default button styling (solid orange pills, no grouping/labels) instead of the
+intended `.rsb-dropdown`/`.rsb-opt` look — this is what the owner's screenshot caught. One-line
+fix (added the missing `}`), verified brace-balanced, `tsc` clean, redeployed. Committed
+separately as `c8c9b7d` since the merge itself (`6904ad4`) had already been pushed.
+
+Other conflicts, all copy-only — took the UI dev's new hero headlines/subcopy on Home, Directory,
+and Recruitment (`directory-design.css`, `directory/page.tsx`, `app/page.tsx`,
+`recruitment/page.tsx`), dropping the `.le-hero-decor` decorative div per their simplification on
+all three. `app/page.tsx`: their new copy no longer displays live company/role counts, so the
+`companyTotal`/`jobTotal`/`recruitmentLive` fetch effect added in the previous pass (see prior
+entry) became dead code — removed it and its now-unused imports (`getJobs`, `searchSellers`,
+`useConfig`) rather than leave it firing two pointless API calls per page load.
+
+`tsc` clean throughout. Committed `6904ad4` (merge) + `c8c9b7d` (brace fix), pushed.
+
+---
+
+### Pulled `origin/design` again (`3d404fc..2c01e52`) — merged 2026-09-28
+
+2 new commits: "complete visual direction across secondary pages" (`9bbd41d`), "audit and unify
+frontend visual system" (`2c01e52`). 306 non-image files changed — mostly a broad className/token
+consistency sweep (2-4 line diffs across admin tabs, dashboard tabs, home components). Larger
+rewrites: `counter-soft-system.css` (432 lines), `SectionSearchDock.tsx` (483 lines), `Navbar.tsx`,
+`JobFilters.tsx`, `CategoryLanding.tsx`, `UnifiedListingWorkbench.tsx`, `recruitment/jobs/page.tsx`,
+`post-job/page.tsx`, `pricing/page.tsx`, `sell/page.tsx`.
+
+Clean auto-merge, zero conflicts this pass. `tsc` clean; both servers run locally for owner review
+(`/`, `/directory`, `/recruitment`, `/search`, `/recruitment/jobs` all 200) before commit.
+
+Owner's review of the running app found real regressions against the old pre-redesign pages —
+logged under "Directory public pages ... punch-list sent to UI dev" above, not fixed here.
+Committed `4b0e64d`, pushed.
 
 ---
 
