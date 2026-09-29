@@ -39,6 +39,16 @@ function humanize(value?: string | null): string {
   return value ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "";
 }
 
+function listingsWithDistinctLeadMedia(listings: Listing[]) {
+  const used = new Set<string>();
+  return listings.map((item) => {
+    const lead = item.media.find((media) => media.type !== "video" && !used.has(media.url));
+    if (!lead) return { ...item, media: [] };
+    used.add(lead.url);
+    return { ...item, media: [lead, ...item.media.filter((media) => media.url !== lead.url)] };
+  });
+}
+
 // Icon-chip section label — same visual language as the category page's
 // "Shop by category" / "Top brands" (SubcategoryTiles.tsx / BrandRail.tsx):
 // a tinted icon chip + bold heading, alternating blue/green down the page so
@@ -279,6 +289,8 @@ export default function ListingDetailPage() {
       contactMobile: null,
     };
   }, [listing, profile]);
+  const sellerListingCards = useMemo(() => listingsWithDistinctLeadMedia(sellerListings), [sellerListings]);
+  const suggestedListingCards = useMemo(() => listingsWithDistinctLeadMedia(similar), [similar]);
 
   if (loading) {
     return (
@@ -562,7 +574,7 @@ export default function ListingDetailPage() {
               )}
             </div>
             <div className="ld-grid">
-              {sellerListings.map((l) => (
+              {sellerListingCards.map((l) => (
                 <ListingCard key={l.id} listing={l} />
               ))}
             </div>
@@ -572,11 +584,10 @@ export default function ListingDetailPage() {
         {/* SIMILAR PRODUCTS */}
         {similar.length > 0 && (
           <section style={{ marginTop: 48 }}>
-            <SectionLabel icon={<GridGlyphIcon />} tone="green">
-              {listing.type === "service" ? "Similar services" : t("listing.similar", "Similar products")}
-            </SectionLabel>
+            <SectionLabel icon={<GridGlyphIcon />} tone="green">You may also like</SectionLabel>
+            <p className="ld-section-intro">Related {listing.type === "service" ? "services" : "products"} from other companies in this category.</p>
             <div className="ld-grid">
-              {similar.map((l) => (
+              {suggestedListingCards.map((l) => (
                 <ListingCard key={l.id} listing={l} />
               ))}
             </div>
@@ -615,6 +626,13 @@ export default function ListingDetailPage() {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
           gap: 20px;
+        }
+        .ld-section-intro {
+          max-width: 62ch;
+          margin: -6px 0 18px;
+          color: var(--muted);
+          font-size: 14px;
+          line-height: 1.6;
         }
         .listing-terms-grid {
           display: grid;

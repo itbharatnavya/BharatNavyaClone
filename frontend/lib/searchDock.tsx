@@ -58,7 +58,6 @@ interface SearchDockValue {
   roleQuery: string;
   roleCity: string;
   roleWorkplace: string;
-  universalQuery: string;
   setProgress: (progress: number, chips?: string[]) => void;
   setQuery: (query: string) => void;
   setCity: (city: string) => void;
@@ -66,7 +65,6 @@ interface SearchDockValue {
   setRoleQuery: (query: string) => void;
   setRoleCity: (city: string) => void;
   setRoleWorkplace: (workplace: string) => void;
-  setUniversalQuery: (query: string) => void;
   // Call immediately before a `router.push` that a real search action (submit,
   // or picking a category/listing suggestion) triggers — see file header.
   markSearchNav: () => void;
@@ -82,7 +80,6 @@ const SearchDockContext = createContext<SearchDockValue>({
   roleQuery: "",
   roleCity: "",
   roleWorkplace: "All workplaces",
-  universalQuery: "",
   setProgress: () => {},
   setQuery: () => {},
   setCity: () => {},
@@ -90,7 +87,6 @@ const SearchDockContext = createContext<SearchDockValue>({
   setRoleQuery: () => {},
   setRoleCity: () => {},
   setRoleWorkplace: () => {},
-  setUniversalQuery: () => {},
   markSearchNav: () => {},
 });
 
@@ -103,7 +99,6 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
   const [roleQuery, setRoleQuery] = useState("");
   const [roleCity, setRoleCity] = useState("");
   const [roleWorkplace, setRoleWorkplace] = useState("All workplaces");
-  const [universalQuery, setUniversalQuery] = useState("");
 
   const pathname = usePathname();
   const pendingSearchNavRef = useRef(false);
@@ -143,7 +138,6 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
       roleQuery,
       roleCity,
       roleWorkplace,
-      universalQuery,
       setProgress,
       setQuery,
       setCity,
@@ -151,10 +145,9 @@ export function SearchDockProvider({ children }: { children: React.ReactNode }) 
       setRoleQuery,
       setRoleCity,
       setRoleWorkplace,
-      setUniversalQuery,
       markSearchNav,
     }),
-    [progress, chips, query, city, selectedCategory, roleQuery, roleCity, roleWorkplace, universalQuery, markSearchNav, setProgress]
+    [progress, chips, query, city, selectedCategory, roleQuery, roleCity, roleWorkplace, markSearchNav, setProgress]
   );
 
   return <SearchDockContext.Provider value={value}>{children}</SearchDockContext.Provider>;

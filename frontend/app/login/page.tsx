@@ -181,8 +181,6 @@ export default function LoginPage() {
         style={{
           width: "44%",
           flexShrink: 0,
-          background: "linear-gradient(180deg, var(--brand-tint), #fff)",
-          borderRight: "1px solid var(--border)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

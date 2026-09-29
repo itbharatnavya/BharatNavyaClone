@@ -1,12 +1,14 @@
 # Bharat Navya — canonical handoff
 
-Updated: 28 September 2026
+Updated: 29 September 2026
 
 Official branch: `design`
 
 Official application: `frontend/`
 
-Official UI implementation checkpoint: `2c01e52` (the parent checkpoint for this workspace-hygiene update)
+Official committed checkpoint: the current tip of `origin/design`; verify it with `git rev-parse origin/design` before continuing.
+
+Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. Public deployment remains a separate verification step.
 
 Git identity: `itbharatnavya <314251907+itbharatnavya@users.noreply.github.com>`
 
@@ -37,7 +39,9 @@ The current product is not the frozen Vite prototype. If a legacy document confl
 
 ## 3. Git and working-tree state
 
-- `design` and `origin/design` were aligned at `2c01e52` before this handoff/archive cleanup.
+- `design` and `origin/design` are aligned after the Mahir reconciliation/search-repair push. Verify the exact checkpoint locally instead of relying on a copied SHA in this document.
+- The reconciliation and search-recommendation repair are available on GitHub in `origin/design`.
+- Do not report the current work as publicly deployed until the deployment SHA and production routes have been verified.
 - The account configured in this checkout is `itbharatnavya`, as requested.
 - Recent official checkpoints:
   - `2c01e52` — audit and unify frontend visual system
@@ -47,6 +51,15 @@ The current product is not the frozen Vite prototype. If a legacy document confl
   - `aace218` — polish Bharat Navya frontend experience
 - Pre-existing dirty files outside this handoff task include product/design documents, Feni PDFs, and backend JSON fixtures. They belong to prior/user work. Do not reset, replace, or sweep them into an unrelated commit.
 - In particular, do not casually commit `backend/DB/*`, `Website content (Feni)/*`, `DESIGN.md`, `HANDOVER.md`, `MIGRATION-CAPABILITY-MATRIX.md`, `PRODUCT-DESIGN-MIGRATION.md`, or `frontend-design-guide.md` merely because they appear in `git status`.
+- The approved frontend requirements and acceptance criteria for the current pass are in `frontend/docs/MAHIR_FEEDBACK_RECONCILIATION_SPEC.md`.
+- `HANDOVER.md` is modified only to identify it as legacy and point here; that pointer is included with this handoff update.
+
+### Search-integration finding
+
+- The expected recommendation work was present on `origin/feature/design-integration` but was not in the ancestry of `design`; merge base was `2c01e52`.
+- Relevant integration commits included `c77ff8f` (search suggestions and dropdown clipping), `93e6bab` (category suggestions route into the current search filter), and `fc42ae0` (unified search flow and removal of the stale Home dock).
+- The repair was ported surgically into the active working tree rather than merging the feature branch over the current dirty frontend.
+- Recruitment employer suggestions originally depended on a backend free-text behavior absent on `design`. The frontend now combines the existing supported `q=` and `company=` job queries, so employer recommendations work without any backend or API-contract change.
 
 ## 4. Product boundary and data rules
 
@@ -92,14 +105,18 @@ Primary live style sources:
 - Legacy-looking route families were bridged into the current typography, palette, spacing, radius, control, and surface hierarchy.
 - The latest audit checked 80 public/auth route states across desktop and mobile, plus 50 admin states and 64 workspace states, without hard render failures in the audited environment.
 - Admin tables, toolbar controls, seller/employer workspaces, pricing admin calls, auth viewport fit, and overflow-prone secondary pages received targeted repairs in the latest checkpoint.
-- Dropdowns and search suggestions were brought into the same visual language.
+- Dropdowns and search suggestions use the Counter border, radius, ivory surface, focus, typography, and icon treatment rather than browser-default or legacy styling.
+- A shared lower-left `BackToTop` control is mounted from the root layout. It appears after approximately 600px, is keyboard accessible, avoids lower-right controls, and respects reduced motion.
+- The product mark uses the selected BN-arrow asset at the existing public URL; the Chakra and proposed tagline are not displayed.
+- The floating helper is consistently named **Navya AI Agent** in visible and accessible copy. It is limited to the public hub routes defined in `ChatAssistant`; dense category, company, listing, employer, and job routes do not receive a conflicting floating assistant.
 
 ### Home `/`
 
 - `HomeAgent` is the hero **Ask Navya** discovery/search experience. It is visually and conceptually distinct from a conventional listing search box.
 - The compact suite layout has a smaller Navya card and right-side Directory, Recruitment, and Growth OS cards. Growth OS is marked **Coming soon**.
 - Ask Navya opens a conversational modal. Its stack must remain above all page media while the page or modal scrolls.
-- The separate bottom-right `ChatAssistant` remains. It is a future-purpose navigation/help assistant, icon-only while closed, named when open, and may show a subtle discovery nudge. Do not merge it with Ask Navya.
+- Home exposes **Ask Navya** as its only AI entry point. The stale `UniversalDockedSearch` and its Home scroll/dock state were removed, so scrolling no longer replaces the navigation or disables the current Ask Navya experience.
+- The separate bottom-right **Navya AI Agent** is used only on the allowed supporting hub routes. Do not merge it with Ask Navya.
 - Directory is green; Recruitment is saffron. Recruitment must not blend into the blue hero or become a black card.
 - The former oversized “Clarity follows the whole decision” section is a smaller, focused journey rather than multiple competing cards.
 - A clearly labelled promotional surface and current blog content remain intact.
@@ -107,7 +124,8 @@ Primary live style sources:
 ### Directory home `/directory`
 
 - Feni-approved page content is integrated while preserving live data sections.
-- The hero search provides as-you-type suggestions and keyboard selection.
+- The hero and docked search use local drafts and provide grouped, API-backed category, company, and product/service recommendations with keyboard selection. A partial typed query is not committed to shared state until submit or selection.
+- Suggestion choices route to the current filtered `/search`, `/seller/:slug`, or `/listing/:id` destinations rather than legacy category/list routes.
 - Company statuses use `getStories("seller")` and remain visible as a truthful empty state when no active status exists.
 - The post-hero band is 2:1: statuses on the left, boosted-company placement on the right; it stacks in that order on narrow screens.
 - Service families, providers, products, journey, company insights, closing CTA, ads, and API listings remain present.
@@ -115,7 +133,7 @@ Primary live style sources:
 ### Recruitment home `/recruitment`
 
 - Feni-approved page content is integrated and role-family descriptions map to live API categories without renaming API labels/routes.
-- The hero search provides as-you-type role/company suggestions and keyboard selection.
+- The hero and docked search provide grouped job-family, role, and employer recommendations with keyboard selection. Employer matching uses the existing `company=` jobs filter alongside the ordinary `q=` role search.
 - Hiring statuses use `getStories("employer")`; blogs/updates are separate.
 - The post-hero band mirrors Directory: 2:1 statuses plus boosted-employer/recruiter placement.
 - Fresh roles, hiring companies, application journey, updates, closing profile section, ads, and live job behavior remain present.
@@ -128,6 +146,9 @@ Primary live style sources:
 - Basic filters are immediately visible; fuller filters remain available without a redundant second “Filters” heading.
 - The search hero uses a distinguishable raised surface with a white field.
 - The result promotion is separated by the shared gap. The desktop filter rail is shorter with a labelled ad below it.
+- Search recommendations expose categories, companies, products/services, and a final free-text search action using live data.
+- The `UnifiedListingWorkbench` URL-sync effect now skips no-op replacements and no longer races genuine suggestion navigation. Verified recommendation clicks leave `/search` for the intended seller/listing route.
+- The results header explicitly permits the suggestion menu to overflow, preventing the dropdown from being clipped by the rounded header surface.
 
 ### Recruitment results `/recruitment/jobs`
 
@@ -141,18 +162,26 @@ Primary live style sources:
 - Category/city, brand, collection, listing/product, seller/company, employer, job, candidate/profile, Create Product (`/sell`), post-job, pricing, login/register, admin, seller dashboard, and recruitment dashboard routes were included in the secondary-page visual pass.
 - Login and registration are designed to fit a normal desktop viewport with balanced top/bottom space and no unnecessary page scroll; re-check at actual viewport sizes after auth changes.
 - Seller/company hero media and metrics use intentional spacing rather than touching.
+- Category routes use the unified Directory workbench without the legacy List/Grid toggle or duplicated filter bar.
+- Listing detail spacing is corrected around the share/report sidebar and labelled advertising. Recommendations prefer distinct real listing imagery, use an honest missing-image treatment when necessary, and include suggested listings without floating-control overlap.
+- Company profiles restore separate Services, Products, Work evidence, and Reviews sections with API-backed data and truthful empty states. Internal scroll constraints were removed, ad spacing was increased, and the inquiry card no longer overlaps its CTA.
+- Directory and Recruitment status rails use circular story controls and retain truthful compact empty states rather than fabricated activity.
+- Login and registration use a full-height desktop context panel without unused strips above or below it; mobile controls retain a minimum readable input size.
 - Feni content was integrated into Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, and Register while preserving behavior and localization boundaries.
 
 ## 7. Verification evidence and how to re-check
 
-Evidence recorded for the latest official checkpoint:
+Evidence recorded for the reconciliation:
 
 - `npm run validate:design` passed.
 - `npx tsc --noEmit` passed.
 - `npm run build` passed.
 - `git diff --check` passed.
-- Public/auth, admin, and workspace route matrices were rendered at desktop and mobile widths without hard failures.
-- Localhost was restored on port 3000 after build/audit work.
+- `/`, `/directory`, `/search`, `/recruitment`, and `/recruitment/jobs` returned HTTP 200 after the build.
+- Live browser checks confirmed Directory category/company/listing suggestions, keyboard selection into filtered results, Recruitment employer suggestions, workplace dropdown submission into filtered jobs, Counter-themed dropdown/select styling, no horizontal overflow in the checked Directory state, and correct navigation to real seller and employer records.
+- Live browser checks confirmed Home keeps Ask Navya after scrolling and no longer mounts the stale universal search dock.
+- The frontend development server was restarted after the production build and restored on port 3000.
+- Full final screenshot approval is still pending. Do not treat these automated and targeted checks as the owner's visual approval.
 
 Run these from `frontend/` after changes:
 
@@ -205,11 +234,11 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-1. Decide and implement public backend hosting, then configure `BACKEND_URL` for Vercel.
-2. Verify the production deployment is built from the intended `origin/design` commit.
-3. Re-run API-backed smoke tests for statuses, blogs, jobs, listings, ads, suggestions, login, profiles, and applications.
-4. Continue screenshot-led polish only when a concrete route/state is visibly inconsistent. Fix shared causes before page-specific overrides.
-5. Preserve the distinct Ask Navya and bottom-right AI Assistant concepts until Mahir defines the assistant’s final purpose.
+1. Review the pushed reconciliation at desktop, phone width, and 200% zoom on the agreed route matrix; log any new visual regressions as a follow-up rather than rewriting this checkpoint.
+2. Verify the resulting GitHub/Vercel deployment SHA before calling the work publicly shipped.
+3. Decide and implement public backend hosting, then configure `BACKEND_URL` for Vercel.
+4. Re-run production API-backed smoke tests for statuses, blogs, jobs, listings, ads, suggestions, login, profiles, and applications.
+5. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles.
 
 ## 11. Non-negotiable hygiene
 

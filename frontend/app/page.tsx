@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import HomeAgent from "@/components/home/HomeAgent";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getBlogs } from "@/lib/api";
 import type { Blog } from "@/lib/types";
-import { useSearchDock } from "@/lib/searchDock";
 
 function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
 function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
@@ -64,10 +63,6 @@ const journey = [
 ];
 
 export default function BharatNavyaHome() {
-  const { docked, setProgress } = useSearchDock();
-  const searchAnchorRef = useRef<HTMLDivElement>(null);
-  const heroFocusedRef = useRef(false);
-  const pendingDockRef = useRef<boolean | null>(null);
   const [sellerBlogs, setSellerBlogs] = useState<Blog[]>([]);
   const [employerBlogs, setEmployerBlogs] = useState<Blog[]>([]);
   const [activeStandardId, setActiveStandardId] = useState("identity");
@@ -84,27 +79,6 @@ export default function BharatNavyaHome() {
     return () => { active = false; };
   }, []);
 
-  useEffect(() => {
-    const anchor = searchAnchorRef.current;
-    if (!anchor || typeof IntersectionObserver === "undefined") return;
-    const searchField = anchor.querySelector("form") || anchor;
-    const observer = new IntersectionObserver(([entry]) => {
-      const shouldDock = !entry.isIntersecting && entry.boundingClientRect.bottom <= 72;
-      if (heroFocusedRef.current && shouldDock) { pendingDockRef.current = true; return; }
-      pendingDockRef.current = null;
-      setProgress(shouldDock ? 1 : 0);
-    }, { threshold: 0.08, rootMargin: "-72px 0px 0px 0px" });
-    observer.observe(searchField);
-    return () => { observer.disconnect(); setProgress(0); };
-  }, [setProgress]);
-
-  useEffect(() => {
-    const searchField = searchAnchorRef.current?.querySelector("form");
-    searchField?.toggleAttribute("inert", docked);
-    if (docked) searchField?.setAttribute("aria-hidden", "true");
-    else searchField?.removeAttribute("aria-hidden");
-  }, [docked]);
-
   const guides = [...sellerBlogs, ...employerBlogs].filter((blog) => blog.coverImage).slice(0, 3);
   const activeStandard = standards.find((standard) => standard.id === activeStandardId) || standards[0];
   const activeJourney = journey[activeJourneyIndex];
@@ -113,7 +87,7 @@ export default function BharatNavyaHome() {
     <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
       <h1 id="home-title"><span>The B2B platform</span> built for what’s next.</h1>
       <p>Discover products, evaluate suppliers, explore roles, and turn everyday business requirements into new opportunities.</p>
-      <div id="ask-navya" ref={searchAnchorRef} className="bn-home-suite" onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}>
+      <div id="ask-navya" className="bn-home-suite">
         <HomeAgent variant="feature" />
         <div className="le-gateways" aria-label="Explore Bharat Navya">
           <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Businesses, products, services and company information</small></span><b aria-hidden>→</b></Link>

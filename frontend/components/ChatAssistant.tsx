@@ -25,7 +25,7 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Hi! I’m the AI Assistant. I can help you navigate Bharat Navya and understand where to go next.",
+    "Hi! I’m Navya AI Agent. I can help you navigate Bharat Navya and understand where to go next.",
 };
 
 // Client-side quick starters (fill + send). API suggestions come back as links.
@@ -35,6 +35,16 @@ const QUICK_PROMPTS = [
   "Show remote operations roles",
   "How do I publish a listing?",
 ];
+
+const ASSISTANT_HUB_ROUTES = new Set([
+  "/directory",
+  "/search",
+  "/recruitment",
+  "/recruitment/jobs",
+  "/about",
+  "/pricing",
+  "/blog",
+]);
 
 function AssistantIcon({ size = 16 }: { size?: number }) {
   return (
@@ -68,12 +78,10 @@ export default function ChatAssistant() {
   const [loading, setLoading] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showNudge, setShowNudge] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
-  const hasOpenedRef = useRef(false);
 
   // Auto-scroll to the latest message.
   useEffect(() => {
@@ -102,31 +110,11 @@ export default function ChatAssistant() {
 
   // Feature-gated (default on). Task-heavy workspaces keep the assistant out of
   // the way of forms, tables and persistent actions; hooks stay above this gate.
+  const embeddedAgentRoute = pathname === "/";
   const workspaceRoute = pathname === "/login" || pathname === "/register" || pathname === "/sell" || pathname === "/post-job" || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/profile" || pathname === "/shortlist" || pathname === "/admin" || pathname.startsWith("/admin/");
+  const assistantHubRoute = ASSISTANT_HUB_ROUTES.has(pathname);
 
-  useEffect(() => {
-    if (featureFlags.ai === false || workspaceRoute || open) {
-      setShowNudge(false);
-      return;
-    }
-
-    let hideTimer: number | undefined;
-    const showBriefly = () => {
-      setShowNudge(true);
-      window.clearTimeout(hideTimer);
-      hideTimer = window.setTimeout(() => setShowNudge(false), 5000);
-    };
-    const firstTimer = window.setTimeout(showBriefly, hasOpenedRef.current ? 45000 : 7000);
-    const repeatTimer = window.setInterval(showBriefly, 60000);
-
-    return () => {
-      window.clearTimeout(firstTimer);
-      window.clearTimeout(hideTimer);
-      window.clearInterval(repeatTimer);
-    };
-  }, [featureFlags.ai, open, pathname, workspaceRoute]);
-
-  if (featureFlags.ai === false || workspaceRoute) return null;
+  if (featureFlags.ai === false || embeddedAgentRoute || workspaceRoute || !assistantHubRoute) return null;
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -160,7 +148,7 @@ export default function ChatAssistant() {
       ]);
       if (typeof res.remaining === "number") setRemaining(res.remaining);
     } catch {
-      setError("Couldn't reach the assistant. Please try again.");
+      setError("Couldn't reach Navya AI Agent. Please try again.");
       setMessages((prev) => [
         ...prev,
         {
@@ -183,8 +171,6 @@ export default function ChatAssistant() {
   }
 
   function openAssistant() {
-    hasOpenedRef.current = true;
-    setShowNudge(false);
     setOpen(true);
   }
 
@@ -193,24 +179,14 @@ export default function ChatAssistant() {
       {/* Floating bubble */}
       {!open && (
         <div className="fixed bottom-6 right-6 z-[120] flex items-center gap-2">
-          {showNudge && (
-            <button
-              type="button"
-              onClick={openAssistant}
-              className="animate-fade-in max-w-[12rem] rounded-xl border border-border bg-surface px-3 py-2 text-left text-xs font-semibold leading-snug text-ink shadow-pop"
-            >
-              Need help navigating?
-            </button>
-          )}
           <button
             ref={triggerRef}
             type="button"
-            aria-label="Open AI Assistant"
+            aria-label="Open Navya AI Agent"
             aria-expanded={open}
             aria-controls="bharat-navya-assistant"
             onClick={openAssistant}
-            className="inline-flex h-[52px] w-[52px] items-center justify-center rounded-full text-white shadow-pop transition-transform hover:-translate-y-0.5 active:translate-y-0"
-            style={{ background: "#172033" }}
+            className="navya-agent-trigger inline-flex h-[52px] w-[52px] items-center justify-center rounded-full text-white transition-transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <AssistantIcon size={23} />
           </button>
@@ -223,18 +199,18 @@ export default function ChatAssistant() {
           id="bharat-navya-assistant"
           role="dialog"
           aria-modal="false"
-          aria-label="AI Assistant"
-          className="fixed z-[120] flex flex-col overflow-hidden border border-border bg-surface shadow-pop
+          aria-label="Navya AI Agent"
+          className="navya-agent-panel fixed z-[120] flex flex-col overflow-hidden bg-surface
                      inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
                      sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:h-[560px] sm:max-h-[calc(100vh-2.5rem)]"
         >
           {/* Header */}
-          <div className="flex flex-shrink-0 items-center gap-2.5 border-b border-border bg-surface px-4 py-3 text-ink">
+          <div className="navya-agent-header flex flex-shrink-0 items-center gap-2.5 border-b border-border bg-surface px-4 py-3 text-ink">
             <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand">
               <AssistantIcon size={18} />
             </span>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold leading-tight">AI Assistant</div>
+              <div className="text-sm font-semibold leading-tight">Navya AI Agent</div>
               <div className="text-[11px] leading-tight text-muted">
                 {remaining !== null ? `AI · ${remaining} left this hour` : "Here to help you navigate"}
               </div>
@@ -242,12 +218,17 @@ export default function ChatAssistant() {
             <button
               ref={closeRef}
               type="button"
-              aria-label="Close assistant"
+              aria-label="Close Navya AI Agent"
               onClick={closeAssistant}
               className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink"
             >
               <CloseIcon />
             </button>
+            <span className="navya-agent-signal" aria-hidden>
+              <i />
+              <i />
+              <i />
+            </span>
           </div>
 
           {/* Messages */}
@@ -345,7 +326,7 @@ export default function ChatAssistant() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything…"
-              aria-label="Message the assistant"
+              aria-label="Message Navya AI Agent"
               className="input flex-1 min-w-0"
               style={{ borderRadius: 999 }}
               disabled={loading}

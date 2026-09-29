@@ -9,7 +9,6 @@ import NotificationBell from "./NotificationBell";
 import Avatar from "./Avatar";
 import { useSearchDock } from "@/lib/searchDock";
 import { DirectoryDockedSearch, RecruitmentDockedSearch } from "./SectionSearchDock";
-import { UniversalDockedSearch } from "./home/UniversalSearch";
 import {
   isCounterPublicRoute,
   isCounterWorkspaceRoute,
@@ -35,10 +34,9 @@ export default function Navbar() {
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const { progress } = useSearchDock();
-  const homeDocked = pathname === "/" && progress > 0;
   const directoryDocked = (pathname === "/directory" || pathname === "/search") && progress > 0;
   const recruitmentDocked = (pathname === "/recruitment" || pathname === "/recruitment/jobs") && progress > 0;
-  const searchDocked = homeDocked || directoryDocked || recruitmentDocked;
+  const searchDocked = directoryDocked || recruitmentDocked;
   const counterPublic = isCounterPublicRoute(pathname);
   const counterWorkspace = isCounterWorkspaceRoute(pathname);
 
@@ -66,7 +64,6 @@ export default function Navbar() {
         </nav>}
         {directoryDocked && <DirectoryDockedSearch />}
         {recruitmentDocked && <RecruitmentDockedSearch />}
-        {homeDocked && <UniversalDockedSearch />}
         <div className="bn-header-actions">
           {!loading && user && featureFlags.notifications && <NotificationBell />}
           {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}

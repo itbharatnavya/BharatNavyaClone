@@ -1,4 +1,11 @@
-# HANDOVER.md — developer setup & handover
+# HANDOVER.md — legacy developer setup reference
+
+> **Superseded for active Bharat Navya design work (7 September 2026).** Read
+> [`HANDOFF.md`](./HANDOFF.md) first. It is the canonical record of the `design`
+> branch, `frontend/` migration, current responsive interactions, preview flags,
+> verification state, and approval requirements. Keep this file only for older
+> backend setup, security, storage, and deployment background; its BharatSource
+> suite navigation and port assumptions are not the current design authority.
 
 Welcome to **BharatSource**. This gets you running in ~5 minutes and points you at the
 deeper docs. If you're an AI agent, read **CLAUDE.md** first. Before touching security or
