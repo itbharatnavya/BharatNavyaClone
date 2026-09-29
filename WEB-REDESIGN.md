@@ -925,6 +925,84 @@ Committed `4b0e64d`, pushed.
 
 ---
 
+### Pulled `origin/design` again (`2c01e52..4e92ac7`) — merged 2026-09-29
+
+3 new commits: "establish canonical frontend handoff" (`acd81c0`), "restore original repository
+layout" (`964d4d1`), "reconcile Mahir feedback" (`4e92ac7`). 29 non-image files changed
+(+1303/-593), plus the logo binary. New doc: `frontend/docs/MAHIR_FEEDBACK_RECONCILIATION_SPEC.md`
+— a formal spec (FR-1..24, NFR-A/R/V, AC-1..19) for a named client review round ("Mahir's review",
+reviewer Parth Akholkar, source: "Approved implementation plan and BN - IT WhatsApp review"). Read
+in full before merging — it's the actual client-change record this pass implements; summarized
+below, not reproduced.
+
+**What the spec covers, and what's now live:**
+- **Brand mark (FR-1/FR-2)** — `bharat-navya-logo.png` replaced with the approved BN-arrow mark,
+  no Ashoka Chakra, no tagline; text wordmark "Bharat Navya" kept in `Navbar.tsx`/`Footer.tsx`.
+  Verified: file shrank 327KB → 27KB (new asset, not a recompress).
+- **Assistant renamed (FR-3/FR-4)** — floating widget is now "Navya AI Agent" everywhere
+  (`ChatAssistant.tsx`: trigger aria-label, panel title, greeting copy) while Home's hero guide
+  stays "Ask Navya" — explicitly two distinct, non-conflated names per FR-3/AC-3. One assistant
+  entry point per route (FR-15) — the legacy floating requirement widget is not globally mounted.
+- **Back-to-top (FR-9/FR-10/FR-11)** — new `components/BackToTop.tsx` (53 lines), mounted once in
+  `app/layout.tsx`'s shared shell. Verified present and wired.
+- **Counter token pass (FR-5/FR-6)** — `counter-soft-system.css` +326 lines: strong-border token,
+  shared grid rhythm/min-height on the three Home gateway cards (Directory/Recruitment/Growth OS
+  — names/states unchanged per OS-4), flat indigo/saffron/green signal rail (no gradients, NFR-V1).
+- **Auth full-height panel (FR-13)** — `login/page.tsx`/`register/page.tsx` trimmed (-2 lines
+  each) to drop the unused strip above/below the desktop context panel; OTP/email-password/
+  redirect/validation behaviour untouched per FR-8/FR-12 (confirmed no Google/intl-phone control
+  added — OS-1/OS-2 explicitly out of scope, consistent with this branch not touching
+  `oauth.routes.js`/`GoogleSignInButton.tsx`).
+- **Circular truthful statuses (FR-14)** — `StoryRail.tsx` (-107/+... net smaller) moves to
+  circular status portraits; empty state stays compact, no simulated activity.
+- **Company profile completeness (FR-20)** — `seller/[slug]/page.tsx` now renders all four:
+  Services, Products, Work evidence, Reviews — each with a truthful empty state string (not a
+  hidden section), closing the "Reviews and Products sections are missing entirely" gap from the
+  2026-09-28 punch-list. Verified via source read (`CompanyOfferings` for Services/Products, plain
+  sections for Work evidence/Reviews, each with its own "No … yet" fallback).
+- **Recommendation imagery (FR-19)** — `ListingCard.tsx` (+45/-… ) gets an honest no-image
+  treatment instead of repeating the same stock photo across "More services from this company"
+  cards — closes another 2026-09-28 punch-list item.
+- **Detail-page ad spacing (FR-16)**, **category-page unification (FR-17)**, **floating-control
+  overlap (FR-18)** — `CategoryLanding.tsx`, `directory-design.css`, `listing/[id]/page.tsx` touched;
+  these directly close the remaining 2026-09-28 punch-list items (List/Grid toggle on category
+  pages, floating chat bubble overlap, Post-Requirement/chat-bubble overlapping the last listing
+  card). Not independently re-verified pixel-by-pixel this pass — spot-checked via `tsc` + 200s
+  only; flag for a follow-up visual pass against the exact punch-list screenshots if regressions
+  reappear.
+- **Search suggestions rewritten (FR-21/22/23/24)** — see conflict resolution below.
+
+**Two conflicts, both resolved by taking `origin/design`:**
+- `SectionSearchDock.tsx` (522 → 367 lines) — the UI dev rewrote both Directory's and
+  Recruitment's suggestion dropdowns from scratch again. Unlike the 2026-09-22 collision (their
+  Directory version back then had **no** company/seller matching, a real regression this session
+  fought to keep out), this rewrite was checked line-by-line before accepting: `searchSellers`
+  company matching is present for Directory, category-suggestion routing still goes to
+  `/search?category=<slug>`, the pinned `Search for "…"` row and full keyboard/combobox nav are
+  all intact. Taken wholesale (`git checkout --theirs`) — the earlier gap this doc flagged as
+  "worth a future pass" is now closed by the UI dev's own work, no manual porting needed.
+- `UnifiedListingWorkbench.tsx` — one-hunk conflict in the URL-sync effect. Both sides kept the
+  no-op-guard fix from the 2026-09-16/17 race-condition bug (skip `router.replace()` when the
+  computed target already equals the current URL, so a same-page filter-sync doesn't cancel a
+  suggestion click's real `router.push()`); origin/design's version additionally adds
+  `fixedCategory` to the effect's dependency array. Took origin/design's version — same fix,
+  cleaner deps.
+
+**Verification:** `tsc --noEmit` clean. Both dev servers were already running locally (backend
+`:4000`, frontend `:3000`); spot-checked `/`, `/directory`, `/recruitment`, `/search`,
+`/recruitment/jobs`, `/listing/1`, `/search?category=technical-textiles` — all 200 post-merge.
+Committed `342507d`, not yet pushed. Local uncommitted WIP (`backend/scripts/seed-demo-stories.js`
+— an `upsertStory()` fix for a duplicate-key abort bug, unrelated to this pull) was stashed before
+merging and restored after, untouched by the merge.
+
+**Not yet done this pass:** full visual/screenshot re-check of the 2026-09-28 Directory punch-list
+items against this new code (spacing, sponsored-card overlap, sidebar CTA overlap, inner-section
+scroll) — the spec's FR-16/17/18/20 line up with those items but weren't independently confirmed
+pixel-for-pixel here, only via source presence + `tsc`/200-status. Promote to `feature/backend-
+phase1` only after that visual pass, per the owner review checklist above.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).
