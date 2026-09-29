@@ -1,7 +1,7 @@
 "use client";
 
-// Shared category / category-in-city landing. Breadcrumbs · sub-category chips ·
-// faceted results (DiscoveryResults). Friendly empty state for unknown slugs.
+// Shared category / category-in-city landing. Breadcrumbs, sub-category chips,
+// and the same unified listing workbench used by Directory search results.
 
 import React, { useEffect, useState } from "react";
 import { getCategory } from "@/lib/api";
@@ -12,7 +12,7 @@ import { CategoryIcon } from "@/components/CategoryMegaMenu";
 import AdSlider from "@/components/AdSlider";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
-import DiscoveryResults from "./DiscoveryResults";
+import UnifiedListingWorkbench from "@/components/directory/UnifiedListingWorkbench";
 import SubcategoryChips from "./SubcategoryChips";
 import SubcategoryTiles from "./SubcategoryTiles";
 import BrandRail from "./BrandRail";
@@ -184,29 +184,13 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
         {children && children.length > 0 && <SubcategoryTiles items={children} />}
         <BrandRail slug={slug} />
 
-        <DiscoveryResults
-          baseQuery={
-            city
-              ? { category: slug, city, near: city }
-              : { category: slug }
-          }
-          initialFilters={initialFilters}
-          query={query}
-          syncUrl
-          near={city}
-          adRail
-          subcategories={(children || []).map((c) => ({
-            slug: c.slug,
-            name: c.name,
-            count: c.listingCount,
-          }))}
-          defaultSort="newest"
-          emptyTitle={t("category.empty.title", "No listings here yet")}
-          emptyMessage={t(
-            "category.empty.message",
-            "Be the first to list in this category, or adjust your filters to see more."
-          )}
-        />
+        <div className="directory-design directory-results directory-listing-results counter-category-results">
+          <UnifiedListingWorkbench
+            query={query || ""}
+            initialFilters={{ ...initialFilters, city: city || initialFilters?.city, sort: initialFilters?.sort || "newest" }}
+            fixedCategory={slug}
+          />
+        </div>
       </div>
     </div>
   );

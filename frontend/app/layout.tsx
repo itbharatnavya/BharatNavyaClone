@@ -19,8 +19,8 @@ import { SearchDockProvider } from "@/lib/searchDock";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
-import FloatingRfqButton from "@/components/rfq/FloatingRfqButton";
 import RouteProgress from "@/components/RouteProgress";
+import BackToTop from "@/components/BackToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -75,7 +75,7 @@ export default function RootLayout({
                         <Footer />
                       </div>
                       <ChatAssistant />
-                      <FloatingRfqButton />
+                      <BackToTop />
                     </SearchDockProvider>
                   </ShortlistProvider>
                 </AuthProvider>

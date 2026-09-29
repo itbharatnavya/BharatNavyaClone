@@ -17,7 +17,7 @@ export default function Breadcrumbs({ items, className = "" }: BreadcrumbsProps)
   return (
     <nav
       aria-label="Breadcrumb"
-      className={className}
+      className={["breadcrumbs", className].filter(Boolean).join(" ")}
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}
     >
       {items.map((item, i) => {

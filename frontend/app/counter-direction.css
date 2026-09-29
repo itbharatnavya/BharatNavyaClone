@@ -6,6 +6,7 @@
   --counter-ivory: #fffdf7;
   --counter-chalk: #e3ddce;
   --counter-line: #d8d0be;
+  --counter-line-strong: color-mix(in srgb, var(--counter-ink) 58%, var(--counter-line));
   --counter-indigo: #1b3fa0;
   --counter-indigo-soft: #dbe4fb;
   --counter-green: #0e7a50;
@@ -322,9 +323,9 @@
 }
 
 .bn-header.is-counter-public .bn-wordmark img {
-  width: 2.25rem;
-  height: 2.25rem;
-  padding: 0.16rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
   background: transparent;
 }
 
@@ -1420,6 +1421,7 @@
 
 .bn-footer.is-counter-public .bn-wordmark,
 .bn-footer.is-counter-public strong { color: white; }
+.bn-footer.is-counter-public .bn-wordmark img { width: 3rem; height: 3rem; padding: 0; }
 .bn-footer.is-counter-public :is(small, h2, .bn-footer-links a, .bn-footer-bottom) { color: var(--counter-on-ink); }
 .bn-footer.is-counter-public .bn-footer-bottom { border-color: #2c3040; }
 .bn-footer.is-counter-public .bn-footer-grid > div:nth-child(2) li:first-child > a > span:first-child { background: var(--counter-green) !important; color: white !important; }
@@ -1486,6 +1488,8 @@
 }
 
 @media (max-width: 640px) {
+  .bn-header.is-counter-public .bn-wordmark img { width: 2.5rem; height: 2.5rem; }
+
   .counter-support-shell { width: min(calc(100% - 2rem), 90rem); }
   .counter-support-hero { min-height: 0; padding-block: 3.5rem; }
   .counter-support-hero h1 { font-size: clamp(3rem, 13vw, 4rem); }

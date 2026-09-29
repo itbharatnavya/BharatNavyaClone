@@ -115,7 +115,15 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   </section>;
 }
 
-export default function UnifiedListingWorkbench({ query, initialFilters }: { query: string; initialFilters: ListingFilterState }) {
+export default function UnifiedListingWorkbench({
+  query,
+  initialFilters,
+  fixedCategory,
+}: {
+  query: string;
+  initialFilters: ListingFilterState;
+  fixedCategory?: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -137,6 +145,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
   }, [initialKey, initialFilters]);
 
   const serverKey = JSON.stringify({
+    fixedCategory,
     type: filters.type,
     category: filters.category,
     city: filters.city,
@@ -152,7 +161,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     const request: ListingQuery = {
       q: query || undefined,
       type: filters.type || undefined,
-      category: filters.category,
+      category: fixedCategory || filters.category,
       city: filters.city,
       verified: filters.verified,
       featured: filters.featured,
@@ -181,7 +190,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     const next = new URLSearchParams(searchParams.toString());
     ["type", "category", "city", "verified", "featured", "maxPrice", "sort", "page"].forEach((key) => next.delete(key));
     if (filters.type) next.set("type", filters.type);
-    if (filters.category) next.set("category", filters.category);
+    if (!fixedCategory && filters.category) next.set("category", filters.category);
     if (filters.city) next.set("city", filters.city);
     if (filters.verified) next.set("verified", "true");
     if (filters.featured) next.set("featured", "true");
@@ -190,25 +199,15 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
     if (page > 1) next.set("page", String(page));
     const nextQuery = next.toString();
     const target = nextQuery ? `${pathname}?${nextQuery}` : pathname;
-    // Skip the replace entirely when it would be a no-op (target === current URL) —
-    // this effect otherwise still fires once around mount even when filters/sort/page
-    // haven't actually changed from the URL they were seeded from, and a same-URL
-    // replace() racing a genuine navigation elsewhere on this page (e.g. the search
-    // bar's own router.push to /seller/:slug or /listing/:id) is enough to win that
-    // race and silently cancel the real navigation.
-    const current = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
+    const currentQuery = searchParams.toString();
+    const current = currentQuery ? `${pathname}?${currentQuery}` : pathname;
     if (target === current) return;
     router.replace(target, { scroll: false });
-    // Only the user's own filter/sort/page picks should re-run this sync. pathname/
-    // searchParams/router are read here, not reacted to — this component only ever
-    // renders on /search, so pathname never actually changes while it's mounted, but
-    // searchParams gets a new object identity on ANY navigation (including one this
-    // page's search bar is trying to make elsewhere, e.g. to /seller/:slug or
-    // /listing/:id) — including it in deps re-fires this effect mid-navigation and its
-    // router.replace(pathname) wins the race, silently cancelling that navigation back
-    // to /search.
+    // Route objects are read to build the current URL, but navigation itself must
+    // not retrigger this filter-sync effect. Otherwise a same-page replace can
+    // race and cancel a genuine suggestion click to a seller or listing route.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, page]);
+  }, [filters, sort, page, fixedCategory]);
 
   const listings = data?.listings || [];
   const brands = useMemo(() => brandOptions(listings), [listings]);
@@ -268,7 +267,7 @@ export default function UnifiedListingWorkbench({ query, initialFilters }: { que
           </div>
         </div>
         <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
-          <Filters hideHeading value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+          <Filters hideHeading hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
         </div>
       </aside>
       <div className="directory-listing-filter-ad">

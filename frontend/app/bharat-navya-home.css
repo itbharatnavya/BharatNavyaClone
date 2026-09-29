@@ -21,6 +21,15 @@
 .bn-section-search-suggestions button>span{min-width:0;display:grid;gap:.15rem}
 .bn-section-search-suggestions strong,.bn-section-search-suggestions small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bn-section-search-suggestions strong{font-size:.9rem}.bn-section-search-suggestions small{color:var(--bn-text-secondary);font-size:.75rem}.bn-section-search-suggestions button>svg{width:1rem}
+.bn-section-search-wrap{position:relative;width:100%;min-width:0}
+.bn-section-search-dropdown{position:absolute;top:calc(100% + .55rem);left:0;right:0;z-index:90;max-height:min(25rem,60vh);overflow-y:auto;padding:.5rem;border:1px solid var(--bn-border);background:var(--bn-surface);box-shadow:var(--bn-shadow-float);color:var(--bn-text-primary);text-align:left}
+.bn-section-search-dropdown-label{display:flex;align-items:center;gap:.45rem;padding:.65rem .7rem .35rem;color:var(--bn-text-secondary);font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.bn-section-search-dropdown-label svg{width:.9rem;height:.9rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
+.bn-section-search-dropdown-loading{padding:.7rem;color:var(--bn-text-secondary);font-size:.78rem}
+.bn-section-search-opt{display:block;width:100%;min-height:2.75rem;padding:.65rem .7rem;border:0;border-radius:var(--bn-radius-small);background:transparent;color:inherit;font:inherit;font-size:.86rem;text-align:left;cursor:pointer}
+.bn-section-search-opt:is(:hover,:focus-visible),.bn-section-search-opt.is-active{background:var(--bn-surface-soft);outline:0}
+.bn-section-search-opt.is-search{display:flex;align-items:center;gap:.55rem;border-top:1px solid var(--bn-border);margin-top:.35rem}
+.bn-section-search-opt.is-search svg{width:1rem;height:1rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
 .bn-section-search:focus-within{border-color:var(--bn-focus);outline:3px solid color-mix(in srgb,var(--bn-focus) 18%,transparent)}
 .bn-section-search--compact{grid-template-columns:minmax(0,1fr) auto;padding:.25rem;border-radius:var(--bn-radius-search);box-shadow:none}
 .bn-section-search--compact .bn-section-search-location{display:none}

@@ -295,3 +295,6 @@
   .directory-design .directory-results-layout.has-selection .directory-result-row .directory-result-meta b{margin-top:.75rem}
   .directory-design .directory-rail-ad{display:none}
 }
+.directory-listing-results > .directory-results-head {
+  overflow: visible;
+}

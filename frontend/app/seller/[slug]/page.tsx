@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getSeller } from "@/lib/api";
 import type { Listing, SellerPublicProfile } from "@/lib/types";
@@ -35,6 +36,48 @@ function listingTerms(listing: Listing) {
     ["Availability", listing.service?.availabilitySchedule || "Ask company"],
     ["Response", listing.service?.sla || "Ask company"],
   ];
+}
+
+function listingsWithDistinctLeadMedia(listings: Listing[]) {
+  const used = new Set<string>();
+  return listings.map((listing) => {
+    const lead = listing.media.find((item) => item.type !== "video" && !used.has(item.url));
+    if (!lead) return { ...listing, media: [] };
+    used.add(lead.url);
+    return { ...listing, media: [lead, ...listing.media.filter((item) => item.url !== lead.url)] };
+  });
+}
+
+function CompanyOfferings({
+  id,
+  title,
+  intro,
+  empty,
+  listings,
+}: {
+  id: string;
+  title: string;
+  intro: string;
+  empty: string;
+  listings: Listing[];
+}) {
+  const presented = listingsWithDistinctLeadMedia(listings);
+  return <section className="company-block" aria-labelledby={id}>
+    <h2 id={id}>{title}</h2>
+    <p className="company-block-intro">{intro}</p>
+    {presented.length ? <div className="company-services">{presented.map((listing) => {
+      const terms = listingTerms(listing);
+      return <Link className="company-offering-card" href={`/listing/${listing.id}`} key={listing.id}>
+        <div>{listing.media[0] ? <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={listing.media[0].url} alt={listing.media[0].alt || listing.title} loading="lazy" decoding="async" /></> : <span className="company-offering-placeholder"><b>{listing.title.charAt(0)}</b><small>{listing.type}</small></span>}</div>
+        <span>{listing.type === "service" ? "Service" : "Product"}</span>
+        <h3>{listing.title}</h3>
+        <p>{listing.description}</p>
+        <strong className="company-offering-price">{formatPrice(listing)}</strong>
+        <dl>{terms.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+        <b>Inspect listing <Arrow /></b>
+      </Link>;
+    })}</div> : <div className="directory-empty">{empty}</div>}
+  </section>;
 }
 
 export default function CompanyProfilePage() {
@@ -74,12 +117,14 @@ export default function CompanyProfilePage() {
   const listings = (profile.listings || []).filter((listing) => listing.status === "active");
   const media = [seller.coverImage, ...listings.flatMap((listing) => listing.media.map((item) => item.url))]
     .filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index)
-    .slice(0, 4);
-  const approvedReviews = (profile.reviews || []).filter((review) => review.status === "approved").slice(0, 3);
+    .slice(0, 6);
+  const approvedReviews = (profile.reviews || []).filter((review) => review.status === "approved");
+  const serviceListings = listings.filter((listing) => listing.type === "service");
+  const productListings = listings.filter((listing) => listing.type === "product");
   const location = [seller.location?.city || profile.city, seller.location?.state || profile.state].filter(Boolean).join(", ") || "India";
 
   return <div className="directory-design company-profile">
-    <div className="directory-shell company-crumb"><Link href="/directory">Directory</Link><span>/</span><Link href="/search">Services &amp; products</Link><span>/</span><strong>{seller.companyName}</strong></div>
+    <div className="directory-shell"><Breadcrumbs className="company-crumb" items={[{ label: "Directory", href: "/directory" }, { label: "Services & products", href: "/search" }, { label: seller.companyName }]} /></div>
 
     <section className="company-cover">
       {seller.coverImage && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={seller.coverImage} alt={`${seller.companyName} work and workplace`} decoding="async" /></>}
@@ -103,26 +148,13 @@ export default function CompanyProfilePage() {
       <div>
         <section className="company-block"><h2>What this company does</h2><p className="company-lead">{seller.about || "This company has not added a detailed overview yet."}</p><div className="company-capabilities">{company.capabilities.map((capability) => <span key={capability}><Check />{capability}</span>)}</div></section>
 
-        <section className="company-block" aria-labelledby="company-listings-title">
-          <h2 id="company-listings-title">Services and products</h2>
-          <p className="company-block-intro">Every listing stays connected to this company’s identity and public record.</p>
-          {listings.length ? <div className="company-services">{listings.map((listing) => {
-            const terms = listingTerms(listing);
-            return <Link className="company-offering-card" href={`/listing/${listing.id}`} key={listing.id}>
-              <div>{listing.media[0] && <>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={listing.media[0].url} alt={listing.media[0].alt || listing.title} loading="lazy" decoding="async" /></>}</div>
-              <span>{listing.type === "service" ? "Service" : "Product"}</span>
-              <h3>{listing.title}</h3>
-              <p>{listing.description}</p>
-              <strong className="company-offering-price">{formatPrice(listing)}</strong>
-              <dl>{terms.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-              <b>Inspect listing <Arrow /></b>
-            </Link>;
-          })}</div> : <div className="directory-empty">No active services or products have been published yet. The company record remains available.</div>}
-        </section>
+        <CompanyOfferings id="company-services-title" title="Services" intro="Service listings published under this company’s verified public record." empty="No active services have been published yet." listings={serviceListings} />
+
+        <CompanyOfferings id="company-products-title" title="Products" intro="Product listings published under this company’s verified public record." empty="No active products have been published yet." listings={productListings} />
 
         <section className="company-block"><h2>Work evidence</h2>{media.length ? <div className="company-gallery">{media.map((image, index) => <figure key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} loading="lazy" decoding="async" /></figure>)}</div> : <div className="directory-empty">No work media has been added. This missing evidence is shown intentionally.</div>}</section>
 
-        <section className="company-block"><h2>What clients have shared</h2>{approvedReviews.length ? <div className="company-reviews">{approvedReviews.map((review) => <blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div> : <div className="directory-empty">No approved public reviews are available yet.</div>}</section>
+        <section className="company-block"><h2>Reviews</h2><p className="company-block-intro">Approved feedback connected to this company record.</p>{approvedReviews.length ? <div className="company-reviews">{approvedReviews.map((review) => <blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div> : <div className="directory-empty">No approved public reviews are available yet.</div>}</section>
       </div>
 
       <aside>

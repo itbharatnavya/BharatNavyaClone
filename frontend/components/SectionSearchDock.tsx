@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import { useSearchDock } from "@/lib/searchDock";
+import { flattenCategories, useCategories } from "@/lib/catalog";
 import { getJobFunctions, getJobs, getListings, searchSellers } from "@/lib/api";
-import { useCategories, flattenCategories } from "@/lib/catalog";
 import type { Job, JobFunction, Listing } from "@/lib/types";
 
 function SearchIcon() {
@@ -33,10 +33,7 @@ function BoxIcon() {
   return <svg aria-hidden viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" /><path d="M3 8l9 5 9-5M12 13v8" /></svg>;
 }
 
-type RoleSuggestion =
-  | { kind: "function"; label: string; slug: string }
-  | { kind: "job"; label: string; jobId: string; company?: string | null }
-  | { kind: "company"; label: string; slug: string | null };
+export type DirectorySearchVariant = "hero" | "compact" | "drawer";
 
 type DirectorySuggestion =
   | { kind: "category"; label: string; slug: string }
@@ -44,9 +41,12 @@ type DirectorySuggestion =
   | { kind: "listing"; label: string; id: string; seller?: string | null }
   | { kind: "search" };
 
-interface SellerSearchResult { name: string; slug: string | null; city?: string | null }
+type RoleSuggestion =
+  | { kind: "function"; label: string; slug: string }
+  | { kind: "job"; label: string; jobId: string; company?: string | null }
+  | { kind: "company"; label: string; slug: string | null };
 
-export type DirectorySearchVariant = "hero" | "compact" | "drawer";
+interface SellerSearchResult { name: string; slug: string | null; city?: string | null }
 
 export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { variant?: DirectorySearchVariant; onSubmitted?: () => void }) {
   const router = useRouter();
@@ -55,46 +55,32 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
   const cityId = useId();
   const listboxId = useId();
   const { query, setQuery, city, setCity, markSearchNav } = useSearchDock();
-
-  // Local, uncommitted draft — only a genuine search action (submit, or picking a
-  // suggestion) ever writes back to the shared `query`. Typing alone never does,
-  // so half-typed text can't leak onto another page via an unrelated navigation
-  // (e.g. clicking a category tile mid-type) — matches old frontend's
-  // DirectorySearchBar (WORKFLOW.md 2026-08-18). Resyncs to the committed query on
-  // every route change, or whenever `query` itself changes (e.g. the docked
-  // compact copy committing a new value, or Back restoring a prior one) — both
-  // this hero instance and the docked compact instance mount at once while
-  // docked, each with its own independent draft.
   const [draft, setDraft] = useState(query);
-  useEffect(() => { setDraft(query); }, [pathname, query]);
-
-  // Suggestions: same real-data contract as old frontend's DirectorySearchBar
-  // (categories filtered client-side from the session-wide catalog + listings
-  // fetched from the API, plus a pinned "Search for…" row always last) — just
-  // grouped/styled with this new dropdown's chrome instead of the old bar's
-  // inline-styled rows. Two more real groups added on top of the old bar's
-  // (companies via GET /api/sellers?q=, since this Directory is company-first)
-  // and gated closed until 2+ characters, matching the old bar's threshold.
   const { categories: catalogCategories } = useCategories();
   const allCategories = useMemo(() => flattenCategories(catalogCategories), [catalogCategories]);
   const [matchedSellers, setMatchedSellers] = useState<SellerSearchResult[]>([]);
   const [matchedListings, setMatchedListings] = useState<Listing[]>([]);
-  const reqIdRef = useRef(0);
-
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-
+  const requestIdRef = useRef(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const term = draft.trim().toLowerCase();
 
+  useEffect(() => { setDraft(query); }, [pathname, query]);
+
   useEffect(() => {
-    if (term.length < 2) { setMatchedSellers([]); setMatchedListings([]); setSuggestionsLoading(false); return; }
-    const id = ++reqIdRef.current;
+    if (term.length < 2) {
+      setMatchedSellers([]);
+      setMatchedListings([]);
+      setSuggestionsLoading(false);
+      return;
+    }
+    const requestId = ++requestIdRef.current;
     setSuggestionsLoading(true);
     const timer = window.setTimeout(() => {
       Promise.allSettled([searchSellers({ q: term, limit: 5 }), getListings({ q: term, limit: 5 })]).then(([sellerResult, listingResult]) => {
-        if (id !== reqIdRef.current) return;
+        if (requestId !== requestIdRef.current) return;
         setMatchedSellers(sellerResult.status === "fulfilled" ? sellerResult.value.sellers || [] : []);
         setMatchedListings(listingResult.status === "fulfilled" ? listingResult.value.listings || [] : []);
         setSuggestionsLoading(false);
@@ -103,140 +89,74 @@ export function DirectorySectionSearch({ variant = "hero", onSubmitted }: { vari
     return () => window.clearTimeout(timer);
   }, [term]);
 
-  const items: DirectorySuggestion[] = useMemo(() => {
+  const items = useMemo<DirectorySuggestion[]>(() => {
     if (term.length < 2) return [];
-    const categories: DirectorySuggestion[] = allCategories
-      .filter((c) => c.name.toLowerCase().includes(term))
-      .slice(0, 5)
-      .map((c) => ({ kind: "category", label: c.name, slug: c.slug }));
-    const companies: DirectorySuggestion[] = matchedSellers.slice(0, 4).map((s) => ({ kind: "company", label: s.name, slug: s.slug || null, city: s.city }));
-    const listings: DirectorySuggestion[] = matchedListings.slice(0, 4).map((l) => ({ kind: "listing", label: l.title, id: l.id, seller: l.seller?.companyName || l.seller?.name || l.sellerName }));
+    const categories = allCategories.filter((category) => category.name.toLowerCase().includes(term)).slice(0, 5).map((category) => ({ kind: "category" as const, label: category.name, slug: category.slug }));
+    const companies = matchedSellers.slice(0, 4).map((seller) => ({ kind: "company" as const, label: seller.name, slug: seller.slug || null, city: seller.city }));
+    const listings = matchedListings.slice(0, 4).map((listing) => ({ kind: "listing" as const, label: listing.title, id: listing.id, seller: listing.seller?.companyName || listing.sellerName }));
     return [...categories, ...companies, ...listings, { kind: "search" }];
-  }, [term, allCategories, matchedSellers, matchedListings]);
-  const showDropdown = open && items.length > 0;
+  }, [allCategories, matchedListings, matchedSellers, term]);
+  const showDropdown = open && (items.length > 0 || suggestionsLoading);
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (event: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) { setOpen(false); setActive(-1); }
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    const close = (event: MouseEvent) => { if (!wrapRef.current?.contains(event.target as Node)) { setOpen(false); setActive(-1); } };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, [open]);
 
-  function go(text: string) {
+  function search(text: string) {
+    const committed = text.trim();
     setOpen(false);
     setActive(-1);
-    const trimmed = text.trim();
-    setQuery(trimmed);
+    setQuery(committed);
     const params = new URLSearchParams();
-    if (trimmed) params.set("q", trimmed);
+    if (committed) params.set("q", committed);
     if (city && city !== PAN_INDIA_LABEL) params.set("city", city);
     markSearchNav();
     onSubmitted?.();
     router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
   }
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    go(draft);
-  }
-
-  // Picking a suggestion clears the draft (and the shared committed query) rather
-  // than leaving the partial typed word behind, since this query is shared with
-  // other docked copies of this bar that stay visible after navigating away.
-  function selectItem(item: DirectorySuggestion) {
+  function chooseSuggestion(item: DirectorySuggestion) {
     setOpen(false);
     setActive(-1);
     markSearchNav();
     onSubmitted?.();
     if (item.kind === "category") {
-      // /search's own category filter (parseDiscoverySeed → UnifiedListingWorkbench →
-      // GET /api/listings?category=) is the live Directory results flow now — the
-      // standalone /<slug> category-landing route is a separate, older page.
-      setDraft("");
-      setQuery("");
-      router.push(`/search?category=${encodeURIComponent(item.slug)}`);
+      setDraft(""); setQuery(""); router.push(`/search?category=${encodeURIComponent(item.slug)}`);
     } else if (item.kind === "company") {
       if (item.slug) { setDraft(""); setQuery(""); router.push(`/seller/${item.slug}`); }
-      else go(item.label);
+      else search(item.label);
     } else if (item.kind === "listing") {
-      setDraft("");
-      setQuery("");
-      router.push(`/listing/${item.id}`);
-    } else {
-      go(draft);
-    }
+      setDraft(""); setQuery(""); router.push(`/listing/${item.id}`);
+    } else search(draft);
   }
 
-  function onQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      if (!open) { setOpen(true); return; }
-      setActive((i) => Math.min(i + 1, items.length - 1));
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActive((i) => Math.max(i - 1, -1));
-    } else if (event.key === "Enter") {
-      if (showDropdown && active >= 0 && active < items.length) {
-        event.preventDefault();
-        selectItem(items[active]);
-      }
-    } else if (event.key === "Escape") {
-      setOpen(false);
-      setActive(-1);
-    }
+  function handleQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") { event.preventDefault(); if (!open) setOpen(true); else setActive((index) => Math.min(index + 1, items.length - 1)); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActive((index) => Math.max(index - 1, -1)); }
+    else if (event.key === "Escape") { setOpen(false); setActive(-1); }
+    else if (event.key === "Enter" && showDropdown && active >= 0 && active < items.length) { event.preventDefault(); chooseSuggestion(items[active]); }
   }
 
-  const optionId = (i: number) => `${listboxId}-opt-${i}`;
+  const optionId = (index: number) => `${listboxId}-option-${index}`;
 
   return <div ref={wrapRef} className="bn-section-search-wrap">
-    <form className={`bn-section-search bn-section-search--${variant}`} onSubmit={submit} aria-label="Search companies">
-      <label className="bn-section-search-query" htmlFor={queryId}>
-        <SearchIcon />
-        <span className="sr-only">Company or service</span>
-        <input
-          id={queryId}
-          value={draft}
-          onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={onQueryKeyDown}
-          placeholder="Search companies, products or services"
-          autoComplete="off"
-          role="combobox"
-          aria-expanded={showDropdown}
-          aria-controls={listboxId}
-          aria-autocomplete="list"
-          aria-activedescendant={active >= 0 ? optionId(active) : undefined}
-        />
-      </label>
-      <label className="bn-section-search-location" htmlFor={cityId}>
-        <LocationIcon />
-        <span className="sr-only">Company location</span>
-        <select id={cityId} value={city} onChange={(event) => setCity(event.target.value)}>
-          <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
-          {ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}
-        </select>
-      </label>
+    <form className={`bn-section-search bn-section-search--${variant}`} onSubmit={(event) => { event.preventDefault(); search(draft); }} aria-label="Search companies">
+      <label className="bn-section-search-query" htmlFor={queryId}><SearchIcon /><span className="sr-only">Company or service</span><input id={queryId} value={draft} onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }} onFocus={() => setOpen(true)} onKeyDown={handleQueryKeyDown} placeholder="Search companies, products or services" role="combobox" aria-expanded={showDropdown} aria-controls={listboxId} aria-autocomplete="list" aria-activedescendant={active >= 0 ? optionId(active) : undefined} autoComplete="off" /></label>
+      <label className="bn-section-search-location" htmlFor={cityId}><LocationIcon /><span className="sr-only">Company location</span><select id={cityId} value={city} onChange={(event) => setCity(event.target.value)}><option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>{ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
       <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search companies"}</span><ArrowIcon /></button>
     </form>
     {showDropdown && <div id={listboxId} role="listbox" aria-label="Search suggestions" className="card bn-section-search-dropdown">
-      {items.some((i) => i.kind === "category") && <div className="bn-section-search-dropdown-label"><TagIcon /> Matching categories</div>}
-      {items.map((item, i) => item.kind !== "category" ? null : (
-        <button key={`cat-${item.slug}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}</button>
-      ))}
-      {items.some((i) => i.kind === "company") && <div className="bn-section-search-dropdown-label"><BuildingIcon /> Matching companies</div>}
-      {items.map((item, i) => item.kind !== "company" ? null : (
-        <button key={`c-${item.slug || item.label}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.city ? ` · ${item.city}` : ""}</button>
-      ))}
-      {items.some((i) => i.kind === "listing") && <div className="bn-section-search-dropdown-label"><BoxIcon /> Matching products &amp; services</div>}
-      {items.map((item, i) => item.kind !== "listing" ? null : (
-        <button key={`l-${item.id}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.seller ? ` · ${item.seller}` : ""}</button>
-      ))}
+      {items.some((item) => item.kind === "category") && <div className="bn-section-search-dropdown-label"><TagIcon /> Matching categories</div>}
+      {items.map((item, index) => item.kind === "category" && <button key={`category-${item.slug}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}</button>)}
+      {items.some((item) => item.kind === "company") && <div className="bn-section-search-dropdown-label"><BuildingIcon /> Matching companies</div>}
+      {items.map((item, index) => item.kind === "company" && <button key={`company-${item.slug || item.label}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}{item.city ? ` · ${item.city}` : ""}</button>)}
+      {items.some((item) => item.kind === "listing") && <div className="bn-section-search-dropdown-label"><BoxIcon /> Matching products &amp; services</div>}
+      {items.map((item, index) => item.kind === "listing" && <button key={`listing-${item.id}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}{item.seller ? ` · ${item.seller}` : ""}</button>)}
       {suggestionsLoading && <div className="bn-section-search-dropdown-loading" role="status" aria-live="polite">Searching companies &amp; products…</div>}
-      {items.map((item, i) => item.kind !== "search" ? null : (
-        <button key="pinned-search" id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`} style={{ display: "flex", alignItems: "center", gap: ".5rem" }}><SearchIcon /> Search for &quot;{draft.trim()}&quot;</button>
-      ))}
+      {items.map((item, index) => item.kind === "search" && <button key="search-all" id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt is-search ${index === active ? "is-active" : ""}`}><SearchIcon /> <span>Search for “{draft.trim()}”</span></button>)}
     </div>}
   </div>;
 }
@@ -305,92 +225,69 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
   const workplaceId = useId();
   const listboxId = useId();
   const { roleQuery, setRoleQuery, roleCity, setRoleCity, roleWorkplace, setRoleWorkplace, markSearchNav } = useSearchDock();
-
-  // Local, uncommitted draft — same commit-on-submit pattern as
-  // DirectorySectionSearch above, kept entirely on Recruitment's own
-  // `roleQuery` field so Directory's and Recruitment's typed text never mix.
   const [draft, setDraft] = useState(roleQuery);
-  useEffect(() => { setDraft(roleQuery); }, [pathname, roleQuery]);
-
-  // Suggestions: closed entirely on an empty query — no "popular searches" here,
-  // that list was static/curated copy, not real data. Once typing starts, three
-  // real groups: matching categories (the job-function catalog, filtered
-  // client-side), matching roles and matching companies — both fetched from
-  // GET /api/jobs?q= (debounced, same pattern as DirectorySearchBar's
-  // getListings), which now folds employer company name into its free-text
-  // match, so a company-name query surfaces that employer's roles too.
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
-  useEffect(() => { getJobFunctions().then(setJobFunctions).catch(() => {}); }, []);
-
   const [matchedJobs, setMatchedJobs] = useState<Job[]>([]);
-  const jobsReqIdRef = useRef(0);
-
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-
+  const requestIdRef = useRef(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const term = draft.trim().toLowerCase();
+
+  useEffect(() => { setDraft(roleQuery); }, [pathname, roleQuery]);
+  useEffect(() => { getJobFunctions().then(setJobFunctions).catch(() => setJobFunctions([])); }, []);
 
   useEffect(() => {
     if (!term) { setMatchedJobs([]); setSuggestionsLoading(false); return; }
-    const id = ++jobsReqIdRef.current;
+    const requestId = ++requestIdRef.current;
     setSuggestionsLoading(true);
     const timer = window.setTimeout(() => {
-      getJobs({ q: term, limit: 8 })
-        .then((r) => { if (id === jobsReqIdRef.current) setMatchedJobs(r.jobs || []); })
-        .catch(() => { if (id === jobsReqIdRef.current) setMatchedJobs([]); })
-        .finally(() => { if (id === jobsReqIdRef.current) setSuggestionsLoading(false); });
+      Promise.allSettled([getJobs({ q: term, limit: 8 }), getJobs({ company: term, limit: 8 })])
+        .then(([roleResult, companyResult]) => {
+          if (requestId !== requestIdRef.current) return;
+          const combined = [
+            ...(roleResult.status === "fulfilled" ? roleResult.value.jobs : []),
+            ...(companyResult.status === "fulfilled" ? companyResult.value.jobs : []),
+          ];
+          setMatchedJobs(Array.from(new Map(combined.map((job) => [job.id, job])).values()));
+        })
+        .finally(() => { if (requestId === requestIdRef.current) setSuggestionsLoading(false); });
     }, 250);
     return () => window.clearTimeout(timer);
   }, [term]);
 
-  const items: RoleSuggestion[] = useMemo(() => {
+  const items = useMemo<RoleSuggestion[]>(() => {
     if (!term) return [];
-    const categories: RoleSuggestion[] = jobFunctions
-      .filter((f) => f.name.toLowerCase().includes(term))
-      .slice(0, 3)
-      .map((f) => ({ kind: "function", label: f.name, slug: f.slug }));
-    // Same reasoning as the company filter below: only surface a job as a "role"
-    // suggestion when its own title matched the term, not merely because it came
-    // back in the same OR-matched batch (e.g. its employer's name matched instead).
-    const roles: RoleSuggestion[] = matchedJobs
-      .filter((j) => j.title.toLowerCase().includes(term))
-      .slice(0, 4)
-      .map((j) => ({ kind: "job", label: j.title, jobId: j.id, company: j.employer?.companyName }));
-    const seenCompanies = new Set<string>();
+    const functions = jobFunctions.filter((item) => item.name.toLowerCase().includes(term)).slice(0, 3).map((item) => ({ kind: "function" as const, label: item.name, slug: item.slug }));
+    const roles = matchedJobs.filter((job) => job.title.toLowerCase().includes(term)).slice(0, 4).map((job) => ({ kind: "job" as const, label: job.title, jobId: job.id, company: job.employer?.companyName }));
+    const seen = new Set<string>();
     const companies: RoleSuggestion[] = [];
-    for (const j of matchedJobs) {
-      const name = j.employer?.companyName;
-      // The backend OR-matches title/description/jobFunction/company in one pass, so
-      // a job can appear here purely because its ROLE matched (e.g. "developer") even
-      // when the company name didn't — only surface a company suggestion when the
-      // company name itself contains the typed term.
-      if (!name || !name.toLowerCase().includes(term) || seenCompanies.has(name)) continue;
-      seenCompanies.add(name);
-      companies.push({ kind: "company", label: name, slug: j.employer?.slug || null });
+    for (const job of matchedJobs) {
+      const name = job.employer?.companyName;
+      if (!name || !name.toLowerCase().includes(term) || seen.has(name)) continue;
+      seen.add(name);
+      companies.push({ kind: "company", label: name, slug: job.employer?.slug || null });
       if (companies.length >= 3) break;
     }
-    return [...categories, ...roles, ...companies];
-  }, [term, jobFunctions, matchedJobs]);
+    return [...functions, ...roles, ...companies];
+  }, [jobFunctions, matchedJobs, term]);
   const showDropdown = open && (items.length > 0 || suggestionsLoading);
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (event: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) { setOpen(false); setActive(-1); }
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    const close = (event: MouseEvent) => { if (!wrapRef.current?.contains(event.target as Node)) { setOpen(false); setActive(-1); } };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, [open]);
 
-  function go(text: string) {
+  function search(text: string) {
+    const committed = text.trim();
     setOpen(false);
     setActive(-1);
-    const trimmed = text.trim();
-    setRoleQuery(trimmed);
+    setRoleQuery(committed);
     const params = new URLSearchParams();
-    if (trimmed) params.set("q", trimmed);
+    if (committed) params.set("q", committed);
     if (roleCity) params.set("city", roleCity);
     if (roleWorkplace !== "All workplaces") params.set("workplace", roleWorkplace);
     markSearchNav();
@@ -398,92 +295,40 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
     router.push(`/recruitment/jobs${params.size ? `?${params.toString()}` : ""}`);
   }
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    go(draft);
-  }
-
-  function selectItem(item: RoleSuggestion) {
+  function chooseSuggestion(item: RoleSuggestion) {
     setOpen(false);
     setActive(-1);
     markSearchNav();
     onSubmitted?.();
-    if (item.kind === "function") {
-      // A category pick is a fresh, broad browse — jumps straight to the
-      // category rather than carrying the free-text query along.
-      setDraft(item.label);
-      setRoleQuery(item.label);
-      router.push(`/recruitment/jobs?jobFunction=${item.slug}`);
-    } else if (item.kind === "job") {
-      // A specific role pick goes straight to that role, same as Directory's
-      // listing suggestions jumping to /listing/:id.
-      setDraft("");
-      setRoleQuery("");
-      router.push(`/job/${item.jobId}`);
-    } else {
-      if (item.slug) { setDraft(""); setRoleQuery(""); router.push(`/employer/${item.slug}`); }
-      else go(item.label);
-    }
+    if (item.kind === "function") { setDraft(item.label); setRoleQuery(item.label); router.push(`/recruitment/jobs?jobFunction=${encodeURIComponent(item.slug)}`); }
+    else if (item.kind === "job") { setDraft(""); setRoleQuery(""); router.push(`/job/${item.jobId}`); }
+    else if (item.slug) { setDraft(""); setRoleQuery(""); router.push(`/employer/${item.slug}`); }
+    else search(item.label);
   }
 
-  function onQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      if (!open) { setOpen(true); return; }
-      setActive((i) => Math.min(i + 1, items.length - 1));
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActive((i) => Math.max(i - 1, -1));
-    } else if (event.key === "Enter") {
-      if (showDropdown && active >= 0 && active < items.length) {
-        event.preventDefault();
-        selectItem(items[active]);
-      }
-    } else if (event.key === "Escape") {
-      setOpen(false);
-      setActive(-1);
-    }
+  function handleQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") { event.preventDefault(); if (!open) setOpen(true); else setActive((index) => Math.min(index + 1, items.length - 1)); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); setActive((index) => Math.max(index - 1, -1)); }
+    else if (event.key === "Escape") { setOpen(false); setActive(-1); }
+    else if (event.key === "Enter" && showDropdown && active >= 0 && active < items.length) { event.preventDefault(); chooseSuggestion(items[active]); }
   }
 
-  const optionId = (i: number) => `${listboxId}-opt-${i}`;
+  const optionId = (index: number) => `${listboxId}-option-${index}`;
 
   return <div ref={wrapRef} className="bn-section-search-wrap">
-    <form className={`bn-section-search bn-section-search--${variant} bn-section-search--recruitment`} onSubmit={submit} aria-label="Search jobs">
-      <label className="bn-section-search-query" htmlFor={queryId}>
-        <SearchIcon />
-        <span className="sr-only">Role, skill or company</span>
-        <input
-          id={queryId}
-          value={draft}
-          onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={onQueryKeyDown}
-          placeholder="Role, skill, or company"
-          autoComplete="off"
-          role="combobox"
-          aria-expanded={showDropdown}
-          aria-controls={listboxId}
-          aria-autocomplete="list"
-          aria-activedescendant={active >= 0 ? optionId(active) : undefined}
-        />
-      </label>
+    <form className={`bn-section-search bn-section-search--${variant} bn-section-search--recruitment`} onSubmit={(event) => { event.preventDefault(); search(draft); }} aria-label="Search jobs">
+      <label className="bn-section-search-query" htmlFor={queryId}><SearchIcon /><span className="sr-only">Role, skill or company</span><input id={queryId} value={draft} onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }} onFocus={() => setOpen(true)} onKeyDown={handleQueryKeyDown} placeholder="Role, skill, or company" role="combobox" aria-expanded={showDropdown} aria-controls={listboxId} aria-autocomplete="list" aria-activedescendant={active >= 0 ? optionId(active) : undefined} autoComplete="off" /></label>
       <label className="bn-section-search-location" htmlFor={cityId}><LocationIcon /><span className="sr-only">Job location</span><select id={cityId} value={roleCity} onChange={(event) => setRoleCity(event.target.value)}><option value="">All locations</option>{ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
       <label className="bn-section-search-workplace" htmlFor={workplaceId}><span className="sr-only">Workplace preference</span><select id={workplaceId} value={roleWorkplace} onChange={(event) => setRoleWorkplace(event.target.value)}>{["All workplaces","On-site","Hybrid","Remote"].map((item) => <option key={item}>{item}</option>)}</select></label>
       <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search jobs"}</span><ArrowIcon /></button>
     </form>
     {showDropdown && <div id={listboxId} role="listbox" aria-label="Search suggestions" className="card bn-section-search-dropdown">
-      {items.some((i) => i.kind === "function") && <div className="bn-section-search-dropdown-label"><TagIcon /> Matching categories</div>}
-      {items.map((item, i) => item.kind !== "function" ? null : (
-        <button key={`f-${item.slug}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}</button>
-      ))}
-      {items.some((i) => i.kind === "job") && <div className="bn-section-search-dropdown-label"><BriefcaseIcon /> Matching roles</div>}
-      {items.map((item, i) => item.kind !== "job" ? null : (
-        <button key={`j-${item.jobId}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}{item.company ? ` · ${item.company}` : ""}</button>
-      ))}
-      {items.some((i) => i.kind === "company") && <div className="bn-section-search-dropdown-label"><BuildingIcon /> Matching companies</div>}
-      {items.map((item, i) => item.kind !== "company" ? null : (
-        <button key={`c-${item.label}`} id={optionId(i)} role="option" aria-selected={i === active} type="button" onMouseEnter={() => setActive(i)} onClick={() => selectItem(item)} className={`bn-section-search-opt ${i === active ? "is-active" : ""}`}>{item.label}</button>
-      ))}
+      {items.some((item) => item.kind === "function") && <div className="bn-section-search-dropdown-label"><TagIcon /> Matching categories</div>}
+      {items.map((item, index) => item.kind === "function" && <button key={`function-${item.slug}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}</button>)}
+      {items.some((item) => item.kind === "job") && <div className="bn-section-search-dropdown-label"><BriefcaseIcon /> Matching roles</div>}
+      {items.map((item, index) => item.kind === "job" && <button key={`job-${item.jobId}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}{item.company ? ` · ${item.company}` : ""}</button>)}
+      {items.some((item) => item.kind === "company") && <div className="bn-section-search-dropdown-label"><BuildingIcon /> Matching companies</div>}
+      {items.map((item, index) => item.kind === "company" && <button key={`company-${item.label}`} id={optionId(index)} role="option" aria-selected={index === active} type="button" onMouseEnter={() => setActive(index)} onClick={() => chooseSuggestion(item)} className={`bn-section-search-opt ${index === active ? "is-active" : ""}`}>{item.label}</button>)}
       {suggestionsLoading && <div className="bn-section-search-dropdown-loading" role="status" aria-live="polite">Searching roles &amp; companies…</div>}
     </div>}
   </div>;

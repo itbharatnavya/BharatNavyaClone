@@ -344,7 +344,7 @@ export default function ListingCard({
             <div className="lc-row-img" style={{ backgroundImage: `url(${image})` }} />
           ) : (
             <div className="lc-row-img lc-row-img-empty">
-              <span>{isService ? "Service" : "No image"}</span>
+              <span className="lc-media-placeholder"><b>{listing.title.charAt(0)}</b><small>{isService ? "Service" : "Product"}</small></span>
             </div>
           )}
         </Link>
@@ -400,9 +400,25 @@ export default function ListingCard({
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--faint);
-            font-size: 11px;
+            background: var(--brand-tint);
+          }
+          .lc-media-placeholder {
+            display: grid;
+            justify-items: center;
+            gap: 3px;
+            color: var(--brand-hover);
             text-align: center;
+          }
+          .lc-media-placeholder b {
+            font-size: 1.7rem;
+            line-height: 1;
+          }
+          .lc-media-placeholder small {
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 750;
+            letter-spacing: .07em;
+            text-transform: uppercase;
           }
           .lc-row-body {
             flex: 1;
@@ -479,7 +495,7 @@ export default function ListingCard({
           <div className="lc-grid-img" style={{ backgroundImage: `url(${image})` }} />
         ) : (
           <div className="lc-grid-img lc-grid-img-empty">
-            <span>{isService ? "Service" : "No image"}</span>
+            <span className="lc-media-placeholder"><b>{listing.title.charAt(0)}</b><small>{isService ? "Service" : "Product"}</small></span>
           </div>
         )}
       </Link>
@@ -528,8 +544,25 @@ export default function ListingCard({
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--faint);
-          font-size: 13px;
+          background: var(--brand-tint);
+        }
+        .lc-media-placeholder {
+          display: grid;
+          justify-items: center;
+          gap: 5px;
+          color: var(--brand-hover);
+          text-align: center;
+        }
+        .lc-media-placeholder b {
+          font-size: clamp(2rem, 4vw, 3.25rem);
+          line-height: 1;
+        }
+        .lc-media-placeholder small {
+          color: var(--muted);
+          font-size: 10px;
+          font-weight: 750;
+          letter-spacing: .08em;
+          text-transform: uppercase;
         }
         .lc-grid-body {
           padding: 12px;

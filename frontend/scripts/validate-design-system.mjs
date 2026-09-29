@@ -12,7 +12,7 @@ const governed = [
   "components/evidence/AdvertisingSlot.tsx",
   "components/evidence/UpdateFeature.tsx",
   "components/evidence/UpdateRail.tsx",
-  "components/home/UniversalSearch.tsx",
+  "components/SectionSearchDock.tsx",
   "app/search/page.tsx",
 ];
 

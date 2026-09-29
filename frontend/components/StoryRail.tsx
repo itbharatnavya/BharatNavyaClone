@@ -64,24 +64,6 @@ function initials(name?: string | null): string {
   return parts || (name || "?").trim().charAt(0).toUpperCase() || "?";
 }
 
-// Deterministic soft gradient per seller so cards with no media still look intentional.
-const GRADIENTS = [
-  "linear-gradient(135deg,#DBEAFE,#FFE9D5)",
-  "linear-gradient(135deg,#E9D5FF,#DBEAFE)",
-  "linear-gradient(135deg,#FFE4E6,#FEF3C7)",
-  "linear-gradient(135deg,#D1FAE5,#DBEAFE)",
-  "linear-gradient(135deg,#FDE68A,#FBCFE8)",
-  "linear-gradient(135deg,#CFFAFE,#E9D5FF)",
-];
-function gradientFor(key: string): string {
-  let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-  return GRADIENTS[h % GRADIENTS.length];
-}
-
-const CARD_W = 108;
-const CARD_RADIUS = 16;
-
 export default function StoryRail({ groups: provided, className = "", heading, emptyState }: StoryRailProps) {
   const [groups, setGroups] = useState<StoryGroup[]>(
     provided ? normalizeGroups(provided) : []
@@ -109,7 +91,10 @@ export default function StoryRail({ groups: provided, className = "", heading, e
     return (
       <div className={className}>
         {heading}
-        <div className="counter-story-empty">{emptyState}</div>
+        <div className="counter-story-empty">
+          <span className="counter-story-empty-mark" aria-hidden>24h</span>
+          {emptyState}
+        </div>
       </div>
     );
   }
@@ -118,28 +103,13 @@ export default function StoryRail({ groups: provided, className = "", heading, e
     <div className={className}>
       {heading}
       <div
-        className="no-scrollbar"
-        style={{
-          display: "flex",
-          gap: 14,
-          overflowX: "auto",
-          // overflowX:auto implicitly clips the Y axis too, and the hover
-          // lift (translateY + scale in .story-card) pushes cards a few px
-          // past their box — extra top/bottom padding keeps that lift from
-          // getting clipped instead of chasing it by shrinking the animation.
-          padding: "10px 2px 8px",
-          // Always left-aligned — a single story (or a short row on a wide
-          // screen) should still start at the left edge like a normal list,
-          // not center itself in the middle of the row.
-          justifyContent: "flex-start",
-        }}
+        className="counter-story-list no-scrollbar"
       >
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <span
                 key={i}
-                className="skeleton"
-                style={{ width: CARD_W, aspectRatio: "2 / 3", borderRadius: CARD_RADIUS, flexShrink: 0 }}
+                className="counter-story-skeleton skeleton"
               />
             ))
           : groups.map((g, i) => {
@@ -153,73 +123,20 @@ export default function StoryRail({ groups: provided, className = "", heading, e
                   key={g.sellerId || i}
                   type="button"
                   onClick={() => setOpenAt(i)}
-                  className="story-card"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: 3,
-                    borderRadius: CARD_RADIUS + 3,
-                    width: CARD_W + 6,
-                    flexShrink: 0,
-                    backgroundImage: unseen
-                      ? "linear-gradient(135deg, #F97316, #2563EB)"
-                      : "none",
-                    backgroundColor: unseen ? undefined : "var(--border-strong)",
-                  }}
+                  className={`story-card${unseen ? " is-unseen" : ""}`}
                 >
                   <span
-                    style={{
-                      position: "relative",
-                      display: "block",
-                      width: CARD_W,
-                      aspectRatio: "2 / 3",
-                      borderRadius: CARD_RADIUS,
-                      overflow: "hidden",
-                      border: "2.5px solid #fff",
-                      background: previewUrl
-                        ? `#f1f5f9 url(${previewUrl}) center/cover`
-                        : gradientFor(g.sellerId || g.sellerName || ""),
-                    }}
+                    className="story-card-avatar"
+                    style={previewUrl ? { backgroundImage: `url(${previewUrl})` } : undefined}
                   >
                     {!previewUrl && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "#1D4ED8",
-                          fontWeight: 800,
-                          fontSize: 22,
-                        }}
-                      >
+                      <span className="story-card-initials">
                         {initials(g.sellerName)}
                       </span>
                     )}
-
-                    {/* bottom scrim + seller name — the WhatsApp/Reels-shelf preview
-                        this replaces used the seller's name as a caption under a round
-                        avatar; here the story's own image carries that weight instead. */}
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        padding: "16px 8px 8px",
-                        background: "linear-gradient(transparent, rgba(15,23,42,.82))",
-                      }}
-                    >
-                      <span
-                        className="line-clamp-1"
-                        style={{ display: "block", fontSize: 11.5, fontWeight: 700, color: "#fff", textAlign: "left" }}
-                      >
-                        {g.sellerName}
-                      </span>
-                    </span>
+                    {unseen && <span className="story-card-unseen" />}
                   </span>
+                  <span className="story-card-name line-clamp-2">{g.sellerName}</span>
                 </button>
               );
             })}
