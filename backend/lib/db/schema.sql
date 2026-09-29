@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
   mobile              TEXT NOT NULL,
   email               TEXT,
   password_hash       TEXT,
+  -- Google social login (0016_add_google_oauth.sql) — Google id_token's `sub`.
+  -- NULL for accounts that never linked Google.
+  google_id           TEXT,
   avatar_url          TEXT,
   city                TEXT,
   state               TEXT,
@@ -50,6 +53,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS users_mobile_idx ON users(mobile);
 CREATE INDEX IF NOT EXISTS users_email_idx ON users(email);
 CREATE INDEX IF NOT EXISTS users_roles_idx ON users USING GIN(roles);
+CREATE UNIQUE INDEX IF NOT EXISTS users_google_id_idx ON users(google_id) WHERE google_id IS NOT NULL;
 
 -- 1:1, present only when the user is a seller.
 CREATE TABLE IF NOT EXISTS seller_profiles (

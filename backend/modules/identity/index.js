@@ -581,6 +581,52 @@ async function getUserByEmail(email) {
   return rows[0] ? usersStore.getById(rows[0].id) : null;
 }
 
+/**
+ * Social login (0016_add_google_oauth.sql and whatever each future provider's
+ * own migration adds). One provider-id column per linked provider; this map is
+ * the single place a new provider gets wired in — add its migration (a nullable
+ * `<provider>_id TEXT` column + partial unique index, same shape as
+ * users_google_id_idx) and one line here, and getUserByOauthId/linkOauthId/
+ * oauthDraftFields all pick it up with no new SQL. routes/oauthShared.js's
+ * finishOauthLogin() is the provider-agnostic find-or-create/session logic that
+ * uses these — a new provider route file only verifies that provider's token
+ * and calls it.
+ */
+const OAUTH_PROVIDERS = {
+  google: { column: "google_id", docKey: "googleId" },
+  // facebook: { column: "facebook_id", docKey: "facebookId" }, // add with its own migration when wired
+  // apple:    { column: "apple_id",    docKey: "appleId" },    // add with its own migration when wired (needs a paid Apple Developer account first)
+};
+
+/** id of the user linked to this provider account, or null (unknown provider,
+ *  no providerId, or no match). */
+async function getUserByOauthId(provider, providerId) {
+  const spec = OAUTH_PROVIDERS[provider];
+  if (!spec || !providerId) return null;
+  const { rows } = await pool.query(
+    `SELECT id FROM users WHERE ${spec.column} = $1 LIMIT 1`,
+    [providerId]
+  );
+  return rows[0] ? usersStore.getById(rows[0].id) : null;
+}
+
+/** Link a provider account onto an existing user (the email-matched fallback
+ *  path in finishOauthLogin — an account that registered via OTP/password
+ *  signing in with a provider for the first time). */
+async function linkOauthId(userId, provider, providerId) {
+  const spec = OAUTH_PROVIDERS[provider];
+  if (!spec) throw new Error(`Unknown oauth provider: ${provider}`);
+  return updateUser(userId, { [spec.docKey]: providerId });
+}
+
+/** The one field a new-user draft needs to carry the provider link, keyed to
+ *  whatever doc key that provider's column maps to. */
+function oauthDraftFields(provider, providerId) {
+  const spec = OAUTH_PROVIDERS[provider];
+  if (!spec) throw new Error(`Unknown oauth provider: ${provider}`);
+  return { [spec.docKey]: providerId };
+}
+
 /* --------------------------------------------------------------- writes ----- */
 
 /** The one write this port exposes. Not yet wired — routes/adminEmployers.js still
@@ -610,6 +656,7 @@ module.exports = {
   hydrateUsersByIds, allUsers, adminUserPage,
   getSellerBySlug, getEmployerBySlug,
   getUserByMobile, getUserByEmail,
+  getUserByOauthId, linkOauthId, oauthDraftFields,
   getEmployerUserIds, getEmployerStatusCards,
   setEmployerApproval,
   createUser, updateUser, removeUser,

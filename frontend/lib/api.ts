@@ -233,6 +233,16 @@ export function login(email: string, password: string): Promise<AuthResult> {
   });
 }
 
+// POST /api/auth/oauth/google — idToken is the Google Identity Services
+// "credential" JWT. Backend verifies it, auto-registers on first sign-in
+// (find-or-create — same {token,user} shape as login/verify-otp).
+export function loginWithGoogle(idToken: string): Promise<AuthResult> {
+  return request<AuthResult>(`/api/auth/oauth/google`, {
+    method: "POST",
+    body: JSON.stringify({ idToken }),
+  });
+}
+
 // GET /auth/me returns data as { user } — unwrap to the User.
 export async function getMe(): Promise<User> {
   const data = await request<{ user: User }>(`/api/auth/me`);

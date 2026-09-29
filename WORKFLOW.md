@@ -113,6 +113,61 @@ duplicate it, only tracks deltas against it.
 
 ## 3. Change log (newest first)
 
+### 2026-09-29 — Google social login (backend + frontend), extensible for Facebook/Apple later
+
+**Why:** Product owner wants social login on `/login`, Google now, Facebook/Apple once
+credentials exist (Apple needs a paid $99/yr Apple Developer account — no free tier). Built
+the backend so adding a future provider never touches the account-linking logic again, only
+that provider's own token-verification code.
+
+**Backend:**
+- `backend/lib/db/schema-migrations/0016_add_google_oauth.sql` (+ baseline `schema.sql`) —
+  nullable `users.google_id`, partial unique index. `lib/db/users.js`'s `USER_COLUMNS` mapper
+  carries it.
+- `modules/identity/index.js` — generic `OAUTH_PROVIDERS` map (`{ google: { column:
+  "google_id", docKey: "googleId" } }`) backing `getUserByOauthId` / `linkOauthId` /
+  `oauthDraftFields`. A future provider is one migration + one line in this map, no new SQL.
+- `modules/identity/routes/oauthShared.js` — `finishOauthLogin(res, profile)`: the
+  provider-agnostic find-by-provider-id → link-by-verified-email → create → suspended-check →
+  JWT-issue logic, written once. Every provider route calls this; none reimplement it.
+- `modules/identity/routes/oauth.routes.js` — `POST /api/auth/oauth/google`, mounted at
+  `/api/auth/oauth`. Verifies the Google id_token via `google-auth-library`, then calls
+  `finishOauthLogin`. Returns `503 oauth_disabled` if `GOOGLE_CLIENT_ID` is unset — no
+  frontend-visible crash on an unconfigured deploy.
+- `GOOGLE_CLIENT_ID` added to `lib/config.js` / `.env.example`. `googleOauth` zod schema in
+  `lib/validate.js`. `google-auth-library` added as a dependency.
+
+**Frontend:**
+- `lib/api.ts`'s `loginWithGoogle(idToken)`, `lib/auth.tsx`'s `useAuth().loginWithGoogle` —
+  same shape as the existing `login`/`loginOtp`.
+- New `components/auth/GoogleSignInButton.tsx` — Google's own "Continue with Google" button
+  (loads Google Identity Services JS, renders nothing if `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is
+  unset), takes `onCredential(idToken)` so any page decides what to do with the result.
+- `app/login/page.tsx` — button wired above the existing OTP/password tabs; on credential,
+  calls `loginWithGoogle` then the page's normal post-login redirect/toast. No register-page
+  change needed — the backend already auto-creates the account on first Google sign-in.
+
+**Verified:** `npx tsc --noEmit` clean; registered + logged in a real user against the
+deployed testing server (`https://bharatnavya-api.vercel.app`) via `curl` before any frontend
+work started; `/login` compiles and serves 200 locally with the button wired in.
+
+**Incident + fix:** `0016_add_google_oauth.sql` was applied to local dev but a user's first
+Google sign-in attempt hit `column "google_id" does not exist` — the migration had never been
+run against local Postgres in THIS session's fresh clone. Applied via `npm run
+migrate-schema`, backend restarted, confirmed fixed. Documented as a standing gotcha (CLAUDE.md
+§9) and a deploy-target checklist (TESTING-SERVER.md) — a migration file does nothing until
+run against each specific database (local / testing / prod) separately.
+
+**Left open:** the same migration still needs to run against the testing server's Neon DB
+(see TESTING-SERVER.md), and `GOOGLE_CLIENT_ID` needs to be set in that deploy's env vars —
+neither happens automatically from a code deploy. Facebook/Apple routes not started (no
+credentials yet).
+
+**Docs touched:** `CLAUDE.md` (§5 new "Social login" bullet, §6 reusable-atoms entry, §9 two
+new gotchas), `TESTING-SERVER.md` (new — deployed server's config + the migration checklist).
+
+---
+
 ### 2026-08-21 — Reviews publish live (no moderation), sponsored/featured ad rail on search & brand pages, ListingCard redesign, Map View removed, Compare removed
 
 **Why:** Several independent cleanups landed together this round: reviews were sitting behind

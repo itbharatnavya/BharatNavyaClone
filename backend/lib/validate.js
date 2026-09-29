@@ -43,6 +43,12 @@ const schemas = {
     email: z.string().email(),
     password: z.string().min(1, "password is required"),
   }),
+  // POST /api/auth/oauth/google — idToken is the Google Identity Services
+  // "credential" JWT; verified server-side (routes/oauth.routes.js), never trusted
+  // as-is.
+  googleOauth: z.object({
+    idToken: z.string().min(1, "idToken is required"),
+  }),
   // POST /api/inquiries (buyer RFQ/enquiry submission). buyerId is intentionally
   // NOT accepted here — the route derives it only from the authenticated req.user,
   // never from the client, to close an identity-spoofing hole (see WORKFLOW.md).

@@ -114,6 +114,18 @@ module.exports = {
   // when set, uploaded-file URLs use this instead of the raw *.s3.amazonaws.com host.
   S3_PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || null,
 
+  // --- Social login (Google) ---
+  // POST /api/auth/oauth/google verifies the Google id_token against this client
+  // id (google-auth-library). Unset (default) leaves the route disabled (503) —
+  // no fake/placeholder client id is ever accepted. Get one free from
+  // console.cloud.google.com (OAuth client ID, Web application) — no billing
+  // account needed. Use a SEPARATE client per environment (dev/staging/prod),
+  // same var name, different value in each deploy's own .env.
+  // Facebook and Apple are NOT wired yet (Apple requires a paid $99/yr Apple
+  // Developer account; Facebook deferred) — add the same shape when credentials
+  // exist.
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || null,
+
   // --- Recruitment go-live gate (RECRUITMENT.md §5) ---
   // Unset (default) defers to the admin-editable featureFlags.recruitmentLive in
   // settings.json (GET /api/config, edited via /admin). Set to "true"/"false" to force
