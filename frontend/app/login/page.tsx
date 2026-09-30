@@ -138,19 +138,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleCredential = async (idToken: string) => {
-    setGoogleLoading(true);
-    try {
-      await loginWithGoogle(idToken);
-      addToast("Signed in with Google.", "success");
-      goNext();
-    } catch (err) {
-      addToast(err instanceof Error ? err.message : "Google sign-in failed.", "error");
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
   const handleResendOtp = async () => {
     if (resendCooldown > 0 || sending) return;
     await handleSendOtp();
@@ -181,6 +168,19 @@ export default function LoginPage() {
       addToast(err instanceof Error ? err.message : "Login failed.", "error");
     } finally {
       setLoggingIn(false);
+    }
+  };
+
+  const handleGoogleCredential = async (idToken: string) => {
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle(idToken);
+      addToast("Signed in with Google.", "success");
+      goNext();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Google sign-in failed.", "error");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -239,14 +239,10 @@ export default function LoginPage() {
           </p>
 
           {GOOGLE_CLIENT_ID && (
-            <>
+            <div className="counter-auth-social">
               <GoogleSignInButton onCredential={handleGoogleCredential} disabled={googleLoading} />
-              <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
-                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-                <span style={{ fontSize: 12, color: "var(--faint)" }}>{t("auth.or", "OR")}</span>
-                <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-              </div>
-            </>
+              <div className="counter-auth-or" aria-hidden="true"><span>{t("auth.or", "OR")}</span></div>
+            </div>
           )}
 
           {/* Tabs */}

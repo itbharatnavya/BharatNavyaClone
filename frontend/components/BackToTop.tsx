@@ -38,7 +38,6 @@ export default function BackToTop() {
       type="button"
       className="back-to-top"
       aria-label="Back to top"
-      title="Back to top"
       onClick={() => {
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
@@ -47,7 +46,6 @@ export default function BackToTop() {
       <svg aria-hidden viewBox="0 0 24 24">
         <path d="m6.5 11.5 5.5-5.5 5.5 5.5M12 6v12" />
       </svg>
-      <span>Back to top</span>
     </button>
   );
 }

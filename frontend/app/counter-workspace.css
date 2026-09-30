@@ -77,8 +77,8 @@
   align-items: flex-end !important;
   overflow: hidden;
   border: 0 !important;
-  border-right: 1px solid #343844 !important;
-  background: var(--counter-ink) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.32) !important;
+  background: var(--counter-indigo) !important;
   color: white;
 }
 
@@ -115,7 +115,7 @@
 .counter-auth-aside p {
   max-width: 46ch;
   margin-top: 1.5rem !important;
-  color: var(--counter-on-ink) !important;
+  color: var(--counter-on-indigo) !important;
   font-size: 1rem !important;
   line-height: 1.65;
 }
@@ -132,6 +132,39 @@
   padding: clamp(1.5rem, 3vw, 2.5rem);
   border: 1px solid var(--counter-line);
   background: var(--counter-ivory);
+}
+
+.counter-auth-social {
+  margin-bottom: 1.25rem;
+}
+
+.google-signin-shell,
+.google-signin-button {
+  width: 100%;
+  min-height: 2.75rem;
+}
+
+.google-signin-button {
+  display: flex;
+  justify-content: center;
+}
+
+.counter-auth-or {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  color: var(--counter-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.counter-auth-or::before,
+.counter-auth-or::after {
+  content: "";
+  height: 1px;
+  background: var(--counter-line);
 }
 
 .counter-auth-form > h1 {

@@ -1,11 +1,5 @@
 "use client";
 
-// Renders Google's own "Continue with Google" button (G logo + text — the same
-// rendered widget every other app uses, via Google Identity Services) and hands
-// the verified credential JWT up to the caller. The caller decides what to do
-// with it (login page calls useAuth().loginWithGoogle — backend auto-registers
-// on first sign-in, no separate "register with Google" path needed).
-
 import { useEffect, useRef } from "react";
 
 declare global {
@@ -15,7 +9,7 @@ declare global {
         id: {
           initialize: (config: {
             client_id: string;
-            callback: (resp: { credential: string }) => void;
+            callback: (response: { credential: string }) => void;
           }) => void;
           renderButton: (parent: HTMLElement, options: Record<string, unknown>) => void;
         };
@@ -28,49 +22,67 @@ export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
 export default function GoogleSignInButton({
   onCredential,
-  disabled,
+  disabled = false,
 }: {
   onCredential: (idToken: string) => void | Promise<void>;
   disabled?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const credentialHandlerRef = useRef(onCredential);
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || disabled) return;
+    credentialHandlerRef.current = onCredential;
+  }, [onCredential]);
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
 
     const scriptId = "google-identity-services";
-    function init() {
-      if (!window.google || !containerRef.current) return;
-      containerRef.current.innerHTML = "";
+    const initialize = () => {
+      const container = containerRef.current;
+      if (!window.google || !container) return;
+      container.replaceChildren();
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
-        callback: (resp) => {
-          void onCredential(resp.credential);
+        callback: ({ credential }) => {
+          void credentialHandlerRef.current(credential);
         },
       });
-      window.google.accounts.id.renderButton(containerRef.current, {
+      window.google.accounts.id.renderButton(container, {
         theme: "outline",
         size: "large",
         text: "continue_with",
         shape: "rectangular",
-        width: 360,
+        width: Math.min(400, Math.max(240, Math.floor(container.getBoundingClientRect().width))),
       });
+    };
+
+    const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (existing) {
+      if (window.google) initialize();
+      else existing.addEventListener("load", initialize, { once: true });
+      return () => existing.removeEventListener("load", initialize);
     }
 
-    if (document.getElementById(scriptId)) {
-      init();
-      return;
-    }
     const script = document.createElement("script");
     script.id = scriptId;
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
-    script.onload = init;
+    script.addEventListener("load", initialize, { once: true });
     document.body.appendChild(script);
-  }, [onCredential, disabled]);
+    return () => script.removeEventListener("load", initialize);
+  }, []);
 
   if (!GOOGLE_CLIENT_ID) return null;
 
-  return <div ref={containerRef} style={{ display: "flex", justifyContent: "center" }} />;
+  return (
+    <div
+      className="google-signin-shell"
+      aria-busy={disabled}
+      style={disabled ? { pointerEvents: "none", opacity: 0.62 } : undefined}
+    >
+      <div ref={containerRef} className="google-signin-button" />
+    </div>
+  );
 }

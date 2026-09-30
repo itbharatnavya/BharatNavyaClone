@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AboutBlogPreview from "@/components/about/AboutBlogPreview";
 
 const principles = [
   {
@@ -57,6 +58,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <AboutBlogPreview />
 
       <section className="counter-about-close">
         <div className="counter-support-shell">

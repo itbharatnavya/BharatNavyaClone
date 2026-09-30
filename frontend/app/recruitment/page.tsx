@@ -13,7 +13,6 @@ import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
 import { RecruitmentSectionSearch } from "@/components/SectionSearchDock";
 import { getBlogs, getJobFunctions, getJobs, getStories } from "@/lib/api";
 import { useSearchDock } from "@/lib/searchDock";
-import { useDockOnScroll } from "@/lib/useDockOnScroll";
 import { closingContext, formatSalary, jobFreshness, jobLocation, rolePreviewModel } from "@/lib/recruitmentDesign";
 import { resolvePublicUpdates, type EvidenceAsset } from "@/lib/livingEvidence";
 import type { Blog, Job, JobFunction, StoryGroup } from "@/lib/types";
@@ -43,9 +42,11 @@ function PathIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="4" y=
 export default function RecruitmentPage() {
   const router = useRouter();
   const { docked, setProgress, setRoleQuery, markSearchNav } = useSearchDock();
-  const { anchorRef: searchAnchorRef, focusHandlers } = useDockOnScroll<HTMLDivElement>(setProgress);
+  const searchAnchorRef = useRef<HTMLDivElement>(null);
   const updatesAnchorRef = useRef<HTMLElement>(null);
   const updatesRequestedRef = useRef(false);
+  const heroFocusedRef = useRef(false);
+  const pendingDockRef = useRef<boolean | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -71,8 +72,15 @@ export default function RecruitmentPage() {
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
+    const anchor = searchAnchorRef.current;
+    if (!anchor || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => { const shouldDock = !entry.isIntersecting && entry.boundingClientRect.bottom <= 72; if (heroFocusedRef.current && shouldDock) { pendingDockRef.current = true; return; } pendingDockRef.current = null; setProgress(shouldDock ? 1 : 0); }, { threshold: 0.08, rootMargin: "-72px 0px 0px 0px" });
+    observer.observe(anchor);
+    return () => { observer.disconnect(); setProgress(0); };
+  }, [setProgress]);
+  useEffect(() => {
     searchAnchorRef.current?.toggleAttribute("inert", docked);
-  }, [docked, searchAnchorRef]);
+  }, [docked]);
 
   const freshJobs = jobs.slice(0, 5);
   const selectedJob = freshJobs.find((job) => job.id === selectedJobId) || freshJobs[0];
@@ -94,7 +102,7 @@ export default function RecruitmentPage() {
     <section className="le-hero" aria-labelledby="recruitment-title"><div className="le-shell">
       <h1 id="recruitment-title">Find the right people. Build the right team.</h1>
       <p>Bharat Navya brings hiring and business presence together, helping companies present opportunities while professionals find roles aligned with their skills, experience, and career goals.</p>
-      <div ref={searchAnchorRef} className="le-hero-search is-recruitment" aria-hidden={docked || undefined} {...focusHandlers}><RecruitmentSectionSearch /></div>
+      <div ref={searchAnchorRef} className="le-hero-search is-recruitment" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>
       <div className="le-examples"><span>Popular searches</span>{["Operations jobs in Ahmedabad","Remote product design roles","Entry-level sales jobs"].map((item) => <button type="button" key={item} onClick={() => exampleSearch(item)}>{item}</button>)}</div>
     </div></section>
 

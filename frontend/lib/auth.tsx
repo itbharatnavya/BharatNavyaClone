@@ -98,15 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const loginWithGoogle = useCallback(
-    async (idToken: string): Promise<User> => {
-      const { token, user: u } = await api.loginWithGoogle(idToken);
-      api.setToken(token);
-      setUser(u);
-      return u;
-    },
-    []
-  );
+  const loginWithGoogle = useCallback(async (idToken: string): Promise<User> => {
+    const { token, user: u } = await api.loginWithGoogle(idToken);
+    api.setToken(token);
+    setUser(u);
+    return u;
+  }, []);
 
   const register = useCallback(
     async (body: RegisterInput): Promise<User | null> => {

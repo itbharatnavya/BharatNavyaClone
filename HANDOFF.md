@@ -8,7 +8,9 @@ Official application: `frontend/`
 
 Official committed checkpoint: the current tip of `origin/design`; verify it with `git rev-parse origin/design` before continuing.
 
-Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. Public deployment remains a separate verification step.
+Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. The UI follow-up for the indigo auth/footer surfaces, the developer-owned Google sign-in integration point, the right-side arrow-only back-to-top control, and the denser About-page blog preview has completed its local visual review and is included in the current UI checkpoint. Deployment and backend integration remain developer-owned work outside this design handoff.
+
+Continuation note: if the current Codex task appears visually blank, start a fresh task in this repository and read `AGENTS.md` followed by this file. Do not assume the blank task pane means the working tree was lost; confirm with `git status --short` and continue from the scoped local changes documented here.
 
 Git identity: `itbharatnavya <314251907+itbharatnavya@users.noreply.github.com>`
 
@@ -106,7 +108,8 @@ Primary live style sources:
 - The latest audit checked 80 public/auth route states across desktop and mobile, plus 50 admin states and 64 workspace states, without hard render failures in the audited environment.
 - Admin tables, toolbar controls, seller/employer workspaces, pricing admin calls, auth viewport fit, and overflow-prone secondary pages received targeted repairs in the latest checkpoint.
 - Dropdowns and search suggestions use the Counter border, radius, ivory surface, focus, typography, and icon treatment rather than browser-default or legacy styling.
-- A shared lower-left `BackToTop` control is mounted from the root layout. It appears after approximately 600px, is keyboard accessible, avoids lower-right controls, and respects reduced motion.
+- A shared arrow-only `BackToTop` control is mounted from the root layout. It appears on the right after approximately 600px, sits above the lower-right Navya AI Agent to avoid overlap, retains an accessible label and keyboard focus, and respects reduced motion.
+- Public footer and login context surfaces use the Counter indigo rather than black backgrounds. Registration keeps its green route ownership.
 - The product mark uses the selected BN-arrow asset at the existing public URL; the Chakra and proposed tagline are not displayed.
 - The floating helper is consistently named **Navya AI Agent** in visible and accessible copy. It is limited to the public hub routes defined in `ChatAssistant`; dense category, company, listing, employer, and job routes do not receive a conflicting floating assistant.
 
@@ -120,6 +123,7 @@ Primary live style sources:
 - Directory is green; Recruitment is saffron. Recruitment must not blend into the blue hero or become a black card.
 - The former oversized “Clarity follows the whole decision” section is a smaller, focused journey rather than multiple competing cards.
 - A clearly labelled promotional surface and current blog content remain intact.
+- The homepage no longer carries the blog-card preview; that editorial preview now belongs to About so Home stays focused on product discovery and the decision journey.
 
 ### Directory home `/directory`
 
@@ -167,7 +171,9 @@ Primary live style sources:
 - Company profiles restore separate Services, Products, Work evidence, and Reviews sections with API-backed data and truthful empty states. Internal scroll constraints were removed, ad spacing was increased, and the inquiry card no longer overlaps its CTA.
 - Directory and Recruitment status rails use circular story controls and retain truthful compact empty states rather than fabricated activity.
 - Login and registration use a full-height desktop context panel without unused strips above or below it; mobile controls retain a minimum readable input size.
+- Login includes the frontend presentation and integration hook for the developer-owned Google Identity Services flow. Only Google is exposed; Facebook and Apple remain absent. The control appears only when `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is configured. Backend endpoint behavior, credentials, persistence, and deployment acceptance remain outside the UI scope.
 - Feni content was integrated into Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, and Register while preserving behavior and localization boundaries.
+- About now includes an API-backed preview of up to four current blog posts before its closing actions. The cards use a dense responsive grid: four across on wide screens, three at intermediate desktop widths, two on tablet, and one on narrow phones. The full `/blog` route and blog API remain unchanged.
 
 ## 7. Verification evidence and how to re-check
 
@@ -182,6 +188,16 @@ Evidence recorded for the reconciliation:
 - Live browser checks confirmed Home keeps Ask Navya after scrolling and no longer mounts the stale universal search dock.
 - The frontend development server was restarted after the production build and restored on port 3000.
 - Full final screenshot approval is still pending. Do not treat these automated and targeted checks as the owner's visual approval.
+
+Evidence recorded for the Google UI/auth/footer/back-to-top follow-up:
+
+- `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, the Impeccable detector, and `git diff --check` passed for the UI checkpoint.
+- Desktop and mobile browser checks confirmed the login context panel fills its intended space without black backgrounds or horizontal overflow; the public footer is indigo.
+- Source re-check on 2026-09-30 confirmed the public login context panel is Counter indigo, registration is Counter green, and the public footer is Counter indigo. The auth form card remains light; do not reintroduce black card or section backgrounds in these public/auth surfaces. Dark ink is still intentionally used for text, buttons, media viewers, and internal/admin states where it is not a card or page background.
+- The back-to-top control is arrow-only, on the right, does not overlap the Navya AI Agent, scrolls to the top, and disappears there while retaining the accessible `Back to top` name.
+- Directory search recommendations rendered from live data in the themed dropdown, and selecting `Coaching & Tutoring` navigated to `/search?category=coaching-tutoring`.
+- The final bounded visual pass covered `/`, `/directory`, `/search`, `/recruitment`, `/recruitment/jobs`, `/about`, `/login`, and `/register` at 1440×900, 390×844, and a 720×450 200%-zoom equivalent. No document-level overflow or browser-console errors were found. Ask Navya, mobile navigation, search recommendations, mobile inline detail, the About blog grid, footer, auth layouts, and back-to-top behavior were checked in the rendered app.
+- Live Google authentication, backend implementation, credentials, deployment, and production API smoke testing remain developer-owned and are not UI acceptance criteria for this checkpoint.
 
 Run these from `frontend/` after changes:
 
@@ -234,11 +250,7 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-1. Review the pushed reconciliation at desktop, phone width, and 200% zoom on the agreed route matrix; log any new visual regressions as a follow-up rather than rewriting this checkpoint.
-2. Verify the resulting GitHub/Vercel deployment SHA before calling the work publicly shipped.
-3. Decide and implement public backend hosting, then configure `BACKEND_URL` for Vercel.
-4. Re-run production API-backed smoke tests for statuses, blogs, jobs, listings, ads, suggestions, login, profiles, and applications.
-5. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles.
+The scoped UI follow-up is complete. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. Backend implementation, Google credentials, hosting, deployment, and production API smoke testing are developer-owned and are intentionally excluded from this design continuation.
 
 ## 11. Non-negotiable hygiene
 

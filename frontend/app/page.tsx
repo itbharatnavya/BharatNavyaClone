@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import HomeAgent from "@/components/home/HomeAgent";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
-import { getBlogs } from "@/lib/api";
-import type { Blog } from "@/lib/types";
 
 function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
 function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
@@ -63,23 +61,8 @@ const journey = [
 ];
 
 export default function BharatNavyaHome() {
-  const [sellerBlogs, setSellerBlogs] = useState<Blog[]>([]);
-  const [employerBlogs, setEmployerBlogs] = useState<Blog[]>([]);
   const [activeStandardId, setActiveStandardId] = useState("identity");
   const [activeJourneyIndex, setActiveJourneyIndex] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-    Promise.allSettled([getBlogs({ authorType: "seller" }), getBlogs({ authorType: "employer" })]).then((results) => {
-      if (!active) return;
-      const [sellerBlogResult, employerBlogResult] = results;
-      if (sellerBlogResult.status === "fulfilled") setSellerBlogs(sellerBlogResult.value || []);
-      if (employerBlogResult.status === "fulfilled") setEmployerBlogs(employerBlogResult.value || []);
-    });
-    return () => { active = false; };
-  }, []);
-
-  const guides = [...sellerBlogs, ...employerBlogs].filter((blog) => blog.coverImage).slice(0, 3);
   const activeStandard = standards.find((standard) => standard.id === activeStandardId) || standards[0];
   const activeJourney = journey[activeJourneyIndex];
 
@@ -134,8 +117,6 @@ export default function BharatNavyaHome() {
     </div></section>
 
     <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" fallbackTitle="Put your business in front of people looking for what you do." fallbackSummary="Feature your business where relevant users are exploring products, services, and suppliers—without changing organic ranking or verification." fallbackAction="Explore placements" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
-
-    {guides.length > 0 && <section className="le-section is-tinted bn-home-guides" aria-labelledby="guides-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="guides-title">Navya Blog</h2></div><Link className="le-button" href="/blog">View all updates</Link></header><div className="le-editorial-grid">{guides.map((guide) => <Link href={`/blog/${guide.slug}`} key={guide.id}><EvidenceMedia asset={{ src: guide.coverImage!, alt: `Cover for ${guide.title}`, kind: "article", source: "api" }} ratio="wide" /><span className="le-editorial-copy"><small>{guide.author?.companyName || guide.authorName || "Bharat Navya"}</small><strong>{guide.title}</strong><p>{guide.excerpt || "Practical context for growing companies and applicants."}</p></span></Link>)}</div></div></section>}
 
   </div>;
 }
