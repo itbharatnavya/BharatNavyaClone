@@ -6,7 +6,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import Filters, { type FilterOption, type ListingFilterState } from "@/components/Filters";
 import Pagination from "@/components/Pagination";
-import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { getListings, type ListingQuery } from "@/lib/api";
 import type { Listing, ListingsResponse } from "@/lib/types";
 
@@ -270,9 +269,6 @@ export default function UnifiedListingWorkbench({
           <Filters hideHeading hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
         </div>
       </aside>
-      <div className="directory-listing-filter-ad">
-        <ApiAdvertisingSlot compact placement={["listing_sidebar", "search_sponsored_row"]} kind="native" context="Sponsored in Directory" summary="A clearly labelled placement, separate from organic results and filter choices." action="View promotion" />
-      </div>
     </div>
   </div>;
 }

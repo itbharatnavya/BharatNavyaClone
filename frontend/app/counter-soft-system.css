@@ -2862,3 +2862,134 @@ main :is(h1, h2, h3, h4),
     padding-inline: var(--counter-space-3);
   }
 }
+
+/* Auth phone input: one explicit country context, one national-number field. */
+.international-phone {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.international-phone-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.82fr) minmax(0, 1.18fr);
+  gap: 0.6rem;
+}
+
+.international-phone-row label,
+.international-phone-number {
+  min-width: 0;
+}
+
+.international-phone-country {
+  width: 100%;
+  padding-inline: 0.75rem 2rem;
+}
+
+.international-phone-number {
+  position: relative;
+  display: block;
+}
+
+.international-phone-number .input {
+  padding-inline-start: 3.5rem;
+}
+
+.international-phone-prefix {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* Contextual guest reminder: non-modal, no focus theft, and smaller than an
+   ad unit so browsing remains the primary task. */
+.guest-account-nudge {
+  position: fixed;
+  z-index: 58;
+  inset-inline-start: clamp(0.75rem, 2vw, 1.5rem);
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  width: min(25rem, calc(100vw - 1.5rem));
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  padding: 1rem 2.75rem 1rem 1rem;
+  border: 1px solid var(--counter-line);
+  border-radius: var(--counter-card-radius);
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
+  box-shadow: 0 0.75rem 2rem rgba(18, 20, 27, 0.14);
+  animation: guest-nudge-in 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.guest-account-nudge-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--brand) 12%, white);
+  color: var(--brand);
+}
+
+.guest-account-nudge-mark svg,
+.guest-account-nudge-close svg {
+  width: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.guest-account-nudge-copy { min-width: 0; }
+.guest-account-nudge-copy > strong { display: block; font-size: 0.95rem; }
+.guest-account-nudge-copy p {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.guest-account-nudge-copy > div { display: flex; align-items: center; gap: 0.8rem; }
+.guest-account-nudge-login { color: var(--brand); font-size: 0.8rem; font-weight: 700; text-underline-offset: 0.18em; }
+.guest-account-nudge-close {
+  position: absolute;
+  inset-inline-end: 0.55rem;
+  top: 0.55rem;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.guest-account-nudge-close:hover { background: var(--bg-subtle); color: var(--ink); }
+
+@keyframes guest-nudge-in {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 560px) {
+  .international-phone-row { grid-template-columns: 1fr; }
+  .international-phone.is-compact .international-phone-row { grid-template-columns: minmax(8.5rem, 0.9fr) minmax(0, 1.1fr); }
+  .guest-account-nudge {
+    bottom: 5.25rem;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    padding: 0.85rem 2.5rem 0.85rem 0.85rem;
+  }
+  .guest-account-nudge-mark { width: 2rem; height: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guest-account-nudge { animation: none; }
+}
