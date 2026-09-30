@@ -1474,11 +1474,11 @@
 
 .back-to-top {
   position: fixed;
-  right: max(1.25rem, env(safe-area-inset-right));
-  bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 5.5rem));
+  right: max(1.5rem, env(safe-area-inset-right));
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
   z-index: 110;
-  min-width: 3rem;
-  min-height: 3rem;
+  width: 3.25rem;
+  height: 3.25rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1489,6 +1489,14 @@
   color: var(--counter-ink);
   box-shadow: var(--counter-shadow-lift);
   transition: transform var(--counter-motion), background-color var(--counter-motion);
+}
+
+body:has(.navya-agent-trigger) .back-to-top {
+  right: max(5.5rem, calc(env(safe-area-inset-right) + 5.5rem));
+}
+
+body:has(.navya-agent-panel) .back-to-top {
+  display: none;
 }
 
 .back-to-top svg {
@@ -1537,7 +1545,7 @@
     font-size: 1rem !important;
   }
 
-  .back-to-top { width: 3rem; }
+  .back-to-top { width: 3.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
