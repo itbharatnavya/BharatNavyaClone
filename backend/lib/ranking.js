@@ -123,8 +123,10 @@ async function rankListings(listings, { query, categorySlug, tierBySeller } = {}
     const recency = ((Date.parse(l.createdAt) || 0) - minT) / tSpan;
     const verified = l.isVerifiedSeller ? 1 : 0;
     // Average the active components so organic stays within ~[0,1].
+    // With a text query, relevance carries 4 of 7 parts so a strong text match is not
+    // outranked by rating/recency/paid placement.
     const organic = hasQuery
-      ? (relevance + rating + recency + verified) / 4
+      ? (relevance * 4 + rating + recency + verified) / 7
       : (rating + recency + verified) / 3;
 
     // ---- paid boost ----

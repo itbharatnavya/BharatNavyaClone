@@ -25,6 +25,7 @@ import type {
   RecentActivityItem,
   Conversation,
   Message,
+  MessagesPage,
   Blog,
   Story,
   StoryGroup,
@@ -703,25 +704,31 @@ export function logSearchSelection(params: {
 // ============================================================
 // Chat
 // ============================================================
-export function getConversations(): Promise<Conversation[]> {
-  return request<Conversation[]>(`/api/chat/conversations`);
+export function getConversations(listingId?: string): Promise<Conversation[]> {
+  return request<Conversation[]>(
+    `/api/chat/conversations${toQuery({ listingId })}`
+  );
+}
+
+export function getConversation(id: string): Promise<Conversation> {
+  return request<Conversation>(`/api/chat/conversations/${id}`);
 }
 
 export function createConversation(
-  listingId: string,
+  listingId: string | null | undefined,
   toUserId: string
 ): Promise<Conversation> {
   return request<Conversation>(`/api/chat/conversations`, {
     method: "POST",
-    body: JSON.stringify({ listingId, toUserId }),
+    body: JSON.stringify({ listingId: listingId || null, toUserId }),
   });
 }
 
 export function getMessages(
   convId: string,
   afterSeq?: number
-): Promise<Message[]> {
-  return request<Message[]>(
+): Promise<MessagesPage> {
+  return request<MessagesPage>(
     `/api/chat/conversations/${convId}/messages${toQuery({ afterSeq })}`
   );
 }
@@ -1047,6 +1054,21 @@ export function markNotificationRead(
 export function markAllNotificationsRead(): Promise<{ updated: number }> {
   return request<{ updated: number }>(`/api/notifications/read-all`, {
     method: "PUT",
+  });
+}
+
+// FCM push token registration (CHAT-PLAN.md Phase 10) — lib/fcm.ts calls
+// this once it has a token; the token itself is never read back.
+export function registerFcmToken(token: string, platform = "web"): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/fcm/token`, {
+    method: "POST",
+    body: JSON.stringify({ token, platform }),
+  });
+}
+export function unregisterFcmToken(token: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/fcm/token`, {
+    method: "DELETE",
+    body: JSON.stringify({ token }),
   });
 }
 

@@ -926,4 +926,18 @@ CREATE TABLE IF NOT EXISTS applications (
 CREATE UNIQUE INDEX IF NOT EXISTS applications_job_candidate_uniq ON applications(job_id, candidate_id);
 CREATE INDEX IF NOT EXISTS applications_employer_idx ON applications(employer_id);
 CREATE INDEX IF NOT EXISTS applications_candidate_idx ON applications(candidate_id);
+
+-- FCM (Firebase Cloud Messaging) web-push device tokens — owned by identity
+-- (0017_add_fcm_tokens.sql). token is the primary key so re-registering the
+-- same browser upserts onto the same row (see lib/fcm.js's registerToken)
+-- instead of accumulating duplicates; a token can be reassigned to a
+-- different user_id if the same browser later logs in as someone else.
+CREATE TABLE IF NOT EXISTS fcm_tokens (
+  token         TEXT PRIMARY KEY,
+  user_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  platform      TEXT NOT NULL DEFAULT 'web',
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS fcm_tokens_user_idx ON fcm_tokens(user_id);
 CREATE INDEX IF NOT EXISTS applications_status_idx ON applications(status);

@@ -554,18 +554,13 @@ export interface StoryGroup {
 // ============================================================
 // Chat
 // ============================================================
-export interface ConversationParticipant {
-  id: string;
-  name?: string;
-  avatarUrl?: string | null;
-}
-
 export interface Conversation {
   id: string;
   participants: string[]; // two user ids
-  participantsInfo?: ConversationParticipant[];
+  otherUserId: string | null;
+  otherUserName: string | null;
   listingId?: string | null;
-  listingTitle?: string;
+  listingTitle?: string | null;
   lastMsgSeq: number;
   lastMsgAt?: string | null;
   preview?: string;
@@ -578,6 +573,12 @@ export interface Message {
   from: string;
   ts: string;
   body: string;
+}
+
+export interface MessagesPage {
+  conversationId: string;
+  messages: Message[];
+  lastMsgSeq: number;
 }
 
 // ============================================================

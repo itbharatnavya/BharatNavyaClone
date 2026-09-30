@@ -113,6 +113,24 @@ duplicate it, only tracks deltas against it.
 
 ## 3. Change log (newest first)
 
+### 2026-09-30 — Directory pagination reset fix, brand-page pagination, search precision (AND matching + phrase boost)
+
+**Reported:** pagination not working on search/category/brand listing pages; searching "multi pin collector" returned unrelated listings (467 hits) instead of the matching product.
+
+**Pagination (frontend).** Backend `GET /api/listings` paging was always correct (`{listings,total,page,totalPages}`). The bug was in `UnifiedListingWorkbench.tsx`: its reset effect (`setPage(1)`) depended on the `initialFilters` object, which both parents (`app/search/page.tsx` via `parseDiscoverySeed`, `CategoryLanding.tsx` inline object) rebuild every render. Clicking page N wrote `?page=N` via `router.replace`, the parent re-rendered with a fresh object, and the effect snapped back to page 1. Fixed: effect now keyed on `initialKey` (serialized filters) only and skips its first run; `page` is initialised from `?page=` so reloads/shared links keep their page.
+- **Brand page** (`app/brand/[slug]/page.tsx`) had no pagination at all (`GET /api/brands/:slug` returns every listing). Added client-side paging (`PAGE_SIZE = 12`, shared `Pagination` component, reset to page 1 on slug/sort change); ads interleave per page slice. Server-side paging on that endpoint is still an open option if brands grow large.
+- Still true: the workbench hides its pagination while the in-memory brand/min-rating filters are active (they filter the current page only).
+
+**Search (backend).** `lib/search.js` used MiniSearch OR-matching with `prefix: true, fuzzy: 0.2` on every word, so any listing matching just "pin"/"multi" (or a fuzzy/prefix variant) qualified. Now: `combineWith: "AND"` first, falling back to OR only when AND finds nothing; prefix expansion only on the last query word; fuzzy only for words longer than 4 characters; a title containing the full query phrase gets a 3x score. `lib/ranking.js`: with a text query, relevance now weighs 4 of 7 parts of the organic score (was 1 of 4), so paid boost/rating/recency cannot bury a strong text match. `searchListings` is shared with the AI concierge/assistant routes, which inherit the stricter matching (OR fallback keeps them from going blank).
+
+**Files:** `frontend/components/directory/UnifiedListingWorkbench.tsx`, `frontend/app/brand/[slug]/page.tsx`, `backend/lib/search.js`, `backend/lib/ranking.js`.
+
+**Verified:** `npx tsc --noEmit` clean. Live `GET /api/listings?q=multi pin collector`: 467 hits -> 2 ("Multi-Pin Board Connectors", "Multi pin board connector a"; "collector" fuzzy-matches "connector"). Headless Chrome against `:3000`: `/search` and the `/tools` category page go to page 2 and 3 with `?page=N` in the URL, the first row changes each time and the active pager button follows; a reload on `?page=3` stays on page 3. `/brand/supreme` (16 listings) shows 12 then 4 across pages 1 and 2. A first version of the reset fix broke reload under dev StrictMode (double effect run reset the page to 1); it now compares against the last-seen filter key held in a ref. Not exercised: AI concierge/assistant routes after the stricter matching.
+
+**Open:** no test covers search ranking; consider a fixture test for AND/phrase behaviour.
+
+---
+
 ### 2026-09-29 — Google social login (backend + frontend), extensible for Facebook/Apple later
 
 **Why:** Product owner wants social login on `/login`, Google now, Facebook/Apple once

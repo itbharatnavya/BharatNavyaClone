@@ -644,6 +644,46 @@ async function setEmployerApproval(userId, status, actorId) {
   });
 }
 
+/* --------------------------------------------------------- FCM push tokens -- */
+// Web-push device tokens (0017_add_fcm_tokens.sql) — one row per browser/device,
+// keyed on the token itself so re-registering upserts instead of duplicating.
+// lib/fcm.js reads these to know who to push to; never exposed in any API
+// response (a device token is bearer-credential-adjacent — treat it like one).
+
+/** Upsert a token for a user — same token re-registered (same browser, maybe a
+ *  different logged-in user) reassigns user_id and bumps last_seen_at. */
+async function registerFcmToken(userId, token, platform = "web") {
+  await pool.query(
+    `INSERT INTO fcm_tokens (token, user_id, platform, created_at, last_seen_at)
+     VALUES ($1, $2, $3, now(), now())
+     ON CONFLICT (token) DO UPDATE
+       SET user_id = EXCLUDED.user_id, platform = EXCLUDED.platform, last_seen_at = now()`,
+    [token, userId, platform]
+  );
+}
+
+/** Drop a token (logout, or the browser's push subscription expired). */
+async function unregisterFcmToken(token) {
+  await pool.query(`DELETE FROM fcm_tokens WHERE token = $1`, [token]);
+}
+
+/** Every token currently registered for a user — lib/fcm.js sends to all of them
+ *  (a user may have chat open on more than one device/browser). */
+async function getFcmTokensForUser(userId) {
+  const { rows } = await pool.query(
+    `SELECT token FROM fcm_tokens WHERE user_id = $1`,
+    [userId]
+  );
+  return rows.map((r) => r.token);
+}
+
+/** Drop tokens Firebase reported as invalid/unregistered — called from
+ *  lib/fcm.js's send result, keeps the table from accumulating dead tokens. */
+async function pruneFcmTokens(tokens = []) {
+  if (!tokens.length) return;
+  await pool.query(`DELETE FROM fcm_tokens WHERE token = ANY($1)`, [tokens]);
+}
+
 module.exports = {
   getAuthUser,
   getEmployerCard, getEmployerCards,
@@ -660,4 +700,5 @@ module.exports = {
   getEmployerUserIds, getEmployerStatusCards,
   setEmployerApproval,
   createUser, updateUser, removeUser,
+  registerFcmToken, unregisterFcmToken, getFcmTokensForUser, pruneFcmTokens,
 };

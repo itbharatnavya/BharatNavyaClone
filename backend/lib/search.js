@@ -155,12 +155,27 @@ async function searchListings({ q, filters = {}, limit } = {}) {
   if (query) {
     const { ms, byId } = getIndex(listings);
     const survivorIds = new Set(survivors.map((l) => l.id));
-    const hits = ms.search(query, {
+    // Every query word must match (AND); only if that finds nothing do we widen to OR.
+    // Prefix expansion applies to the last word only (search-as-you-type) and fuzzy
+    // matching only to longer words, so "pin" cannot drift onto unrelated titles.
+    const base = {
       boost: FIELD_BOOST,
-      prefix: true,
-      fuzzy: 0.2,
+      prefix: (_t, i, terms) => i === terms.length - 1,
+      fuzzy: (t) => (t.length > 4 ? 0.2 : false),
       filter: (r) => survivorIds.has(r.id),
-    });
+    };
+    let hits = ms.search(query, { ...base, combineWith: "AND" });
+    if (hits.length === 0) hits = ms.search(query, { ...base, combineWith: "OR" });
+    // Exact phrase in the title outranks scattered word matches.
+    const phrase = query.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    if (phrase.includes(" ")) {
+      hits = hits
+        .map((h) => {
+          const t = String((byId.get(h.id) || {}).title || "").toLowerCase().replace(/[^a-z0-9]+/g, " ");
+          return t.includes(phrase) ? { ...h, score: h.score * 3 } : h;
+        })
+        .sort((a, b) => b.score - a.score);
+    }
     // MiniSearch returns hits already sorted by descending score.
     results = hits
       .map((h) => ({ listing: byId.get(h.id), score: h.score }))

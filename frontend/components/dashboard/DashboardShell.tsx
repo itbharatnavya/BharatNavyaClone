@@ -15,6 +15,7 @@ import PromoteTab from "./PromoteTab";
 import BulkUploadTab from "./BulkUploadTab";
 import LeadsTab from "./LeadsTab";
 import MyRfqsTab from "./MyRfqsTab";
+import InboxTab from "./InboxTab";
 import SavedTab from "./SavedTab";
 import FollowingTab from "./FollowingTab";
 import ReviewsTab from "./ReviewsTab";
@@ -58,6 +59,7 @@ const ALL_TABS: TabMeta[] = [
   { id: "leads", label: "RFQs", icon: "leads", sellerOnly: true },
   { id: "consultations", label: "Consultation requests", icon: "consultations", flag: "consultationsLive", expertOnly: true },
   { id: "myrfqs", label: "My RFQs", icon: "myrfqs" },
+  { id: "inbox", label: "Inbox", icon: "inbox", flag: "chat" },
   { id: "saved", label: "Saved", icon: "saved" },
   { id: "following", label: "Following", icon: "following", flag: "follow" },
   { id: "reviews", label: "Reviews", icon: "reviews", sellerOnly: true },
@@ -459,6 +461,8 @@ export default function DashboardShell() {
         return <ConsultationsTab user={user} />;
       case "myrfqs":
         return <MyRfqsTab user={user} />;
+      case "inbox":
+        return <InboxTab user={user} initialConversationId={searchParams.get("c")} />;
       case "saved":
         return <SavedTab user={user} />;
       case "following":

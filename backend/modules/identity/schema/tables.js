@@ -26,4 +26,5 @@ module.exports = [
   "candidate_work_history",
   "employer_profiles",
   "referrals",
+  "fcm_tokens",
 ];

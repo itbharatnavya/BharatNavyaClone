@@ -1003,6 +1003,84 @@ phase1` only after that visual pass, per the owner review checklist above.
 
 ---
 
+### Spec audit — `MAHIR_FEEDBACK_RECONCILIATION_SPEC.md` vs running app — 2026-09-29
+
+Owner asked to run both servers locally and check every FR/AC in the spec against the actual
+merged code (post `f71e205`/`0c4d413`). Both servers were already up (`:4000`/`:3000`). Verified
+via source reads + a scratch Playwright script (`chromium`, not committed — deleted after use;
+re-write from scratch next time, don't look for it on disk).
+
+**Confirmed live and working (no action needed):**
+- FR-1/FR-2 — BN-arrow logo live (`/bharat-navya-logo.png`, 44×44 in the shell), no Chakra/tagline,
+  "Bharat Navya" wordmark kept in `Navbar.tsx`/`Footer.tsx`.
+- FR-3/FR-4/AC-2/AC-3 — `/directory`'s floating trigger aria-label is "Open Navya AI Agent"; Home
+  still shows "Ask Navya" ×2 and zero "Navya AI Agent" text — the two names stay distinct.
+- FR-6 — Home's three `.le-gateway` cards all render at identical 288px height (equal grid rhythm).
+  The one `linear-gradient` left in `counter-soft-system.css:2356` is a pure CSS caret-icon trick
+  on `<select>` arrows, not a decorative gradient — NFR-V1 still clean.
+- FR-9/FR-10/FR-11 — back-to-top appears after scrolling `/directory` past 600px and a click
+  returns `window.scrollY` to 0, live-verified.
+- FR-13 — `/login`'s desktop context panel is 827px tall inside a 900px viewport starting at y=69
+  (bottom ≈896/900) — no meaningful unused strip.
+- FR-14/AC-11 — `.story-card-avatar` (`globals.css:686`) is `border-radius:50%`, genuinely
+  circular, not a square placeholder (first probe grabbed the wrong `<img>` and had to be
+  corrected — the real avatar is a `<span>` with `background-image`, not an `<img>`).
+- FR-15/FR-18 — exactly one assistant mount, `<ChatAssistant />` in `app/layout.tsx`. The legacy
+  `components/rfq/FloatingRfqButton.tsx` has zero importers anywhere in `frontend/` — not globally
+  mounted (see pending #3 below on whether that's fully intentional).
+- FR-17 — `/abrasives` (a real category-landing route, not `/search?category=`) renders through
+  the unified workbench: 0 List/Grid toggle text, one coherent filter rail
+  (`directory-listing-filter-rail` → `-panel`/`-quick`/`-content`/`-ad`), not duplicate bars.
+- FR-20 — `/seller/coimbatore-precision-machinery-works` renders all 4 real headings: Services,
+  Products, Work evidence, Reviews.
+- FR-21/FR-22 — Directory dropdown groups categories+companies+products (source-verified: design
+  branch's `SectionSearchDock.tsx` still calls `searchSellers`); Recruitment groups roles+companies
+  (live-verified: typing "TechNova" surfaces a "Matching companies" group).
+- FR-24 — suggestion dropdown's parent has `overflow:visible`; not clipped.
+- NFR-R1 — `document.documentElement.scrollWidth === clientWidth` (both 390) on all 7 routes
+  checked at 390px (`/`, `/directory`, `/recruitment`, `/search`, `/login`, `/register`,
+  `/recruitment/jobs`) — no document-level horizontal overflow anywhere, despite some individual
+  elements (e.g. 84 on `/directory`) whose own bounding box extends past the viewport inside
+  `overflow:hidden` containers (carousels, closed dropdowns) — that's normal, not a page-scroll bug.
+
+**Pending / needs owner attention before next merge:**
+
+1. **FR-16 (ad spacing near detail pages) — untestable right now, not a known bug.** No ad slot is
+   currently booked (`recruitment` landing: 0 ad elements rendered; `/listing/1`'s
+   `ApiAdvertisingSlot` didn't render either) — the "shared-shell margins, clear separation from
+   neighbours" fix can't be visually confirmed with nothing on screen to check. **Next merge:**
+   book a test ad on `listing_detail`/`recruitment_home`/`recruitment_search_top` via
+   `/admin`, then re-check spacing against the footer and the card above/below.
+2. **FR-19 (recommendation imagery) — only the fallback got exercised, not the "prefer distinct
+   real image" path.** `/listing/1` has no other listings from the same seller, so "More services
+   from this company" never rendered. Confirmed the honest placeholder exists
+   (`ListingCard.tsx`'s `.lc-media-placeholder` — initial letter + "Service"/"Product" label, no
+   fabricated stock photo). **Next merge:** find/seed a listing whose company has 2+ listings
+   sharing one demo image and confirm distinct images get preferred over the repeat.
+3. **`FloatingRfqButton.tsx` is fully orphaned — confirm with the UI dev whether that's
+   intentional.** It's the "Post Requirement" widget the 2026-09-28 punch-list flagged as
+   overlapping the last listing card's View button. It now looks removed rather than
+   repositioned. If it's meant to still exist somewhere (a dedicated `/rfq` entry point per its own
+   top-of-file comment), confirm that route/trigger still works; if it's meant to be gone, delete
+   the dead file.
+4. **AC-9 (200% browser zoom) — not covered by this pass.** Only 390px and 1440px were checked
+   this round; zoom-specific overflow wasn't simulated. Add a zoom check next time (CDP
+   `Emulation.setDeviceMetricsOverride` with a `scale` factor, or a browser's native zoom via a
+   real device-pixel-ratio bump) before signing off AC-9 as fully verified.
+5. **Seller-profile sidebar CTA / stats-vs-ad overlap (from the 2026-09-28 punch-list) — same root
+   cause as #1.** Nothing renders in the ad slot to actually check for overlap against. Re-check
+   once #1's test ad is booked.
+
+**Method note for next time:** the probe script was scratch/throwaway (Playwright via
+`chromium.launch()`, run from repo root so `require('playwright')` resolves against the root
+`node_modules`, deleted after the run). Rewrite it fresh rather than looking for it on disk. Key
+gotchas hit while writing it: the story avatar is a `<span style="background-image">`, not an
+`<img>` — selecting `img` for status portraits gives false positives; and an element's own
+bounding box extending past the viewport is not the same as document-level horizontal overflow —
+always compare `scrollWidth` vs `clientWidth` on `document.documentElement`, not per-element boxes.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).

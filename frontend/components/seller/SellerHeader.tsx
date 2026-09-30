@@ -3,17 +3,19 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { BadgeVariant } from "@/components/Badge";
+import type { Conversation } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useTr } from "@/components/discovery/hooks";
 import { useToast } from "@/components/Toast";
-import { followUser, unfollowUser, getFollowStatus } from "@/lib/api";
+import { followUser, unfollowUser, getFollowStatus, createConversation } from "@/lib/api";
 import { waLink } from "@/lib/whatsapp";
 import Avatar from "@/components/Avatar";
 import Rating from "@/components/Rating";
 import TrustBadges from "@/components/TrustBadges";
 import Badge from "@/components/Badge";
 import ContactAuthModal from "@/components/auth/ContactAuthModal";
+import ChatModal from "@/components/chat/ChatModal";
 
 export interface SellerHeaderProps {
   userId: string; // seller's user id (follow target)
@@ -53,6 +55,15 @@ function waNumber(raw?: string | null): string | null {
   if (!digits) return null;
   if (digits.length === 10) return `91${digits}`;
   return digits;
+}
+
+// Inline chat-bubble glyph — line-glyph only, matches the Call/WhatsApp icons.
+function ChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11.5 4h.5A8.4 8.4 0 0 1 21 11.5Z" />
+    </svg>
+  );
 }
 
 // Inline WhatsApp glyph (speech-bubble + handset). SVG only — never the emoji.
@@ -112,6 +123,10 @@ export default function SellerHeader(props: SellerHeaderProps) {
   const [following, setFollowing] = useState(false);
   const [followBusy, setFollowBusy] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"contact" | "chat" | null>(null);
+  const [startingChat, setStartingChat] = useState(false);
+  const [chatConvo, setChatConvo] = useState<Conversation | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const followEnabled = flagOn("follow", false);
   const wa = waNumber(contactMobile);
@@ -123,6 +138,7 @@ export default function SellerHeader(props: SellerHeaderProps) {
   // yourself makes no sense.
   const showWhatsApp = !isOwnProfile && flagOn("whatsapp", true) && (user ? !!wa : true);
   const showCall = !isOwnProfile && flagOn("call", true) && (user ? !!contactMobile : true);
+  const showChat = !isOwnProfile && flagOn("chat", true);
 
   const years = yearEstablished ? new Date().getFullYear() - yearEstablished : null;
 
@@ -166,9 +182,43 @@ export default function SellerHeader(props: SellerHeaderProps) {
 
   function handleContactClick() {
     if (!user) {
+      setPendingAction("contact");
       setAuthOpen(true);
     }
     // When logged in, the tel:/wa.me <a> below handles the click directly.
+  }
+
+  async function startChat() {
+    if (isOwnProfile) return;
+    setStartingChat(true);
+    try {
+      const convo = await createConversation(undefined, userId);
+      setChatConvo(convo);
+      setChatOpen(true);
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : "Could not start chat", "error");
+    } finally {
+      setStartingChat(false);
+    }
+  }
+
+  function handleChatClick() {
+    if (!user) {
+      setPendingAction("chat");
+      setAuthOpen(true);
+      return;
+    }
+    void startChat();
+  }
+
+  function handleAuthSuccess() {
+    const action = pendingAction;
+    setPendingAction(null);
+    if (action === "chat") {
+      void startChat();
+    } else {
+      onContactUnlocked?.();
+    }
   }
 
   return (
@@ -244,6 +294,18 @@ export default function SellerHeader(props: SellerHeaderProps) {
                   {t("common.whatsapp", "WhatsApp")}
                 </button>
               ) : null)}
+            {showChat && (
+              <button
+                type="button"
+                onClick={handleChatClick}
+                disabled={startingChat}
+                className="btn btn-secondary"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              >
+                <ChatIcon />
+                {t("common.chat", "Chat")}
+              </button>
+            )}
             {followEnabled && (
               <button
                 type="button"
@@ -316,12 +378,25 @@ export default function SellerHeader(props: SellerHeaderProps) {
         }
       `}</style>
 
-      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp */}
+      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp/Chat */}
       <ContactAuthModal
         open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        onSuccess={onContactUnlocked}
+        onClose={() => {
+          setAuthOpen(false);
+          setPendingAction(null);
+        }}
+        onSuccess={handleAuthSuccess}
       />
+
+      {chatConvo && (
+        <ChatModal
+          open={chatOpen}
+          onClose={() => setChatOpen(false)}
+          conversationId={chatConvo.id}
+          meId={user?.id || ""}
+          otherUserName={companyName}
+        />
+      )}
     </div>
   );
 }

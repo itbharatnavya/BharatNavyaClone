@@ -11,6 +11,7 @@ import type { BrandDetail } from "@/lib/api";
 import type { Listing } from "@/lib/types";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
+import Pagination from "@/components/Pagination";
 import { useAds, AdCard, InFeedAd, interleaveAds, isAdSlot } from "@/components/AdRail";
 import EmptyState from "@/components/discovery/EmptyState";
 import { Monogram } from "@/components/brand/BrandCard";
@@ -84,6 +85,8 @@ function priceOf(l: Listing): number | null {
   return typeof p === "number" ? p : null;
 }
 
+const PAGE_SIZE = 12;
+
 function sortListings(listings: Listing[], sort: Sort): Listing[] {
   const out = listings.slice();
   if (sort === "newest") {
@@ -131,6 +134,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [sort, setSort] = useState<Sort>("newest");
+  const [page, setPage] = useState(1);
   const [view, setView] = useState<ViewValue>("list");
 
   useEffect(() => {
@@ -165,7 +169,17 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   // desktop sidebar (top 3, stacked) and the mobile/tablet in-feed slots
   // (cycled) — the two are mutually exclusive by breakpoint.
   const ads = useAds("search_top");
-  const listItemsWithAds = useMemo(() => interleaveAds(sorted, ads), [sorted, ads]);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const pageItems = useMemo(
+    () => sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [sorted, page]
+  );
+  const listItemsWithAds = useMemo(() => interleaveAds(pageItems, ads), [pageItems, ads]);
+
+  // A new brand or sort order starts again from page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [slug, sort]);
 
   // ---- Unknown brand ----
   if (!loading && (notFound || !data)) {
@@ -358,6 +372,18 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                         </div>
                       )
                     )}
+                  </div>
+                )}
+                {totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
+                    <Pagination
+                      page={page}
+                      totalPages={totalPages}
+                      onChange={(next) => {
+                        setPage(next);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    />
                   </div>
                 )}
               </div>

@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import type { Listing } from "@/lib/types";
+import type { Listing, Conversation } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useTr } from "@/components/discovery/hooks";
 import { useToast } from "@/components/Toast";
-import { reportListing } from "@/lib/api";
+import { reportListing, createConversation } from "@/lib/api";
 import { waLink, enquiryText } from "@/lib/whatsapp";
 import Avatar from "@/components/Avatar";
 import Rating from "@/components/Rating";
@@ -15,6 +15,8 @@ import TrustBadges from "@/components/TrustBadges";
 import Modal from "@/components/Modal";
 import Textarea from "@/components/Textarea";
 import ContactAuthModal from "@/components/auth/ContactAuthModal";
+import ChatModal from "@/components/chat/ChatModal";
+import ProductInboxModal from "@/components/chat/ProductInboxModal";
 
 export interface ContactSeller {
   userId: string; // seller's user id (used to open a conversation / follow)
@@ -76,6 +78,25 @@ function ArrowIcon() {
   );
 }
 
+// Inline phone glyph — line-glyph only, pairs with Call so all three buttons
+// share the icon-above-label layout (fixes label wrap at 3-button width).
+function PhoneIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 3a2 2 0 0 1-.4 2.1L8 10.3a16 16 0 0 0 6 6l1.5-1.5a2 2 0 0 1 2-.4c1 .3 2 .5 3 .7a2 2 0 0 1 1.7 2Z" />
+    </svg>
+  );
+}
+
+// Inline chat-bubble glyph — line-glyph only, matches Share/Report/WhatsApp icons.
+function ChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}>
+      <path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11.5 4h.5A8.4 8.4 0 0 1 21 11.5Z" />
+    </svg>
+  );
+}
+
 // Inline WhatsApp glyph (speech-bubble + handset). SVG only — never the emoji.
 function WhatsAppIcon() {
   return (
@@ -91,6 +112,27 @@ function WhatsAppIcon() {
     </svg>
   );
 }
+
+// Icon-above-label layout for the Call/WhatsApp/Chat row — at 3-button width
+// a side-by-side icon+label ("WhatsApp") wraps mid-word, so each button
+// stacks its icon over a small nowrap label instead.
+const contactBtnStyle: React.CSSProperties = {
+  flex: 1,
+  minHeight: 56,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 4,
+  padding: "8px 4px",
+};
+const contactBtnLabelStyle: React.CSSProperties = {
+  fontSize: 12,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  maxWidth: "100%",
+};
 
 const REPORT_REASONS = [
   "Prohibited or illegal item",
@@ -113,9 +155,14 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
   const [reportOpen, setReportOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"contact" | "chat" | null>(null);
   const [reason, setReason] = useState(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
+  const [chatConvo, setChatConvo] = useState<Conversation | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [productInboxOpen, setProductInboxOpen] = useState(false);
 
   const years = seller.yearEstablished
     ? new Date().getFullYear() - seller.yearEstablished
@@ -132,6 +179,10 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
   // listing never sees these — calling/WhatsApp-ing yourself makes no sense.
   const showWhatsApp = !isOwnListing && flagOn("whatsapp", true) && (user ? !!wa : true);
   const showCall = !isOwnListing && flagOn("call", true) && (user ? !!seller.contactMobile : true);
+  // Chat is the one exception shown on your OWN listing too — not to message
+  // yourself, but to see every buyer's messages about this product
+  // (ProductInboxModal) instead of starting/joining a single thread.
+  const showChat = flagOn("chat", true);
   const showShare = flagOn("share", true);
 
   const shareText = `Check out "${listing.title}" on Bharat Navya`;
@@ -161,9 +212,47 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
 
   function handleContactClick() {
     if (!user) {
+      setPendingAction("contact");
       setAuthOpen(true);
     }
     // When logged in, the tel:/wa.me <a> below handles the click directly.
+  }
+
+  async function startChat() {
+    if (isOwnListing) return;
+    setStartingChat(true);
+    try {
+      const convo = await createConversation(listing.id, seller.userId);
+      setChatConvo(convo);
+      setChatOpen(true);
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : "Could not start chat", "error");
+    } finally {
+      setStartingChat(false);
+    }
+  }
+
+  function handleChatClick() {
+    if (isOwnListing) {
+      setProductInboxOpen(true);
+      return;
+    }
+    if (!user) {
+      setPendingAction("chat");
+      setAuthOpen(true);
+      return;
+    }
+    void startChat();
+  }
+
+  function handleAuthSuccess() {
+    const action = pendingAction;
+    setPendingAction(null);
+    if (action === "chat") {
+      void startChat();
+    } else {
+      onContactUnlocked?.();
+    }
   }
 
   async function submitReport() {
@@ -240,28 +329,31 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
       </div>
 
       <div style={{ padding: "16px 20px 20px" }}>
-      {/* Call / WhatsApp — the primary way to reach a seller (no in-app chat).
-          Logged out: buttons open the login/register gate. Logged in: real
-          tel:/wa.me links with a pre-filled enquiry. */}
-      {(showCall || showWhatsApp) && (
+      {/* Call / WhatsApp / Chat — three equal contact channels. Logged out:
+          buttons open the login/register gate. Logged in: real tel:/wa.me
+          links with a pre-filled enquiry, or a chat thread tagged to this
+          listing (get-or-create conversation, opened in-page). */}
+      {(showCall || showWhatsApp || showChat) && (
         <div style={{ display: "flex", gap: 8 }}>
           {showCall &&
             (user ? (
               <a
                 href={`tel:${(seller.contactMobile || "").replace(/\s/g, "")}`}
                 className="btn btn-brand btn-block"
-                style={{ flex: 1 }}
+                style={contactBtnStyle}
               >
-                {t("common.call", "Call")}
+                <PhoneIcon />
+                <span style={contactBtnLabelStyle}>{t("common.call", "Call")}</span>
               </a>
             ) : (
               <button
                 type="button"
                 onClick={handleContactClick}
                 className="btn btn-brand btn-block"
-                style={{ flex: 1 }}
+                style={contactBtnStyle}
               >
-                {t("common.call", "Call")}
+                <PhoneIcon />
+                <span style={contactBtnLabelStyle}>{t("common.call", "Call")}</span>
               </button>
             ))}
           {showWhatsApp &&
@@ -271,22 +363,36 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary btn-block"
-                style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                style={contactBtnStyle}
               >
                 <WhatsAppIcon />
-                {t("common.whatsapp", "WhatsApp")}
+                <span style={contactBtnLabelStyle}>{t("common.whatsapp", "WhatsApp")}</span>
               </a>
             ) : !user ? (
               <button
                 type="button"
                 onClick={handleContactClick}
                 className="btn btn-secondary btn-block"
-                style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                style={contactBtnStyle}
               >
                 <WhatsAppIcon />
-                {t("common.whatsapp", "WhatsApp")}
+                <span style={contactBtnLabelStyle}>{t("common.whatsapp", "WhatsApp")}</span>
               </button>
             ) : null)}
+          {showChat && (
+            <button
+              type="button"
+              onClick={handleChatClick}
+              disabled={startingChat}
+              className="btn btn-secondary btn-block"
+              style={contactBtnStyle}
+            >
+              <ChatIcon />
+              <span style={contactBtnLabelStyle}>
+                {isOwnListing ? t("common.messages", "Messages") : t("common.chat", "Chat")}
+              </span>
+            </button>
+          )}
         </div>
       )}
 
@@ -436,12 +542,36 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
         </div>
       </Modal>
 
-      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp */}
+      {/* Login/register gate — opened when a logged-out visitor taps Call/WhatsApp/Chat */}
       <ContactAuthModal
         open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        onSuccess={onContactUnlocked}
+        onClose={() => {
+          setAuthOpen(false);
+          setPendingAction(null);
+        }}
+        onSuccess={handleAuthSuccess}
       />
+
+      {chatConvo && (
+        <ChatModal
+          open={chatOpen}
+          onClose={() => setChatOpen(false)}
+          conversationId={chatConvo.id}
+          meId={user?.id || ""}
+          otherUserName={seller.name}
+          listingTitle={listing.title}
+        />
+      )}
+
+      {isOwnListing && (
+        <ProductInboxModal
+          open={productInboxOpen}
+          onClose={() => setProductInboxOpen(false)}
+          listingId={listing.id}
+          listingTitle={listing.title}
+          meId={user?.id || ""}
+        />
+      )}
     </div>
   );
 }

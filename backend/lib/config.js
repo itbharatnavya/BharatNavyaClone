@@ -149,6 +149,12 @@ module.exports = {
       : process.env.CONSULTATIONS_LIVE === "false"
         ? false
         : null,
+
+  // --- FCM push (lib/fcm.js) ---
+  // Path to a Firebase service account JSON (never the JSON itself — see
+  // .env.example). Unset (default) leaves push disabled; lib/fcm.js no-ops
+  // rather than throwing, same pattern as GOOGLE_CLIENT_ID above.
+  FCM_SERVICE_ACCOUNT_PATH: process.env.FCM_SERVICE_ACCOUNT_PATH || null,
 };
 
 if (module.exports.UPLOAD_STORAGE === "s3" && !isDev && !module.exports.AWS_S3_BUCKET) {

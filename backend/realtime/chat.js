@@ -25,6 +25,10 @@
 const auth = require("../lib/auth");
 const chat = require("../modules/chat");
 const identity = require("../modules/identity");
+const directory = require("../modules/directory");
+const notify = require("../lib/notify");
+const fcm = require("../lib/fcm");
+const logger = require("../lib/logger");
 
 const CONV_INDEX = "conversations/index.json";
 const MAX_BODY = 4000;
@@ -32,6 +36,13 @@ const PREVIEW_LEN = 140;
 
 function roomFor(conversationId) {
   return `convo:${conversationId}`;
+}
+
+// Every authenticated socket auto-joins its own user room — lets the server
+// push a live "notification" event to a user's active tab(s) without them
+// having joined the specific conversation the message belongs to.
+function userRoomFor(userId) {
+  return `user:${userId}`;
 }
 
 function msgFileFor(conversationId) {
@@ -48,6 +59,56 @@ function isParticipant(convo, userId) {
     Array.isArray(convo.participants) &&
     convo.participants.includes(userId)
   );
+}
+
+// Best-effort "new_message" notification for the OTHER participant — never
+// awaited by the send path, wrapped so a failure here can never delay or
+// break message delivery (mirrors lib/leads.js's notifySellerOfLead).
+async function notifyNewMessage(io, convo, fromUser, msg) {
+  try {
+    const recipientId = (convo.participants || []).find((p) => p !== fromUser.id);
+    if (!recipientId || recipientId === fromUser.id) return; // no self-notify
+    let listingTitle = null;
+    if (convo.listingId) {
+      const titles = await directory.listingTitlesByIds([convo.listingId]);
+      listingTitle = titles.get(convo.listingId) || null;
+    }
+    const link = convo.listingId
+      ? `/listing/${convo.listingId}?chat=${convo.id}`
+      : `/dashboard?tab=inbox&c=${convo.id}`;
+    // notifications.json's repo maps `data` onto a fixed set of typed columns
+    // (see schema/tables.js) — no free-form jsonb fallback, so this reuses the
+    // same columns notifySellerOfLead already writes (name/message/link/
+    // productName) rather than inventing new ones that would need a migration.
+    const notification = await notify.createNotification(recipientId, "new_message", {
+      name: fromUser.name || "Someone",
+      message: msg.body.slice(0, PREVIEW_LEN),
+      productName: listingTitle,
+      link,
+    });
+    // Live push to any of the recipient's connected tabs (NotificationBell
+    // listens for this) — the DB row above is still the source of truth,
+    // this is purely so an active session doesn't wait for the ~30s poll.
+    io.to(userRoomFor(recipientId)).emit("notification", notification);
+
+    // FCM push — reaches the recipient even with no tab open (Socket.IO above
+    // only reaches an active connection). Never awaited by the caller's
+    // critical path; fcm.sendPush is itself a no-op if push isn't configured.
+    const tokens = await identity.getFcmTokensForUser(recipientId);
+    if (tokens.length) {
+      void fcm.sendPush(
+        tokens,
+        {
+          title: listingTitle ? `${fromUser.name || "Someone"} — ${listingTitle}` : fromUser.name || "New message",
+          body: msg.body.slice(0, PREVIEW_LEN),
+          link,
+        },
+        (dead) => identity.pruneFcmTokens(dead)
+      );
+    }
+  } catch (err) {
+    logger.error({ err }, "notifyNewMessage failed");
+  }
 }
 
 function reply(ack, socket, ok, payload) {
@@ -76,6 +137,8 @@ function attachChat(io) {
   });
 
   io.on("connection", (socket) => {
+    socket.join(userRoomFor(socket.user.id));
+
     // --- joinConversation: participant check BEFORE join. --------------------
     socket.on("joinConversation", async (payload, ack) => {
       try {
@@ -149,6 +212,7 @@ function attachChat(io) {
         // Live push (optimization) only for a newly-created message.
         if (!outcome.duplicate) {
           io.to(roomFor(conversationId)).emit("message", outcome.msg);
+          void notifyNewMessage(io, convo, socket.user, outcome.msg);
         }
         return reply(ack, socket, true, { message: outcome.msg });
       } catch (_err) {
