@@ -221,6 +221,13 @@ export function login(email: string, password: string): Promise<AuthResult> {
   });
 }
 
+export function loginWithGoogle(idToken: string): Promise<AuthResult> {
+  return request<AuthResult>(`/api/auth/oauth/google`, {
+    method: "POST",
+    body: JSON.stringify({ idToken }),
+  });
+}
+
 // GET /auth/me returns data as { user } — unwrap to the User.
 export async function getMe(): Promise<User> {
   const data = await request<{ user: User }>(`/api/auth/me`);

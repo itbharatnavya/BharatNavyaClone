@@ -102,7 +102,7 @@ export default function RecruitmentPage() {
     <section className="le-hero" aria-labelledby="recruitment-title"><div className="le-shell">
       <h1 id="recruitment-title">Find the right people. Build the right team.</h1>
       <p>Bharat Navya brings hiring and business presence together, helping companies present opportunities while professionals find roles aligned with their skills, experience, and career goals.</p>
-      <div ref={searchAnchorRef} className="le-hero-search is-recruitment" inert={docked ? true : undefined} aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>
+      <div ref={searchAnchorRef} className="le-hero-search is-recruitment" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>
       <div className="le-examples"><span>Popular searches</span>{["Operations jobs in Ahmedabad","Remote product design roles","Entry-level sales jobs"].map((item) => <button type="button" key={item} onClick={() => exampleSearch(item)}>{item}</button>)}</div>
     </div></section>
 

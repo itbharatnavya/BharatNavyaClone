@@ -30,6 +30,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<User>;
   loginOtp: (mobile: string, otp: string) => Promise<User>;
+  loginWithGoogle: (idToken: string) => Promise<User>;
   register: (body: RegisterInput) => Promise<User | null>;
   logout: () => void;
   refresh: () => Promise<User | null>;
@@ -97,6 +98,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const loginWithGoogle = useCallback(async (idToken: string): Promise<User> => {
+    const { token, user: u } = await api.loginWithGoogle(idToken);
+    api.setToken(token);
+    setUser(u);
+    return u;
+  }, []);
+
   const register = useCallback(
     async (body: RegisterInput): Promise<User | null> => {
       const res = await api.register(body);
@@ -124,11 +132,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdmin: !!user?.roles?.includes("admin"),
       login,
       loginOtp,
+      loginWithGoogle,
       register,
       logout,
       refresh,
     }),
-    [user, loading, login, loginOtp, register, logout, refresh]
+    [user, loading, login, loginOtp, loginWithGoogle, register, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

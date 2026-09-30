@@ -15,6 +15,7 @@ import Button from "@/components/Button";
 import { useTr } from "@/components/discovery/hooks";
 import { useGuestOnly } from "@/lib/useGuestOnly";
 import { safeNext } from "@/lib/redirect";
+import GoogleSignInButton, { GOOGLE_CLIENT_ID } from "@/components/auth/GoogleSignInButton";
 
 type Tab = "otp" | "password";
 type Stage = "mobile" | "otp";
@@ -25,7 +26,7 @@ export default function LoginPage() {
   const router = useRouter();
   const t = useTr();
   const { addToast } = useToast();
-  const { loginOtp, login } = useAuth();
+  const { loginOtp, login, loginWithGoogle } = useAuth();
   const { branding } = useConfig();
 
   const [next, setNext] = useState(DEFAULT_NEXT);
@@ -56,6 +57,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Inline field-validation messages (toast is reserved for API/submit outcomes).
   const [mobileError, setMobileError] = useState("");
@@ -169,6 +171,19 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleCredential = async (idToken: string) => {
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle(idToken);
+      addToast("Signed in with Google.", "success");
+      goNext();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : "Google sign-in failed.", "error");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   // Already authenticated (or still resolving auth state) — the redirect
   // effect above handles navigation; render nothing rather than the form.
   if (authLoading || redirecting) return null;
@@ -222,6 +237,13 @@ export default function LoginPage() {
           <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
             {t("auth.login.subtitle", "One account to access Directory and Recruitment.")}
           </p>
+
+          {GOOGLE_CLIENT_ID && (
+            <div className="counter-auth-social">
+              <GoogleSignInButton onCredential={handleGoogleCredential} disabled={googleLoading} />
+              <div className="counter-auth-or" aria-hidden="true"><span>{t("auth.or", "OR")}</span></div>
+            </div>
+          )}
 
           {/* Tabs */}
           <div
