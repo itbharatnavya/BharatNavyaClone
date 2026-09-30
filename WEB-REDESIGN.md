@@ -1081,6 +1081,63 @@ always compare `scrollWidth` vs `clientWidth` on `document.documentElement`, not
 
 ---
 
+### Pulled `origin/design` again (`4e92ac7..b909c44`) — merged 2026-09-30
+
+One new commit from the UI dev ("polish auth and editorial UI"), merged into
+`feature/design-integration` after this session's own local work (`95db77f`, the product-tagged
+chat + FCM push feature — see `CHAT-PLAN.md`) was committed first so the merge had a clean base.
+Per owner direction this pass: **UI developer's code — both visual and functional — wins over
+ours on every conflict**, not just styling. `tsc --noEmit` clean after resolution.
+
+**What the UI dev changed:**
+- **Public footer + login context panel: black → Counter indigo.** `bn-footer.is-counter-public`
+  and `.counter-auth-aside` both switch from `var(--counter-ink)` to `var(--counter-indigo)`
+  (`counter-direction.css`, `counter-workspace.css`), with matching `--counter-on-indigo` text/
+  border tokens. Registration keeps its existing green. Auth form card itself stays light — only
+  the aside/footer background changed.
+- **Google sign-in button rewritten** (`components/auth/GoogleSignInButton.tsx`) — fixes a stale-
+  closure bug (credential handler is now held in a ref, updated via `useEffect`, so a re-render
+  with a new `onCredential` doesn't get silently ignored), handles the Google script already being
+  on the page from a prior mount (listens for its `load` event instead of assuming `window.google`
+  is ready), sizes the button responsively off its container, and shows a disabled/busy state via
+  CSS (`.google-signin-shell[aria-busy]`) instead of unmounting. Took this version wholesale —
+  strictly more correct than ours, nothing lost.
+- **Back-to-top control moved left → right**, repositioned above the floating Navya AI Agent
+  (`bottom: 5.5rem` instead of `1rem`) so the two no longer collide, and simplified to an arrow-
+  only icon (dropped the text label + its screen-reader-only mobile variant, kept the accessible
+  name via `aria-label`). `counter-soft-system.css`/`counter-workspace.css`.
+- **New About-page blog preview** (`components/about/AboutBlogPreview.tsx`, mounted in
+  `app/about/page.tsx`) — API-backed (`getBlogs`), up to 4 posts, responsive grid (4 cols desktop
+  → 3 at intermediate widths → 2 tablet → 1 phone), `counter-about-blog*` CSS. Companion change:
+  the equivalent blog-card preview that used to sit on the Home page is gone — "Home stays focused
+  on product discovery," per the UI dev's own `HANDOFF.md` note; not re-added here (matches this
+  doc's "don't force old functionality to survive unchanged" rule).
+- `frontend/.env.example` — `NEXT_PUBLIC_GOOGLE_CLIENT_ID` comment reworded.
+
+**Conflicts (7 files, all resolved in the UI dev's favor per the owner's priority call):**
+- `frontend/.env.example`, `frontend/lib/api.ts`, `frontend/lib/auth.tsx` — trivial (comment
+  wording / formatting only), took theirs.
+- `frontend/components/auth/GoogleSignInButton.tsx` (add/add) — took theirs wholesale, see above.
+- `frontend/app/login/page.tsx` — took the UI dev's `counter-auth-social`/`counter-auth-or`
+  class-based Google-button layout over this session's inline-styled divider. Also found and fixed
+  a **pre-existing duplicate `handleGoogleCredential` definition** in this file (two byte-identical
+  copies, left over from an earlier auto-merge that didn't flag a conflict since both sides added
+  the same code) — not part of this pull, just noticed and cleaned up while in the file.
+- `frontend/app/directory/page.tsx`, `frontend/app/recruitment/page.tsx` — the hero search-dock
+  focus/blur handling conflicted: this branch had refactored it into a shared `lib/useDockOnScroll.ts`
+  hook (commit `fc42ae0`, a bug fix, never pushed to `design`), while the UI dev's side kept the
+  original inline `heroFocusedRef`/`pendingDockRef` implementation. Per the owner's "UI dev's
+  functional changes win too" instruction, took the UI dev's inline version whole for both pages
+  (refs, the `IntersectionObserver` effect, and the hero `<div>`'s handlers) — **not** just the one
+  changed line. `lib/useDockOnScroll.ts` is now unused by both callers; left the file in place
+  (dead code, not deleted) rather than guessing whether something else still wants it.
+
+**Not yet done:** visual verification of the indigo footer/aside and the new About blog grid in a
+real browser (no browser tool available this session) — `tsc` clean and dev server 200s were
+checked, per the owner checklist above items 2/3/5/6 still need a manual pass before promoting.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).
