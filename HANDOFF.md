@@ -378,7 +378,12 @@ Open owner questions from the 1 October afternoon session are listed in section 
 - Demo articles: `node backend/scripts/seed-blogs-demo.js` (12 posts, covers for the original four). Uses `lib/pg-store`, idempotent.
 - Home, Directory, Recruitment and About all use GSAP through `components/home/useStory.ts`; see DESIGN-SYSTEM.md section 10.
 
-## Attraction kit (components/attract)
-- `Compare` (Without / With), `FeatureCards` + `Art` (looping SVG illustrations: radar, tracker, funnel, shield, fanout; they run only once a card has `is-live`), `Staircase` (live counts + CTA banner), `Count`. Pattern borrowed from ofbusiness.com product pages.
-- Recruitment: Compare, FeatureCards, Staircase (counts via `getJobs` totals). Directory: product showcase, FeatureCards, Staircase. Home: proof band, pinned showcase, Compare, FeatureCards, closing.
-- Removed: the old role / company / story listing sections and `components/discovery/StoriesCta.tsx`. Their `.ps-company*`, `.ps-need*`, `.ps-role*`, `.ps-stories*`, `.ps-cta*`, and Home `.hs-record*`, `.hs-aud*` CSS is now unused.
+## Page-specific scenes (replaces the generic "attraction kit")
+Each page tells its own story; there is deliberately no shared feature-card template.
+- Directory (below the category strip): `ProductShowcase` (tabs + asymmetric grid), `RfqScene` (one requirement fans out, quotes come back; scrubbed), `StorefrontScene` (pinned: a seller profile builds itself in four steps).
+- Recruitment (below the function strip): `TrackerScene` (five application stages + sticky phone), `RoleFinder` (live count of matching roles from `getJobs` totals), `HireScene` (post a role, ranked matches, shortlist; scrubbed).
+- Home: proof band, pinned product showcase, `PulseScene` (live feed of newest products, roles, articles), closing.
+- Styles: `.rfq-*`, `.sf-*`, `.trk-*`, `.rf-*`, `.hire-*`, `.pulse-*` at the end of `counter-soft-system.css`. Old `.cmp-*`, `.feat-*`, `.art-*`, `.stairs-*`, `.cta-banner` CSS was removed.
+- Price and candidate figures in RfqScene and HireScene are sample data and are labelled as such.
+- `node backend/scripts/backfill-job-workplace.js` sets a workplace type on demo jobs (the seed only sets `remote`), so the On-site / Hybrid / Remote filters return results. Run it after `seed-recruitment-demo.js`.
+- GSAP gotcha: do not tween an element that also has a CSS `transition` on the same property (opacity); tween its container instead (see the comment in `TrackerScene`).

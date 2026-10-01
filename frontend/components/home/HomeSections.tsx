@@ -3,8 +3,7 @@
 // Home page below the hero. Five sections, each with one authored motion idea:
 //   proof     live counts + an ambient category marquee
 //   showcase  pinned, scrubbed three-state sequence (Directory, Recruitment, Ask Navya)
-//   compare   Without / With Bharat Navya, wiped in as you scroll (components/attract)
-//   features  three illustrated cards that come alive on scroll (components/attract)
+//   pulse     a live feed of the newest products, roles and articles (PulseScene)
 //   close     a headline revealed word by word under a panel that rises into place
 // Everything is plain readable content first: motion only ever starts from the
 // final layout (see useStory), so reduced motion, small screens and no-JS all get
@@ -16,9 +15,8 @@ import { getCategories, getFeaturedSellers, getJobs, getListings } from "@/lib/a
 import { mapSeller } from "@/components/home/FeaturedSellers";
 import { formatSalary, jobLocation } from "@/lib/recruitmentDesign";
 import { useStory, type StoryKit } from "@/components/home/useStory";
-import Count from "@/components/attract/Count";
-import Compare from "@/components/attract/Compare";
-import FeatureCards from "@/components/attract/FeatureCards";
+import Count from "@/components/home/Count";
+import PulseScene from "@/components/home/PulseScene";
 
 interface Row { name?: string; meta?: string; tag?: string }
 interface Data { categories: string[]; categoryCount: number; listings: number; jobs: number; companies: Row[]; roles: Row[] }
@@ -85,23 +83,6 @@ const SHOWCASE = [
     points: ["Plain-language search", "Pointed to the right place", "Always an answer, never a dead end"],
     href: "#ask-navya", cta: "Try Ask Navya",
   },
-];
-
-const WITHOUT = [
-  { icon: "M4 6h16v12H4z|m4 7 8 6 8-6", title: "Thin listings", body: "A name, a category and a phone number, and little else to go on." },
-  { icon: "M9 3H5v4|M15 3h4v4|M9 21H5v-4|M15 21h4v-4|M4 12h16", title: "Scattered tools", body: "One site for suppliers, another for hiring, none of them connected." },
-  { icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z|M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7|M12 17h.01", title: "Dead ends", body: "Searches that stop at no results and leave you to start over." },
-];
-const WITH = [
-  { icon: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z|m9 12 2 2 4-4", title: "Records with substance", body: "Identity, evidence and terms sit behind every company, product and role." },
-  { icon: "M16 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20|M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3|M15.5 4.3a3.5 3.5 0 0 1 0 6.4", title: "One connected platform", body: "Companies, products, services and roles work from a single account." },
-  { icon: "M6 7h12a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 2v-3.2A3 3 0 0 1 3 15v-5a3 3 0 0 1 3-3Z|M8 12h.01|M12 12h.01|M16 12h.01", title: "Never a dead end", body: "Search and Ask Navya always point somewhere useful." },
-];
-
-const FEATURES = [
-  { art: "radar" as const, title: "Find what you need", body: "Search companies, products, services and roles from one place, in your own words." },
-  { art: "tracker" as const, title: "Follow every step", body: "Enquiries and applications show a clear status, visible to you and to the other side." },
-  { art: "shield" as const, title: "Trust what you see", body: "Identity, evidence and terms sit behind every record before you reach out." },
 ];
 
 const CLOSING = "Start with what you need. We’ll show you the rest.".split(" ");
@@ -241,22 +222,7 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
       </div>
     </div></section>
 
-    <Compare
-      id="record-title"
-      title="More than a name and a phone number."
-      lead="A listing alone tells you little. Bharat Navya puts the identity, evidence and terms behind it within reach."
-      labelWithout="Without Bharat Navya"
-      labelWith="With Bharat Navya"
-      without={WITHOUT}
-      withItems={WITH}
-    />
-
-    <FeatureCards
-      id="aud-title"
-      title="Built for both sides of business."
-      lead="Whether you are offering, buying, hiring or applying, the same account and the same clarity."
-      features={FEATURES}
-    />
+    <PulseScene />
 
     {children}
 
