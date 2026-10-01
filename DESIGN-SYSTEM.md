@@ -98,3 +98,11 @@ These are intentional and are **not** to be normalised without the owner's say-s
 - A label is never the same colour as the surface behind it; selected (blue) states restyle their inner text to white.
 - Cards that sit on a hero use a distinct fill and a 1px light border (white, bright blue, navy, pale blue), never the hero's own colour.
 - Check with a contrast pass before shipping: every visible text element should reach 4.5:1 against its effective background (`node frontend/scripts/contrast-audit.mjs 1440 / /directory ...`; usage is at the top of the file).
+
+## 10. Motion (Home is the pilot)
+
+- One authored motion idea per major section, in `components/home/HomeSections.tsx`; GSAP + ScrollTrigger load on demand through `components/home/useStory.ts`.
+- Content is complete and readable without motion: tweens only start from the final layout, inside `matchMedia`. Reduced motion, phones and short windows get no pinning or scrubbing.
+- Pin only when `(min-width:1024px) and (min-height:700px)`; the section sets `data-pinned` and CSS lays out the stacked stage from that attribute.
+- Animate transform, opacity and clip-path only. No bounce easing. Idle motion is limited to the slow category marquee and a 6px float.
+- Pointer tilt is gated on `(hover:hover) and (pointer:fine)`; touch gets `:active` press feedback instead.
