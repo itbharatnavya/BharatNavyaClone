@@ -39,13 +39,12 @@ export default function InternationalPhoneField({
           >
             {PHONE_COUNTRIES.map((option) => (
               <option key={option.iso} value={option.iso}>
-                {option.name} ({option.dialCode})
+                {option.dialCode} · {option.name}
               </option>
             ))}
           </select>
         </label>
         <label className="international-phone-number">
-          <span className="international-phone-prefix" aria-hidden="true">{selected.dialCode}</span>
           <input
             id={id}
             name="mobile"

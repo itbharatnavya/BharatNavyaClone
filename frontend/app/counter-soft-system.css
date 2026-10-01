@@ -2881,7 +2881,7 @@ main :is(h1, h2, h3, h4),
 
 .international-phone-row {
   display: grid;
-  grid-template-columns: minmax(9rem, 0.82fr) minmax(0, 1.18fr);
+  grid-template-columns: 7.75rem minmax(0, 1fr);
   gap: 0.6rem;
 }
 
@@ -2892,28 +2892,12 @@ main :is(h1, h2, h3, h4),
 
 .international-phone-country {
   width: 100%;
-  padding-inline: 0.75rem 2rem;
+  padding-inline: 0.65rem 1.75rem;
 }
 
 .international-phone-number {
   position: relative;
   display: block;
-}
-
-.international-phone-number .input {
-  padding-inline-start: 3.5rem;
-}
-
-.international-phone-prefix {
-  position: absolute;
-  z-index: 1;
-  inset-inline-start: 0.85rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-  pointer-events: none;
 }
 
 /* Contextual guest reminder: non-modal, no focus theft, and smaller than an
@@ -2988,8 +2972,8 @@ main :is(h1, h2, h3, h4),
 }
 
 @media (max-width: 560px) {
-  .international-phone-row { grid-template-columns: 1fr; }
-  .international-phone.is-compact .international-phone-row { grid-template-columns: minmax(8.5rem, 0.9fr) minmax(0, 1.1fr); }
+  .international-phone-row,
+  .international-phone.is-compact .international-phone-row { grid-template-columns: 7.25rem minmax(0, 1fr); }
   .guest-account-nudge {
     bottom: 5.25rem;
     grid-template-columns: 2rem minmax(0, 1fr);
