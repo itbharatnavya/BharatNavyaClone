@@ -1,8 +1,8 @@
 "use client";
 
-// Directory products: category tabs over a curated grid. The first featured (or
-// newest) product becomes a large spotlight card, eleven more fill the grid, and a
-// final tile opens the full search for the chosen category. Tabs come from the
+// Directory products: category tabs over a dense grid of compact cards (featured
+// products first, then newest) and a final tile that opens the full search for the
+// chosen category. Tabs come from the
 // busiest product categories; each tab's results are fetched once and cached.
 // Styles: .ps-products* in app/counter-soft-system.css.
 
@@ -13,7 +13,7 @@ import { getListings } from "@/lib/api";
 import { useCategoryTree } from "@/lib/catalog";
 import type { Listing } from "@/lib/types";
 
-const LIMIT = 12;
+const LIMIT = 14;
 const TABS = 6;
 interface Result { listings: Listing[]; total: number }
 
@@ -57,7 +57,6 @@ export default function ProductShowcase() {
   const label = tabs.find((tab) => tab.slug === active)?.label || "all categories";
   const href = `/search?type=product${active ? `&category=${encodeURIComponent(active)}` : ""}`;
   const listings = result?.listings || [];
-  const spotlight = listings.length >= 8;
 
   return <div className="ps-products">
     <div className="ps-products-bar">
@@ -74,8 +73,8 @@ export default function ProductShowcase() {
         ? <div className="bn-product-grid ps-product-grid is-loading" aria-label="Loading product listings">{Array.from({ length: 8 }).map((_, index) => <span key={index} />)}</div>
         : listings.length === 0
           ? <div className="le-empty">No products in this category yet. <button type="button" className="hs-link" onClick={() => setActive("")}>Show all products</button></div>
-          : <ul key={active} className={`bn-product-grid ps-product-grid${spotlight ? " has-spotlight" : ""}${busy ? " is-busy" : ""}`} role="list">
-            {listings.map((listing, index) => <li key={listing.id} className={spotlight && index === 0 ? "is-spotlight" : undefined} style={{ ["--i" as string]: index }}><ListingCard listing={listing} /></li>)}
+          : <ul key={active} className={`bn-product-grid ps-product-grid${busy ? " is-busy" : ""}`} role="list">
+            {listings.map((listing, index) => <li key={listing.id} style={{ ["--i" as string]: index }}><ListingCard listing={listing} /></li>)}
             {result.total > listings.length && <li className="ps-more" style={{ ["--i" as string]: listings.length }}>
               <Link href={href}>
                 <small>More in {label}</small>

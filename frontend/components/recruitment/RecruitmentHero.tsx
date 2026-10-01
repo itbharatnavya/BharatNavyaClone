@@ -1,82 +1,60 @@
 "use client";
 
-// Recruitment landing hero. Not a list of roles: it explains the one thing a job
-// board rarely shows, what happens after you apply, and that both sides see it.
-// Left: headline, search and job-function shortcuts. Right: a short looping scene
-// where a candidate profile matches a real open role and the application moves
-// Applied, Viewed, Shortlisted, Hired, with what each side sees at every step.
-// Two audience paths sit along the bottom. Under reduced motion the scene rests
-// on the Shortlisted step.
+// Recruitment landing hero: headline, a one-row search and job-function shortcuts
+// on the left; a small, quiet illustration on the right (people around a role,
+// signals travelling in, a check popping on the role card); two audience paths
+// along the bottom. The art is decorative SVG animated with CSS and SMIL; under
+// reduced motion it holds still.
 
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import Avatar from "@/components/Avatar";
-import { formatSalary, jobLocation } from "@/lib/recruitmentDesign";
 import type { Job } from "@/lib/types";
 
 export interface FunctionShortcut { label: string; href: string; icon: ReactNode }
 
-const STEPS = [
-  { label: "Applied", you: "You applied with your saved profile.", them: "A new application lands in the inbox." },
-  { label: "Viewed", you: "You are told when your profile is opened.", them: "The team reviews skills and experience." },
-  { label: "Shortlisted", you: "You are shortlisted for the next round.", them: "The candidate is moved to interview." },
-  { label: "Hired", you: "You get a clear final outcome.", them: "The role is filled and the post closes." },
-];
-const FALLBACK_SKILLS = ["Your skills", "Your experience", "Your preferences"];
-
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
 const icon = (d: string) => <svg aria-hidden viewBox="0 0 24 24">{d.split("|").map((path) => <path key={path} d={path} />)}</svg>;
 
-function MatchScene({ job }: { job?: Job }) {
-  const [step, setStep] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setStep(2); return; }
-    let live = true;
-    let timer = 0;
-    const tick = (index: number) => {
-      if (!live) return;
-      setStep(index);
-      timer = window.setTimeout(() => tick((index + 1) % STEPS.length), index === STEPS.length - 1 ? 2600 : 1900);
-    };
-    tick(0);
-    return () => { live = false; window.clearTimeout(timer); };
-  }, []);
+const PEOPLE = [
+  { x: 88, y: 110, delay: "0s" },
+  { x: 392, y: 96, delay: "-1.6s" },
+  { x: 70, y: 292, delay: "-3.1s" },
+  { x: 410, y: 300, delay: "-4.4s" },
+];
 
-  const skills = job?.skills?.length ? job.skills.slice(0, 3) : FALLBACK_SKILLS;
-  const company = job?.employer?.companyName || "A hiring company";
-  const current = STEPS[step];
-  return <aside className="bn-rmatch" aria-label="How hiring works on Bharat Navya">
-    <header><strong>Two sides, one clear process</strong><span>Live example</span></header>
-    <div className="bn-rmatch-pair">
-      <article className="bn-rmatch-side">
-        <small>You</small>
-        <span className="bn-rmatch-id"><Avatar name="You" size={40} /><strong>Your profile</strong></span>
-        <ul>{skills.map((skill) => <li key={skill} className={step >= 0 ? "is-match" : undefined}>{icon("m5 12.5 4.5 4.5L19 7.5")}{skill}</li>)}</ul>
-      </article>
-      <span className="bn-rmatch-bridge" aria-hidden><i /><b>{job?.skills?.length ? `${skills.length} of ${skills.length} skills match` : "Profile matches"}</b></span>
-      <article className="bn-rmatch-side is-role">
-        <small>The role</small>
-        <span className="bn-rmatch-id"><Avatar src={job?.employer?.logo || undefined} name={company} size={40} /><strong>{job?.title || "Open role"}</strong></span>
-        <p>{company}{job ? ` · ${jobLocation(job)}` : ""}</p>
-        {job && <b>{formatSalary(job)}</b>}
-      </article>
-    </div>
-    <ol className="bn-rmatch-track" aria-label="Application status">
-      {STEPS.map((item, index) => <li key={item.label} className={index < step ? "is-done" : index === step ? "is-current" : undefined}><i aria-hidden /><span>{item.label}</span></li>)}
-    </ol>
-    <div className="bn-rmatch-views" aria-live="off">
-      <p key={`y${step}`}><small>You see</small>{current.you}</p>
-      <p key={`t${step}`}><small>The employer sees</small>{current.them}</p>
-    </div>
-  </aside>;
+function HiringArt() {
+  return <svg className="bn-ill" viewBox="0 0 480 400" aria-hidden focusable="false">
+    <circle cx="240" cy="200" r="150" className="bn-ill-glow" />
+    <circle cx="240" cy="200" r="100" className="bn-ill-glow is-inner" />
+    <g className="bn-ill-orbit is-a"><circle cx="240" cy="200" r="120" className="bn-ill-ring" /><circle cx="360" cy="200" r="5" fill="#9db8ff" /></g>
+    <g className="bn-ill-orbit is-b"><circle cx="240" cy="200" r="175" className="bn-ill-ring is-faint" /><circle cx="65" cy="200" r="4" fill="#ffbe2e" /></g>
+    {PEOPLE.map((person, index) => <g key={index}>
+      <line x1={person.x} y1={person.y} x2="240" y2="200" className="bn-ill-link" />
+      <circle r="4.5" fill="#ffbe2e" className="bn-ill-pulse" opacity="0">
+        <animateMotion dur="3.6s" begin={`${index * 0.9}s`} repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.4;1" calcMode="linear" path={`M${person.x},${person.y} L240,200`} />
+        <animate attributeName="opacity" dur="3.6s" begin={`${index * 0.9}s`} repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.04;0.34;0.4;1" />
+      </circle>
+    </g>)}
+    {PEOPLE.map((person, index) => <g key={`p${index}`} className="bn-ill-person" style={{ animationDelay: person.delay }}>
+      <circle cx={person.x} cy={person.y} r="27" fill="#fff" />
+      <circle cx={person.x} cy={person.y - 6} r="7.5" fill="#1b3fa0" />
+      <path d={`M${person.x - 13} ${person.y + 15} a13 11 0 0 1 26 0z`} fill="#1b3fa0" />
+    </g>)}
+    <circle cx="240" cy="200" r="46" className="bn-ill-pulse-ring" />
+    <rect x="194" y="154" width="92" height="92" rx="24" fill="#fff" />
+    <g transform="translate(214 174) scale(1.75)" fill="none" stroke="#1b3fa0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h16v11H4z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /><path d="M4 13h16" /></g>
+    <g className="bn-ill-check"><circle cx="284" cy="158" r="16" fill="#ffbe2e" /><path d="m276 158 6 6 10-11" fill="none" stroke="#12141b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></g>
+    <circle cx="150" cy="56" r="5" fill="#ffbe2e" className="bn-ill-dot" />
+    <circle cx="334" cy="352" r="4" fill="#9db8ff" className="bn-ill-dot is-late" />
+  </svg>;
 }
 
-export default function RecruitmentHero({ id, title, search, shortcuts, jobs }: {
+export default function RecruitmentHero({ id, title, search, shortcuts }: {
   id: string;
   title: string;
   search: ReactNode;
   shortcuts: FunctionShortcut[];
-  jobs: Job[];
+  jobs?: Job[];
 }) {
   return <section className="le-hero bn-rhero" aria-labelledby={id}>
     <div className="le-shell bn-rhero-grid">
@@ -87,7 +65,7 @@ export default function RecruitmentHero({ id, title, search, shortcuts, jobs }: 
           {shortcuts.map((item) => <Link key={item.href} href={item.href}>{item.icon}<span>{item.label}</span></Link>)}
         </div>}
       </div>
-      <MatchScene job={jobs[0]} />
+      <div className="bn-rhero-art"><HiringArt /></div>
     </div>
     <nav className="le-shell bn-rhero-paths" aria-label="Recruitment paths">
       <Link href="/recruitment/jobs" className="is-seeker">
