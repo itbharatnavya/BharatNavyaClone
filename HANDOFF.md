@@ -24,7 +24,7 @@ This is the single continuation source of truth for current Bharat Navya product
 
 - Worktree: `~/.codex/worktrees/design-integration-merge/BharatConnect`, branch `codex/design-integration-merge`.
 - **On `origin/design` (pushed at the owner's request):** `fe23af9` "Redesign heroes, header and catalog pages". That already contains the header and popup work, hero rebuilds, feed band, category marquee, HeroStage, floating header, docked-search flight, ListingCard, Categories page and the earlier handoff.
-- **Local only, not pushed yet:** `a2fed6d` (checkpoint), `06301ab` (Recruitment live + radius/type token migration), `099d929` (amber highlight, contrast fixes, contrast audit script), plus uncommitted edits on top (Home hero stage route colours, amber "The B2B platform" title, DESIGN-SYSTEM.md and this file). Push only when the owner says so, and only to `origin/design`.
+- **Local only, not pushed yet:** `a2fed6d` (checkpoint), `06301ab` (Recruitment live + radius/type token migration), `099d929` (amber highlight, contrast fixes, contrast audit script), `128c39d` (Home hero stage route colours, amber "The B2B platform" title, this handoff). Push only when the owner says so, and only to `origin/design`.
 - `tmp/phone-audit.mjs` is an untracked stray from earlier work; never commit it.
 
 ### Runtime
