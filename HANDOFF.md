@@ -369,3 +369,11 @@ Open owner questions from the 1 October afternoon session are listed in section 
 - Never hide absent API data with fabricated content.
 - Never push to anything except `origin/design` without explicit approval.
 - Keep commits scoped and name exactly what was verified.
+
+
+## Landing pages rebuild (Directory, Recruitment, About)
+- Directory and Recruitment keep their hero, status strip, ad and category strip; everything below is now three sections each: `components/directory/DirectorySections.tsx`, `components/recruitment/RecruitmentSections.tsx`, shared closing `components/discovery/StoriesCta.tsx`. Styles `.ps-*` at the end of `counter-soft-system.css`.
+- Recruitment hero is now a two-sided "apply and track" scene (`RecruitmentHero.tsx`, `.bn-rmatch*`), not a roles list. Old `.bn-rhero-board*` CSS is unused.
+- About is `components/about/AboutSections.tsx` (`.ab-*`); old `counter-support-*` About CSS and `components/about/AboutBlogPreview.tsx` are unused.
+- Demo articles: `node backend/scripts/seed-blogs-demo.js` (12 posts, covers for the original four). Uses `lib/pg-store`, idempotent.
+- Home, Directory, Recruitment and About all use GSAP through `components/home/useStory.ts`; see DESIGN-SYSTEM.md section 10.
