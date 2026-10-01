@@ -401,7 +401,7 @@ export default function AISearchBar({
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   aria-label="City"
-                  style={{ fontSize: hero ? 14.5 : 13.5 }}
+                  style={{ fontSize: hero ? "var(--fs-sm)" : "var(--fs-sm)" }}
                 >
                   <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
                   {ALL_CITIES.map((c) => (
@@ -448,7 +448,7 @@ export default function AISearchBar({
               border: "none",
               outline: "none",
               background: "transparent",
-              fontSize: hero ? 16 : 15,
+              fontSize: hero ? "var(--fs-md)" : "var(--fs-sm)",
               color: "var(--ink)",
               padding: hero ? "8px 0" : "6px 0",
             }}
@@ -495,7 +495,7 @@ export default function AISearchBar({
           }}
         >
           {catSug.length > 0 && (
-            <div style={{ padding: "6px 10px 4px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div style={{ padding: "6px 10px 4px", fontSize: "var(--fs-xs)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
               {t("common.category")}
             </div>
           )}
@@ -521,13 +521,13 @@ export default function AISearchBar({
                 <span className="line-clamp-1" style={{ flex: 1, minWidth: 0, textAlign: "left", fontWeight: 600, color: "var(--ink)" }}>
                   {item.cat.name}
                 </span>
-                <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>{t("common.category")}</span>
+                <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", flexShrink: 0 }}>{t("common.category")}</span>
               </button>
             );
           })}
 
           {listSug.length > 0 && (
-            <div style={{ padding: "8px 10px 4px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div style={{ padding: "8px 10px 4px", fontSize: "var(--fs-xs)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
               {t("common.products")}
             </div>
           )}
@@ -553,7 +553,7 @@ export default function AISearchBar({
                     width: 34,
                     height: 34,
                     flexShrink: 0,
-                    borderRadius: 8,
+                    borderRadius: "var(--r-xs)",
                     background: img ? `#f1f5f9 url(${img}) center/cover` : "var(--bg-subtle)",
                     border: "1px solid var(--border)",
                   }}
@@ -562,7 +562,7 @@ export default function AISearchBar({
                   <span className="line-clamp-1" style={{ display: "block", fontWeight: 600, color: "var(--ink)" }}>
                     {l.title}
                   </span>
-                  <span className="line-clamp-1" style={{ display: "block", fontSize: 12, color: "var(--muted)" }}>
+                  <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                     {priceLabel(l)} · {listingSellerName(l)}
                   </span>
                 </span>
@@ -582,7 +582,7 @@ export default function AISearchBar({
                 type="button"
                 onMouseEnter={() => setActive(i)}
                 onClick={() => void runAi(query)}
-                style={{ ...rowStyle(activeRow), marginTop: items.length > 1 ? 4 : 0, borderTop: items.length > 1 ? "1px solid var(--border)" : undefined, borderRadius: 8 }}
+                style={{ ...rowStyle(activeRow), marginTop: items.length > 1 ? 4 : 0, borderTop: items.length > 1 ? "1px solid var(--border)" : undefined, borderRadius: "var(--r-xs)" }}
               >
                 <span style={{ ...iconWrap, color: "var(--brand)", background: "var(--brand-tint)" }}>
                   <SparkIcon size={16} />
@@ -591,7 +591,7 @@ export default function AISearchBar({
                   <span style={{ fontWeight: 600 }}>{aiEnabled ? "Ask AI" : "Search"}</span>
                   <span className="line-clamp-1" style={{ color: "var(--muted)" }}> “{query.trim()}”</span>
                 </span>
-                {sugLoading && <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>…</span>}
+                {sugLoading && <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", flexShrink: 0 }}>…</span>}
               </button>
             );
           })()}
@@ -609,9 +609,9 @@ export default function AISearchBar({
             gap: 8,
             background: "var(--brand-tint)",
             border: "1px solid #BFDBFE",
-            borderRadius: 12,
+            borderRadius: "var(--r-sm)",
             padding: "12px 14px",
-            fontSize: 14,
+            fontSize: "var(--fs-sm)",
             color: "var(--brand-hover)",
           }}
         >
@@ -623,7 +623,7 @@ export default function AISearchBar({
       )}
 
       {error && (
-        <div style={{ marginTop: 10, fontSize: 13, color: "var(--error)" }}>{error}</div>
+        <div style={{ marginTop: 10, fontSize: "var(--fs-xs)", color: "var(--error)" }}>{error}</div>
       )}
 
       {/* ---- Never-blank panel: zero matches still helps the shopper ---- */}
@@ -639,7 +639,7 @@ export default function AISearchBar({
               <InfoIcon />
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 14, color: "var(--ink)", fontWeight: 600, margin: 0 }}>
+              <p style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", fontWeight: 600, margin: 0 }}>
                 {listMessage ||
                   `No exact matches for "${query.trim()}" yet — post a requirement and matching vendors will send you quotes.`}
               </p>
@@ -668,19 +668,19 @@ export default function AISearchBar({
             <span style={{ color: "var(--brand)", display: "inline-flex" }}>
               <SparkIcon size={16} />
             </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+            <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)" }}>
               {`${aiEnabled ? "AI found" : "Found"} ${listResults.length} ${listResults.length === 1 ? "vendor" : "vendors"}`}
             </span>
             <Link
               href={`/search?q=${encodeURIComponent(query.trim())}`}
-              style={{ marginLeft: "auto", fontSize: 13, fontWeight: 600, color: "var(--brand)", flexShrink: 0 }}
+              style={{ marginLeft: "auto", fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)", flexShrink: 0 }}
             >
               {t("cta.viewAll")} →
             </Link>
           </div>
 
           {listMessage && (
-            <p style={{ fontSize: 13, color: "var(--muted)", margin: "0 0 10px" }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", margin: "0 0 10px" }}>
               {listMessage}
             </p>
           )}
@@ -699,7 +699,7 @@ export default function AISearchBar({
                       gap: 12,
                       padding: 10,
                       border: "1px solid var(--border)",
-                      borderRadius: 10,
+                      borderRadius: "var(--r-sm)",
                       background: "#fff",
                     }}
                   >
@@ -709,18 +709,18 @@ export default function AISearchBar({
                         width: 52,
                         height: 52,
                         flexShrink: 0,
-                        borderRadius: 8,
+                        borderRadius: "var(--r-xs)",
                         background: img ? `#f1f5f9 url(${img}) center/cover` : "var(--bg-subtle)",
                         border: "1px solid var(--border)",
                       }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <Link href={`/listing/${l.id}`}>
-                        <span className="line-clamp-1" style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
+                        <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                           {l.title}
                         </span>
                       </Link>
-                      <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 2, fontSize: 12, color: "var(--muted)" }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 2, fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                         <span style={{ fontWeight: 600, color: "var(--ink)" }}>{priceLabel(l)}</span>
                         <span style={{ color: "var(--faint)" }}>·</span>
                         <span className="line-clamp-1">{listingSellerName(l)}</span>
@@ -777,11 +777,11 @@ function rowStyle(activeRow: boolean): React.CSSProperties {
     gap: 10,
     width: "100%",
     padding: "9px 10px",
-    borderRadius: 8,
+    borderRadius: "var(--r-xs)",
     border: "none",
     cursor: "pointer",
     background: activeRow ? "var(--bg-subtle)" : "transparent",
-    fontSize: 14,
+    fontSize: "var(--fs-sm)",
     fontFamily: "inherit",
   };
 }
@@ -790,9 +790,9 @@ const iconWrap: React.CSSProperties = {
   width: 30,
   height: 30,
   flexShrink: 0,
-  borderRadius: 8,
+  borderRadius: "var(--r-xs)",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: 15,
+  fontSize: "var(--fs-sm)",
 };

@@ -37,7 +37,7 @@ export default function PackageCard({ pkg, onBook }: PackageCardProps) {
       <div style={{ minWidth: 0 }}>
         <h3
           style={{
-            fontSize: 16.5,
+            fontSize: "var(--fs-md)",
             fontWeight: 700,
             color: "var(--ink)",
             margin: 0,
@@ -47,11 +47,11 @@ export default function PackageCard({ pkg, onBook }: PackageCardProps) {
           {pkg.title}
         </h3>
         <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 26, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.02em" }}>
+          <span style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.02em" }}>
             {isQuote ? "Custom quote" : formatPrice(pkg.price)}
           </span>
           {!isQuote && pkg.unit && (
-            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{pkg.unit}</span>
+            <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--muted)" }}>{pkg.unit}</span>
           )}
         </div>
         {pkg.timeline && (
@@ -61,7 +61,7 @@ export default function PackageCard({ pkg, onBook }: PackageCardProps) {
               alignItems: "center",
               gap: 6,
               marginTop: 8,
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               color: "var(--muted)",
             }}
           >
@@ -74,7 +74,7 @@ export default function PackageCard({ pkg, onBook }: PackageCardProps) {
       </div>
 
       {pkg.description && (
-        <p style={{ fontSize: 13.5, color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
           {pkg.description}
         </p>
       )}
@@ -87,7 +87,7 @@ export default function PackageCard({ pkg, onBook }: PackageCardProps) {
               <span style={{ color: "var(--success)", flexShrink: 0, marginTop: 1, display: "inline-flex" }}>
                 <CheckIcon size={16} />
               </span>
-              <span style={{ fontSize: 13.5, color: "var(--ink)", lineHeight: 1.45, minWidth: 0 }}>{d}</span>
+              <span style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", lineHeight: 1.45, minWidth: 0 }}>{d}</span>
             </li>
           ))}
         </ul>

@@ -123,7 +123,7 @@ export default function MediaUpload({
               style={{
                 position: "relative",
                 aspectRatio: "1 / 1",
-                borderRadius: 10,
+                borderRadius: "var(--r-sm)",
                 overflow: "hidden",
                 border: "1px solid var(--border)",
                 background: "var(--bg-subtle)",
@@ -142,7 +142,7 @@ export default function MediaUpload({
                     position: "absolute",
                     left: 6,
                     top: 6,
-                    fontSize: 12,
+                    fontSize: "var(--fs-xs)",
                     background: "var(--brand)",
                     color: "#fff",
                     padding: "2px 6px",
@@ -161,7 +161,7 @@ export default function MediaUpload({
                   top: 6,
                   width: 24,
                   height: 24,
-                  borderRadius: 999,
+                  borderRadius: "var(--r-pill)",
                   border: "none",
                   background: "rgba(0,0,0,0.6)",
                   color: "#fff",
@@ -214,7 +214,7 @@ export default function MediaUpload({
 
       {shown && <p className="field-error">{shown}</p>}
 
-      <style>{`.mu-spin{width:13px;height:13px;border-radius:999px;border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:muspin .7s linear infinite}@keyframes muspin{to{transform:rotate(360deg)}}`}</style>
+      <style>{`.mu-spin{width:13px;height:13px;border-radius: var(--r-pill);border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:muspin .7s linear infinite}@keyframes muspin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

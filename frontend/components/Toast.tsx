@@ -89,7 +89,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               width: 340,
               maxWidth: "calc(100vw - 40px)",
               padding: "13px 16px",
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               lineHeight: 1.4,
               pointerEvents: "auto",
             }}

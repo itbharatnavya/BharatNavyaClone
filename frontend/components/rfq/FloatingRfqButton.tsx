@@ -276,7 +276,7 @@ export default function FloatingRfqButton() {
               {showForm && (
                 <div className="card card-flat" style={{ padding: 14 }}>
                   <div className="mb-3 flex items-baseline justify-between gap-3">
-                    <h3 className="text-[13.5px] font-semibold text-ink">Your requirement</h3>
+                    <h3 className="text-sm font-semibold text-ink">Your requirement</h3>
                     {isFallback && <span className="text-xs text-faint">AI draft</span>}
                   </div>
                   <RfqForm
@@ -291,7 +291,7 @@ export default function FloatingRfqButton() {
                     </p>
                   )}
                   {!user && (
-                    <p className="mt-3.5 text-[12px] text-muted">
+                    <p className="mt-3.5 text-xs text-muted">
                       You&apos;ll be asked to log in to send this requirement.
                     </p>
                   )}

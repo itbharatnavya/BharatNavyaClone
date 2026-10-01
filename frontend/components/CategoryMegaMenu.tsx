@@ -362,12 +362,12 @@ export default function CategoryMegaMenu() {
                           alignItems: "center",
                           gap: 10,
                           padding: "9px 10px",
-                          borderRadius: 10,
+                          borderRadius: "var(--r-sm)",
                           background: on ? "var(--surface)" : "transparent",
                           border: on ? "1px solid var(--border)" : "1px solid transparent",
                           boxShadow: on ? "var(--shadow-card)" : "none",
                           color: on ? "var(--brand-hover)" : "var(--ink)",
-                          fontSize: 14,
+                          fontSize: "var(--fs-sm)",
                           fontWeight: on ? 600 : 500,
                           transition: "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease",
                         }}
@@ -376,7 +376,7 @@ export default function CategoryMegaMenu() {
                         <span className="line-clamp-1" style={{ flex: 1, minWidth: 0 }}>
                           {top.name}
                         </span>
-                        <span style={{ fontSize: 12, color: on ? "var(--brand)" : "var(--faint)", flexShrink: 0 }}>
+                        <span style={{ fontSize: "var(--fs-xs)", color: on ? "var(--brand)" : "var(--faint)", flexShrink: 0 }}>
                           {top.children.length}
                         </span>
                         <ChevronRight dimmed={!on} />
@@ -411,7 +411,7 @@ export default function CategoryMegaMenu() {
                         <CategoryIcon slug={active.slug} name={active.name} size={26} />
                         <h3
                           className="line-clamp-1"
-                          style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", minWidth: 0 }}
+                          style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", minWidth: 0 }}
                         >
                           {active.name}
                         </h3>
@@ -419,7 +419,7 @@ export default function CategoryMegaMenu() {
                       <Link
                         href={`/${active.slug}`}
                         className=""
-                        style={{ fontSize: 13, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
+                        style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
                       >
                         {tr("megamenu.viewAll", "View all in")} {active.name} →
                       </Link>
@@ -440,7 +440,7 @@ export default function CategoryMegaMenu() {
                               className=""
                               style={{
                                 display: "block",
-                                fontSize: 14,
+                                fontSize: "var(--fs-sm)",
                                 fontWeight: 600,
                                 color: "var(--ink)",
                                 transition: "color 120ms ease",
@@ -465,7 +465,7 @@ export default function CategoryMegaMenu() {
                                     <Link
                                       href={`/${g.slug}`}
                                       className="line-clamp-1"
-                                      style={{ fontSize: 13, color: "var(--muted)", transition: "color 120ms ease" }}
+                                      style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", transition: "color 120ms ease" }}
                                     >
                                       {g.name}
                                     </Link>
@@ -477,7 +477,7 @@ export default function CategoryMegaMenu() {
                         ))}
                       </div>
                     ) : (
-                      <p style={{ fontSize: 14, color: "var(--muted)" }}>
+                      <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
                         {tr("megamenu.browseCategory", "Browse listings in")} {active.name}.
                       </p>
                     )}
@@ -498,7 +498,7 @@ export default function CategoryMegaMenu() {
               <Link
                 href="/categories"
                 className=""
-                style={{ fontSize: 13, fontWeight: 600, color: "var(--brand)" }}
+                style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)" }}
               >
                 {tr("megamenu.browseAll", "Browse all categories")} →
               </Link>
@@ -522,7 +522,7 @@ export function MobileCategoryAccordion() {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "0 4px" }}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <span key={i} className="skeleton" style={{ height: 44, borderRadius: 10 }} />
+          <span key={i} className="skeleton" style={{ height: 44, borderRadius: "var(--r-sm)" }} />
         ))}
       </div>
     );
@@ -588,7 +588,7 @@ export function MobileCategoryAccordion() {
                             <Link
                               key={g.id}
                               href={`/${g.slug}`}
-                              className="block rounded-lg px-3 py-1.5 text-[13px] text-faint hover:bg-bg-subtle line-clamp-1"
+                              className="block rounded-lg px-3 py-1.5 text-xs text-faint hover:bg-bg-subtle line-clamp-1"
                             >
                               {g.name}
                             </Link>

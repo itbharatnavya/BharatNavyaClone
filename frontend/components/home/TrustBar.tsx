@@ -162,7 +162,7 @@ export default function TrustBar() {
                   width: 44,
                   height: 44,
                   flexShrink: 0,
-                  borderRadius: 12,
+                  borderRadius: "var(--r-sm)",
                   background: accent.bg,
                   color: accent.color,
                   display: "inline-flex",
@@ -185,7 +185,7 @@ export default function TrustBar() {
                 >
                   {display(s.value)}
                 </span>
-                <span className="line-clamp-1" style={{ display: "block", fontSize: 13, color: "var(--muted)" }}>
+                <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                   {s.label}
                 </span>
               </span>

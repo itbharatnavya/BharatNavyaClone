@@ -61,7 +61,7 @@ function BrandRfqCard() {
     <Link href="/rfq" className="card card-pad" style={{ display: "block", textDecoration: "none" }}>
       <div
         style={{
-          fontSize: 12,
+          fontSize: "var(--fs-xs)",
           fontWeight: 700,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
@@ -70,7 +70,7 @@ function BrandRfqCard() {
       >
         Can&apos;t find it?
       </div>
-      <p style={{ margin: "6px 0 14px", fontSize: 14.5, fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>
+      <p style={{ margin: "6px 0 14px", fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>
         Post a requirement and let sellers quote you
       </p>
       <span className="btn btn-primary btn-sm btn-block" style={{ pointerEvents: "none" }}>
@@ -116,7 +116,7 @@ function HeroSkeleton() {
       <div className="container-bs" style={{ paddingTop: 28, paddingBottom: 28 }}>
         <span className="skeleton" style={{ display: "block", height: 12, width: 220, marginBottom: 18 }} />
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <span className="skeleton" style={{ width: 72, height: 72, borderRadius: 16, flexShrink: 0 }} />
+          <span className="skeleton" style={{ width: 72, height: 72, borderRadius: "var(--r-md)", flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0 }}>
             <span className="skeleton" style={{ display: "block", height: 28, width: 240, marginBottom: 10 }} />
             <span className="skeleton" style={{ display: "block", height: 14, width: 180 }} />
@@ -254,7 +254,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
               <h1
                 className="line-clamp-1"
                 style={{
-                  fontSize: 30,
+                  fontSize: "var(--fs-2xl)",
                   fontWeight: 800,
                   letterSpacing: "-0.02em",
                   color: "var(--ink)",
@@ -262,7 +262,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
               >
                 {brand.name}
               </h1>
-              <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 6 }}>{reach}</p>
+              <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 6 }}>{reach}</p>
             </div>
           </div>
         </div>
@@ -282,7 +282,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
             {/* Toolbar — mirrors DiscoveryResults' (search/category pages):
                 results count · Grid/List segmented toggle · sort. */}
             <div className="brand-toolbar">
-              <div style={{ fontSize: 14, color: "var(--muted)" }}>
+              <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
                 <strong style={{ color: "var(--brand)", fontWeight: 800 }}>{sorted.length}</strong>{" "}
                 {sorted.length === 1 ? "product" : "products"}
               </div>
@@ -309,7 +309,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
                 </div>
 
                 <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 13, color: "var(--faint)" }}>Sort</span>
+                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>Sort</span>
                   <select
                     className="select"
                     style={{ width: "auto", minWidth: 176 }}
@@ -395,7 +395,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           display: inline-flex;
           background: var(--bg-subtle);
           border: 1px solid var(--border);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           padding: 3px;
         }
         .brand-view-indicator {
@@ -404,7 +404,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           bottom: 3px;
           left: 3px;
           width: calc(50% - 3px);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           background: var(--brand);
           box-shadow: 0 1px 4px rgba(26, 79, 174, 0.35);
           transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -419,10 +419,10 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           background: none;
           cursor: pointer;
           padding: 7px 14px;
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 600;
           color: var(--muted);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           transition: color 200ms ease;
           white-space: nowrap;
           font-family: inherit;
@@ -476,13 +476,13 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
           flex-wrap: wrap;
           padding: 14px 16px;
           margin-bottom: 16px;
-          border-radius: 12px;
+          border-radius: var(--r-sm);
           border: 1px solid var(--border);
           background: var(--brand-tint);
           text-decoration: none;
         }
         :global(.brand-rfq-inline-text) {
-          font-size: 14px;
+          font-size: var(--fs-sm);
           color: var(--ink);
           flex: 1;
           min-width: 200px;

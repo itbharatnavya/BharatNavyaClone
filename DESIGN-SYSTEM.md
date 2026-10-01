@@ -35,23 +35,23 @@ Code lives in `frontend/app/`: tokens in `counter-direction.css` (`:root`), comp
 
 ## 3. Type
 
-Display: Anek Latin (`--font-anek-latin`). Body and UI: Work Sans (`--font-work-sans`). No other families.
+Display: Anek Latin (`--font-anek-latin`). Body and UI: Work Sans (`--font-work-sans`). No other families. **Seven sizes, nothing else** (the migration script that enforced this is described in section 8):
 
-| Role | Size | Weight |
+| Token | Size | Use |
 |---|---|---|
-| Page title (h1) | `clamp(1.75rem, 3.2vw, 2.5rem)` (heroes up to 3.5rem) | 700 |
-| Section title (h2) | `clamp(1.35rem, 2.4vw, 1.9rem)` | 700 |
-| Card title / h3 | `1.05rem` | 700 |
-| Body | `1rem` | 400 to 500 |
-| UI text (buttons, fields, rows) | `0.95rem` | 600 to 700 |
-| Meta / secondary | `0.85rem` | 400 to 600 |
-| Label / caption / chip | `0.75rem` | 700, uppercase labels `letter-spacing: .07em` |
+| `--fs-xs` | `0.75rem` (12px) | labels, captions, chips, badges (the floor; never go smaller) |
+| `--fs-sm` | `0.875rem` (14px) | meta text, secondary lines, small buttons, table cells |
+| `--fs-md` | `1rem` (16px) | body copy, fields, default buttons |
+| `--fs-lg` | `1.125rem` (18px) | card titles, lead text |
+| `--fs-xl` | `1.375rem` (22px) | h3, prices, panel titles |
+| `--fs-2xl` | `clamp(1.5rem, 2.6vw, 2rem)` | h2, section titles |
+| `--fs-3xl` | `clamp(1.9rem, 4vw, 3.25rem)` | h1 and **every hero title** (Home, Directory, Recruitment, Offer, Features, About ...) |
 
-Never go below `0.75rem` for text a person has to read. Price numbers: Anek Latin 800.
+Weights: 400 body, 600 to 700 UI and headings, 800 for price figures. Tailwind's `text-xs/sm/base/lg/xl/2xl/3xl` are configured to these same sizes, so either style is fine.
 
 ## 4. Shape and space
 
-- **Radius:** pill `999px` for buttons, chips, segmented controls and search fields; card `1.25rem` (`--counter-radius-card`); inner tile `1rem`; small `0.75rem`; circle `50%`. Nothing else.
+- **Radius scale (five steps and a circle):** `--r-xs` `0.5rem` (tiny elements, thumbnails), `--r-sm` `0.75rem` (small tiles, fields), `--r-md` `1rem` (inner tiles, photos inside cards), `--r-lg` `1.25rem` (cards, panels, hero blocks), `--r-pill` `999px` (buttons, chips, segmented controls, search fields), `50%` for circles. Tailwind `rounded-*` is mapped onto the same steps.
 - **Borders:** 1px `--counter-line` on cards; no drop shadow on resting cards. A soft shadow (`--counter-shadow-rest`) only for things that float: sticky panels, popovers, the floating header.
 - **Spacing:** `--counter-space-1..8` (0.25 to 3rem). Section gap `--counter-section-gap`. Card padding `--counter-space-4` or `-5`.
 - **Shell:** `width: min(calc(100% - 2rem), 76rem); margin-inline: auto`. Heroes and sections are inset rounded blocks inside the shell, not edge-to-edge.
@@ -73,7 +73,7 @@ Never go below `0.75rem` for text a person has to read. Price numbers: Anek Lati
 
 1. Find the closest existing component above and reuse it. Only build new if none fits, and then compose it from the tokens here.
 2. Colours from section 2 only. If you reach for a hex code, you are off-system.
-3. Sizes from the type and radius tables. If you reach for `13px` or `14px`, use `0.85rem`.
+3. Sizes and radii from the tables (`var(--fs-*)`, `var(--r-*)`). A raw `13px` or `10px` is off-system.
 4. Inside the page shell, white card, 1px line, `1.25rem`.
 5. CTAs from section 5; one primary per view.
 6. Check at 390px and 1440px: no sideways scroll, no clipped corners, no text under 0.75rem.
@@ -82,3 +82,9 @@ Never go below `0.75rem` for text a person has to read. Price numbers: Anek Lati
 ## 7. Deliberate custom designs
 
 These are intentional and are **not** to be normalised without the owner's say-so: the Home hero stage (animated cards), the Directory and Recruitment landing heroes, the status strip, the rotating image ad and the category marquee, the floating header and docked search. Any change that touches how those look needs a conversation first.
+
+## 8. Keeping it consistent
+
+- `frontend/app/counter-direction.css` `:root` defines `--r-*` and `--fs-*`. All older radius names (`--bn-radius-*`, `--counter-*-radius`) now resolve to these.
+- A one-off migration mapped every `font-size`, `border-radius`, `fontSize`, `borderRadius` and Tailwind arbitrary value in `frontend/app` and `frontend/components` onto the scale (about 1,400 declarations). Re-run a scan after big changes: distinct font sizes should stay at 7 and distinct radii at 5 plus circle.
+- Review new CSS for raw `px`, raw hex colours and `border-radius`/`font-size` that are not tokens before merging.

@@ -47,7 +47,7 @@ export default function RecruitmentComingSoon() {
             width: 72,
             height: 72,
             margin: "0 auto",
-            borderRadius: 20,
+            borderRadius: "var(--r-lg)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -61,7 +61,7 @@ export default function RecruitmentComingSoon() {
         </span>
 
         <div style={{ marginTop: 22 }}>
-          <span className="badge badge-neutral" style={{ fontSize: 12 }}>
+          <span className="badge badge-neutral" style={{ fontSize: "var(--fs-xs)" }}>
             Coming soon
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function RecruitmentComingSoon() {
           </Link>
         </div>
 
-        <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 18 }}>
+        <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 18 }}>
           One Bharat Navya account will connect the available products.
         </p>
       </div>

@@ -133,11 +133,11 @@ export function PanelHeader({
       }}
     >
       <div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+        <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, color: "var(--ink)", letterSpacing: "-0.01em" }}>
           {title}
         </h1>
         {subtitle && (
-          <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>{subtitle}</p>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>{subtitle}</p>
         )}
       </div>
       {actions && <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>{actions}</div>}
@@ -164,13 +164,13 @@ export function StatCard({
   return (
     <div className="card card-flat" style={{ padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <span style={{ fontSize: 13, color: "var(--muted)", fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 500 }}>{label}</span>
         {icon && <span style={{ color: accent, display: "inline-flex" }}>{icon}</span>}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: "var(--ink)", marginTop: 8, lineHeight: 1.1 }}>
+      <div style={{ fontSize: "var(--fs-xl)", fontWeight: 700, color: "var(--ink)", marginTop: 8, lineHeight: 1.1 }}>
         {value}
       </div>
-      {hint && <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 6 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 6 }}>{hint}</div>}
     </div>
   );
 }
@@ -206,7 +206,7 @@ export function EmptyState({
           style={{
             width: 52,
             height: 52,
-            borderRadius: 14,
+            borderRadius: "var(--r-md)",
             background: "var(--bg-subtle)",
             display: "grid",
             placeItems: "center",
@@ -216,9 +216,9 @@ export function EmptyState({
           {icon}
         </div>
       )}
-      <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{title}</div>
+      <div style={{ fontSize: "var(--fs-md)", fontWeight: 600, color: "var(--ink)" }}>{title}</div>
       {subtitle && (
-        <div style={{ fontSize: 14, color: "var(--muted)", maxWidth: 420 }}>{subtitle}</div>
+        <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", maxWidth: 420 }}>{subtitle}</div>
       )}
       {action && <div style={{ marginTop: 8 }}>{action}</div>}
     </div>
@@ -238,12 +238,12 @@ export function Loading({ label = "Loading…" }: { label?: string }) {
         gap: 10,
         padding: "40px 0",
         color: "var(--muted)",
-        fontSize: 14,
+        fontSize: "var(--fs-sm)",
       }}
     >
       <span className="bs-spin" aria-hidden />
       {label}
-      <style>{`.bs-spin{width:16px;height:16px;border-radius:999px;border:2px solid var(--border);border-top-color:var(--brand);animation:bsspin .7s linear infinite}@keyframes bsspin{to{transform:rotate(360deg)}}`}</style>
+      <style>{`.bs-spin{width:16px;height:16px;border-radius: var(--r-pill);border:2px solid var(--border);border-top-color:var(--brand);animation:bsspin .7s linear infinite}@keyframes bsspin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

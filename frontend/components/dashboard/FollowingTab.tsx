@@ -102,16 +102,16 @@ export default function FollowingTab({ user }: Props) {
                     <Link
                       href={`/seller/${slug}`}
                       className="line-clamp-1"
-                      style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}
+                      style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}
                     >
                       {companyName}
                     </Link>
                   ) : (
-                    <span className="line-clamp-1" style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
+                    <span className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
                       {companyName}
                     </span>
                   )}
-                  <div style={{ fontSize: 12.5, color: "var(--faint)", marginTop: 2 }}>
+                  <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 2 }}>
                     {location && <span>{location} · </span>}
                     {tr("dashboard.following.since", "Following since")} {formatDate(e.createdAt)}
                   </div>

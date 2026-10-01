@@ -73,7 +73,7 @@ export default function SellerStoriesSection({
         <div
           role="tablist"
           aria-label={t("seller.stories.segmentLabel", "Story type")}
-          style={{ display: "inline-flex", padding: 3, background: "var(--bg-subtle)", borderRadius: 999, marginBottom: 16 }}
+          style={{ display: "inline-flex", padding: 3, background: "var(--bg-subtle)", borderRadius: "var(--r-pill)", marginBottom: 16 }}
         >
           {(["new", "highlights"] as Segment[]).map((seg) => (
             <button
@@ -84,10 +84,10 @@ export default function SellerStoriesSection({
               onClick={() => setSegment(seg)}
               style={{
                 padding: "7px 18px",
-                borderRadius: 999,
+                borderRadius: "var(--r-pill)",
                 border: "none",
                 cursor: "pointer",
-                fontSize: 13,
+                fontSize: "var(--fs-xs)",
                 fontWeight: 600,
                 background: segment === seg ? "#fff" : "transparent",
                 color: segment === seg ? "var(--brand)" : "var(--muted)",
@@ -163,7 +163,7 @@ export default function SellerStoriesSection({
                         style={{
                           width: 34,
                           height: 34,
-                          borderRadius: "999px",
+                          borderRadius: "var(--r-pill)",
                           background: "rgba(15,23,42,.55)",
                           display: "flex",
                           alignItems: "center",
@@ -188,7 +188,7 @@ export default function SellerStoriesSection({
                         background: "linear-gradient(transparent, rgba(15,23,42,.82))",
                       }}
                     >
-                      <span className="line-clamp-1" style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#fff", textAlign: "left" }}>
+                      <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-xs)", fontWeight: 700, color: "#fff", textAlign: "left" }}>
                         {s.caption}
                       </span>
                     </span>

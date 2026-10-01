@@ -63,7 +63,7 @@ export default function RecentActivity({ limit = 6, className = "" }: { limit?: 
                   <Link
                     href={it.sellerSlug ? `/seller/${it.sellerSlug}` : "#"}
                     className="line-clamp-1"
-                    style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}
+                    style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}
                   >
                     {it.sellerName}
                   </Link>
@@ -81,7 +81,7 @@ export default function RecentActivity({ limit = 6, className = "" }: { limit?: 
                   )}
                 </div>
                 {it.sellerCity && (
-                  <span style={{ padding: "2px 16px 0", fontSize: 12.5, color: "var(--muted)" }}>{it.sellerCity}</span>
+                  <span style={{ padding: "2px 16px 0", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>{it.sellerCity}</span>
                 )}
 
                 {it.image && (
@@ -94,15 +94,15 @@ export default function RecentActivity({ limit = 6, className = "" }: { limit?: 
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <Avatar src={it.buyerAvatarUrl} name={it.buyerName} size={32} />
                     <span style={{ minWidth: 0 }}>
-                      <span className="line-clamp-1" style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>
+                      <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                         {it.buyerName}
                       </span>
-                      <span style={{ fontSize: 12, color: "var(--faint)" }}>Wrote a review</span>
+                      <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>Wrote a review</span>
                     </span>
                   </div>
                   <Rating value={it.rating} showValue={false} size={14} />
                   {it.reviewText && (
-                    <p className="line-clamp-2" style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.55 }}>
+                    <p className="line-clamp-2" style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.55 }}>
                       {it.reviewText}
                     </p>
                   )}

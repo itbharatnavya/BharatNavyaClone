@@ -44,7 +44,7 @@ export default function CollectionsPage() {
           <Breadcrumbs items={crumbs} />
           <h1
             style={{
-              fontSize: 30,
+              fontSize: "var(--fs-2xl)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
               color: "var(--ink)",
@@ -53,7 +53,7 @@ export default function CollectionsPage() {
           >
             Collections
           </h1>
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
             Handpicked themes across the platform — seasonal gear, top-rated makers, made-in-India
             picks and more. Each collection gathers listings worth exploring together.
             {!loading && collections.length > 0 && (

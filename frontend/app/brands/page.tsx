@@ -69,7 +69,7 @@ export default function BrandsPage() {
           <Breadcrumbs items={crumbs} />
           <h1
             style={{
-              fontSize: 30,
+              fontSize: "var(--fs-2xl)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
               color: "var(--ink)",
@@ -78,7 +78,7 @@ export default function BrandsPage() {
           >
             Brands
           </h1>
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8, maxWidth: 720 }}>
             Discover the manufacturers and makers behind the platform. Filter by store to see
             the brands that supply each category.
           </p>
@@ -87,7 +87,7 @@ export default function BrandsPage() {
           <div style={{ marginTop: 18, maxWidth: 320 }}>
             <label
               htmlFor="brand-category"
-              style={{ display: "block", fontSize: 13, color: "var(--faint)", marginBottom: 6 }}
+              style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--faint)", marginBottom: 6 }}
             >
               Filter by store
             </label>
@@ -120,7 +120,7 @@ export default function BrandsPage() {
               >
                 <span
                   className="skeleton"
-                  style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0 }}
+                  style={{ width: 56, height: 56, borderRadius: "var(--r-sm)", flexShrink: 0 }}
                 />
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span className="skeleton" style={{ display: "block", height: 14, width: "80%", marginBottom: 8 }} />
@@ -142,7 +142,7 @@ export default function BrandsPage() {
           />
         ) : (
           <>
-            <div style={{ fontSize: 14, color: "var(--muted)", marginBottom: 18 }}>
+            <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginBottom: 18 }}>
               <strong style={{ color: "var(--ink)", fontWeight: 700 }}>{brands.length}</strong>{" "}
               {brands.length === 1 ? "brand" : "brands"}
               {activeName ? ` in ${activeName}` : ""}

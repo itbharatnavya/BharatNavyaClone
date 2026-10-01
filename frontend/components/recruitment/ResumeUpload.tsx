@@ -82,11 +82,11 @@ export default function ResumeUpload({ value, onChange, label = "Upload CV / res
               alignItems: "center",
               gap: 8,
               padding: "8px 12px",
-              borderRadius: 8,
+              borderRadius: "var(--r-xs)",
               border: "1px solid var(--border)",
               background: "var(--bg-subtle)",
               color: "var(--ink)",
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               minWidth: 0,
               maxWidth: "100%",
               overflow: "hidden",
@@ -103,7 +103,7 @@ export default function ResumeUpload({ value, onChange, label = "Upload CV / res
             style={{
               width: 44,
               height: 44,
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               border: "1px dashed var(--border)",
               background: "var(--bg-subtle)",
               display: "grid",
@@ -133,9 +133,9 @@ export default function ResumeUpload({ value, onChange, label = "Upload CV / res
         </label>
       </div>
 
-      {error && <div style={{ fontSize: 13, color: "#DC2626", marginTop: 8 }}>{error}</div>}
+      {error && <div style={{ fontSize: "var(--fs-xs)", color: "#DC2626", marginTop: 8 }}>{error}</div>}
 
-      <style>{`.ru-spin{width:13px;height:13px;border-radius:999px;border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:ruspin .7s linear infinite}@keyframes ruspin{to{transform:rotate(360deg)}}`}</style>
+      <style>{`.ru-spin{width:13px;height:13px;border-radius: var(--r-pill);border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:ruspin .7s linear infinite}@keyframes ruspin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

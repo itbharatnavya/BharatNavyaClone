@@ -189,7 +189,7 @@ function PostJobInner() {
       <div className="container-bs section-pad-sm counter-workspace-page counter-recruitment-workspace" style={{ maxWidth: 720 }}>
         <span
           style={{
-            fontSize: 12,
+            fontSize: "var(--fs-xs)",
             fontWeight: 700,
             textTransform: "uppercase",
             letterSpacing: "0.08em",
@@ -198,13 +198,13 @@ function PostJobInner() {
         >
           Recruitment
         </span>
-        <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)", marginTop: 6 }}>
+        <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)", marginTop: 6 }}>
           {user.employerProfile ? "Complete your employer profile first" : "Create your employer profile first"}
         </h1>
-        <p style={{ fontSize: 14.5, color: "var(--muted)", marginTop: 6 }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 6 }}>
           Candidates see this hiring profile on every role you publish. Add these details before posting:
         </p>
-        <ul style={{ margin: "16px 0 0", paddingLeft: 20, color: "var(--ink)", fontSize: 14, lineHeight: 1.9 }}>
+        <ul style={{ margin: "16px 0 0", paddingLeft: 20, color: "var(--ink)", fontSize: "var(--fs-sm)", lineHeight: 1.9 }}>
           {companyGaps.map((g) => (
             <li key={g.key}>{g.label}</li>
           ))}
@@ -219,7 +219,7 @@ function PostJobInner() {
   if (notOwner) {
     return (
       <div className="container-bs counter-workspace-page counter-recruitment-workspace" style={{ paddingTop: 100, paddingBottom: 100, textAlign: "center" }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700 }}>You can't edit this job</h1>
+        <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700 }}>You can't edit this job</h1>
         <p style={{ color: "var(--muted)", marginTop: 8 }}>It doesn't belong to your account.</p>
         <Button variant="green" href="/recruitment/dashboard" style={{ marginTop: 16 }}>Back to dashboard</Button>
       </div>
@@ -339,21 +339,21 @@ function PostJobInner() {
 
       <style jsx>{`
         .pj-eyebrow {
-          font-size: 12px;
+          font-size: var(--fs-xs);
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           color: var(--tricolor-green-hover);
         }
         .pj-h1 {
-          font-size: 28px;
+          font-size: var(--fs-xl);
           font-weight: 800;
           letter-spacing: -0.02em;
           color: var(--ink);
           margin-top: 6px;
         }
         .pj-sub {
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           color: var(--muted);
           margin-top: 6px;
         }
@@ -361,7 +361,7 @@ function PostJobInner() {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 13.5px;
+          font-size: var(--fs-sm);
           color: var(--ink);
           cursor: pointer;
         }

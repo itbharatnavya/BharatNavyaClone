@@ -89,7 +89,7 @@ export default function ImageUpload({ value, onChange, label = "Upload image" }:
             style={{
               width: 64,
               height: 64,
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               objectFit: "cover",
               border: "1px solid var(--border)",
               flexShrink: 0,
@@ -101,7 +101,7 @@ export default function ImageUpload({ value, onChange, label = "Upload image" }:
             style={{
               width: 64,
               height: 64,
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               border: "1px dashed var(--border)",
               background: "var(--bg-subtle)",
               display: "grid",
@@ -138,10 +138,10 @@ export default function ImageUpload({ value, onChange, label = "Upload image" }:
       </div>
 
       {error && (
-        <div style={{ fontSize: 13, color: "#DC2626", marginTop: 8 }}>{error}</div>
+        <div style={{ fontSize: "var(--fs-xs)", color: "#DC2626", marginTop: 8 }}>{error}</div>
       )}
 
-      <style>{`.iu-spin{width:15px;height:15px;border-radius:999px;border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:iuspin .7s linear infinite}@keyframes iuspin{to{transform:rotate(360deg)}}`}</style>
+      <style>{`.iu-spin{width:15px;height:15px;border-radius: var(--r-pill);border:2px solid var(--border);border-top-color:var(--brand);display:inline-block;animation:iuspin .7s linear infinite}@keyframes iuspin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

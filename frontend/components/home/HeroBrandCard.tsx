@@ -146,7 +146,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
     <div
       style={{
         position: "relative",
-        borderRadius: 22,
+        borderRadius: "var(--r-lg)",
         padding: "clamp(24px, 4vw, 40px) clamp(24px, 4.4vw, 46px)",
         border: "1px solid var(--navy-deep)",
       }}
@@ -162,7 +162,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
           position: "absolute",
           inset: 0,
           overflow: "hidden",
-          borderRadius: 22,
+          borderRadius: "var(--r-lg)",
           background:
             "radial-gradient(560px 260px at 100% -25%, rgba(245,130,31,0.4) 0%, rgba(245,130,31,0) 65%)," +
             "radial-gradient(480px 220px at -5% 120%, rgba(30,158,82,0.3) 0%, rgba(30,158,82,0) 65%)," +
@@ -176,7 +176,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
         <div
           className="line-clamp-1"
           style={{
-            fontSize: 12,
+            fontSize: "var(--fs-xs)",
             fontWeight: 700,
             letterSpacing: "0.05em",
             textTransform: "uppercase",
@@ -199,7 +199,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
         </h1>
         <p
           style={{
-            fontSize: 15,
+            fontSize: "var(--fs-sm)",
             color: "rgba(255,255,255,0.76)",
             lineHeight: 1.6,
             margin: "10px 0 0",
@@ -230,7 +230,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
             {sellerCount > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.85)" }}>
                 <StorefrontIcon />
-                <span style={{ fontSize: 13.5 }}>
+                <span style={{ fontSize: "var(--fs-sm)" }}>
                   <strong style={{ fontWeight: 800, color: "#fff" }}>{display(sellerCount)}</strong> verified sellers
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function HeroBrandCard({ guestTitle, searchSlot }: HeroBrandCardP
             {categoryCount > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.85)" }}>
                 <GridIcon />
-                <span style={{ fontSize: 13.5 }}>
+                <span style={{ fontSize: "var(--fs-sm)" }}>
                   <strong style={{ fontWeight: 800, color: "#fff" }}>{display(categoryCount)}</strong> categories
                 </span>
               </div>

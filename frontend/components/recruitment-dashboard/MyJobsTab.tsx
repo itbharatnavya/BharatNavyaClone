@@ -68,14 +68,14 @@ export default function MyJobsTab({ onViewApplications }: { onViewApplications: 
   return (
     <div className="card card-flat card-pad">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>My jobs</h3>
+        <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>My jobs</h3>
         <Button variant="green" size="sm" href="/post-job">+ Post a job</Button>
       </div>
 
       {loading ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>Loading…</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>Loading…</p>
       ) : jobs.length === 0 ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>You haven't posted any jobs yet.</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>You haven't posted any jobs yet.</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {jobs.map((job) => {
@@ -84,17 +84,17 @@ export default function MyJobsTab({ onViewApplications }: { onViewApplications: 
             return (
               <div key={job.id} className="card" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
-                  <Link href={`/job/${job.id}`} style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }}>
+                  <Link href={`/job/${job.id}`} style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                     {job.title}
                   </Link>
-                  <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}>
+                  <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 3 }}>
                     {jobLocation(job)}
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => onViewApplications(job.id)}
-                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 13, fontWeight: 600, color: "var(--brand)" }}
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)" }}
                 >
                   {job.applicationCount} application{job.applicationCount === 1 ? "" : "s"}
                 </button>

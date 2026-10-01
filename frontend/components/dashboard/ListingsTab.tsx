@@ -198,7 +198,7 @@ export default function ListingsTab({ user }: Props) {
                   style={{
                     width: 64,
                     height: 64,
-                    borderRadius: 10,
+                    borderRadius: "var(--r-sm)",
                     background: "var(--bg-subtle)",
                     flexShrink: 0,
                     overflow: "hidden",
@@ -219,21 +219,21 @@ export default function ListingsTab({ user }: Props) {
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <Link
                       href={`/listing/${l.id}`}
-                      style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}
+                      style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}
                     >
                       {l.title}
                     </Link>
                     <Badge variant={STATUS_VARIANT[l.status] || "neutral"}>{l.status}</Badge>
                     <Badge variant="neutral">{l.type}</Badge>
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
+                  <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4 }}>
                     {priceLabel(l)}
                     {l.location?.city ? ` · ${l.location.city}` : ""}
                   </div>
                   {verificationLine(l) && (
                     <div
                       style={{
-                        fontSize: 12.5,
+                        fontSize: "var(--fs-xs)",
                         marginTop: 4,
                         color: l.status === "rejected" ? "var(--error)" : "var(--muted)",
                       }}
@@ -357,7 +357,7 @@ export default function ListingsTab({ user }: Props) {
           </>
         }
       >
-        <p style={{ fontSize: 14, color: "var(--muted)" }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
           {tr(
             "dashboard.listings.deleteConfirm",
             `"${deleting?.title || ""}" will be permanently removed. This cannot be undone.`

@@ -78,7 +78,7 @@ export default function ShortlistGrid({ ids, loading }: ShortlistGridProps) {
             style={{
               width: 52,
               height: 52,
-              borderRadius: 12,
+              borderRadius: "var(--r-sm)",
               background: "var(--action-tint)",
               color: "var(--action)",
               display: "inline-flex",
@@ -91,10 +91,10 @@ export default function ShortlistGrid({ ids, loading }: ShortlistGridProps) {
               <path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" />
             </svg>
           </div>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>
+          <h2 style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>
             No saved services or products yet
           </h2>
-          <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginBottom: 20 }}>
             Save any service or product to compare it here later.
           </p>
           <Link href="/search" className="btn btn-primary">

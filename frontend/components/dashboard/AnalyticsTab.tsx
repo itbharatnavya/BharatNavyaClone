@@ -55,7 +55,7 @@ function BarRow({
       >
         <span
           style={{
-            fontSize: 13,
+            fontSize: "var(--fs-xs)",
             color: "var(--ink)",
             fontWeight: 500,
             overflow: "hidden",
@@ -66,7 +66,7 @@ function BarRow({
         >
           {label}
         </span>
-        <span style={{ fontSize: 12, color: "var(--muted)", flexShrink: 0 }}>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", flexShrink: 0 }}>
           {fmt(value)} {suffix}
         </span>
       </div>
@@ -77,7 +77,7 @@ function BarRow({
         preserveAspectRatio="none"
         role="img"
         aria-label={`${label}: ${fmt(value)} ${suffix}`}
-        style={{ display: "block", borderRadius: 6, overflow: "hidden" }}
+        style={{ display: "block", borderRadius: "var(--r-xs)", overflow: "hidden" }}
       >
         <rect x="0" y="0" width="100" height="12" rx="6" fill="var(--bg-subtle)" />
         {width > 0 && (
@@ -212,12 +212,12 @@ export default function AnalyticsTab({ user, onNavigate }: Props) {
       <div className="card card-flat" style={{ padding: 20, marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
           <Icon name="overview" size={18} style={{ color: "var(--brand)" }} />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {tr("dashboard.analytics.viewsByListing", "Views by listing")}
           </h2>
         </div>
         {viewRows.length === 0 ? (
-          <p style={{ fontSize: 14, color: "var(--muted)" }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {tr(
               "dashboard.analytics.noViews",
               "No views yet. Share your listings or promote them to get seen."
@@ -243,12 +243,12 @@ export default function AnalyticsTab({ user, onNavigate }: Props) {
       <div className="card card-flat" style={{ padding: 20, marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
           <Icon name="leads" size={18} style={{ color: "var(--success)" }} />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {tr("dashboard.analytics.leadsByListing", "Leads by listing")}
           </h2>
         </div>
         {leadRows.length === 0 ? (
-          <p style={{ fontSize: 14, color: "var(--muted)" }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {tr(
               "dashboard.analytics.noLeads",
               "No leads yet. A boosted listing shows higher and attracts more enquiries."
@@ -289,7 +289,7 @@ export default function AnalyticsTab({ user, onNavigate }: Props) {
             display: "inline-flex",
             width: 40,
             height: 40,
-            borderRadius: 10,
+            borderRadius: "var(--r-sm)",
             alignItems: "center",
             justifyContent: "center",
             background: "#fff",
@@ -312,13 +312,13 @@ export default function AnalyticsTab({ user, onNavigate }: Props) {
           </svg>
         </span>
         <div style={{ flex: 1, minWidth: 220 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {tr(
               "dashboard.analytics.upsellTitle",
               "Boost a listing to get more views"
             )}
           </h2>
-          <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
             {tr(
               "dashboard.analytics.upsell",
               "Feature a listing, pin it to the top of its category, or lift its search rank — more visibility means more leads."

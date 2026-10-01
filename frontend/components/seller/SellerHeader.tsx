@@ -241,11 +241,11 @@ export default function SellerHeader(props: SellerHeaderProps) {
               <Avatar src={logo} name={companyName} size={84} ring />
             </div>
             <div style={{ minWidth: 0, paddingTop: 4 }}>
-              <h1 className="line-clamp-2" style={{ fontSize: 22, fontWeight: 800, color: "var(--ink)", lineHeight: 1.25 }}>
+              <h1 className="line-clamp-2" style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)", lineHeight: 1.25 }}>
                 {companyName}
               </h1>
               {(city || state) && (
-                <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
+                <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4 }}>
                   {[city, state].filter(Boolean).join(", ")}
                 </div>
               )}

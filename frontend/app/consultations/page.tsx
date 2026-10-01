@@ -42,7 +42,7 @@ const SORT_OPTIONS = [
 
 // Shared styling for the native <select>/<input> controls in the filter bar.
 const controlStyle: React.CSSProperties = {
-  fontSize: 14,
+  fontSize: "var(--fs-sm)",
   minWidth: 0,
   width: "100%",
 };
@@ -270,7 +270,7 @@ export default function ConsultationsPage() {
                 marginTop: 14,
               }}
             >
-              <span style={{ fontSize: 13.5, color: "var(--muted)", fontWeight: 600 }}>
+              <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", fontWeight: 600 }}>
                 {loading ? "Finding experts…" : resultLabel}
                 {q ? ` for “${q}”` : ""}
               </span>
@@ -300,15 +300,15 @@ export default function ConsultationsPage() {
             }}
           >
             {Array.from({ length: 6 }).map((_, i) => (
-              <span key={i} className="skeleton" style={{ height: 300, borderRadius: 12 }} />
+              <span key={i} className="skeleton" style={{ height: 300, borderRadius: "var(--r-sm)" }} />
             ))}
           </div>
         ) : error ? (
           <div className="card card-flat" style={{ padding: 28, textAlign: "center" }}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", margin: 0 }}>
+            <p style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", margin: 0 }}>
               We couldn&apos;t load experts right now.
             </p>
-            <p style={{ fontSize: 14, color: "var(--muted)", margin: "8px 0 0" }}>{error}</p>
+            <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "8px 0 0" }}>{error}</p>
             <button
               className="btn btn-secondary btn-sm"
               style={{ marginTop: 16 }}
@@ -319,10 +319,10 @@ export default function ConsultationsPage() {
           </div>
         ) : experts.length === 0 ? (
           <div className="card card-flat" style={{ padding: 32, textAlign: "center", maxWidth: 480, margin: "0 auto" }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
+            <p style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", margin: 0 }}>
               No experts match your filters
             </p>
-            <p style={{ fontSize: 14, color: "var(--muted)", margin: "8px 0 0", lineHeight: 1.55 }}>
+            <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "8px 0 0", lineHeight: 1.55 }}>
               Try broadening your search — clear a filter or two and we&apos;ll show
               you more verified professionals.
             </p>

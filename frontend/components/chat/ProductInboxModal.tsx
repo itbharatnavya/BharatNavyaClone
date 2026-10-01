@@ -154,18 +154,18 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                       <span
                         className="line-clamp-1"
-                        style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}
+                        style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}
                       >
                         {c.otherUserName || "Buyer"}
                       </span>
                       {c.lastMsgAt && (
-                        <span style={{ fontSize: 12, color: "var(--faint)", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", whiteSpace: "nowrap" }}>
                           {timeAgo(c.lastMsgAt)}
                         </span>
                       )}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginTop: 2 }}>
-                      <span className="line-clamp-1" style={{ fontSize: 12.5, color: "var(--muted)", flex: 1 }}>
+                      <span className="line-clamp-1" style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", flex: 1 }}>
                         {c.preview || "…"}
                       </span>
                       {!!c.unread && (
@@ -173,11 +173,11 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
                           style={{
                             background: "var(--action)",
                             color: "#fff",
-                            fontSize: 12,
+                            fontSize: "var(--fs-xs)",
                             fontWeight: 700,
                             minWidth: 18,
                             height: 18,
-                            borderRadius: 999,
+                            borderRadius: "var(--r-pill)",
                             display: "inline-flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -200,7 +200,7 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
             <div style={{ display: "grid", placeItems: "center", flex: 1, color: "var(--faint)", padding: 40 }}>
               <div style={{ textAlign: "center" }}>
                 <Icon name="inbox" size={30} />
-                <div style={{ marginTop: 8, fontSize: 14 }}>Select a buyer to view the conversation</div>
+                <div style={{ marginTop: 8, fontSize: "var(--fs-sm)" }}>Select a buyer to view the conversation</div>
               </div>
             </div>
           ) : (
@@ -215,7 +215,7 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
                 }}
               >
                 <Avatar name={activeConv.otherUserName || "Buyer"} size={32} />
-                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
+                <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                   {activeConv.otherUserName || "Buyer"}
                 </div>
               </div>

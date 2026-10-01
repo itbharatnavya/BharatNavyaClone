@@ -44,7 +44,7 @@ export default function Avatar({
   const common: React.CSSProperties = {
     width: size,
     height: size,
-    borderRadius: "999px",
+    borderRadius: "var(--r-pill)",
     flexShrink: 0,
     boxShadow: ring ? "0 0 0 2px #fff, 0 0 0 3px #E5E7EB" : undefined,
   };

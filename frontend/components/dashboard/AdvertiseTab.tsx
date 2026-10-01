@@ -290,7 +290,7 @@ export default function AdvertiseTab({ user }: Props) {
               display: "inline-flex",
               width: 40,
               height: 40,
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               alignItems: "center",
               justifyContent: "center",
               background: "#fff",
@@ -313,13 +313,13 @@ export default function AdvertiseTab({ user }: Props) {
             </svg>
           </span>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+            <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
               {tr(
                 "dashboard.advertise.upsellTitle",
                 "Self-serve advertising is a paid feature"
               )}
             </h2>
-            <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>
+            <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
               {tr(
                 "dashboard.advertise.upsell",
                 "Self-serve advertising is available on Silver & Gold — upgrade to run campaigns."
@@ -332,7 +332,7 @@ export default function AdvertiseTab({ user }: Props) {
       <div className="card" style={{ padding: 20, marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
           <Icon name="plus" size={18} style={{ color: "var(--brand)" }} />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {tr("dashboard.advertise.create", "Create a campaign")}
           </h2>
         </div>
@@ -372,17 +372,17 @@ export default function AdvertiseTab({ user }: Props) {
                     style={{
                       width: 64,
                       height: 64,
-                      borderRadius: 10,
+                      borderRadius: "var(--r-sm)",
                       objectFit: "cover",
                       border: "1px solid var(--border)",
                       flexShrink: 0,
                     }}
                   />
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
+                    <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                       {headline}
                     </div>
-                    <div style={{ fontSize: 12, color: "var(--faint)", wordBreak: "break-all" }}>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", wordBreak: "break-all" }}>
                       {targetUrl}
                     </div>
                   </div>
@@ -479,7 +479,7 @@ export default function AdvertiseTab({ user }: Props) {
                 ? tr("common.submitting", "Submitting…")
                 : tr("dashboard.advertise.submit", "Submit for review")}
             </Button>
-            <span style={{ fontSize: 12, color: "var(--faint)", minWidth: 0 }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", minWidth: 0 }}>
               {tr(
                 "dashboard.advertise.reviewNote",
                 "An admin reviews every campaign before it goes live."
@@ -493,7 +493,7 @@ export default function AdvertiseTab({ user }: Props) {
       {/* My campaigns */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <Icon name="listings" size={18} style={{ color: "var(--brand)" }} />
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
           {tr("dashboard.advertise.myCampaigns", "My campaigns")}
         </h2>
       </div>
@@ -531,7 +531,7 @@ export default function AdvertiseTab({ user }: Props) {
                     style={{
                       width: 72,
                       height: 54,
-                      borderRadius: 8,
+                      borderRadius: "var(--r-xs)",
                       objectFit: "cover",
                       border: "1px solid var(--border)",
                       flexShrink: 0,
@@ -543,19 +543,19 @@ export default function AdvertiseTab({ user }: Props) {
                     style={{
                       width: 72,
                       height: 54,
-                      borderRadius: 8,
+                      borderRadius: "var(--r-xs)",
                       background: "var(--bg-subtle)",
                       flexShrink: 0,
                     }}
                   />
                 )}
                 <div style={{ flex: 1, minWidth: 180 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>
+                  <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                     {a.headline || "Untitled campaign"}
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: "var(--fs-xs)",
                       color: "var(--muted)",
                       marginTop: 2,
                       display: "flex",
@@ -568,7 +568,7 @@ export default function AdvertiseTab({ user }: Props) {
                     <span>{targetingLabel(a)}</span>
                   </div>
                   {(a.startDate || a.endDate) && (
-                    <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 2 }}>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 2 }}>
                       {formatDate(a.startDate) || "—"} → {formatDate(a.endDate) || "—"}
                     </div>
                   )}

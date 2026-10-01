@@ -114,7 +114,7 @@ export default function RfqForm({
             marginTop: -6,
           }}
         >
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+          <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             Can&apos;t find your category?
           </span>
           <button type="button" className="chip" onClick={() => setOtherOpen(true)}>
@@ -124,7 +124,7 @@ export default function RfqForm({
       ) : (
         <div className="card card-flat" style={{ padding: 14, borderStyle: "dashed", marginTop: -6 }}>
           <label className="field-label">Suggest a new category</label>
-          <p style={{ fontSize: 12.5, color: "var(--muted)", margin: "0 0 8px" }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", margin: "0 0 8px" }}>
             Tell us what to call it. Your requirement still gets sent below —
             this just flags the gap for our team.
           </p>
@@ -156,7 +156,7 @@ export default function RfqForm({
             </button>
           </div>
           {suggestedName && (
-            <p style={{ fontSize: 12.5, color: "var(--brand)", marginTop: 10, marginBottom: 0 }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--brand)", marginTop: 10, marginBottom: 0 }}>
               Sent &ldquo;{suggestedName}&rdquo; for review.
             </p>
           )}

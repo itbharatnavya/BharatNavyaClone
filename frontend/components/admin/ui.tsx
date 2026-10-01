@@ -19,7 +19,7 @@ export function SectionHeader({
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="text-[20px] font-bold tracking-tight text-ink">{title}</h2>
+        <h2 className="text-lg font-bold tracking-tight text-ink">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -52,7 +52,7 @@ export function StatCard({
       <div className="text-xs font-semibold uppercase tracking-wide text-faint">
         {label}
       </div>
-      <div className={`mt-1.5 text-[26px] font-bold leading-none ${color}`}>
+      <div className={`mt-1.5 text-xl font-bold leading-none ${color}`}>
         {value}
       </div>
       {hint && <div className="mt-1.5 text-xs text-muted">{hint}</div>}
@@ -341,7 +341,7 @@ export function Panel({
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             {title && (
-              <h3 className="text-[15px] font-bold text-ink">{title}</h3>
+              <h3 className="text-sm font-bold text-ink">{title}</h3>
             )}
             {desc && <p className="mt-0.5 text-sm text-muted">{desc}</p>}
           </div>

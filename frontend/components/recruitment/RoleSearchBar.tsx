@@ -341,7 +341,7 @@ export default function RoleSearchBar({
           align-items: center;
           background: #ffffff;
           border: 1.5px solid var(--border-strong);
-          border-radius: var(--bn-radius-search);
+          border-radius: var(--r-lg);
           box-shadow: var(--shadow-card);
           padding: 6px 6px 6px 20px;
           gap: 4px;
@@ -366,12 +366,12 @@ export default function RoleSearchBar({
           border: none;
           outline: none;
           background: transparent;
-          font-size: 15px;
+          font-size: var(--fs-sm);
           color: var(--ink);
           padding: 10px 8px;
         }
         .rsb-compact .rsb-input {
-          font-size: 14px;
+          font-size: var(--fs-sm);
           padding: 7px 6px;
         }
         .rsb-input::placeholder {
@@ -388,7 +388,7 @@ export default function RoleSearchBar({
           height: 20px;
         }
         .rsb-in {
-          font-size: 14px;
+          font-size: var(--fs-sm);
           color: var(--muted);
           flex-shrink: 0;
           display: none;
@@ -404,7 +404,7 @@ export default function RoleSearchBar({
           border: none;
           outline: none;
           background: transparent;
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           font-weight: 500;
           color: var(--ink);
           padding: 10px 22px 10px 8px;
@@ -412,7 +412,7 @@ export default function RoleSearchBar({
           cursor: pointer;
         }
         .rsb-compact .rsb-city {
-          font-size: 13px;
+          font-size: var(--fs-xs);
           padding: 7px 20px 7px 6px;
           max-width: 120px;
         }
@@ -429,16 +429,16 @@ export default function RoleSearchBar({
           background: var(--bn-action);
           color: #fff;
           border: none;
-          border-radius: var(--bn-radius-search-action);
+          border-radius: var(--r-lg);
           padding: 12px 26px;
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           font-weight: 700;
           cursor: pointer;
           transition: background-color 150ms ease;
         }
         .rsb-compact .rsb-submit {
           padding: 8px 18px;
-          font-size: 13.5px;
+          font-size: var(--fs-sm);
         }
         .rsb-submit:hover {
           background: var(--bn-action-hover);
@@ -453,7 +453,7 @@ export default function RoleSearchBar({
         @media (max-width: 480px) {
           .rsb:not(.rsb-compact) {
             flex-wrap: wrap;
-            border-radius: var(--bn-radius-search-stacked);
+            border-radius: var(--r-lg);
             padding: 12px 14px;
           }
           .rsb:not(.rsb-compact) .rsb-input {
@@ -497,7 +497,7 @@ export default function RoleSearchBar({
           align-items: center;
           gap: 6px;
           padding: 8px 10px 4px;
-          font-size: 0.75rem;
+          font-size: var(--fs-xs);
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -509,9 +509,9 @@ export default function RoleSearchBar({
           text-align: left;
           border: none;
           background: transparent;
-          border-radius: 8px;
+          border-radius: var(--r-xs);
           padding: 9px 10px;
-          font-size: 14px;
+          font-size: var(--fs-sm);
           font-family: inherit;
           color: var(--ink);
           cursor: pointer;
@@ -522,7 +522,7 @@ export default function RoleSearchBar({
         }
         .rsb-opt small {
           color: var(--muted);
-          font-size: 0.75rem;
+          font-size: var(--fs-xs);
           font-weight: 500;
         }
         .rsb-opt-active {

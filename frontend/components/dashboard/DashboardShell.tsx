@@ -331,7 +331,7 @@ export default function DashboardShell() {
             style={{
               width: 52,
               height: 52,
-              borderRadius: 14,
+              borderRadius: "var(--r-md)",
               margin: "0 auto 14px",
               background: "var(--brand-tint)",
               color: "var(--brand)",
@@ -341,10 +341,10 @@ export default function DashboardShell() {
           >
             <Icon name="profile" size={24} />
           </div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+          <h1 style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>
             {tr("dashboard.gate.title", "Sign in to view your dashboard")}
           </h1>
-          <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8, marginBottom: 20 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8, marginBottom: 20 }}>
             {tr("dashboard.gate.subtitle", "Manage your listings, leads and profile in one place.")}
           </p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
@@ -405,12 +405,12 @@ export default function DashboardShell() {
               alignItems: "center",
               gap: 10,
               padding: narrow ? "9px 14px" : "10px 12px",
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               border: "none",
               cursor: "pointer",
               whiteSpace: "nowrap",
               flexShrink: 0,
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               fontWeight: isActive ? 600 : 500,
               color: isActive ? "var(--brand)" : "var(--muted)",
               background: isActive ? "var(--brand-tint)" : "transparent",
@@ -492,8 +492,8 @@ export default function DashboardShell() {
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
         <Avatar name={user.name} src={user.avatarUrl} size={44} />
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{user.name}</div>
-          <div style={{ fontSize: 13, color: "var(--muted)" }}>
+          <div style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>{user.name}</div>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {user.sellerProfile?.companyName ||
               [user.city, user.state].filter(Boolean).join(", ") ||
               user.mobile}

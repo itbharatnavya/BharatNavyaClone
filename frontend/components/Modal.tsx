@@ -95,7 +95,7 @@ export default function Modal({
           display: "flex",
           flexDirection: "column",
           background: "var(--bn-surface, #fff)",
-          borderRadius: "var(--bn-radius-card, 20px)",
+          borderRadius: "var(--r-lg)",
           boxShadow: "0 24px 60px rgba(16,24,40,.24)",
           overflow: "hidden",
         }}
@@ -111,7 +111,7 @@ export default function Modal({
           }}
         >
           {title && (
-            <div id={titleId} style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
+            <div id={titleId} style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
               {title}
             </div>
           )}

@@ -148,7 +148,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           <Breadcrumbs items={crumbs} />
           <h1
             style={{
-              fontSize: 32,
+              fontSize: "var(--fs-2xl)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
               color: cover ? "#fff" : "var(--ink)",
@@ -160,7 +160,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           {data.subtitle && (
             <p
               style={{
-                fontSize: 15,
+                fontSize: "var(--fs-sm)",
                 color: cover ? "rgba(255,255,255,.9)" : "var(--muted)",
                 marginTop: 8,
                 maxWidth: 720,
@@ -171,7 +171,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           )}
           <p
             style={{
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               fontWeight: 600,
               color: cover ? "rgba(255,255,255,.92)" : "var(--faint)",
               marginTop: 12,

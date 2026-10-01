@@ -99,16 +99,16 @@ export default function ReviewsTab({ user, context = "directory" }: Props) {
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                     <Avatar name={r.buyerName} size={36} />
                     <div>
-                      <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>
+                      <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: "var(--fs-sm)" }}>
                         {r.buyerName || "Buyer"}
                       </div>
                       <Rating value={r.rating} size={13} showValue={false} />
                     </div>
                   </div>
-                  <span style={{ fontSize: 12, color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
+                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
                 </div>
                 {r.reviewText && (
-                  <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>{r.reviewText}</p>
+                  <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>{r.reviewText}</p>
                 )}
               </div>
             ))}

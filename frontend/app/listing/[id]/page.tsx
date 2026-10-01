@@ -76,7 +76,7 @@ function SectionLabel({
         style={{
           width: 30,
           height: 30,
-          borderRadius: 8,
+          borderRadius: "var(--r-xs)",
           background: palette.bg,
           color: palette.fg,
           display: "inline-flex",
@@ -87,7 +87,7 @@ function SectionLabel({
       >
         {icon}
       </span>
-      <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+      <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
         {children}
       </h2>
     </div>
@@ -355,7 +355,7 @@ export default function ListingDetailPage() {
       <div className="directory-design counter-public-page listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
+          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
             {t("listing.notFound.title", "This listing doesn't exist")}
           </h1>
           <p style={{ color: "var(--muted)", maxWidth: 440, margin: "0 auto 28px" }}>
@@ -423,7 +423,7 @@ export default function ListingDetailPage() {
               borderColor: listing.status === "rejected" ? "var(--error)" : "var(--action)",
               background: listing.status === "rejected" ? "#fef2f2" : "var(--action-tint)",
               color: listing.status === "rejected" ? "#b91c1c" : "var(--ink)",
-              fontSize: 13.5,
+              fontSize: "var(--fs-sm)",
             }}
           >
             {listing.status === "rejected" ? (
@@ -474,14 +474,14 @@ export default function ListingDetailPage() {
                 </h1>
 
                 {locationLabel && (
-                  <div style={{ margin: "0 0 18px", display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: 14 }}>
+                  <div style={{ margin: "0 0 18px", display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                       <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
                     <span>
                       {isPanIndia && (
-                        <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
+                        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
                           {t("listing.availableIn", "Available in")}
                         </span>
                       )}
@@ -493,10 +493,10 @@ export default function ListingDetailPage() {
 
                 {condition && (
                   <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                       {t("listing.condition", "Condition")}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
+                    <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                       {conditionLabel[condition] || condition}
                     </span>
                   </div>
@@ -516,7 +516,7 @@ export default function ListingDetailPage() {
                   <SectionLabel icon={<DescriptionIcon />} tone="green">
                     {t("listing.description", "Description")}
                   </SectionLabel>
-                  <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
+                  <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
                     {listing.description}
                   </p>
                 </section>
@@ -570,7 +570,7 @@ export default function ListingDetailPage() {
               {contact.slug && (
                 <Link
                   href={`/seller/${contact.slug}`}
-                  style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
+                  style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
                 >
                   {t("listing.viewAllSeller", "View all")} →
                 </Link>
@@ -634,7 +634,7 @@ export default function ListingDetailPage() {
           max-width: 62ch;
           margin: -6px 0 18px;
           color: var(--muted);
-          font-size: 14px;
+          font-size: var(--fs-sm);
           line-height: 1.6;
         }
         .listing-terms-grid {
@@ -643,7 +643,7 @@ export default function ListingDetailPage() {
           gap: 1px;
           overflow: hidden;
           border: 1px solid var(--border);
-          border-radius: 14px;
+          border-radius: var(--r-md);
           background: var(--border);
         }
         .listing-terms-grid > div {
@@ -653,7 +653,7 @@ export default function ListingDetailPage() {
         }
         .listing-terms-grid dt {
           color: var(--faint);
-          font-size: 0.75rem;
+          font-size: var(--fs-xs);
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;
@@ -661,7 +661,7 @@ export default function ListingDetailPage() {
         .listing-terms-grid dd {
           margin-top: 5px;
           color: var(--ink);
-          font-size: 14px;
+          font-size: var(--fs-sm);
           font-weight: 650;
           line-height: 1.45;
         }

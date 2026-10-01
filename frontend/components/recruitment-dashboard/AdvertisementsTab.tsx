@@ -147,7 +147,7 @@ export default function AdvertisementsTab() {
 
         {!loadingAds && ads.length > 0 && (
           <div style={{ marginTop: 4 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>My campaigns</div>
+            <div style={{ fontSize: "var(--fs-xs)", fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>My campaigns</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {ads.map((a) => {
                 const st = statusStyle(a.status);
@@ -155,13 +155,13 @@ export default function AdvertisementsTab() {
                   <div key={a.id} className="card card-flat" style={{ padding: 12, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                     {a.creativeImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.creativeImageUrl} alt="" style={{ width: 60, height: 44, borderRadius: 8, objectFit: "cover", border: "1px solid var(--border)", flexShrink: 0 }} />
+                      <img src={a.creativeImageUrl} alt="" style={{ width: 60, height: 44, borderRadius: "var(--r-xs)", objectFit: "cover", border: "1px solid var(--border)", flexShrink: 0 }} />
                     ) : (
-                      <div aria-hidden style={{ width: 60, height: 44, borderRadius: 8, background: "var(--bg-subtle)", flexShrink: 0 }} />
+                      <div aria-hidden style={{ width: 60, height: 44, borderRadius: "var(--r-xs)", background: "var(--bg-subtle)", flexShrink: 0 }} />
                     )}
                     <div style={{ flex: 1, minWidth: 160 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{a.headline || "Untitled campaign"}</div>
-                      <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                      <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>{a.headline || "Untitled campaign"}</div>
+                      <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                         {AD_PLACEMENTS.find((p) => p.value === a.placementType)?.label || a.placementType}
                       </div>
                     </div>

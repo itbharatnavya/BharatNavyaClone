@@ -81,7 +81,7 @@ export default function AgentHeroCard() {
               style={{
                 width: 44,
                 height: 44,
-                borderRadius: 12,
+                borderRadius: "var(--r-sm)",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -113,12 +113,12 @@ export default function AgentHeroCard() {
             >
               Bharat Agent
             </h2>
-            <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.78)", marginTop: 6, lineHeight: 1.55 }}>
+            <p style={{ fontSize: "var(--fs-sm)", color: "rgba(255,255,255,0.78)", marginTop: 6, lineHeight: 1.55 }}>
               One assistant for the whole suite. Tell it what you need — sourcing or hiring — and it works out where to take you.
             </p>
           </div>
 
-          <span style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.6)", marginTop: "auto", paddingTop: 4 }}>
+          <span style={{ fontSize: "var(--fs-xs)", fontWeight: 700, color: "rgba(255,255,255,0.6)", marginTop: "auto", paddingTop: 4 }}>
             Launching soon
           </span>
         </div>
@@ -132,7 +132,7 @@ export default function AgentHeroCard() {
                 style={{
                   width: 32,
                   height: 32,
-                  borderRadius: 9,
+                  borderRadius: "var(--r-xs)",
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -146,17 +146,17 @@ export default function AgentHeroCard() {
               </span>
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>{p.title}</span>
+                  <span style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>{p.title}</span>
                   {p.badge && (
-                    <span className="badge badge-neutral" style={{ fontSize: 12 }}>
+                    <span className="badge badge-neutral" style={{ fontSize: "var(--fs-xs)" }}>
                       {p.badge}
                     </span>
                   )}
                 </span>
-                <span className="line-clamp-2" style={{ display: "block", fontSize: 12, color: "var(--muted)", marginTop: 2, lineHeight: 1.4 }}>
+                <span className="line-clamp-2" style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2, lineHeight: 1.4 }}>
                   {p.tagline}
                 </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: p.ctaColor, marginTop: 5 }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: "var(--fs-xs)", fontWeight: 700, color: p.ctaColor, marginTop: 5 }}>
                   {p.cta}
                   <ArrowRightIcon size={12} />
                 </span>

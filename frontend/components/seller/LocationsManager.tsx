@@ -290,7 +290,7 @@ export default function LocationsManager({ user }: { user: User }) {
   return (
     <div>
       {locations.length === 0 ? (
-        <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 14 }}>
+        <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBottom: 14 }}>
           No branches yet. Add your first business location below — you can then
           assign each product to a branch when you list it.
         </p>
@@ -341,17 +341,17 @@ export default function LocationsManager({ user }: { user: User }) {
                         {loc.label || "Branch"}
                       </span>
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", wordBreak: "break-word" }}>
+                    <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", wordBreak: "break-word" }}>
                       {loc.city}
                       {loc.state ? `, ${loc.state}` : ""}
                     </div>
                     {loc.pincode && (
-                      <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
+                      <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>
                         PIN {loc.pincode}
                       </div>
                     )}
                     {loc.address && (
-                      <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4, wordBreak: "break-word" }}>
+                      <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4, wordBreak: "break-word" }}>
                         {loc.address}
                       </div>
                     )}
@@ -383,7 +383,7 @@ export default function LocationsManager({ user }: { user: User }) {
 
       {/* Add location */}
       <div className="card card-flat" style={{ padding: 16, minWidth: 0 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
+        <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", marginBottom: 12 }}>
           Add a location
         </h3>
         {draftFields(

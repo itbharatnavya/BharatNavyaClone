@@ -67,7 +67,7 @@ export default function BlogArticlePage({
         className="counter-public-page counter-article container-bs section-pad"
         style={{ maxWidth: 640, textAlign: "center" }}
       >
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>{t("blog.notFound", "Article not found")}</h1>
+        <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700 }}>{t("blog.notFound", "Article not found")}</h1>
         <p style={{ color: "var(--muted)", marginTop: 8 }}>
           {error || t("blog.notFoundMessage", "This article may have been unpublished.")}
         </p>
@@ -108,7 +108,7 @@ export default function BlogArticlePage({
 
       <h1
         style={{
-          fontSize: 34,
+          fontSize: "var(--fs-2xl)",
           fontWeight: 700,
           letterSpacing: "-0.02em",
           lineHeight: 1.2,
@@ -135,19 +135,19 @@ export default function BlogArticlePage({
             title={`Visit ${vendorName}`}
           >
             <Avatar src={author?.logo} name={vendorName} size={40} />
-            <span style={{ color: "var(--brand)", fontWeight: 600, fontSize: 15 }}>
+            <span style={{ color: "var(--brand)", fontWeight: 600, fontSize: "var(--fs-sm)" }}>
               {vendorName}
             </span>
           </Link>
         ) : (
           <span style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
             <Avatar src={author?.logo} name={vendorName} size={40} />
-            <span style={{ color: "var(--ink)", fontWeight: 600, fontSize: 15 }}>
+            <span style={{ color: "var(--ink)", fontWeight: 600, fontSize: "var(--fs-sm)" }}>
               {vendorName}
             </span>
           </span>
         )}
-        <span style={{ fontSize: 14, color: "var(--muted)", display: "flex", gap: 8, alignItems: "center" }}>
+        <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", display: "flex", gap: 8, alignItems: "center" }}>
           {dateStr && <span>{dateStr}</span>}
           {dateStr && typeof blog.views === "number" && blog.views > 0 && <span>·</span>}
           {typeof blog.views === "number" && blog.views > 0 && (
@@ -188,30 +188,30 @@ export default function BlogArticlePage({
         <div className="vendor-card-head">
           <Avatar src={author?.logo} name={vendorName} size={48} />
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 600, letterSpacing: "0.02em" }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", fontWeight: 600, letterSpacing: "0.02em" }}>
               {isEmployerAuthor ? t("blog.aboutCompanyEyebrow", "ABOUT THE COMPANY") : t("blog.aboutVendorEyebrow", "ABOUT THE VENDOR")}
             </div>
             {vendorHref ? (
               <Link
                 href={vendorHref}
                 className="line-clamp-1"
-                style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}
+                style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}
               >
                 {vendorName}
               </Link>
             ) : (
-              <div className="line-clamp-1" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>
+              <div className="line-clamp-1" style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>
                 {vendorName}
               </div>
             )}
             {author?.city && (
-              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{author.city}</div>
+              <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>{author.city}</div>
             )}
           </div>
         </div>
 
         {aboutText && (
-          <p className="line-clamp-3" style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6, marginTop: 14 }}>
+          <p className="line-clamp-3" style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.6, marginTop: 14 }}>
             {aboutText}
           </p>
         )}
@@ -231,7 +231,7 @@ export default function BlogArticlePage({
             )}
           </div>
         ) : (
-          <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 12 }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 12 }}>
             {isEmployerAuthor
               ? t("blog.companyUnlinked", "This company's public profile isn't available yet.")
               : t("blog.vendorUnlinked", "This vendor's public profile isn't available yet.")}
@@ -262,7 +262,7 @@ export default function BlogArticlePage({
 
       <style>{`
         .blog-prose {
-          font-size: 16px;
+          font-size: var(--fs-md);
           line-height: 1.75;
           color: var(--ink);
         }
@@ -274,9 +274,9 @@ export default function BlogArticlePage({
           margin-bottom: 12px;
           line-height: 1.3;
         }
-        .blog-prose h1 { font-size: 26px; }
-        .blog-prose h2 { font-size: 22px; }
-        .blog-prose h3 { font-size: 18px; }
+        .blog-prose h1 { font-size: var(--fs-xl); }
+        .blog-prose h2 { font-size: var(--fs-xl); }
+        .blog-prose h3 { font-size: var(--fs-lg); }
         .blog-prose p { color: var(--ink); }
         .blog-prose a { color: var(--brand); text-decoration: underline; }
         .blog-prose ul, .blog-prose ol { padding-left: 24px; }

@@ -48,12 +48,12 @@ export default function Rating({
         ))}
       </span>
       {showValue && (
-        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+        <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)" }}>
           {v.toFixed(1)}
         </span>
       )}
       {typeof count === "number" && (
-        <span style={{ fontSize: 13, color: "var(--faint)" }}>({count})</span>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>({count})</span>
       )}
     </span>
   );

@@ -144,7 +144,7 @@ export default function RegisterPage() {
           <h2
             style={{
               marginTop: 14,
-              fontSize: 28,
+              fontSize: "var(--fs-xl)",
               fontWeight: 700,
               letterSpacing: "-0.02em",
               color: "var(--ink)",
@@ -152,7 +152,7 @@ export default function RegisterPage() {
           >
             {t("auth.register.asideTitle", "Start building your place on Bharat Navya.")}
           </h2>
-          <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
+          <p style={{ marginTop: 12, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
             {t(
               "auth.register.asideCopy",
               "Create one account to represent your business or professional profile, manage your activity, respond to enquiries, and access opportunities across the platform."
@@ -173,10 +173,10 @@ export default function RegisterPage() {
         }}
       >
         <div className="counter-auth-form" style={{ width: "100%", maxWidth: 420 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>
+          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, marginBottom: 4 }}>
             {t("auth.register.title", "Create your account")}
           </h1>
-          <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
+          <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", marginBottom: 24 }}>
             {t("auth.register.subtitle", "Create your account to access more of Bharat Navya.")}
           </p>
 
@@ -295,7 +295,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="divider" style={{ margin: "24px 0" }} />
-          <div style={{ textAlign: "center", fontSize: 14, color: "var(--muted)" }}>
+          <div style={{ textAlign: "center", fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {t("auth.haveAccount", "Already have an account?")}{" "}
             <Link href={(() => {
               const validated = safeNext(next, DEFAULT_NEXT);

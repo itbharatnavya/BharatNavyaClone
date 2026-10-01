@@ -85,10 +85,10 @@ export default function JobFilters({ value, onChange, jobFunctions, className = 
 
       <div className="flt-block">
         <p className="flt-label">Workplace</p>
-        <div className="flt-segment" role="radiogroup" aria-label="Workplace">
+        <div className="flt-chips" role="radiogroup" aria-label="Workplace">
           {WORKPLACE_TYPES.map((item) => {
             const active = (value.workplaceType || "") === item.value;
-            return <button key={item.value || "any"} type="button" role="radio" aria-checked={active} className={active ? "is-active" : undefined} onClick={() => set({ workplaceType: (item.value || undefined) as WorkplaceType | undefined })}>{item.label}</button>;
+            return <button key={item.value || "any"} type="button" role="radio" aria-checked={active} className={`flt-chip${active ? " is-active" : ""}`} onClick={() => set({ workplaceType: (item.value || undefined) as WorkplaceType | undefined })}>{item.label}</button>;
           })}
         </div>
       </div>

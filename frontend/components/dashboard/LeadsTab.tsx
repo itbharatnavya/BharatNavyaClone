@@ -128,7 +128,7 @@ export default function LeadsTab({ user }: Props) {
         title={tr("dashboard.leads.title", "RFQs")}
         subtitle={tr("dashboard.leads.subtitle", "Buyer requirements delivered to you — connect directly by call or WhatsApp.")}
         actions={
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+          <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {summary.total} total · {summary.contacted} contacted · {summary.notContacted} not contacted
           </span>
         }
@@ -170,7 +170,7 @@ export default function LeadsTab({ user }: Props) {
       ) : (
         <>
           <div className="card card-flat" style={{ padding: 0, overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--fs-sm)" }}>
               <thead>
                 <tr style={{ background: "var(--bg-subtle)" }}>
                   {["Date", "Buyer", "Requirement", "Category", "Status", ""].map((h) => (
@@ -179,7 +179,7 @@ export default function LeadsTab({ user }: Props) {
                       style={{
                         textAlign: "left",
                         padding: "10px 14px",
-                        fontSize: 12,
+                        fontSize: "var(--fs-xs)",
                         fontWeight: 700,
                         textTransform: "uppercase",
                         letterSpacing: "0.03em",
@@ -203,11 +203,11 @@ export default function LeadsTab({ user }: Props) {
                       </td>
                       <td style={{ padding: "10px 14px" }}>
                         <div style={{ fontWeight: 600, color: "var(--ink)" }}>{r.buyerName || "Buyer"}</div>
-                        <div style={{ fontSize: 12, color: "var(--faint)" }}>{r.buyerMobile || r.buyerEmail || "—"}</div>
+                        <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{r.buyerMobile || r.buyerEmail || "—"}</div>
                       </td>
                       <td style={{ padding: "10px 14px", maxWidth: 220 }}>
                         <div className="line-clamp-1">{r.productName || "Requirement"}</div>
-                        {r.quantity && <div style={{ fontSize: 12, color: "var(--faint)" }}>Qty: {r.quantity}</div>}
+                        {r.quantity && <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>Qty: {r.quantity}</div>}
                       </td>
                       <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: "var(--muted)" }}>
                         {r.categoryId || "—"}
@@ -251,11 +251,11 @@ export default function LeadsTab({ user }: Props) {
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 14 }}>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
               Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--muted)" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                 Rows per page
                 <select value={limit} onChange={(e) => setLimit(Number(e.target.value))} className="select" style={{ width: "auto", padding: "4px 8px" }}>
                   {PAGE_SIZE_OPTIONS.map((n) => (
@@ -268,7 +268,7 @@ export default function LeadsTab({ user }: Props) {
               <button type="button" className="btn btn-secondary btn-sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                 Previous
               </button>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                 Page {page} of {totalPages}
               </span>
               <button type="button" className="btn btn-secondary btn-sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>

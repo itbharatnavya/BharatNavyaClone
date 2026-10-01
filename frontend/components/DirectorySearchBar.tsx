@@ -132,11 +132,11 @@ function rowStyle(activeRow: boolean): React.CSSProperties {
     gap: 10,
     width: "100%",
     padding: "9px 10px",
-    borderRadius: 8,
+    borderRadius: "var(--r-xs)",
     border: "none",
     cursor: "pointer",
     background: activeRow ? "var(--bg-subtle)" : "transparent",
-    fontSize: 14,
+    fontSize: "var(--fs-sm)",
     fontFamily: "inherit",
   };
 }
@@ -144,11 +144,11 @@ const iconWrap: React.CSSProperties = {
   width: 30,
   height: 30,
   flexShrink: 0,
-  borderRadius: 8,
+  borderRadius: "var(--r-xs)",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: 15,
+  fontSize: "var(--fs-sm)",
 };
 
 export default function DirectorySearchBar({
@@ -400,7 +400,7 @@ export default function DirectorySearchBar({
                   value={city}
                   onChange={(e) => onCityChange?.(e.target.value)}
                   aria-label="City"
-                  style={{ fontSize: 13.5 }}
+                  style={{ fontSize: "var(--fs-sm)" }}
                 >
                   <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
                   {ALL_CITIES.map((c) => (
@@ -428,9 +428,9 @@ export default function DirectorySearchBar({
                 minWidth: 0,
                 background: "var(--brand-tint)",
                 color: "var(--brand-hover)",
-                fontSize: hero ? 14.5 : 12.5,
+                fontSize: hero ? "var(--fs-sm)" : "var(--fs-xs)",
                 fontWeight: 600,
-                borderRadius: 8,
+                borderRadius: "var(--r-xs)",
                 padding: "8px 8px 8px 12px",
               }}
             >
@@ -504,7 +504,7 @@ export default function DirectorySearchBar({
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: 9,
+              borderRadius: "var(--r-xs)",
               padding: 0,
               width: buttonSize,
               height: buttonSize,
@@ -561,7 +561,7 @@ export default function DirectorySearchBar({
                 <span className="line-clamp-1" style={{ flex: 1, minWidth: 0, textAlign: "left", fontWeight: 600, color: "var(--ink)" }}>
                   {item.cat.name}
                 </span>
-                <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>Category</span>
+                <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", flexShrink: 0 }}>Category</span>
               </button>
             );
           })}
@@ -594,7 +594,7 @@ export default function DirectorySearchBar({
                     width: 34,
                     height: 34,
                     flexShrink: 0,
-                    borderRadius: 8,
+                    borderRadius: "var(--r-xs)",
                     background: img ? `#f1f5f9 url(${img}) center/cover` : "var(--bg-subtle)",
                     border: "1px solid var(--border)",
                   }}
@@ -603,7 +603,7 @@ export default function DirectorySearchBar({
                   <span className="line-clamp-1" style={{ display: "block", fontWeight: 600, color: "var(--ink)" }}>
                     {l.title}
                   </span>
-                  <span className="line-clamp-1" style={{ display: "block", fontSize: 12, color: "var(--muted)" }}>
+                  <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                     {priceLabel(l)} · {listingSellerName(l)}
                   </span>
                 </span>
@@ -624,7 +624,7 @@ export default function DirectorySearchBar({
                 onMouseEnter={() => setActive(i)}
                 onClick={submit}
                 className="directory-search-suggestion directory-search-suggestion-submit"
-                style={{ ...rowStyle(activeRow), marginTop: items.length > 1 ? 4 : 0, borderTop: items.length > 1 ? "1px solid var(--border)" : undefined, borderRadius: 8 }}
+                style={{ ...rowStyle(activeRow), marginTop: items.length > 1 ? 4 : 0, borderTop: items.length > 1 ? "1px solid var(--border)" : undefined, borderRadius: "var(--r-xs)" }}
               >
                 <span style={{ ...iconWrap, color: "var(--brand)", background: "var(--brand-tint)" }}>
                   <SearchGlassIcon />
@@ -633,7 +633,7 @@ export default function DirectorySearchBar({
                   <span style={{ fontWeight: 600 }}>Search</span>
                   <span className="line-clamp-1" style={{ color: "var(--muted)" }}> “{term}”</span>
                 </span>
-                {sugLoading && <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>…</span>}
+                {sugLoading && <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", flexShrink: 0 }}>…</span>}
               </button>
             );
           })()}

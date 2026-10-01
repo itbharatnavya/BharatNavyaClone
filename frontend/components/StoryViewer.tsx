@@ -163,7 +163,7 @@ export default function StoryViewer({
         {/* progress bars */}
         <div style={{ position: "absolute", top: 10, left: 10, right: 10, zIndex: 3, display: "flex", gap: 4 }}>
           {group.stories.map((s, i) => (
-            <div key={s.id} style={{ flex: 1, height: 3, borderRadius: 3, background: "rgba(255,255,255,.35)", overflow: "hidden" }}>
+            <div key={s.id} style={{ flex: 1, height: 3, borderRadius: "var(--r-xs)", background: "rgba(255,255,255,.35)", overflow: "hidden" }}>
               <div
                 style={{
                   height: "100%",
@@ -180,7 +180,7 @@ export default function StoryViewer({
           <Avatar src={group.avatarUrl} name={group.sellerName} size={34} />
           <Link
             href={group.sellerSlug ? `/seller/${group.sellerSlug}` : "#"}
-            style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}
+            style={{ color: "#fff", fontSize: "var(--fs-sm)", fontWeight: 600 }}
           >
             {group.sellerName}
           </Link>
@@ -219,7 +219,7 @@ export default function StoryViewer({
                 padding: 24,
                 textAlign: "center",
                 color: "#fff",
-                fontSize: 16,
+                fontSize: "var(--fs-md)",
                 fontWeight: 600,
                 background: "linear-gradient(135deg,#1D4ED8,#9db8ff)",
               }}
@@ -248,7 +248,7 @@ export default function StoryViewer({
               padding: "48px 16px 20px",
               background: "linear-gradient(transparent, rgba(0,0,0,.72))",
               color: "#fff",
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               pointerEvents: "none",
             }}
           >

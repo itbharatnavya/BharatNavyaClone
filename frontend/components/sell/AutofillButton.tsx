@@ -77,7 +77,7 @@ export default function AutofillButton({
               display: "flex",
               alignItems: "center",
               gap: 6,
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               fontWeight: 600,
               color: "var(--ink)",
             }}
@@ -98,7 +98,7 @@ export default function AutofillButton({
             </svg>
             Auto-fill from photo
           </div>
-          <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 2 }}>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>
             Paste a product/service photo URL — AI drafts the title, description &
             keywords.
           </div>
@@ -163,11 +163,11 @@ export default function AutofillButton({
             <p
               style={{
                 marginTop: 10,
-                fontSize: 12.5,
+                fontSize: "var(--fs-xs)",
                 color: "var(--warn)",
                 background: "#E3EBFF",
                 border: "1px solid #C4D3F7",
-                borderRadius: 8,
+                borderRadius: "var(--r-xs)",
                 padding: "8px 10px",
               }}
             >

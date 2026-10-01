@@ -67,7 +67,7 @@ export default function PopularSearches({ className = "" }: { className?: string
                   position: "relative",
                   display: "block",
                   overflow: "hidden",
-                  borderRadius: 16,
+                  borderRadius: "var(--r-md)",
                   aspectRatio: "4 / 3",
                   border: "1px solid var(--border)",
                   boxShadow: "var(--shadow-card)",
@@ -86,7 +86,7 @@ export default function PopularSearches({ className = "" }: { className?: string
                 />
                 <span aria-hidden style={{ position: "absolute", inset: 0, background: WASHES[i % WASHES.length] }} />
                 <span style={{ position: "absolute", left: 14, right: 14, bottom: 14, zIndex: 1 }}>
-                  <span className="line-clamp-2" style={{ display: "block", fontSize: 15.5, fontWeight: 800, color: "#ffffff", lineHeight: 1.3 }}>
+                  <span className="line-clamp-2" style={{ display: "block", fontSize: "var(--fs-md)", fontWeight: 800, color: "#ffffff", lineHeight: 1.3 }}>
                     {(item as SearchTrendItem).query}
                   </span>
                   <span

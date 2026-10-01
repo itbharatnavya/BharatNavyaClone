@@ -153,9 +153,9 @@ export default function CandidateProfileTab() {
             style={{
               border: "1px solid var(--border)",
               background: "var(--bg-subtle)",
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               padding: "12px 14px",
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               color: "var(--ink)",
             }}
           >
@@ -211,7 +211,7 @@ export default function CandidateProfileTab() {
           <label className="field-label">Preferred job types</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
             {JOB_TYPES.map((t) => (
-              <label key={t.value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, color: "var(--ink)" }}>
+              <label key={t.value} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "var(--fs-sm)", color: "var(--ink)" }}>
                 <input type="checkbox" checked={preferredJobTypes.includes(t.value)} onChange={() => togglePreferredJobType(t.value)} />
                 {t.label}
               </label>
@@ -232,7 +232,7 @@ export default function CandidateProfileTab() {
           {errors.resumeUrl ? (
             <p className="field-error">{errors.resumeUrl}</p>
           ) : (
-            <p style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 6 }}>Required before you can apply to a job.</p>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 6 }}>Required before you can apply to a job.</p>
           )}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>

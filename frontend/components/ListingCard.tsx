@@ -82,10 +82,10 @@ export function RatingPill({ value, count }: { value: number; count?: number }) 
           gap: 2,
           background: "var(--success)",
           color: "#fff",
-          fontSize: 12,
+          fontSize: "var(--fs-xs)",
           fontWeight: 700,
           padding: "2px 6px",
-          borderRadius: 5,
+          borderRadius: "var(--r-xs)",
           lineHeight: 1.3,
         }}
       >
@@ -95,7 +95,7 @@ export function RatingPill({ value, count }: { value: number; count?: number }) 
         </svg>
       </span>
       {typeof count === "number" && count > 0 && (
-        <span style={{ fontSize: 12, color: "var(--muted)" }}>{count} Ratings</span>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>{count} Ratings</span>
       )}
     </span>
   );

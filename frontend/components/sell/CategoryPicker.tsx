@@ -136,10 +136,10 @@ export default function CategoryPicker({
           }}
         >
           <div>
-            <div style={{ fontSize: 12, color: "var(--brand-hover)", fontWeight: 600 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--brand-hover)", fontWeight: 600 }}>
               Selected category
             </div>
-            <div style={{ fontSize: 14, color: "var(--ink)", fontWeight: 600 }}>
+            <div style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", fontWeight: 600 }}>
               {pathLabel(selected)}
             </div>
           </div>
@@ -196,12 +196,12 @@ export default function CategoryPicker({
                 width: "100%",
                 textAlign: "left",
                 padding: "9px 12px",
-                borderRadius: 8,
+                borderRadius: "var(--r-xs)",
                 border: "none",
                 background:
                   value === c.id ? "var(--brand-tint)" : "transparent",
                 cursor: "pointer",
-                fontSize: 14,
+                fontSize: "var(--fs-sm)",
                 color: "var(--ink)",
               }}
               onMouseEnter={(e) =>
@@ -213,7 +213,7 @@ export default function CategoryPicker({
               }
             >
               <span style={{ fontWeight: 500 }}>{c.name}</span>
-              <span style={{ color: "var(--faint)", fontSize: 12, marginLeft: 8 }}>
+              <span style={{ color: "var(--faint)", fontSize: "var(--fs-xs)", marginLeft: 8 }}>
                 {pathLabel(c)}
               </span>
             </button>
@@ -230,7 +230,7 @@ export default function CategoryPicker({
         }}
       >
         <span className="divider" style={{ flex: 1 }} />
-        <span style={{ fontSize: 12, color: "var(--faint)" }}>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
           or browse by category
         </span>
         <span className="divider" style={{ flex: 1 }} />
@@ -266,7 +266,7 @@ export default function CategoryPicker({
         ))}
       </div>
       {usable.length === 0 && (
-        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 12 }}>
+        <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 12 }}>
           No categories available yet for {type}s.
         </p>
       )}
@@ -290,7 +290,7 @@ export default function CategoryPicker({
               flexWrap: "wrap",
             }}
           >
-            <div style={{ fontSize: 13.5, color: "var(--muted)" }}>
+            <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
               Can’t find your category?
             </div>
             <button
@@ -304,7 +304,7 @@ export default function CategoryPicker({
         ) : (
           <div>
             <label className="field-label">Suggest a new category</label>
-            <p style={{ fontSize: 12.5, color: "var(--muted)", margin: "0 0 8px" }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", margin: "0 0 8px" }}>
               Tell us what to call it. Our team reviews suggestions and adds new
               categories — this doesn’t block your listing.
             </p>
@@ -342,7 +342,7 @@ export default function CategoryPicker({
             {suggestedName && (
               <p
                 style={{
-                  fontSize: 12.5,
+                  fontSize: "var(--fs-xs)",
                   color: "var(--brand)",
                   marginTop: 10,
                   marginBottom: 0,

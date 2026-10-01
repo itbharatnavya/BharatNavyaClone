@@ -47,7 +47,7 @@ export default function RecruitmentBlogPage() {
         <div className="rb-grid">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i}>
-              <div className="skeleton" style={{ height: 170, borderRadius: 12 }} />
+              <div className="skeleton" style={{ height: 170, borderRadius: "var(--r-sm)" }} />
               <div className="skeleton" style={{ height: 18, width: "80%", marginTop: 12 }} />
               <div className="skeleton" style={{ height: 14, width: "50%", marginTop: 8 }} />
             </div>
@@ -83,7 +83,7 @@ export default function RecruitmentBlogPage() {
                   <div className="rb-body">
                     {b.tags?.[0] && <span className="badge badge-neutral" style={{ marginBottom: 8 }}>{b.tags[0]}</span>}
                     <h2 className="line-clamp-2 rb-card-title">{b.title}</h2>
-                    {b.excerpt && <p className="line-clamp-2" style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 8 }}>{b.excerpt}</p>}
+                    {b.excerpt && <p className="line-clamp-2" style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8 }}>{b.excerpt}</p>}
                   </div>
                 </Link>
 
@@ -122,14 +122,14 @@ export default function RecruitmentBlogPage() {
         .rb-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .rb-cover-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--faint); background: linear-gradient(120deg, var(--tricolor-green-tint), var(--bg-subtle)); }
         .rb-body { padding: 18px; }
-        .rb-card-title { font-size: 17px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+        .rb-card-title { font-size: var(--fs-md); font-weight: 600; line-height: 1.35; color: var(--ink); }
         .rb-author { margin-top: auto; padding: 12px 18px 16px; border-top: 1px solid var(--border); }
         .rb-author-link { display: flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; color: inherit; }
         .rb-author-text { display: flex; flex-direction: column; min-width: 0; }
-        .rb-author-name { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rb-author-name { font-size: var(--fs-xs); font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .rb-author-name--link { color: var(--tricolor-green-hover); }
         .rb-author-link:hover .rb-author-name--link { text-decoration: underline; }
-        .rb-author-meta { font-size: 12px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rb-author-meta { font-size: var(--fs-xs); color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @media (max-width: 900px) { .rb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 560px) { .rb-grid { grid-template-columns: minmax(0, 1fr); } }
       `}</style>

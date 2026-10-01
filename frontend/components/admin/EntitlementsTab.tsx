@@ -350,7 +350,7 @@ export default function EntitlementsTab() {
                 return (
                   <div key={t.key} className="rounded-xl border border-border bg-canvas p-4">
                     <div className="mb-3 flex items-center gap-2">
-                      <span className="text-[15px] font-bold text-ink">{t.name}</span>
+                      <span className="text-sm font-bold text-ink">{t.name}</span>
                       <Pill status={t.key}>{t.key}</Pill>
                       {t.limits.priceInfo?.label && (
                         <span className="ml-auto text-xs text-faint">

@@ -76,7 +76,7 @@ export default function SubscriptionTab({ user }: Props) {
             style={{
               width: 48,
               height: 48,
-              borderRadius: 12,
+              borderRadius: "var(--r-sm)",
               background: "var(--brand)",
               color: "#fff",
               display: "grid",
@@ -86,11 +86,11 @@ export default function SubscriptionTab({ user }: Props) {
             <Icon name="subscription" size={24} />
           </div>
           <div>
-            <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
               {tr("dashboard.subscription.current", "Current plan")}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, color: "var(--ink)" }}>
+              <span style={{ fontSize: "var(--fs-xl)", fontWeight: 700, color: "var(--ink)" }}>
                 {TIER_LABEL[tier] || tier}
               </span>
               {sp.planStatus && (
@@ -100,7 +100,7 @@ export default function SubscriptionTab({ user }: Props) {
           </div>
         </div>
         {sp.planEndDate && (
-          <div style={{ fontSize: 13, color: "var(--muted)" }}>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {tr("dashboard.subscription.renews", "Valid till")} <strong>{formatDate(sp.planEndDate)}</strong>
           </div>
         )}

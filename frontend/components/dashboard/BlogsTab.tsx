@@ -175,10 +175,10 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
             >
               <div style={{ minWidth: 200, flex: 1 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 600, color: "var(--ink)", fontSize: 15 }}>{b.title}</span>
+                  <span style={{ fontWeight: 600, color: "var(--ink)", fontSize: "var(--fs-sm)" }}>{b.title}</span>
                   <Badge variant={b.status === "published" ? "new" : "neutral"}>{b.status}</Badge>
                 </div>
-                <div style={{ fontSize: 13, color: "var(--faint)", marginTop: 4 }}>
+                <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 4 }}>
                   {b.publishedAt ? formatDate(b.publishedAt) : formatDate(b.createdAt)}
                   {typeof b.views === "number" ? ` · ${b.views} views` : ""}
                 </div>
@@ -283,7 +283,7 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
           </>
         }
       >
-        <p style={{ fontSize: 14, color: "var(--muted)" }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
           {tr("dashboard.blogs.deleteConfirm", `"${deleting?.title || ""}" will be permanently deleted.`)}
         </p>
       </Modal>

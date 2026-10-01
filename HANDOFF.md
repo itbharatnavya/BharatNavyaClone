@@ -18,7 +18,7 @@ This is the single continuation source of truth for current Bharat Navya product
 
 ## 0. Current working state (1 October 2026, afternoon session)
 
-**Design system (read first for any UI work): `DESIGN-SYSTEM.md`.** It supersedes the colour and style notes in section 5 below and in older docs (no orange, no green except success, white cards on the light-blue page, one CTA look, round white icon-only close buttons). Also added in the latest session: themed dropdowns for every `<select>` (`DropdownEnhancer`), new `Filters` / `JobFilters`, list/grid toggle and ad-below-results on `/search`, Post requirement pill + assistant bubble on all pages, company profile and About/Pricing/Blog restyled into the shell. Local note: `frontend/.env.local` (git-ignored) sets `NEXT_PUBLIC_RECRUITMENT_DESIGN_PREVIEW=true`; without it `/recruitment/jobs`, `/job/*` and `/employer/*` show "Coming soon".
+**Design system (read first for any UI work): `DESIGN-SYSTEM.md`.** It supersedes the colour and style notes in section 5 below and in older docs (no orange, no green except success, white cards on the light-blue page, one CTA look, round white icon-only close buttons). Also added in the latest session: themed dropdowns for every `<select>` (`DropdownEnhancer`), new `Filters` / `JobFilters`, list/grid toggle and ad-below-results on `/search`, Post requirement pill + assistant bubble on all pages, company profile and About/Pricing/Blog restyled into the shell. `RecruitmentGate` is now a pass-through: Recruitment pages are always live (the old "Coming soon" belonged to the earlier suite build).
 
 
 Read this first. It supersedes the older "committed and pushed" wording above for the work listed here.

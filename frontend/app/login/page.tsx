@@ -210,7 +210,7 @@ export default function LoginPage() {
           <h2
             style={{
               marginTop: 14,
-              fontSize: 28,
+              fontSize: "var(--fs-xl)",
               fontWeight: 700,
               letterSpacing: "-0.02em",
               color: "var(--ink)",
@@ -218,7 +218,7 @@ export default function LoginPage() {
           >
             {t("auth.login.welcome", "Welcome back to Bharat Navya.")}
           </h2>
-          <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
+          <p style={{ marginTop: 12, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
             {t("auth.login.asideCopy", "Companies, careers, and opportunities—all in one place.")}
           </p>
         </div>
@@ -236,8 +236,8 @@ export default function LoginPage() {
         }}
       >
         <div className="counter-auth-form" style={{ width: "100%", maxWidth: 400 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Sign in")}</h1>
-          <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: 14, marginBottom: 24 }}>
+          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Sign in")}</h1>
+          <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", marginBottom: 24 }}>
             {t("auth.login.subtitle", "One account to access Directory and Recruitment.")}
           </p>
 
@@ -276,7 +276,7 @@ export default function LoginPage() {
                     border: "none",
                     cursor: "pointer",
                     padding: "0 0 12px",
-                    fontSize: 14,
+                    fontSize: "var(--fs-sm)",
                     fontWeight: 600,
                     color: active ? "var(--ink)" : "var(--muted)",
                     borderBottom: active
@@ -339,7 +339,7 @@ export default function LoginPage() {
                       }}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
                       aria-label={`OTP digit ${index + 1}`}
-                      style={{ textAlign: "center", padding: "12px 0", fontSize: 18 }}
+                      style={{ textAlign: "center", padding: "12px 0", fontSize: "var(--fs-lg)" }}
                     />
                   ))}
                 </div>
@@ -410,7 +410,7 @@ export default function LoginPage() {
           )}
 
           <div className="divider" style={{ margin: "24px 0" }} />
-          <div style={{ textAlign: "center", fontSize: 14, color: "var(--muted)" }}>
+          <div style={{ textAlign: "center", fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {t("auth.newHere", "New to Bharat Navya?")}{" "}
             <Link href={(() => {
               const validated = safeNext(next, DEFAULT_NEXT);

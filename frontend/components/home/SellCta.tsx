@@ -34,10 +34,10 @@ export default function SellCta({ className = "" }: SellCtaProps) {
           <div className="eyebrow" style={{ marginBottom: 10 }}>
             {t("home.sell.eyebrow", "Grow your business")}
           </div>
-          <h2 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
             {t("home.sell.title", "Sell to buyers across India — free to start")}
           </h2>
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 10 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 10 }}>
             {t(
               "home.sell.subtitle",
               "List your products or services, get verified, and receive enquiries and leads. One account to buy and to sell."

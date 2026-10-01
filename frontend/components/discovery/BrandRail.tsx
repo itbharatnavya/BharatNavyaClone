@@ -56,7 +56,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
             style={{
               width: 30,
               height: 30,
-              borderRadius: 8,
+              borderRadius: "var(--r-xs)",
               background: "var(--action-tint)",
               color: "var(--action-hover)",
               display: "inline-flex",
@@ -67,7 +67,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
           >
             <TagGlyphIcon />
           </span>
-          <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
             Brands in this category
           </h2>
         </div>
@@ -78,7 +78,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
             display: "inline-flex",
             alignItems: "center",
             gap: 4,
-            fontSize: 13,
+            fontSize: "var(--fs-xs)",
             fontWeight: 600,
             color: "var(--brand)",
             whiteSpace: "nowrap",
@@ -121,7 +121,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
                 className="line-clamp-1"
                 style={{
                   display: "block",
-                  fontSize: 14,
+                  fontSize: "var(--fs-sm)",
                   fontWeight: 600,
                   color: "var(--ink)",
                   transition: "color 120ms ease",
@@ -129,7 +129,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
               >
                 {b.name}
               </span>
-              <span style={{ fontSize: 12, color: "var(--faint)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                 {b.count} {b.count === 1 ? "product" : "products"}
               </span>
             </span>

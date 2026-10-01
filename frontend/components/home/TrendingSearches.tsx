@@ -45,12 +45,12 @@ export default function TrendingSearches({ className = "" }: { className?: strin
   return (
     <div className={["card card-flat", className].join(" ")} style={{ padding: "18px 20px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <h3 style={{ fontSize: 18, fontWeight: 800, color: "var(--ink)" }}>
+        <h3 style={{ fontSize: "var(--fs-lg)", fontWeight: 800, color: "var(--ink)" }}>
           Trending Searches Near You
         </h3>
         <span className="badge badge-new">NEW</span>
       </div>
-      <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 4 }}>
+      <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
         Stay updated with the latest local trends.
       </p>
 
@@ -72,12 +72,12 @@ export default function TrendingSearches({ className = "" }: { className?: strin
           >
             {loading ? (
               <>
-                <span className="skeleton" style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0 }} />
+                <span className="skeleton" style={{ width: 44, height: 44, borderRadius: "var(--r-sm)", flexShrink: 0 }} />
                 <span className="skeleton" style={{ height: 14, width: "70%" }} />
               </>
             ) : (
               <>
-                <div style={{ width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: "var(--bg-subtle)" }}>
+                <div style={{ width: 44, height: 44, borderRadius: "var(--r-sm)", overflow: "hidden", flexShrink: 0, background: "var(--bg-subtle)" }}>
                   <img
                     src={`/demo/${
                       (item as SearchTrendItem).categorySlug
@@ -90,13 +90,13 @@ export default function TrendingSearches({ className = "" }: { className?: strin
                   />
                 </div>
                 <span style={{ minWidth: 0 }}>
-                  <span className="line-clamp-1" style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>
+                  <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
                     {(item as SearchTrendItem).query}
                   </span>
                   <Link
                     href={hrefFor(item as SearchTrendItem)}
                     className=""
-                    style={{ fontSize: 12.5, fontWeight: 600, color: "var(--brand)" }}
+                    style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)" }}
                   >
                     Explore →
                   </Link>

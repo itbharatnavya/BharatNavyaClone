@@ -129,11 +129,11 @@ export default function AdSlider({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 999,
+    borderRadius: "var(--r-pill)",
     border: "none",
     background: "rgba(15,23,42,0.55)",
     color: "#fff",
-    fontSize: 20,
+    fontSize: "var(--fs-lg)",
     lineHeight: 1,
     cursor: "pointer",
     zIndex: 3,
@@ -205,7 +205,7 @@ export default function AdSlider({
                     padding: multi ? "12px 16px 40px" : "12px 16px 20px", // multi: clear the indicator row
                     background: OVERLAY_GRADIENT,
                     color: "#fff",
-                    fontSize: 14,
+                    fontSize: "var(--fs-sm)",
                     fontWeight: 600,
                   }}
                 >
@@ -297,7 +297,7 @@ export default function AdSlider({
                     width: 44,
                     height: 44,
                     padding: 0,
-                    borderRadius: 999,
+                    borderRadius: "var(--r-pill)",
                     border: "none",
                     cursor: "pointer",
                     background: "transparent",
@@ -311,7 +311,7 @@ export default function AdSlider({
                     style={{
                       width: 18,
                       height: 7,
-                      borderRadius: 999,
+                      borderRadius: "var(--r-pill)",
                       background: i === active ? "#fff" : "rgba(255,255,255,0.55)",
                       transform: `scaleX(${i === active ? 1 : 0.39})`,
                       transition: "transform 0.3s ease, background-color 0.3s ease",

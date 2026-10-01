@@ -316,7 +316,7 @@ export default function ChatAssistant() {
               placeholder="Ask anything…"
               aria-label="Message Navya AI Agent"
               className="input flex-1 min-w-0"
-              style={{ borderRadius: 999 }}
+              style={{ borderRadius: "var(--r-pill)" }}
               disabled={loading}
             />
             <button

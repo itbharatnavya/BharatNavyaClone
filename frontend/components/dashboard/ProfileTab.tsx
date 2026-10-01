@@ -89,8 +89,8 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
   return (
     <div className="card card-flat" style={{ padding: 22 }}>
       <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{title}</h2>
-        {subtitle && <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 3 }}>{subtitle}</p>}
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>{title}</h2>
+        {subtitle && <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -374,7 +374,7 @@ export default function ProfileTab({ user }: Props) {
                   alignItems: "center",
                   gap: 12,
                   padding: "14px 16px",
-                  borderRadius: 10,
+                  borderRadius: "var(--r-sm)",
                   border: "1px solid var(--border)",
                   background: "var(--bg-subtle)",
                 }}
@@ -402,10 +402,10 @@ export default function ProfileTab({ user }: Props) {
                   </svg>
                 </span>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>
+                  <div style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
                     {tr("dashboard.profile.verified", "Your business is verified")}
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
+                  <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>
                     {tr(
                       "dashboard.profile.verifiedHint",
                       "The verified badge and trust seal are live on your public profile."
@@ -420,7 +420,7 @@ export default function ProfileTab({ user }: Props) {
                   alignItems: "center",
                   gap: 12,
                   padding: "14px 16px",
-                  borderRadius: 10,
+                  borderRadius: "var(--r-sm)",
                   border: "1px solid var(--border)",
                   background: "var(--bg-subtle)",
                 }}
@@ -441,7 +441,7 @@ export default function ProfileTab({ user }: Props) {
                     <path d="M12 7v5l3 2" />
                   </svg>
                 </span>
-                <div style={{ fontSize: 14, color: "var(--ink)" }}>
+                <div style={{ fontSize: "var(--fs-sm)", color: "var(--ink)" }}>
                   {tr(
                     "dashboard.profile.verifyPending",
                     "Submitted for review. An admin will verify your business shortly."

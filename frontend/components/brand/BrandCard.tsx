@@ -88,7 +88,7 @@ export default function BrandCard({ brand }: { brand: BrandCardBrand }) {
           className="line-clamp-1"
           style={{
             display: "block",
-            fontSize: 16,
+            fontSize: "var(--fs-md)",
             fontWeight: 700,
             color: "var(--ink)",
             transition: "color 120ms ease",
@@ -96,7 +96,7 @@ export default function BrandCard({ brand }: { brand: BrandCardBrand }) {
         >
           {brand.name}
         </span>
-        <span style={{ fontSize: 13, color: "var(--muted)" }}>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
           {brand.count} {brand.count === 1 ? "product" : "products"}
         </span>
       </span>

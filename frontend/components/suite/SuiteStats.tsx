@@ -94,7 +94,7 @@ export default function SuiteStats() {
           >
             {display(s.value)}
           </span>
-          <span className="line-clamp-1" style={{ display: "block", fontSize: 13.5, color: "var(--muted)", marginTop: 4 }}>
+          <span className="line-clamp-1" style={{ display: "block", fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
             {s.label}
           </span>
         </div>
