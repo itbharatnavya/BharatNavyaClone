@@ -51,7 +51,7 @@ export default function StorefrontScene() {
         trigger: q(".sf-stage")[0],
         start: "top 96px",
         end: () => `+=${Math.round(window.innerHeight * 0.9 * 3.4)}`,
-        pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        pin: true, refreshPriority: 1, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true, // pins are measured first so triggers below them include the pin spacing
         snap: { snapTo: "labels", duration: { min: 0.2, max: 0.5 }, ease: "power1.inOut" },
         onUpdate: () => { mark(Math.min(3, Math.round(tl.time()))); count(); },
         onRefresh: count,

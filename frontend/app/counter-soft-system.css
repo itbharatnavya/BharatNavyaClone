@@ -5246,3 +5246,46 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .na-error { padding: 0 1rem 0.4rem; color: var(--error, #b42318); font-size: var(--fs-xs); }
 .na-foot { flex: 0 0 auto; margin: 0; padding: 0 1rem 0.7rem; color: var(--counter-muted); font-size: var(--fs-xs); text-align: center; }
 @media (max-width: 560px) { .na-panel { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; width: auto; height: min(80vh, 36rem); } }
+
+/* Home: what makes Bharat Navya different (illustrated, animated cards) */
+.wy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--counter-space-4); margin: 0; padding: 0; list-style: none; perspective: 1100px; }
+.wy-card { display: grid; grid-template-rows: auto auto 1fr; gap: 0.6rem; padding: 1.4rem 1.4rem 0; overflow: hidden; border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: #fff; transition: box-shadow 0.2s ease, transform 0.2s ease; }
+.wy-card:hover { box-shadow: 0 14px 30px rgba(18, 48, 126, 0.14); transform: translateY(-3px); }
+.wy-card h3 { margin: 0; color: var(--counter-indigo); font: 800 var(--fs-xl)/1.1 var(--font-anek-latin), sans-serif; }
+.wy-card p { margin: 0; color: var(--counter-muted); font-size: var(--fs-md); line-height: 1.55; }
+.wy-art { display: grid; place-items: end center; margin: 0 -1.4rem; padding: 1rem 1rem 0; background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--counter-indigo-soft) 50%, white)); }
+svg.wy { width: 100%; max-width: 19rem; height: auto; fill: none; stroke: none; }
+.wy-wire { fill: none; stroke: var(--counter-line); stroke-width: 1.4; stroke-dasharray: 3 5; stroke-linecap: round; }
+.wy-signal { fill: none; stroke: var(--counter-highlight); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 94; stroke-dashoffset: 6; }
+.wy-ping { fill: none; stroke: var(--counter-sky); stroke-width: 2; transform-origin: 120px 78px; opacity: 0; }
+.wy-ping.is-city { fill: var(--counter-sky); stroke: none; }
+.wy-hub { fill: #fff; font: 800 12px var(--font-anek-latin), sans-serif; }
+.wy-label { fill: var(--counter-ink); font: 700 9px var(--font-work-sans, system-ui), sans-serif; }
+.wy-score { fill: var(--counter-indigo); font: 800 20px var(--font-anek-latin), sans-serif; }
+.wy-caption { fill: var(--counter-muted); font: 700 8px var(--font-work-sans, system-ui), sans-serif; }
+.wy-stamp-text { fill: #fff; font: 800 9px var(--font-work-sans, system-ui), sans-serif; }
+.wy-ring { fill: none; stroke: var(--counter-indigo); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 8; transform: rotate(-90deg); transform-origin: 196px 62px; }
+.wy-land { fill: color-mix(in srgb, var(--counter-indigo-soft) 70%, white); stroke: var(--counter-sky); stroke-width: 1; stroke-linejoin: round; }
+.wy-card .wy-tick, .wy-card .wy-stamp, .wy-card .wy-node { opacity: 1; }
+.wy-card .wy-tick { opacity: 0; }
+.wy-card .wy-stamp { opacity: 0; transform-origin: 188px 127px; }
+.wy-card .wy-ring { stroke-dashoffset: 100; }
+.wy-card .wy * { animation-play-state: paused; }
+.wy-card.is-live .wy * { animation-play-state: running; }
+.wy-card.is-live .wy-signal { animation: wy-signal 2.6s linear infinite; }
+.wy-card.is-live .wy-ping { animation: wy-ping 2.4s ease-out infinite; }
+.wy-card.is-live .wy-node { animation: wy-node 4s ease-in-out infinite alternate; }
+.wy-card.is-live .wy-tick { animation: wy-tick 6s ease-in-out infinite; }
+.wy-card.is-live .wy-ring { animation: wy-ring 6s ease-in-out infinite; }
+.wy-card.is-live .wy-stamp { animation: wy-stamp 6s ease-in-out infinite; }
+@keyframes wy-signal { 0% { stroke-dashoffset: 6; } 100% { stroke-dashoffset: -100; } }
+@keyframes wy-ping { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes wy-node { to { transform: translateY(-4px); } }
+@keyframes wy-tick { 0%, 10% { opacity: 0; transform: scale(0.4); } 20%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.4); } }
+@keyframes wy-ring { 0%, 8% { stroke-dashoffset: 100; } 45%, 90% { stroke-dashoffset: 8; } 100% { stroke-dashoffset: 100; } }
+@keyframes wy-stamp { 0%, 48% { opacity: 0; transform: scale(1.8); } 56%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.8); } }
+@media (max-width: 1000px) { .wy-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) {
+  .wy * { animation: none !important; }
+  .wy-card .wy-tick, .wy-card .wy-stamp { opacity: 1; } .wy-card .wy-ring { stroke-dashoffset: 8; } .wy-signal { display: none; }
+}

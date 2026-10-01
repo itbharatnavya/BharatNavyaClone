@@ -4,6 +4,7 @@
 //   proof     live counts + an ambient category marquee
 //   showcase  pinned, scrubbed three-state sequence (Directory, Recruitment, Ask Navya)
 //   route     a need types itself and is routed to the right product (RouteScene)
+//   why       three animated cards: connected, verifiable, all of India (WhyScene)
 //   close     a headline revealed word by word under a panel that rises into place
 // Everything is plain readable content first: motion only ever starts from the
 // final layout (see useStory), so reduced motion, small screens and no-JS all get
@@ -17,6 +18,7 @@ import { formatSalary, jobLocation } from "@/lib/recruitmentDesign";
 import { useStory, type StoryKit } from "@/components/home/useStory";
 import Count from "@/components/home/Count";
 import RouteScene from "@/components/home/RouteScene";
+import WhyScene from "@/components/home/WhyScene";
 
 interface Row { name?: string; meta?: string; tag?: string }
 interface Data { categories: string[]; categoryCount: number; listings: number; jobs: number; companies: Row[]; roles: Row[] }
@@ -114,6 +116,7 @@ function pinShowcase({ gsap, q, wide }: StoryKit, root: HTMLElement): (() => voi
       start: "top 96px",
       end: () => `+=${Math.round(window.innerHeight * 0.9 * (last + 0.4))}`,
       pin: true,
+      refreshPriority: 1, // measure pins first so triggers below them (created earlier) include the pin spacing
       scrub: 0.6,
       anticipatePin: 1,
       invalidateOnRefresh: true,
@@ -223,6 +226,8 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
     </div></section>
 
     <RouteScene />
+
+    <WhyScene />
 
     {children}
 

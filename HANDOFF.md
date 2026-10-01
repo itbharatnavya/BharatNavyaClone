@@ -392,3 +392,6 @@ Each page tells its own story; there is deliberately no shared feature-card temp
 - `useStory` now installs one page-wide ResizeObserver that calls `ScrollTrigger.refresh()` when document height changes (product grids load late). GSAP skips tween callbacks on refresh, so scenes that write text (typing, counters) do it from the ScrollTrigger's `onUpdate` and `onRefresh`, and staggered start states are set with `gsap.set`.
 - Blog indexes (`/blog`, `/recruitment/blog`): compact cards, 4 across on desktop, 3 on tablet, 2 on phones; no lead card. About shows a short featured article plus a scrolling rail of nine more.
 - AI assistant panel is `.na-*` (clean card, intro, tappable starters, amber send).
+- Home also has `WhyScene` ("What makes Bharat Navya different"): three illustrated cards (connected hub, trust ring and checks, India city network) that animate once in view. Order on Home: proof, pinned showcase, RouteScene, WhyScene, closing.
+- Pinned ScrollTriggers set `refreshPriority: 1`. Without it, triggers created before a later pin (child effects run first) ignore the pin spacing and fire far too early.
+- RfqScene and HireScene play once on arrival (not scrubbed); only pinned scenes are scroll-driven.
