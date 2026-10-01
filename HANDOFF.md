@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-Updated: 29 September 2026
+Updated: 1 October 2026
 
 Official branch: `design`
 
@@ -8,7 +8,7 @@ Official application: `frontend/`
 
 Official committed checkpoint: the current tip of `origin/design`; verify it with `git rev-parse origin/design` before continuing.
 
-Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. The UI follow-up for the indigo auth/footer surfaces, the developer-owned Google sign-in integration point, the bottom-right arrow-only back-to-top control beside the unchanged Navya AI Agent, and the denser About-page blog preview has completed its local visual review and is included in the current UI checkpoint. Deployment and backend integration remain developer-owned work outside this design handoff.
+Current implementation state: Mahir feedback reconciliation, the `feature/design-integration` merge, search repair, and the 1 October live UI-polish requests are committed to and pushed on `origin/design`. The latest polish includes the Ask Navya glow, blue selected Recruitment tab, compact dial-code-only phone selector, centred guest-account reminder, and About in the shared desktop/mobile navigation. Deployment and backend integration remain developer-owned work outside this design handoff.
 
 Continuation note: if the current Codex task appears visually blank, start a fresh task in this repository and read `AGENTS.md` followed by this file. Do not assume the blank task pane means the working tree was lost; confirm with `git status --short` and continue from the scoped local changes documented here.
 
@@ -19,7 +19,7 @@ This is the single continuation source of truth for current Bharat Navya product
 ## 1. Start here in a new session
 
 1. Read `AGENTS.md`, then this file.
-2. Confirm `git branch --show-current` is `design`.
+2. Confirm the official target is `origin/design`. The currently attached managed worktree uses `codex/design-integration-merge`; its verified commits are pushed with `git push origin HEAD:design`. A normal continuation checkout may instead be on local `design`.
 3. Run `git status --short` before editing. Preserve unrelated dirty files.
 4. Work in `frontend/`. Do not implement current UI work in the archive.
 5. Use the project `frontend-design` and `impeccable` skills for visual/UI work; read each selected skill completely before acting.
@@ -41,7 +41,7 @@ The current product is not the frozen Vite prototype. If a legacy document confl
 
 ## 3. Git and working-tree state
 
-- `design` and `origin/design` are aligned after the Mahir reconciliation/search-repair push. Verify the exact checkpoint locally instead of relying on a copied SHA in this document.
+- The verified implementation is on `origin/design`. The current managed worktree branch is `codex/design-integration-merge`; verify its `HEAD` against `origin/design` instead of relying on a copied SHA in this document.
 - The reconciliation and search-recommendation repair are available on GitHub in `origin/design`.
 - Do not report the current work as publicly deployed until the deployment SHA and production routes have been verified.
 - The account configured in this checkout is `itbharatnavya`, as requested.
@@ -51,6 +51,12 @@ The current product is not the frozen Vite prototype. If a legacy document confl
   - `3d404fc` — integrate Feni content across public frontend
   - `72b9fa4` — integrate live search suggestions
   - `aace218` — polish Bharat Navya frontend experience
+  - `c0d34ee` — merge `feature/design-integration` while retaining the approved single-ad brand layout
+  - `72b5f2b` — add the breathing glow around the full Ask Navya card
+  - `70ab222` — use blue for the selected Recruitment navigation tab
+  - `b61a21b` — show only the dial code in the compact phone selector while retaining country names in its dropdown
+  - `69873fb` — centre the guest-account reminder in the viewport
+  - `355030b` — add About to the shared desktop and mobile navigation
 - Pre-existing dirty files outside this handoff task include product/design documents, Feni PDFs, and backend JSON fixtures. They belong to prior/user work. Do not reset, replace, or sweep them into an unrelated commit.
 - In particular, do not casually commit `backend/DB/*`, `Website content (Feni)/*`, `DESIGN.md`, `HANDOVER.md`, `MIGRATION-CAPABILITY-MATRIX.md`, `PRODUCT-DESIGN-MIGRATION.md`, or `frontend-design-guide.md` merely because they appear in `git status`.
 - The approved frontend requirements and acceptance criteria for the current pass are in `frontend/docs/MAHIR_FEEDBACK_RECONCILIATION_SPEC.md`.
@@ -65,7 +71,7 @@ The current product is not the frozen Vite prototype. If a legacy document confl
 
 ## 4. Product boundary and data rules
 
-- Public navigation is **Home, Directory, Recruitment**.
+- Public navigation is **Home, Directory, Recruitment, About**.
 - Directory is one services-and-products discovery journey. Companies are the providers behind those listings, not a third listing type.
 - Preserve existing authentication, search, inquiry, job, application, seller, employer, candidate, story/status, blog, and advertising contracts.
 - Use live/API-generated companies, listings, products, jobs, blogs, statuses, ads, and genuine empty states. Do not replace them with convenient static fixtures.
@@ -112,6 +118,7 @@ Primary live style sources:
 - Public footer and login context surfaces use the Counter indigo rather than black backgrounds. Registration keeps its green route ownership.
 - The product mark uses the selected BN-arrow asset at the existing public URL; the Chakra and proposed tagline are not displayed.
 - The floating helper is consistently named **Navya AI Agent** in visible and accessible copy. It is limited to the public hub routes defined in `ChatAssistant`; dense category, company, listing, employer, and job routes do not receive a conflicting floating assistant.
+- The shared header now exposes Home, Directory, Recruitment, and About on desktop and in the mobile menu. About uses a clear selected state; Recruitment uses the approved blue selected state.
 
 ### Home `/`
 
@@ -124,6 +131,7 @@ Primary live style sources:
 - The former oversized “Clarity follows the whole decision” section is a smaller, focused journey rather than multiple competing cards.
 - A clearly labelled promotional surface and current blog content remain intact.
 - The homepage no longer carries the blog-card preview; that editorial preview now belongs to About so Home stays focused on product discovery and the decision journey.
+- The full Ask Navya card has a restrained breathing glow around its outer container. The reduced-motion path remains static.
 
 ### Directory home `/directory`
 
@@ -174,6 +182,8 @@ Primary live style sources:
 - Login includes the frontend presentation and integration hook for the developer-owned Google Identity Services flow. Only Google is exposed; Facebook and Apple remain absent. The control appears only when `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is configured. Backend endpoint behavior, credentials, persistence, and deployment acceptance remain outside the UI scope.
 - Feni content was integrated into Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, and Register while preserving behavior and localization boundaries.
 - About now includes an API-backed preview of up to four current blog posts before its closing actions. The cards use a dense responsive grid: four across on wide screens, three at intermediate desktop widths, two on tablet, and one on narrow phones. The full `/blog` route and blog API remain unchanged.
+- The country selector in shared phone fields shows only the selected dial code when closed, is sized for supported codes, and keeps full dial-code plus country-name labels inside the dropdown.
+- The delayed guest-account reminder is centred in the viewport on desktop and mobile, including throughout its entrance animation. It remains dismissible and non-modal.
 
 ## 7. Verification evidence and how to re-check
 
@@ -228,6 +238,14 @@ Evidence recorded for the `feature/design-integration` merge (2026-10-01):
 - `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, JavaScript syntax checks, and `git diff --check` passed after resolution. The backend architecture-only checks passed, but the database-backed suite could not run in this environment because `PG_URL_TEST`/`PG_URL` is not configured; it requires the developer-owned disposable PostgreSQL test database.
 - Dependency audit remains follow-up work: the merged lockfiles currently report frontend and backend advisories, including a critical advisory against the current Next.js line and Firebase-related transitive advisories. No automatic major-version upgrade was attempted during the merge.
 
+Evidence recorded for the live UI-polish follow-up (2026-10-01):
+
+- Ask Navya glow, Recruitment selected-state colour, compact phone selector, centred guest reminder, and About navigation were each checked in the rendered local app at desktop and mobile widths.
+- The phone selector rendered `+91` in the closed field while its native options retained labels such as `+1 · United States` and `+44 · United Kingdom`.
+- About was confirmed in both the desktop header and opened mobile menu, with `/about` receiving the selected state.
+- `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, the Impeccable layout detector, and `git diff --check` passed for the completed polish commits.
+- The frontend preview was restored at `http://localhost:3000` after the latest build. The backend was not running locally, so expected `/api/*` proxy failures remain outside this frontend-only verification.
+
 Run these from `frontend/` after changes:
 
 ```bash
@@ -279,7 +297,9 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-The scoped UI follow-up is complete except for the Directory highlights/product decision, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, and production API smoke testing are developer-owned and are intentionally excluded from this design continuation.
+Immediate pending UI request: keep the **Mobile OTP** and **Email & password** login tabs side by side at narrow widths instead of stacking them. The cause is the `@media (max-width: 640px)` rule in `frontend/app/counter-workspace.css` that changes `.counter-auth-tabs` to `flex-direction: column`; no edit for this request was made before this handoff update. Preserve two equal-width tabs in one row, verify readable labels at approximately 390px, then run the normal design, TypeScript, build, and rendered-browser checks.
+
+The other scoped product choice still pending is the exact Directory highlights content and counts, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, dependency remediation, database-backed test configuration, and production API smoke testing are developer-owned and intentionally excluded from this design continuation.
 
 ## 11. Non-negotiable hygiene
 
