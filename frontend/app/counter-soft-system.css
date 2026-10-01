@@ -4553,3 +4553,11 @@ main :is(h1, h2, h3, h4),
 .le-update-feature-list button[aria-pressed="true"] :is(span, strong, b) { color: #fff; }
 .le-proof-options button[aria-pressed="true"] small,
 .le-update-feature-list button[aria-pressed="true"] small { color: rgb(255 255 255 / 0.85); }
+
+/* Home hero stage: the two product cards carry their route identity colour so the hero
+   reads lively. Directory = green, Recruitment = the amber highlight (dark label). This is
+   a deliberate, scoped exception (see DESIGN-SYSTEM.md section 7). */
+.bn-hstage-card.is-directory { --route: #0b7a52; background: #0b7a52; color: #fff; border-color: rgb(255 255 255 / 0.35); }
+.bn-hstage-card.is-recruitment { --route: var(--counter-indigo); background: var(--counter-highlight); color: var(--counter-on-highlight); border-color: var(--counter-highlight-edge); }
+.bn-hstage-card.is-recruitment .bn-hstage-icon { border-color: rgb(18 20 27 / 0.35); }
+.bn-hstage-card.is-recruitment .bn-hstage-copy small { opacity: 0.85; }

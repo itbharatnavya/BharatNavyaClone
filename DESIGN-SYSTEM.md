@@ -82,6 +82,8 @@ Weights: 400 body, 600 to 700 UI and headings, 800 for price figures. Tailwind's
 
 ## 7. Deliberate custom designs
 
+These are intentional and are **not** to be normalised without the owner's say-so. Scoped colour exception: on the Home hero stage the Directory card is green (`#0b7a52`) and the Recruitment card is the amber highlight, to keep the hero lively; the rest of the platform stays blue plus one amber CTA.
+
 These are intentional and are **not** to be normalised without the owner's say-so: the Home hero stage (animated cards), the Directory and Recruitment landing heroes, the status strip, the rotating image ad and the category marquee, the floating header and docked search. Any change that touches how those look needs a conversation first.
 
 ## 8. Keeping it consistent

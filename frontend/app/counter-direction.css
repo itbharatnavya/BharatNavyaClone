@@ -677,7 +677,7 @@
 }
 
 .counter-home-page .bn-home-hero h1 span {
-  color: var(--counter-sky);
+  color: var(--counter-highlight); /* the one key highlight: "The B2B platform" pops on the blue hero */
 }
 
 

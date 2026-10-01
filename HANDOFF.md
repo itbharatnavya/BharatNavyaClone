@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-Updated: 1 October 2026 (afternoon session; see section 0)
+Updated: 1 October 2026 (end of the long design session; see section 0)
 
 Official branch: `design`
 
@@ -16,56 +16,52 @@ Git identity: `itbharatnavya <314251907+itbharatnavya@users.noreply.github.com>`
 
 This is the single continuation source of truth for current Bharat Navya product and visual work. Read it after `AGENTS.md`. `HANDOVER.md` is legacy engineering/setup context only; the tracked `Design/` Vite tree is a frozen reference and must not be used as the implementation target.
 
-## 0. Current working state (1 October 2026, afternoon session)
+## 0. Current working state (1 October 2026, end of the long design session)
 
-**Design system (read first for any UI work): `DESIGN-SYSTEM.md`.** It supersedes the colour and style notes in section 5 below and in older docs (no orange, no green except success, white cards on the light-blue page, one CTA look, round white icon-only close buttons). Also added in the latest session: themed dropdowns for every `<select>` (`DropdownEnhancer`), new `Filters` / `JobFilters`, list/grid toggle and ad-below-results on `/search`, Post requirement pill + assistant bubble on all pages, company profile and About/Pricing/Blog restyled into the shell. `RecruitmentGate` is now a pass-through: Recruitment pages are always live (the old "Coming soon" belonged to the earlier suite build).
+**Read `DESIGN-SYSTEM.md` first for any UI work** (after `AGENTS.md`). It is the single source of truth for colour, type, radius, spacing, CTAs and components, and it overrides older style notes in section 5 below and in `CLAUDE.md` / `DESIGN.md` (no orange cards, no green except success, white cards on the light-blue page, one amber primary CTA, round white icon-only close buttons).
 
+### Git and where things are
 
-Read this first. It supersedes the older "committed and pushed" wording above for the work listed here.
+- Worktree: `~/.codex/worktrees/design-integration-merge/BharatConnect`, branch `codex/design-integration-merge`.
+- **On `origin/design` (pushed at the owner's request):** `fe23af9` "Redesign heroes, header and catalog pages". That already contains the header and popup work, hero rebuilds, feed band, category marquee, HeroStage, floating header, docked-search flight, ListingCard, Categories page and the earlier handoff.
+- **Local only, not pushed yet:** `a2fed6d` (checkpoint), `06301ab` (Recruitment live + radius/type token migration), `099d929` (amber highlight, contrast fixes, contrast audit script), plus uncommitted edits on top (Home hero stage route colours, amber "The B2B platform" title, DESIGN-SYSTEM.md and this file). Push only when the owner says so, and only to `origin/design`.
+- `tmp/phone-audit.mjs` is an untracked stray from earlier work; never commit it.
 
-**Nothing from this session is committed or pushed.** It sits uncommitted in `~/.codex/worktrees/design-integration-merge/BharatConnect` (branch `codex/design-integration-merge`, HEAD `2baba22`, equal to `origin/design`): about 38 modified files plus two new components (`frontend/components/discovery/LandingHero.tsx`, `frontend/components/recruitment/RecruitmentHero.tsx`). Stage by file when committing; do not sweep in `backend/DB/*`, the Feni PDFs or the other pre-existing dirty documents. `backend/scripts/seed-demo-ads.js`, `seed-demo-stories.js` and `seed-recruitment-demo.js` were edited on purpose (see "Seeds" below). Checks last run clean: `npx tsc --noEmit`, `npm run validate:design`, `git diff --check`. ESLint is not configured in this project (`next lint` prompts for setup), so there is no lint result.
+### Runtime
 
-### Runtime state left behind
+- **Frontend (port 3000):** `cd frontend && BACKEND_URL=http://localhost:4000 npm run dev`. Next 14.2 + Turbopack dev is flaky after hot reloads: you may see `TypeError: Cannot read properties of null (reading 'useContext')` or old output on some routes. It is the dev server, not the code. Fix: stop it, `rm -rf .next`, start again (or run `npx next dev` without Turbopack). No env flag is needed for Recruitment any more.
+- **Backend (port 4000):** `node index.js` in `backend/`. On this branch it requires Postgres (`PG_URL` in the git-ignored `backend/.env`); local DB `bharatnavya`. Load order: `npm run setup-pg-schema`, `npm run migrate-all`, `npm run seed-recruitment-demo`, `npm run seed-demo-stories`, `node scripts/seed-demo-ads.js`, then the Directory blogs. `migrate-all` fails for `inquiries`, `blogs`, `leads-ledger`, `quotes` and **deletes rows not in the JSON files**: re-running it wipes the seeds, so re-seed in the same order afterwards. Production cannot reach a local backend (section 9); the developer wires the real database.
 
-- **Frontend, port 3000:** the Codex-started `next dev --turbo` process. At the end of the session `/about` and `/blog` return **500** there ("Cannot read properties of null (reading 'useContext')"). It is not the code: the committed code and the current working tree both serve those pages 200 on a fresh server (verified on a throwaway checkout on port 3200, since removed). The long-running process is stuck, most likely after a CSS syntax error mid-session. Restart it (`cd frontend && npm run dev`); it was not restarted because it is not this session's process.
-- **Backend, port 4000:** started by this session (`node index.js` in `backend/`). On this branch the backend **requires Postgres** (`PG_URL`); the old JSON file-DB mode is gone. A local database `bharatnavya` was created (the unrelated `bnchat` database was not touched) and `backend/.env` (git-ignored) holds `PG_URL=postgresql://<user>@localhost:5432/bharatnavya` and `PORT=4000`.
-- **How the local data was loaded, in this order:** `npm run setup-pg-schema`, `npm run migrate-all`, `npm run seed-recruitment-demo`, `npm run seed-demo-stories`, `node scripts/seed-demo-ads.js`, then the 4 Directory blogs from `backend/DB/blogs.json` inserted straight into the `blogs` table with `author_type = 'seller'` (the fixture has no `author_type`, so `migrate-all` rejects it).
-- **`migrate-all` caveats:** it fails for `inquiries.json`, `blogs.json`, `leads-ledger.jsonl` and `quotes.json` (fixture/schema drift), and it **deletes any row not present in the JSON files**. Re-running it after the seed scripts wipes the recruitment, story and ad seeds, so re-run the seeds after it, in the order above.
-- Production still cannot reach a local backend (see section 9); the developer owns connecting the real database. The owner asked for the frontend to be designed against the API, with the developer wiring the data.
+### What the latest stretch changed (all in the frontend)
 
-### What changed this session
+- **Recruitment is live:** `RecruitmentGate` is a pass-through (the old "Coming soon" screen belonged to the earlier suite build).
+- **Colour system:** page `--canvas #dce9fb`; white surfaces; blues by purpose (`--counter-indigo` active/selected, `--counter-green #2556c8` Directory surfaces, `--counter-sky`, `--counter-focus`, `--counter-indigo-soft`); **one amber highlight `--counter-highlight #ffbe2e` for every primary CTA** and the Home title accent; green only for success/verified; legacy `--counter-saffron` / `--action` now alias the primary blue. Scoped exception: on the Home hero stage the Directory card is green `#0b7a52` and the Recruitment card is amber.
+- **Type and radius scale enforced:** 7 font sizes (`--fs-xs` 12px to `--fs-3xl`), radii `--r-xs/sm/md/lg/pill` plus circle. A migration mapped about 1,400 declarations in CSS and TSX; Tailwind `text-*` and `rounded-*` map to the same steps. All hero titles use `--fs-3xl`.
+- **Dropdowns:** `components/DropdownEnhancer.tsx` (mounted in `app/layout.tsx`) replaces every `<select>` popup with a themed list (filter box above 10 options); the select stays the source of truth. `data-native` opts out.
+- **Filters:** `components/Filters.tsx` and `components/recruitment/JobFilters.tsx` share `.flt*` styles (applied chips, switches, chip price/rating, show more, bottom sheet on phones). `/search` has a list/grid toggle (`UnifiedListingWorkbench`), the ad sits below the results, and the hero is the Directory blue.
+- **Listing preview pane** (`lp-*`): price first, plain facts list, round white close. **Listing page:** Save is an icon beside the badges, smaller title, hashtags removed, one-accent seller card, photo-first on phones with a fixed "Contact seller" button.
+- **Company profile** (`/seller/[slug]`, `.cp-*`) rebuilt: stats, work evidence second, facts, offers via `ListingCard hideSeller`, contained ad, sticky inquiry card. About / Pricing / Blog / career guides moved into the inset rounded shell. Offer, Features, About, Home heroes now share the same title size.
+- **Floating widgets:** assistant bubble on every page except sign-in and admin; `FloatingRfqButton` ("Post requirement", amber) stacked above it on Directory pages.
+- **Directory / Recruitment landings:** products section sits below categories with compact `ListingCard` tiles; the "From what you need…" step sections were removed; Home hero stage cards are distinct (white, green, amber, pale).
+- **Legibility:** every sub-12px text size raised; `--faint` darkened to `#54627a`; blue-surface text fixed (Home contrast board, closing bands, pricing plan, pressed tabs). `frontend/scripts/contrast-audit.mjs` lists text below 4.5:1 per page (usage at the top of the file; needs headless Chrome on :9333). Last run: 0 groups on the 20 key pages.
 
-- **Header:** on desktop, when the search docks into the header, the hamburger now opens a dropdown (it toggled but stayed hidden above 899px). The docked location chip opens its "Keep exploring" search popup directly below the header at every width (it was a bottom sheet).
-- **Guest reminder:** `GuestAccountNudge` now opens the shared `ContactAuthModal` with `purpose="account"` instead of its own card; timing and the 7-day dismissal are unchanged.
-- **Home:** the outlined container around the four suite cards and the One / Four / Before ledger strip were removed.
-- **Directory hero** (`LandingHero`): photo-slideshow underlay with a route-colour scrim, no subtitle, compact search (lens, arrow-only submit), four short category chips, three neutral action cards straddling the bottom edge; phone/tablet use the same underlay with a vertical fade and a swipe row of cards.
-- **Recruitment hero** (`RecruitmentHero`): deliberately different layout (copy + search + function shortcuts, live "Latest roles" board, two audience paths); no subtitle.
-- **Feed band** (`.bn-feed` in `counter-soft-system.css`): full section width; short status strip (white card, 4.75rem bubbles, no title or dot, hidden when empty), tall image-only promotion, and the category heading as a tab with a rounded straight-sided step and a rounded inside corner, joined to the body.
-- **Category body** (`CategoryShowcase`): two auto-scrolling card rows (8 live categories or job functions; opposite directions; plays by default, hover/focus pauses, reduced motion gives scrollable rows). No pause button and no browse-all card; the heading button is the only browse-all link.
-- **Promotion:** the feed-band ad is image-only (`imageOnly` prop): the card is the photo and one link, with a short title on a scrim, the Sponsored label and the rotation dots. `ApiAdvertisingSlot` rotates up to 5 ads every 4 seconds on every page that uses it.
-- **Search suggestions:** sit above the hero cards, with larger option text and a thin custom scrollbar.
-- **Hover text colour removed everywhere (owner request, temporary):** 19 `:hover` rules lost their `color` declaration (focus/selected states keep it via companion rules) and all Tailwind `hover:text-*` / `group-hover:text-*` classes were stripped. Background/border/shadow hover effects are unchanged. A hover-and-compare check over Home, Directory, Recruitment, Search, Jobs, Pricing, Login, Sell, Categories, About and Blog found zero colour changes (and a deliberate control rule was detected, so the check works).
-- **Category photos:** `lib/categoryImages.ts` now maps by what the files actually show (several `/demo` names do not match their content).
-- **Seeds:** seeded active statuses never expire (`SEEDED_STATUS_EXPIRES_AT`); two untargeted `category_top` ads and a fifth `recruitment_home` ad were added so each landing slot has 5. These edits only take effect when the developer re-runs the seeds on the real database.
+### Gotchas
 
-**Home hero stage (added after the afternoon session).** `frontend/components/home/HeroStage.tsx` replaces the old `.bn-home-suite` row: four cards (flex-grow 1 vs 2.2), one active at a time, each playing a scripted scene (typing, fake cursor, click) as a pure function of a 50ms clock `t`. Rows come from `getFeaturedSellers` / `getJobs`, skeleton bars if empty. `HomeAgent` has a `variant="stage"`. CSS is the `bn-hstage-*` / `bn-scene-*` block at the end of `counter-soft-system.css` (not `bn-stage-*`, which a legacy rule in `bharat-navya-home.css` styles). Dead now: `.bn-home-suite` CSS and `HomeAgent variant="feature"`. Header is a floating bar (`.bn-header.is-counter-public`), page canvas is light blue (`--canvas #dce9fb`, `--counter-ivory #eaf3ff`).
+- **Do not use `bn-stage*` class names** (a legacy rule in `bharat-navya-home.css` styles `.bn-stage span`); the hero stage uses `bn-hstage-*`.
+- `lib/routePresentation.ts` `ROOT_ROUTES` must list every folder under `app/` that is not a category; any other first path segment is treated as a category page (floating header, Directory pill).
+- CTA contract is a long `:is(...)` list at the end of `counter-soft-system.css` with `!important`. Add new CTA classes to that list instead of restyling buttons locally. Rules with a higher-specificity blanket link colour (for example the Offer hero) need an explicit override.
+- When appending or replacing blocks in `counter-soft-system.css`, never replace "from marker to end of file": that once silently dropped later rules. Parse all stylesheets with PostCSS (`postcss.parse`) after bulk edits.
+- `living-evidence.css` `.le-hero > .le-shell { z-index: 1 }`: stacking rules need a parent selector and matching media-query specificity.
+- The `.counter-directory-page > section` rule gives every top-level section a card treatment; non-card sections opt out explicitly.
 
-**Catalog pass (product/service/category pages).** `ListingCard` is one design in two layouts (`.lcard*` in `counter-soft-system.css`; props unchanged, `RatingPill` still exported). `/categories` is rebuilt as an even photo grid (`.bn-catalog*`); `SubcategoryTiles` uses `imgFor` so every tile has a photo (`.bn-sub*`). `lib/routePresentation.ts` now treats categories/brands/collections and any `app/[category]` path as Counter public routes (floating header), keep `ROOT_ROUTES` in sync with `app/` folders. Listing detail: summary order is title, place, price; photo first on phones; `.ld-mobile-cta` is a fixed "Contact seller" button. Ad chip (`.le-ad-disclosure`) had no background token and sat bare over photos; fixed. Hero search "flies" into the header via `useDockFlight` (`SectionSearchDock.tsx`, pages publish `data-dock-source`). Dev-server note: after editing `lib/` modules, a stale Turbopack cache can leave some routes on old output; `rm -rf .next` and restart.
+### Waiting on the owner
 
-### Gotchas learned this session
-
-- `living-evidence.css` sets `.le-hero > .le-shell { z-index: 1 }`. New hero/band stacking rules use a parent selector to outrank it, and their media-query counterparts must keep the same specificity or they silently lose (this broke the phone layout once).
-- Blind regex clean-ups of CSS can leave dangling selectors that merge into the next rule and take the whole page down. After any bulk CSS edit, parse every stylesheet with PostCSS (`postcss.parse`) before trusting it.
-- Any screenshot helper that injects `animation: none` will also report the marquee and ad rotation as static; remove it before measuring motion.
-- The `.counter-directory-page > section` rule gives every top-level section a rounded, shadowed card treatment; sections that are not cards (the feed band) must opt out explicitly.
-
-### Open questions for the owner
-
-1. Each page still has its older section below the new category block (six hard-coded service families on Directory, role families on Recruitment). They now overlap with the new category rows. Remove them?
-2. Ad rotation lives in the shared `ApiAdvertisingSlot`, so listing, job, seller and brand pages rotate too. Keep, or limit to the landing pages?
-3. Recruitment's heading tab has empty space under it because its job-function cards are a full-width grid. Shrinking it needs a shorter promotion card; leave as is?
-4. Category rows show the same card twice at once on wide screens because each row has only 4 cards. More than 8 categories would avoid the repeat.
-5. Restore hover text colours when the owner is ready (see `git diff`).
+1. **Workspace pages** (dashboards, admin, Sell, Post-job, Profile) were only touched through tokens and have not been reviewed; the owner will provide credentials so they can be restyled and checked.
+2. **Sponsored-slot placement** on brand, category and other pages (only `/search` moved below results): owner will say.
+3. Directory vs Recruitment are both blue (owner: leave for now). Whether the Home stage route colours (green Directory, amber Recruitment) should also colour the route landing heroes is undecided.
+4. The Recruitment hero "Search jobs" button renders as a tall amber block beside the stacked fields; slimmer?
+5. Older sections still below the new category block (six service families on Directory, role families on Recruitment); category rows repeat cards because each has only 4; hover text colours are still removed (owner request, temporary, see `git log`).
+6. Push the local commits to `origin/design`.
 
 ## 1. Start here in a new session
 
