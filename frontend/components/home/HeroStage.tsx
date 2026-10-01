@@ -110,6 +110,8 @@ function RecruitmentScene({ t, end, jobs }: SceneProps) {
   </div>;
 }
 
+const MARKS = [ICONS.agent, ICONS.directory, ICONS.recruitment, ICONS.growth]; // watermark glyph per card
+
 const BARS = [38, 52, 44, 66, 58, 80, 92];
 function GrowthScene({ t }: SceneProps) {
   const at = (ms: number) => t >= ms;
@@ -182,7 +184,10 @@ export default function HeroStage() {
     const isActive = !reduced && active === index;
     return {
       className: `bn-hstage-card${isActive ? " is-active" : ""}`,
-      scene: <div className="bn-hstage-scene" aria-hidden><Scene t={isActive ? t : ENDS[index]} end={ENDS[index]} companies={companies} jobs={jobs} /></div>,
+      scene: <>
+        <span className="bn-hstage-mark" aria-hidden><Icon d={MARKS[index]} /></span>
+        <div className="bn-hstage-scene" aria-hidden><Scene t={isActive ? t : ENDS[index]} end={ENDS[index]} companies={companies} jobs={jobs} /></div>
+      </>,
     };
   };
   const ask = card(0), directory = card(1), recruitment = card(2), growth = card(3);

@@ -4580,3 +4580,16 @@ main :is(h1, h2, h3, h4),
   .bn-hstage-card:not(.is-active) .bn-hstage-copy strong { font-size: var(--fs-xl); }
   .bn-hstage-card:not(.is-active) .bn-hstage-copy small { font-size: var(--fs-sm); -webkit-line-clamp: 3; }
 }
+
+/* Resting cards carry a large watermark of their icon in a darker shade of the
+   card colour; it fades out while the card plays its scene. Desktop only. */
+.bn-hstage-mark { display: none; }
+@media (min-width: 1101px) {
+  .bn-hstage-mark { display: block; position: absolute; z-index: 0; left: 50%; top: 46%; width: 62%; max-width: 12rem; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; transition: opacity 0.2s ease; }
+  .bn-hstage-mark svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+  .bn-hstage-card.is-active .bn-hstage-mark { opacity: 0; }
+  .bn-hstage-card.is-ask .bn-hstage-mark { color: color-mix(in srgb, var(--counter-indigo) 10%, white); }
+  .bn-hstage-card.is-directory .bn-hstage-mark { color: color-mix(in srgb, #0b7a52 82%, black); }
+  .bn-hstage-card.is-recruitment .bn-hstage-mark { color: color-mix(in srgb, var(--counter-highlight) 86%, #8a5a00); }
+  .bn-hstage-card.is-growth .bn-hstage-mark { color: color-mix(in srgb, var(--counter-indigo-soft) 84%, var(--counter-indigo)); }
+}
