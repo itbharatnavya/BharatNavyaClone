@@ -282,7 +282,7 @@
 .counter-about-blog-grid p { -webkit-line-clamp: 3; }
 
 .counter-about-close,
-.counter-pricing-close { padding-block: clamp(3rem, 6vw, 5rem); background: var(--counter-ink); color: white; }
+.counter-pricing-close { padding-block: clamp(3rem, 6vw, 5rem); background: var(--counter-indigo); color: white; }
 .counter-about-close .counter-support-shell,
 .counter-pricing-close .counter-support-shell { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
 .counter-about-close h2,
@@ -290,7 +290,7 @@
 .counter-about-close p,
 .counter-pricing-close p { max-width: 56ch; margin-top: 0.75rem; color: var(--counter-on-ink); }
 .counter-support-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.counter-support-actions > a { min-height: 3.5rem; display: inline-flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.85rem 1.1rem; border: 1px solid #4a4f5d; border-radius: var(--counter-button-radius, 1.25rem) !important; background: transparent; color: white; font-weight: 800; }
+.counter-support-actions > a { min-height: 3.5rem; display: inline-flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.85rem 1.1rem; border: 1px solid rgba(255, 255, 255, 0.38); border-radius: var(--counter-button-radius, 1.25rem) !important; background: transparent; color: white; font-weight: 800; }
 .counter-support-actions > a:first-child { background: var(--counter-saffron); border-color: var(--counter-saffron); color: var(--counter-ink); }
 
 .counter-pricing-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.6fr); gap: 4rem; align-items: end; }
@@ -1487,6 +1487,10 @@
 .bn-footer.is-counter-public .bn-footer-bottom { border-color: rgba(255, 255, 255, 0.24); }
 .bn-footer.is-counter-public .bn-footer-grid > div:nth-child(2) li:first-child > a > span:first-child { background: var(--counter-green) !important; color: white !important; }
 .bn-footer.is-counter-public .bn-footer-grid > div:nth-child(2) li:nth-child(2) > a > span:first-child { background: var(--counter-saffron) !important; color: var(--counter-ink) !important; }
+
+@media (max-width: 760px) {
+  .bn-footer.is-counter-public { padding-bottom: 6rem; }
+}
 
 @media (max-width: 899px) {
   .counter-about-hero-grid,

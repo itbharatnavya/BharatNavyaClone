@@ -212,6 +212,14 @@ Evidence recorded for the final back-to-top correction (`be9dfa9`):
 - Live Directory checks confirmed the control is absent at the top, appears only after the hero/top section has been passed, sits beside the unchanged AI assistant on desktop and 390px mobile, disappears immediately after activation, and disappears when manually scrolling back above the top-section boundary.
 - Commit `be9dfa9` is pushed to `origin/design`.
 
+Evidence recorded for the Feni-content and Mahir-feedback source audit (2026-10-01):
+
+- All 12 pages across Feni's four supplied PDFs were rendered and checked against the active `frontend/` implementation. Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, Register, and the shared footer retain the approved content and hierarchy; several shortened Directory, registration, and footer passages were restored to the supplied meaning.
+- Mahir's complete available WhatsApp export was reviewed directly: typed feedback, all 14 image attachments, all 17 video attachments, and the existing voice-note review record. The implemented UI reflects the confirmed feedback on borders, alignment, text hierarchy, logo treatment, restrained non-black public surfaces, Directory scanability, Recruitment location/workplace clarity, Navya AI naming, and the Axay-requested back-to-top behavior.
+- The raw Blog API failure text was replaced by a calm, branded public error state. About and Pricing closing surfaces now use Counter indigo instead of near-black, and mobile public footers reserve enough bottom space for the unchanged assistant plus back-to-top controls.
+- A fresh desktop/mobile browser pass covered `/`, `/directory`, `/recruitment`, `/about`, `/blog`, `/pricing`, `/login`, and `/register` at 1440×900 and 390×844. The document width stayed within the viewport on every audited route; spacing, text wrapping, fixed-control clearance, and footer layout were checked from rendered output.
+- The only unresolved design/product choice remains the exact Directory highlights content and counts. Parth said he will confirm that choice separately, so no unsupported metrics or highlights were invented. Google credentials/backend persistence, international OTP/provider support, deployment, and production API acceptance remain developer-owned.
+
 Run these from `frontend/` after changes:
 
 ```bash

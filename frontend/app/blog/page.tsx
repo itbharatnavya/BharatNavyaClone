@@ -60,7 +60,9 @@ export default function BlogIndexPage() {
           ))}
         </div>
       ) : error ? (
-        <p style={{ color: "var(--error)" }}>{error}</p>
+        <div className="counter-public-state" role="status">
+          Updates are temporarily unavailable. Please try again shortly.
+        </div>
       ) : blogs.length === 0 ? (
         <div
           className="card card-flat card-pad"

@@ -370,8 +370,8 @@ const DICT: Record<string, { en: string; hi: string }> = {
   "auth.createAccountLink": { en: "Create an account", hi: "खाता बनाएँ" },
   "auth.register.asideTitle": { en: "Start building your place on Bharat Navya.", hi: "भारत नव्य पर अपनी जगह बनाना शुरू करें।" },
   "auth.register.asideCopy": {
-    en: "Create one account to represent your business or professional profile, manage activity, and access opportunities across the platform.",
-    hi: "अपने व्यवसाय या पेशेवर प्रोफ़ाइल का प्रतिनिधित्व करने, गतिविधि संभालने और पूरे प्लेटफ़ॉर्म के अवसरों तक पहुँचने के लिए एक खाता बनाएँ।",
+    en: "Create one account to represent your business or professional profile, manage your activity, respond to enquiries, and access opportunities across the platform.",
+    hi: "अपने व्यवसाय या पेशेवर प्रोफ़ाइल का प्रतिनिधित्व करने, अपनी गतिविधि संभालने, पूछताछ का जवाब देने और पूरे प्लेटफ़ॉर्म के अवसरों तक पहुँचने के लिए एक खाता बनाएँ।",
   },
   "auth.register.title": { en: "Create your account", hi: "अपना खाता बनाएँ" },
   "auth.register.subtitle": { en: "Create your account to access more of Bharat Navya.", hi: "भारत नव्य की अधिक सुविधाओं तक पहुँचने के लिए अपना खाता बनाएँ।" },

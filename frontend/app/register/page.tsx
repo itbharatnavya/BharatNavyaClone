@@ -155,7 +155,7 @@ export default function RegisterPage() {
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 15 }}>
             {t(
               "auth.register.asideCopy",
-              "Create one account to represent your business or professional profile, manage activity, and access opportunities across the platform."
+              "Create one account to represent your business or professional profile, manage your activity, respond to enquiries, and access opportunities across the platform."
             )}
           </p>
         </div>
