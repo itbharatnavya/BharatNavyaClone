@@ -3005,13 +3005,13 @@ main :is(h1, h2, h3, h4),
 }
 
 .bn-landing-copy .le-hero-search {
-  width: min(100%, 36rem);
+  width: min(100%, 41rem);
   margin: var(--counter-space-5) 0 0;
 }
 
 /* Search: lens first, arrow-only submit, a compact bar. */
 .bn-landing-hero .bn-section-search {
-  grid-template-columns: minmax(0, 1fr) minmax(7.5rem, 9.5rem) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 12rem) auto;
   padding: 0.3rem;
   border-radius: var(--r-lg);
 }
@@ -4561,3 +4561,22 @@ main :is(h1, h2, h3, h4),
 .bn-hstage-card.is-recruitment { --route: var(--counter-indigo); background: var(--counter-highlight); color: var(--counter-on-highlight); border-color: var(--counter-highlight-edge); }
 .bn-hstage-card.is-recruitment .bn-hstage-icon { border-color: rgb(18 20 27 / 0.35); }
 .bn-hstage-card.is-recruitment .bn-hstage-copy small { opacity: 0.85; }
+
+/* Search selects never clip their value: ellipsis if a long place still overflows. */
+.bn-section-search select { text-overflow: ellipsis; }
+
+/* Resting hero cards (desktop): icon top-left, arrow top-right, name and line
+   anchored to the bottom, so the card is filled edge to edge instead of floating
+   a title in the middle. The active card keeps the scene-plus-footer layout. */
+@media (min-width: 1101px) {
+  .bn-hstage-card:not(.is-active) .bn-hstage-label {
+    position: absolute; inset: 0; min-height: 0; transform: none;
+    display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr;
+    align-items: start; padding: 1.4rem;
+  }
+  .bn-hstage-card:not(.is-active) .bn-hstage-icon { width: 3rem; height: 3rem; grid-area: 1 / 1; }
+  .bn-hstage-card:not(.is-active) .bn-hstage-label > b { grid-area: 1 / 2; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); border-radius: 50%; }
+  .bn-hstage-card:not(.is-active) .bn-hstage-copy { grid-area: 2 / 1 / 3 / 3; align-self: end; gap: 0.35rem; }
+  .bn-hstage-card:not(.is-active) .bn-hstage-copy strong { font-size: var(--fs-xl); }
+  .bn-hstage-card:not(.is-active) .bn-hstage-copy small { font-size: var(--fs-sm); -webkit-line-clamp: 3; }
+}
