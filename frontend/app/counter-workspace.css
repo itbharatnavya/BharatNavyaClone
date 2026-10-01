@@ -434,9 +434,6 @@
 @media (max-width: 640px) {
   .counter-workspace-page { padding-top: 2rem !important; }
   .counter-workspace-page > h1 { font-size: 2.75rem !important; }
-  .counter-auth-tabs { flex-direction: column; }
-  .counter-auth-tabs > button { border-right: 0 !important; border-bottom: 1px solid var(--counter-line) !important; }
-  .counter-auth-tabs > button:last-child { border-bottom: 0 !important; }
   .counter-listing-type { min-height: 11rem; }
   .counter-role-gate { grid-template-columns: 1fr !important; }
   .counter-role-option { min-height: 10rem; border-right: 0 !important; border-bottom: 1px solid var(--counter-line) !important; }

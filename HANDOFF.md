@@ -8,7 +8,7 @@ Official application: `frontend/`
 
 Official committed checkpoint: the current tip of `origin/design`; verify it with `git rev-parse origin/design` before continuing.
 
-Current implementation state: Mahir feedback reconciliation, the `feature/design-integration` merge, search repair, and the 1 October live UI-polish requests are committed to and pushed on `origin/design`. The latest polish includes the Ask Navya glow, blue selected Recruitment tab, compact dial-code-only phone selector, centred guest-account reminder, and About in the shared desktop/mobile navigation. Deployment and backend integration remain developer-owned work outside this design handoff.
+Current implementation state: Mahir feedback reconciliation, the `feature/design-integration` merge, search repair, and the 1 October live UI-polish requests are committed to and pushed on `origin/design`. The latest polish includes the Ask Navya glow, blue selected Recruitment tab, compact Counter-styled international phone picker, side-by-side mobile login methods, centred guest-account reminder, and About in the shared desktop/mobile navigation. Deployment and backend integration remain developer-owned work outside this design handoff.
 
 Continuation note: if the current Codex task appears visually blank, start a fresh task in this repository and read `AGENTS.md` followed by this file. Do not assume the blank task pane means the working tree was lost; confirm with `git status --short` and continue from the scoped local changes documented here.
 
@@ -182,7 +182,8 @@ Primary live style sources:
 - Login includes the frontend presentation and integration hook for the developer-owned Google Identity Services flow. Only Google is exposed; Facebook and Apple remain absent. The control appears only when `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is configured. Backend endpoint behavior, credentials, persistence, and deployment acceptance remain outside the UI scope.
 - Feni content was integrated into Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, and Register while preserving behavior and localization boundaries.
 - About now includes an API-backed preview of up to four current blog posts before its closing actions. The cards use a dense responsive grid: four across on wide screens, three at intermediate desktop widths, two on tablet, and one on narrow phones. The full `/blog` route and blog API remain unchanged.
-- The country selector in shared phone fields shows only the selected dial code when closed, is sized for supported codes, and keeps full dial-code plus country-name labels inside the dropdown.
+- The country selector in shared phone fields shows only the selected dial code when closed and uses a compact width sized for supported codes. Its opened list is a bounded, scrollable Counter-styled panel with full dial-code plus country-name labels, visible selection/focus states, outside-click dismissal, and keyboard navigation.
+- Mobile OTP and Email & password remain equal-width tabs in one row on narrow login layouts instead of stacking and consuming extra vertical space.
 - The delayed guest-account reminder is centred in the viewport on desktop and mobile, including throughout its entrance animation. It remains dismissible and non-modal.
 
 ## 7. Verification evidence and how to re-check
@@ -245,6 +246,7 @@ Evidence recorded for the live UI-polish follow-up (2026-10-01):
 - About was confirmed in both the desktop header and opened mobile menu, with `/about` receiving the selected state.
 - `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, the Impeccable layout detector, and `git diff --check` passed for the completed polish commits.
 - The frontend preview was restored at `http://localhost:3000` after the latest build. The backend was not running locally, so expected `/api/*` proxy failures remain outside this frontend-only verification.
+- The final auth-control follow-up confirmed side-by-side login tabs and the compact country trigger in the rendered mobile layout. The custom country list was checked visually on login and registration; Arrow Up/Down, Home/End, Enter/Space, Escape, focus return, outside click, accessible names, selected-state announcement, and bounded scrolling are implemented in the shared component used by login, registration, and contact/apply auth.
 
 Run these from `frontend/` after changes:
 
@@ -297,14 +299,7 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-Immediate pending UI requests—neither was implemented before this handoff update:
-
-1. Keep the **Mobile OTP** and **Email & password** login tabs side by side at narrow widths instead of stacking them. The cause is the `@media (max-width: 640px)` rule in `frontend/app/counter-workspace.css` that changes `.counter-auth-tabs` to `flex-direction: column`. Preserve two equal-width tabs in one row and verify readable labels at approximately 390px.
-2. Refine the international phone country picker. The closed control correctly shows only the dial code, but it still appears too wide for values such as `+91`, and the opened native operating-system `<select>` menu does not match the Counter visual direction. Replace the native presentation with an accessible, keyboard-operable styled listbox/popover that uses the project palette, typography, borders, radii, focus treatment, and a bounded scroll area. Keep full `dial code · country name` labels in the opened list, show only the dial code when closed, and size the closed control compactly for the longest supported dial code plus its disclosure icon. Verify the shared field wherever it appears: login, registration, and contact/apply authentication, at desktop and approximately 390px mobile widths.
-
-After completing either item, run the normal design, TypeScript, production-build, and rendered-browser checks. For the country picker also verify arrow-key navigation, Enter/Space selection, Escape dismissal, focus return, screen-reader naming, no clipping, and no horizontal overflow.
-
-The other scoped product choice still pending is the exact Directory highlights content and counts, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, dependency remediation, database-backed test configuration, and production API smoke testing are developer-owned and intentionally excluded from this design continuation.
+No immediate auth UI request remains from this pass. The scoped product choice still pending is the exact Directory highlights content and counts, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, dependency remediation, database-backed test configuration, and production API smoke testing are developer-owned and intentionally excluded from this design continuation.
 
 ## 11. Non-negotiable hygiene
 
