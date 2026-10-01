@@ -4593,3 +4593,28 @@ main :is(h1, h2, h3, h4),
   .bn-hstage-card.is-recruitment .bn-hstage-mark { color: color-mix(in srgb, var(--counter-highlight) 86%, #8a5a00); }
   .bn-hstage-card.is-growth .bn-hstage-mark { color: color-mix(in srgb, var(--counter-indigo-soft) 84%, var(--counter-indigo)); }
 }
+
+/* Section heads (Home, Directory, Recruitment): title on the left, the blurb
+   bottom-aligned with it on the right and the action tucked beneath the blurb.
+   Buttons never wrap or sit off-centre. */
+.le-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; text-align: center; white-space: nowrap; }
+
+:is(section, div) header.le-section-head.le-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  grid-auto-rows: auto;
+  align-items: end;
+  column-gap: clamp(2rem, 5vw, 4rem);
+  row-gap: var(--counter-space-3);
+}
+header.le-section-head > div { grid-column: 1; grid-row: 1 / span 2; max-width: none; }
+header.le-section-head > div > p { margin-top: var(--counter-space-2); max-width: 34rem; font-size: var(--fs-md); line-height: 1.55; }
+header.le-section-head > p { grid-column: 2; grid-row: 1; align-self: end; max-width: 34rem; margin: 0; font-size: var(--fs-md); line-height: 1.55; }
+header.le-section-head > a.le-button { grid-column: 2; grid-row: 2; align-self: start; justify-self: start; }
+/* No blurb beside it: the action sits at the bottom right of the head. */
+header.le-section-head:not(:has(> p)) > a.le-button { grid-row: 1 / span 2; align-self: end; justify-self: end; }
+
+@media (max-width: 900px) {
+  :is(section, div) header.le-section-head.le-section-head { grid-template-columns: minmax(0, 1fr); align-items: start; row-gap: var(--counter-space-2); }
+  header.le-section-head > div, header.le-section-head > p, header.le-section-head > a.le-button { grid-column: 1; grid-row: auto; justify-self: start; align-self: start; }
+}
