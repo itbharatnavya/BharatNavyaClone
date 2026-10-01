@@ -4928,3 +4928,41 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .ps-role-pane .bn-role-preview .bn-evidence-media { aspect-ratio: 16 / 9; height: auto; min-height: 0; }
 .ps-role-pane .bn-role-preview .bn-evidence-media img { width: 100%; height: 100%; object-fit: cover; }
 .bn-rmatch-side.is-role .bn-rmatch-id strong { white-space: normal; line-height: 1.2; }
+
+/* Directory products: category tabs, a spotlight card and a "more" tile */
+.ps-products { display: grid; gap: var(--counter-space-4); }
+.ps-products-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.ps-tabs { display: flex; gap: 0.4rem; max-width: 100%; overflow-x: auto; padding: 0.25rem; border: 1px solid var(--counter-line); border-radius: var(--r-pill); background: #fff; scrollbar-width: none; }
+.ps-tabs::-webkit-scrollbar { display: none; }
+.ps-tabs button { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.4rem; padding: 0 1rem; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--counter-muted); font: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+.ps-tabs button:hover { color: var(--counter-ink); background: var(--counter-indigo-soft); }
+.ps-tabs button[aria-selected="true"] { background: var(--counter-indigo); color: #fff; }
+.ps-tabs small { padding: 0.05rem 0.45rem; border-radius: var(--r-pill); background: color-mix(in srgb, currentColor 14%, transparent); font-size: var(--fs-xs); }
+.ps-products-count { margin: 0; color: var(--counter-muted); font-size: var(--fs-sm); font-weight: 600; }
+.ps-product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); transition: opacity 0.2s ease; }
+.ps-product-grid.is-busy { opacity: 0.55; }
+.ps-product-grid > li { animation: ps-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes ps-pop { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+.ps-product-grid.has-spotlight > li.is-spotlight { grid-column: span 2; grid-row: span 2; }
+.ps-product-grid.has-spotlight > li.is-spotlight .lcard-media { flex: 1 1 auto; aspect-ratio: auto; min-height: 15rem; }
+.ps-product-grid.has-spotlight > li.is-spotlight .lcard-title { font-size: var(--fs-xl); }
+.ps-product-grid.has-spotlight > li.is-spotlight .lcard-price strong { font-size: var(--fs-2xl); }
+.ps-product-grid.has-spotlight > li.is-spotlight .lcard-flag { top: 1rem; left: 1rem; }
+.ps-more { display: flex; }
+.ps-more > a { width: 100%; min-height: 12rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.5rem; padding: 1.25rem; border-radius: var(--r-lg); background: var(--counter-indigo); color: #fff; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.ps-more > a:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(18, 48, 126, 0.25); }
+.ps-more small { color: var(--counter-sky); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.ps-more strong { font: 800 var(--fs-3xl)/1 var(--font-anek-latin), sans-serif; }
+.ps-more span { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--fs-sm); font-weight: 800; }
+.ps-more svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease; }
+.ps-more > a:hover svg { transform: translateX(4px); }
+@media (max-width: 1000px) {
+  .ps-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ps-product-grid.has-spotlight > li.is-spotlight { grid-row: span 1; }
+  .ps-product-grid.has-spotlight > li.is-spotlight .lcard-media { flex: 0 0 auto; aspect-ratio: 16 / 9; min-height: 0; }
+}
+@media (max-width: 560px) {
+  .ps-product-grid { grid-template-columns: minmax(0, 1fr); }
+  .ps-product-grid.has-spotlight > li.is-spotlight { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .ps-product-grid > li { animation: none; } }

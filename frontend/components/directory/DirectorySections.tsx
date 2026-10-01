@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Avatar from "@/components/Avatar";
-import ProductListingRail from "@/components/directory/ProductListingRail";
+import ProductShowcase from "@/components/directory/ProductShowcase";
 import StoriesCta from "@/components/discovery/StoriesCta";
 import { useStory } from "@/components/home/useStory";
 import { useFeaturedSellers } from "@/lib/catalog";
@@ -53,8 +53,8 @@ export default function DirectorySections() {
 
   return <div ref={root} className="ps">
     <section className="ps-sec" aria-labelledby="products-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="products-title">Where products meet possibility.</h2></div><p>Every product is a capability, a supplier and a potential requirement. Browse what was listed most recently, with the seller always in view.</p><Link className="le-button" href="/search?type=product">Explore products</Link></header>
-      <div className="ps-rail"><ProductListingRail /></div>
+      <header className="le-section-head"><div><h2 id="products-title">Where products meet possibility.</h2></div><p>Every product is a capability, a supplier and a potential requirement. Browse the newest listings by category, with the seller always in view.</p><Link className="le-button" href="/search?type=product">Explore products</Link></header>
+      <div className="ps-rail"><ProductShowcase /></div>
     </div></section>
 
     <section className="ps-sec" aria-labelledby="business-title"><div className="le-shell">
