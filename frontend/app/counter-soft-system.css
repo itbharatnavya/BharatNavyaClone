@@ -896,6 +896,8 @@
 }
 
 .counter-home-page .bn-home-suite > .bn-home-agent.is-feature {
+  position: relative;
+  isolation: isolate;
   min-height: 18rem;
   display: flex;
   flex-direction: column;
@@ -904,7 +906,29 @@
   border: 0;
   border-radius: var(--counter-radius-card);
   background: var(--counter-ivory);
-  box-shadow: none;
+  box-shadow: 0 0.45rem 1.1rem rgba(18, 20, 27, 0.12);
+}
+
+.counter-home-page .bn-home-suite > .bn-home-agent.is-feature::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -0.42rem;
+  border: 1px solid color-mix(in srgb, var(--counter-saffron) 72%, white);
+  border-radius: calc(var(--counter-radius-card) + 0.42rem);
+  box-shadow:
+    0 0.7rem 1.8rem color-mix(in srgb, var(--counter-saffron) 32%, transparent),
+    0 0.25rem 0.85rem rgba(255, 255, 255, 0.24);
+  opacity: 0.24;
+  transform: scale(0.987);
+  pointer-events: none;
+  animation: bn-navya-card-breathe 3.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.counter-home-page .bn-home-suite > .bn-home-agent.is-feature > * {
+  position: relative;
+  z-index: 1;
 }
 
 .bn-home-agent.is-feature .bn-home-agent-intro {
@@ -952,7 +976,12 @@
   color: var(--counter-ink);
   font-weight: 750;
   text-align: left;
-  animation: bn-agent-invite 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes bn-navya-card-breathe {
+  0%, 100% { opacity: 0.24; transform: scale(0.987); }
+  48% { opacity: 0.84; transform: scale(1.018); }
+  72% { opacity: 0.48; transform: scale(1.006); }
 }
 
 .bn-home-agent-launch svg {
@@ -1094,6 +1123,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .counter-home-page .bn-home-suite > .bn-home-agent.is-feature::before {
+    animation: none;
+    opacity: 0.48;
+    transform: none;
+    will-change: auto;
+  }
+
   .bn-home-agent-launch {
     animation: none;
   }
