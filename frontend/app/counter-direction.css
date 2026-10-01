@@ -421,8 +421,8 @@
 }
 
 .bn-header.is-counter-public .bn-primary-nav a[href="/recruitment"][aria-current="page"] {
-  background: var(--counter-saffron);
-  color: var(--counter-ink);
+  background: var(--counter-indigo);
+  color: white;
 }
 
 .bn-header.is-counter-public :is(.bn-sign-in, .bn-menu-button, .bn-account > button) {
@@ -1515,6 +1515,10 @@
   .bn-header.is-counter-public .bn-mobile-nav a[aria-current="page"] {
     background: var(--counter-chalk);
     color: var(--counter-ink);
+  }
+  .bn-header.is-counter-public .bn-mobile-nav a[href="/recruitment"][aria-current="page"] {
+    background: var(--counter-indigo);
+    color: white;
   }
   .bn-home-standard-stage,
   .bn-home-contrast > .le-shell {
