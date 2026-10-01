@@ -20,6 +20,7 @@ const links = [
   { href: "/", label: "Home", match: (path: string) => path === "/" },
   { href: "/directory", label: "Directory", match: isDirectoryRoute },
   { href: "/recruitment", label: "Recruitment", match: (path: string) => isRecruitmentPublicRoute(path) || path.startsWith("/job/") || path.startsWith("/employer/") },
+  { href: "/about", label: "About", match: (path: string) => path === "/about" },
 ];
 
 function MenuIcon({ open }: { open: boolean }) {

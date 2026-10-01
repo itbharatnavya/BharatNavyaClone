@@ -425,6 +425,11 @@
   color: white;
 }
 
+.bn-header.is-counter-public .bn-primary-nav a[href="/about"][aria-current="page"] {
+  background: var(--counter-ink);
+  color: white;
+}
+
 .bn-header.is-counter-public :is(.bn-sign-in, .bn-menu-button, .bn-account > button) {
   border-color: var(--counter-line);
   border-radius: var(--counter-button-radius, 1.25rem);
