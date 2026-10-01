@@ -92,6 +92,6 @@ export default function RecruitmentPage() {
     </section>
 
 
-    <RecruitmentSections jobs={jobs} loading={loading} />
+    <RecruitmentSections />
   </div>;
 }

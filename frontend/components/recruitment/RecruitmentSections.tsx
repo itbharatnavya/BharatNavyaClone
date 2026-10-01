@@ -1,101 +1,71 @@
 "use client";
 
-// Recruitment landing below the job-function strip: three sections.
-//   roles     open roles beside a context pane for the selected one
-//             (motion: rows slide in, the pane wipes in from the right)
-//   hiring    companies currently hiring (motion: cards tip up in 3D)
-//   guides    career guides beside a call to action (motion: wipe-in)
-// Content is complete without motion; see useStory. Styles: .ps-* in counter-soft-system.css.
+// Recruitment landing below the job-function strip: three sections that sell the
+// product instead of listing it (people see listings the moment they search).
+//   1. Without / With Bharat Navya comparison
+//   2. three feature cards with looping illustrations
+//   3. a staircase of live role counts and a call-to-action banner
+// Shared kit: components/attract/*. Styles: .cmp-*, .feat-*, .stairs-*, .art-*.
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import Avatar from "@/components/Avatar";
-import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
-import StoriesCta from "@/components/discovery/StoriesCta";
-import { useStory } from "@/components/home/useStory";
-import { getBlogs } from "@/lib/api";
-import { formatSalary, jobFreshness, jobLocation, rolePreviewModel } from "@/lib/recruitmentDesign";
-import type { Blog, Job } from "@/lib/types";
+import { useEffect, useState } from "react";
+import Compare from "@/components/attract/Compare";
+import FeatureCards from "@/components/attract/FeatureCards";
+import Staircase from "@/components/attract/Staircase";
+import { getJobs } from "@/lib/api";
 
-const Arrow = () => <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
+const WITHOUT = [
+  { icon: "M4 6h16v12H4z|m4 7 8 6 8-6", title: "Applications disappear", body: "You apply, then wait, with no idea whether anyone looked." },
+  { icon: "M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z|M4 4l16 16", title: "Roles hide the basics", body: "Pay, place and workplace stay a mystery until you have already clicked." },
+  { icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z|M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7|M12 17h.01", title: "Fit is guesswork", body: "Employers sift through the wrong CVs, and candidates through the wrong roles." },
+];
+const WITH = [
+  { icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z|m8.5 12.5 2.5 2.5 4.5-5", title: "A clear status on every application", body: "Applied, viewed, shortlisted, hired: you and the employer see the same thing." },
+  { icon: "M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z|M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z", title: "Pay, place and workplace up front", body: "Salary, location and on-site, hybrid or remote are shown before you click." },
+  { icon: "M4 19V9|M10 19V5|M16 19v-7|M20 19H2", title: "Skills matched to the role", body: "Profiles and roles are matched on skills so the right people find each other." },
+];
+const FEATURES = [
+  { art: "radar" as const, title: "Find roles that fit", body: "Search by role, skill or company across every function and city, with pay and workplace at a glance." },
+  { art: "tracker" as const, title: "Know where you stand", body: "Every application moves through clear stages that you and the employer can both see." },
+  { art: "funnel" as const, title: "Hire from a real pipeline", body: "Post a role, receive matched applications and move the best candidates forward in one place." },
+];
 
-export default function RecruitmentSections({ jobs, loading }: { jobs: Job[]; loading: boolean }) {
-  const root = useRef<HTMLDivElement>(null);
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  useEffect(() => { getBlogs({ authorType: "employer" }).then(setBlogs).catch(() => setBlogs([])); }, []);
+export default function RecruitmentSections() {
+  const [counts, setCounts] = useState({ all: 0, entry: 0, mid: 0, senior: 0 });
+  useEffect(() => {
+    let live = true;
+    const total = (query: Parameters<typeof getJobs>[0]) => getJobs({ limit: 1, ...query }).then((response) => response.total).catch(() => 0);
+    Promise.all([total({}), total({ experienceLevel: "entry" }), total({ experienceLevel: "mid" }), total({ experienceLevel: "senior" })])
+      .then(([all, entry, mid, senior]) => { if (live) setCounts({ all, entry, mid, senior }); });
+    return () => { live = false; };
+  }, []);
 
-  const roles = jobs.slice(0, 5);
-  const current = roles.find((job) => job.id === selectedId) || roles[0];
-  const companies = useMemo(() => {
-    const map = new Map<string, { id: string; name: string; slug: string | null; logo: string | null; location: string; verified: boolean; titles: string[] }>();
-    for (const job of jobs) {
-      if (!job.employer) continue;
-      const found = map.get(job.employer.id);
-      if (found) { if (found.titles.length < 2) found.titles.push(job.title); continue; }
-      map.set(job.employer.id, { id: job.employer.id, name: job.employer.companyName || "Company", slug: job.employer.slug, logo: job.employer.logo, location: [job.employer.city, job.employer.state].filter(Boolean).join(", ") || "India", verified: job.employer.isVerified, titles: [job.title] });
-    }
-    return Array.from(map.values()).slice(0, 4);
-  }, [jobs]);
-
-  useStory(root, ({ gsap, q }) => {
-    const once = (trigger: string, start = "top 86%") => ({ trigger, start, once: true });
-    gsap.from(q(".ps-role"), { x: -28, opacity: 0, duration: 0.6, stagger: 0.08, ease: "power2.out", scrollTrigger: once(".ps-role-list") });
-    gsap.from(q(".ps-role-pane"), { clipPath: "inset(0% 0% 0% 100%)", duration: 0.9, ease: "power3.inOut", scrollTrigger: once(".ps-role-pane") });
-    gsap.from(q(".ps-company"), { y: 40, rotateX: 14, transformPerspective: 900, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out", clearProps: "transform", scrollTrigger: once(".ps-company-grid") });
-    gsap.from(q(".ps-stories-list ul, .ps-stories-list .ps-empty"), { clipPath: "inset(0% 100% 0% 0%)", duration: 0.9, ease: "power3.inOut", scrollTrigger: once(".ps-stories-list ul, .ps-stories-list .ps-empty", "top 90%") });
-    gsap.from(q(".ps-cta"), { scale: 0.94, y: 30, opacity: 0, duration: 0.9, ease: "power3.out", scrollTrigger: once(".ps-cta") });
-  });
-
-  return <div ref={root} className="ps">
-    <section className="ps-sec" aria-labelledby="roles-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="roles-title">Open roles, with the context up front.</h2></div><p>See pay, place and workplace first, then read about the employer before you decide to apply.</p><Link className="le-button" href="/recruitment/jobs">Browse all jobs</Link></header>
-      <div className="ps-roles">
-        <ul className="ps-role-list">
-          {[0, 1, 2, 3, 4].map((index) => {
-            const job = roles[index];
-            if (!loading && !job) return <li key={index} hidden />;
-            return <li key={index} className={`ps-role${job && job.id === current?.id ? " is-selected" : ""}${job ? "" : " is-loading"}`}>
-              {job ? <Link href={`/job/${job.id}`} onMouseEnter={() => setSelectedId(job.id)} onFocus={() => setSelectedId(job.id)}>
-                <Avatar src={job.employer?.logo || undefined} name={job.employer?.companyName || "Company"} size={44} />
-                <span className="ps-role-main"><strong>{job.title}</strong><small>{job.employer?.companyName || "Company"} · {jobLocation(job)}</small></span>
-                <span className="ps-role-meta"><b>{formatSalary(job)}</b><small>{jobFreshness(job.postedAt)}</small></span>
-                <Arrow />
-              </Link> : <><span className="hs-sk is-wide" /><span className="hs-sk is-thin" /></>}
-            </li>;
-          })}
-        </ul>
-        <div className="ps-role-pane"><RoleContextPreview model={current ? rolePreviewModel(current) : undefined} /></div>
-      </div>
-    </div></section>
-
-    <section className="ps-sec" aria-labelledby="hiring-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="hiring-title">Explore the companies behind the roles.</h2></div><p>Go beyond the job title and see who is hiring, where they are based and what else they are looking for.</p></header>
-      <ul className="ps-company-grid is-wide">
-        {[0, 1, 2, 3].map((index) => {
-          const company = companies[index];
-          if (!loading && !company) return <li key={index} hidden />;
-          return <li key={index} className={`ps-company${company ? "" : " is-loading"}`}>
-            {company ? <Link href={company.slug ? `/employer/${company.slug}` : "/recruitment/jobs"}>
-              <span className="ps-company-top"><Avatar src={company.logo || undefined} name={company.name} size={48} />{company.verified && <em className="hs-m-tag">Verified</em>}</span>
-              <strong>{company.name}</strong>
-              <small>{company.location}</small>
-              <span className="ps-chips">{company.titles.map((title) => <i key={title}>{title}</i>)}</span>
-              <span className="ps-company-foot"><b>Hiring now</b><span>View employer<Arrow /></span></span>
-            </Link> : <><span className="hs-sk is-wide" /><span className="hs-sk" /><span className="hs-sk is-thin" /></>}
-          </li>;
-        })}
-      </ul>
-    </div></section>
-
-    <StoriesCta
-      id="recruitment-guides-title"
-      title="Explore the role before you apply."
-      lead="Career guides from employers on Bharat Navya."
-      blogs={blogs}
-      allHref="/recruitment/blog"
-      allLabel="All career guides"
-      panel={{ eyebrow: "For candidates and employers", title: "Present your potential. Find the right people.", body: "Build a profile with your skills and experience, or post structured roles that give candidates a clearer view of the opportunity.", primary: { href: "/profile", label: "Build your profile" }, secondary: { href: "/post-job", label: "Post a job" } }}
+  return <>
+    <Compare
+      id="recruit-compare-title"
+      title="Hiring and job search, without the guesswork."
+      lead="Bharat Navya shows what matters up front and keeps both sides informed."
+      labelWithout="Without Bharat Navya"
+      labelWith="With Bharat Navya"
+      without={WITHOUT}
+      withItems={WITH}
     />
-  </div>;
+    <FeatureCards
+      id="recruit-features-title"
+      title="Built for finding, and for being found."
+      lead="One flow from the first search to the final outcome."
+      features={FEATURES}
+    />
+    <Staircase
+      id="recruit-stairs-title"
+      title="Open roles for every stage."
+      lead="Live counts from the platform, from a first job to a senior move."
+      steps={[
+        { label: "Senior roles", sub: "Leading teams and functions", value: counts.senior, icon: "M12 3l2.7 5.5 6 .9-4.3 4.2 1 6L12 16.8 6.6 19.6l1-6L3.3 9.4l6-.9L12 3z" },
+        { label: "Mid-level roles", sub: "Growing into the next step", value: counts.mid, icon: "M4 17l6-6 4 4 6-7|M15 8h5v5" },
+        { label: "Entry-level roles", sub: "Starting out and switching in", value: counts.entry, icon: "M12 3v12|M7 10l5 5 5-5|M5 21h14" },
+        { label: "All open roles", sub: "Across every function", value: counts.all, icon: "M4 8h16v11H4z|M9 8V6a3 3 0 0 1 6 0v2|M4 13h16" },
+      ]}
+      banner={{ title: "Ready to find your next role, or your next hire?", body: "Build a profile in minutes, or post a structured role that candidates can trust.", primary: { href: "/profile", label: "Build your profile" }, secondary: { href: "/post-job", label: "Post a job" } }}
+    />
+  </>;
 }
