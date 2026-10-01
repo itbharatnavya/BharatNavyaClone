@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
   mobile              TEXT NOT NULL,
   email               TEXT,
   password_hash       TEXT,
+  -- Google social login (0016_add_google_oauth.sql) — Google id_token's `sub`.
+  -- NULL for accounts that never linked Google.
+  google_id           TEXT,
   avatar_url          TEXT,
   city                TEXT,
   state               TEXT,
@@ -50,6 +53,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS users_mobile_idx ON users(mobile);
 CREATE INDEX IF NOT EXISTS users_email_idx ON users(email);
 CREATE INDEX IF NOT EXISTS users_roles_idx ON users USING GIN(roles);
+CREATE UNIQUE INDEX IF NOT EXISTS users_google_id_idx ON users(google_id) WHERE google_id IS NOT NULL;
 
 -- 1:1, present only when the user is a seller.
 CREATE TABLE IF NOT EXISTS seller_profiles (
@@ -560,7 +564,11 @@ CREATE TABLE IF NOT EXISTS reviews (
   rating          NUMERIC(3,2),
   review_text     TEXT,
   status          TEXT,
-  created_at      TIMESTAMPTZ
+  created_at      TIMESTAMPTZ,
+  -- BACKEND-AUDIT.md S2 — a user can never review their own account
+  -- (0014_add_review_self_check.sql for existing databases).
+  CONSTRAINT reviews_no_self_review
+    CHECK (buyer_id IS NULL OR target_user_id IS NULL OR buyer_id <> target_user_id)
 );
 
 CREATE TABLE IF NOT EXISTS shortlist (
@@ -738,6 +746,24 @@ CREATE TABLE IF NOT EXISTS employer_profiles (
 CREATE INDEX IF NOT EXISTS employer_profiles_slug_idx ON employer_profiles(slug);
 CREATE INDEX IF NOT EXISTS employer_profiles_status_idx ON employer_profiles(status);
 
+-- Identity read-port view (0013_add_identity_employer_cards.sql). The named seam
+-- modules/recruitment JOINs against for the "active job from an APPROVED employer"
+-- gate instead of hydrating every user. Columns match identity.employerCardOf().
+CREATE OR REPLACE VIEW identity_employer_cards AS
+  SELECT
+    u.id             AS user_id,
+    ep.company_name  AS company_name,
+    ep.slug          AS slug,
+    ep.status        AS status,
+    ep.is_verified   AS is_verified,
+    ep.logo          AS logo,
+    ep.location_city AS location_city,
+    ep.location_state AS location_state,
+    u.name           AS name,
+    u.avatar_url     AS avatar_url
+  FROM users u
+  JOIN employer_profiles ep ON ep.user_id = u.id;
+
 -- 1:1, present only when the user has a candidate profile (no approval gate — see
 -- RECRUITMENT.md §2). skills/preferredLocations/preferredJobTypes are simple string
 -- lists (text[], GIN-indexed on skills so a future "search candidates by skill" query
@@ -840,6 +866,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   -- (nestedToRow, the nested-object flattening helper, assigns NULL for an omitted
   -- field rather than substituting a default).
   location_remote       BOOLEAN,
+  -- Added in 0015_add_job_workplace_type.sql — "onsite"/"hybrid"/"remote", same
+  -- free-text convention as listings.service_mode. location_remote is kept in sync
+  -- (derived from this) for every existing boolean-only reader.
+  location_workplace_type TEXT,
   salary_min            NUMERIC(12,2),
   salary_max            NUMERIC(12,2),
   salary_currency       TEXT,
@@ -869,6 +899,7 @@ CREATE INDEX IF NOT EXISTS jobs_experience_level_idx ON jobs(experience_level);
 CREATE INDEX IF NOT EXISTS jobs_city_idx ON jobs(location_city);
 CREATE INDEX IF NOT EXISTS jobs_posted_at_idx ON jobs(posted_at);
 CREATE INDEX IF NOT EXISTS jobs_skills_idx ON jobs USING GIN(skills);
+CREATE INDEX IF NOT EXISTS jobs_workplace_type_idx ON jobs(location_workplace_type);
 
 -- Applications. status_history is a small append-only log of {status, note, changedAt}
 -- entries — never filtered/queried on its own, so it's a plain jsonb column (inline on
@@ -895,4 +926,18 @@ CREATE TABLE IF NOT EXISTS applications (
 CREATE UNIQUE INDEX IF NOT EXISTS applications_job_candidate_uniq ON applications(job_id, candidate_id);
 CREATE INDEX IF NOT EXISTS applications_employer_idx ON applications(employer_id);
 CREATE INDEX IF NOT EXISTS applications_candidate_idx ON applications(candidate_id);
+
+-- FCM (Firebase Cloud Messaging) web-push device tokens — owned by identity
+-- (0017_add_fcm_tokens.sql). token is the primary key so re-registering the
+-- same browser upserts onto the same row (see lib/fcm.js's registerToken)
+-- instead of accumulating duplicates; a token can be reassigned to a
+-- different user_id if the same browser later logs in as someone else.
+CREATE TABLE IF NOT EXISTS fcm_tokens (
+  token         TEXT PRIMARY KEY,
+  user_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  platform      TEXT NOT NULL DEFAULT 'web',
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS fcm_tokens_user_idx ON fcm_tokens(user_id);
 CREATE INDEX IF NOT EXISTS applications_status_idx ON applications(status);

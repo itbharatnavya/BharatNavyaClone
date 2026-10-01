@@ -1,0 +1,105 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "items": [
+        {
+          "accountStatus": "active",
+          "accountType": "seller",
+          "avatarUrl": null,
+          "candidateProfile": null,
+          "city": "Mumbai",
+          "contactVisibility": "on_request",
+          "createdAt": "<volatile>",
+          "email": "admin@bharatsource.in",
+          "employerProfile": null,
+          "hats": [
+            "buyer",
+            "seller",
+            "admin"
+          ],
+          "id": "usr_admin",
+          "interests": [
+            "chemicals-dyes-petrochemicals"
+          ],
+          "mobile": "9999999999",
+          "name": "BharatSource Admin",
+          "recruitmentRole": "recruiter",
+          "recruitmentRoleLockedAt": null,
+          "roles": [
+            "user",
+            "admin"
+          ],
+          "sellerProfile": {
+            "about": "",
+            "accountManagerId": null,
+            "adminNotes": null,
+            "analyticsEnabled": false,
+            "annualTurnover": null,
+            "boostCategoryIds": [],
+            "boostGeoLocations": [],
+            "boostKeywords": [],
+            "certifications": [],
+            "cinNumber": null,
+            "companyName": "BharatSource Admin",
+            "contactEmail": "admin@bharatsource.in",
+            "contactMobile": "9999999999",
+            "coverImage": null,
+            "employeeCount": null,
+            "featuredCredits": 0,
+            "featuredEndDate": null,
+            "featuredStartDate": null,
+            "gstNumber": null,
+            "isFeaturedSeller": false,
+            "isVerified": true,
+            "leadQuotaPerCycle": null,
+            "leadQuotaResetDate": null,
+            "leadsConsumed": 0,
+            "legacyCategories": [],
+            "listingLimit": null,
+            "location": {
+              "city": "Mumbai",
+              "state": ""
+            },
+            "logo": null,
+            "natureOfBusiness": null,
+            "panNumber": null,
+            "perLeadPrice": null,
+            "performance": {},
+            "planEndDate": null,
+            "planId": null,
+            "planStartDate": null,
+            "planStatus": "inactive",
+            "planTier": "free",
+            "priorityTier": "none",
+            "rankBoostScore": 0,
+            "rating": 0,
+            "responseRate": 0,
+            "reviewCount": 0,
+            "slug": "bharatsource-admin-usradmin",
+            "status": "approved",
+            "trustSealVerified": false,
+            "verifiedBadgeExpiry": null,
+            "website": null,
+            "yearEstablished": null
+          },
+          "state": "",
+          "status": null
+        }
+      ],
+      "page": 1,
+      "summary": {
+        "admins": 1,
+        "buyers": 23,
+        "candidates": 23,
+        "employers": 20,
+        "sellers": 60,
+        "suspended": 0,
+        "total": 125
+      },
+      "total": 1,
+      "totalPages": 1
+    },
+    "success": true
+  }
+}

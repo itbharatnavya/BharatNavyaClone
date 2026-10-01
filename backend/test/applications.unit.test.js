@@ -1,13 +1,14 @@
 /**
- * Pure-function unit tests for routes/applications.js's helpers.
- * No DB, no server — run with `npm test` (node:test).
+ * Pure-function unit tests for the Recruitment application service + policy
+ * (modules/recruitment/service/application.service.js + policy.js, extracted from
+ * routes/applications.js in Phase 4b). No DB, no server — run with `npm test`.
  */
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { candidateMiniOf, jobMiniOf, canViewApplication, VALID_STATUSES } =
-  require("../routes/applications")._internal;
+  require("../modules/recruitment");
 
 test("VALID_STATUSES is the full pipeline in order", () => {
   assert.deepEqual(VALID_STATUSES, ["applied", "viewed", "shortlisted", "interview", "rejected", "hired"]);

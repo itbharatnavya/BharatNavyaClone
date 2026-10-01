@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { Listing, SellerPublicProfile } from "@/lib/types";
-import { getListing, getSeller, getListings, getListingOffers, type Offer } from "@/lib/api";
+import type { Listing, SellerPublicProfile, Conversation } from "@/lib/types";
+import { getListing, getSeller, getListings, getListingOffers, getConversation, type Offer } from "@/lib/api";
 import { formatLocation } from "@/lib/indiaGeo";
 import { useShortlist } from "@/lib/shortlist";
+import { useAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/Toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -18,6 +19,7 @@ import SpecTable from "@/components/listing/SpecTable";
 import SellerContactCard, { ContactSeller } from "@/components/listing/SellerContactCard";
 import OtherSellers from "@/components/listing/OtherSellers";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
+import ChatModal from "@/components/chat/ChatModal";
 
 // Robust i18n wrapper: tolerant of the useT() return shape and missing keys,
 // always falling back to a clean English string.
@@ -123,10 +125,12 @@ function GridGlyphIcon() {
 
 export default function ListingDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = typeof params.id === "string" ? params.id : "";
   const { addToast } = useToast();
   const t = useTr();
   const shortlist = useShortlist();
+  const { user } = useAuth();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
@@ -136,6 +140,8 @@ export default function ListingDetailPage() {
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [deepChatConvo, setDeepChatConvo] = useState<Conversation | null>(null);
+  const [deepChatOpen, setDeepChatOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -289,6 +295,30 @@ export default function ListingDetailPage() {
       contactMobile: null,
     };
   }, [listing, profile]);
+  // `?chat=<conversationId>` deep link (from a "new_message" notification) —
+  // opens the chat modal directly, regardless of whether this is the buyer's
+  // or the seller's own listing (a seller replying to a buyer's message about
+  // their own product must still be able to open it).
+  useEffect(() => {
+    const chatId = searchParams.get("chat");
+    if (!chatId || !user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const convo = await getConversation(chatId);
+        if (!cancelled) {
+          setDeepChatConvo(convo);
+          setDeepChatOpen(true);
+        }
+      } catch {
+        /* not a participant, deleted, or auth not ready yet — silently ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams, user]);
+
   const sellerListingCards = useMemo(() => listingsWithDistinctLeadMedia(sellerListings), [sellerListings]);
   const suggestedListingCards = useMemo(() => listingsWithDistinctLeadMedia(similar), [similar]);
 
@@ -688,6 +718,17 @@ export default function ListingDetailPage() {
           }
         }
       `}</style>
+
+      {deepChatConvo && (
+        <ChatModal
+          open={deepChatOpen}
+          onClose={() => setDeepChatOpen(false)}
+          conversationId={deepChatConvo.id}
+          meId={user?.id || ""}
+          otherUserName={deepChatConvo.otherUserName}
+          listingTitle={deepChatConvo.listingTitle}
+        />
+      )}
     </div>
   );
 }

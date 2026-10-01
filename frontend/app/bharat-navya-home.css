@@ -39,6 +39,19 @@
 .bn-section-search--compact input{min-height:2.5rem;font-size:.82rem}
 .bn-section-search--compact .bn-section-search-submit{min-height:2.5rem;padding:.5rem .8rem;border-radius:var(--bn-radius-search-action);font-size:.78rem}
 .bn-section-search--compact .bn-section-search-submit svg{display:none}
+.bn-section-search-wrap{position:relative;width:100%}
+/* No border-radius override here on purpose — this element also carries the base .card class
+   (globals.css, 12px), and that's the same radius RoleSearchBar's pre-existing .rsb-dropdown
+   uses (it never overrides .card's radius either). Matching that sibling suggestion-dropdown
+   exactly, rather than the rounder --bn-radius-card (22px) this used before, which read as
+   noticeably more round than every other themed component around it. */
+.bn-section-search-dropdown{position:absolute;top:calc(100% + .5rem);left:0;right:0;z-index:40;padding:.4rem;max-height:22rem;overflow-y:auto;background:#fff;border:1px solid var(--bn-border);box-shadow:var(--bn-shadow-float)}
+.bn-section-search-dropdown-label{display:flex;align-items:center;gap:.4rem;padding:.5rem .65rem .25rem;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--bn-text-secondary)}
+.bn-section-search-dropdown-label svg{width:.85rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
+.bn-section-search-dropdown-loading{padding:.6rem .65rem;font-size:.78rem;color:var(--bn-text-secondary)}
+.bn-section-search-opt{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:.6rem .65rem;font:inherit;font-size:.85rem;color:var(--bn-text-primary);cursor:pointer}
+.bn-section-search-opt svg{width:.85rem;height:.85rem;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
+.bn-section-search-opt.is-active{background:var(--bn-blue-050);color:var(--bn-action)}
 .bn-header-search-filters{max-width:9.5rem;min-height:3rem;padding:.55rem .7rem;border:1px solid var(--bn-border);border-radius:.85rem;background:#fff;display:flex;align-items:center;gap:.4rem;color:var(--bn-text-secondary);font-size:.72rem;font-weight:800}
 .bn-header-search-filters span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bn-search-drawer-backdrop{position:fixed;inset:0;z-index:140;display:grid;place-items:end center;padding:1rem;background:rgba(15,20,32,.4)}

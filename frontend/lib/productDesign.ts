@@ -1,15 +1,5 @@
 import type { Job } from "./types";
 
-export type SearchDestination = "directory" | "recruitment";
-export type SearchConfidence = "high" | "low";
-
-export interface UniversalSearchIntent {
-  query: string;
-  location?: string;
-  destination: SearchDestination;
-  confidence: SearchConfidence;
-}
-
 export interface DirectoryCompany {
   id: string;
   name: string;
@@ -114,60 +104,6 @@ export const alignedDirectorySlugs = new Set(Object.keys(directoryPresentations)
 export function isAlignedDirectoryCompany(raw: any): boolean {
   const slug = raw?.slug || raw?.sellerSlug;
   return Boolean(slug && alignedDirectorySlugs.has(slug));
-}
-
-const recruitmentSignals = [
-  /\bjob(?:s)?\b/i,
-  /\brole(?:s)?\b/i,
-  /\bhiring\b/i,
-  /\bcareer(?:s)?\b/i,
-  /\bvacanc(?:y|ies)\b/i,
-  /\bintern(?:ship)?\b/i,
-  /\bsalary\b/i,
-  /\bremote\b/i,
-  /\bhybrid\b/i,
-  /\bfull[- ]?time\b/i,
-  /\bpart[- ]?time\b/i,
-  /\bapply\b/i,
-  /\brecruit(?:er|ment|ing)?\b/i,
-];
-
-const directorySignals = [
-  /\bcompan(?:y|ies)\b/i,
-  /\bservice(?:s)?\b/i,
-  /\bconsultant(?:s)?\b/i,
-  /\bpartner(?:s)?\b/i,
-  /\bagenc(?:y|ies)\b/i,
-  /\bprovider(?:s)?\b/i,
-  /\bsupplier(?:s)?\b/i,
-  /\bvendor(?:s)?\b/i,
-  /\bcompliance\b/i,
-  /\baccount(?:ant|ing)?\b/i,
-  /\blogistics\b/i,
-  /\bmanufacturer(?:s)?\b/i,
-];
-
-export function classifyUniversalSearch(query: string): UniversalSearchIntent {
-  const normalized = query.trim().replace(/\s+/g, " ");
-  const recruitmentScore = recruitmentSignals.filter((signal) => signal.test(normalized)).length;
-  const directoryScore = directorySignals.filter((signal) => signal.test(normalized)).length;
-
-  if (recruitmentScore > directoryScore && recruitmentScore > 0) {
-    return { query: normalized, destination: "recruitment", confidence: "high" };
-  }
-  if (directoryScore > recruitmentScore && directoryScore > 0) {
-    return { query: normalized, destination: "directory", confidence: "high" };
-  }
-  return { query: normalized, destination: "directory", confidence: "low" };
-}
-
-export function universalSearchHref(intent: UniversalSearchIntent): string {
-  const params = new URLSearchParams();
-  if (intent.query) params.set("q", intent.query);
-  if (intent.location) params.set("city", intent.location);
-  params.set("source", "home");
-  const base = intent.destination === "recruitment" ? "/recruitment/jobs" : "/search";
-  return `${base}?${params.toString()}`;
 }
 
 export function mapDirectoryCompany(raw: any): DirectoryCompany | null {

@@ -1,0 +1,179 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "ancestors": [],
+      "category": {
+        "description": "Find verified Accounting, Tax & Compliance providers, compare quotes and enquire on BharatSource.",
+        "facets": [
+          "location",
+          "rate",
+          "experience",
+          "credentials",
+          "availability",
+          "rating"
+        ],
+        "icon": null,
+        "id": "cat_accounting",
+        "listingCount": 42,
+        "name": "Accounting, Tax & Compliance",
+        "order": 21,
+        "parentId": null,
+        "path": [
+          "accounting"
+        ],
+        "slug": "accounting",
+        "type": "service"
+      },
+      "children": [
+        {
+          "description": "Find verified Taxation providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_taxation",
+          "listingCount": 28,
+          "name": "Taxation",
+          "order": 1,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "taxation"
+          ],
+          "slug": "taxation",
+          "type": "service"
+        },
+        {
+          "description": "Find verified Bookkeeping providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_bookkeeping",
+          "listingCount": 3,
+          "name": "Bookkeeping",
+          "order": 2,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "bookkeeping"
+          ],
+          "slug": "bookkeeping",
+          "type": "service"
+        },
+        {
+          "description": "Find verified Auditing & Assurance providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_auditing-assurance",
+          "listingCount": 2,
+          "name": "Auditing & Assurance",
+          "order": 3,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "auditing-assurance"
+          ],
+          "slug": "auditing-assurance",
+          "type": "service"
+        },
+        {
+          "description": "Find verified Payroll Services providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_payroll-services",
+          "listingCount": 3,
+          "name": "Payroll Services",
+          "order": 4,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "payroll-services"
+          ],
+          "slug": "payroll-services",
+          "type": "service"
+        },
+        {
+          "description": "Find verified Company Registration providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_company-registration",
+          "listingCount": 2,
+          "name": "Company Registration",
+          "order": 5,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "company-registration"
+          ],
+          "slug": "company-registration",
+          "type": "service"
+        },
+        {
+          "description": "Find verified Financial Consulting providers, compare quotes and enquire on BharatSource.",
+          "facets": [
+            "location",
+            "rate",
+            "experience",
+            "credentials",
+            "availability",
+            "rating"
+          ],
+          "icon": null,
+          "id": "cat_financial-consulting",
+          "listingCount": 3,
+          "name": "Financial Consulting",
+          "order": 6,
+          "parentId": "cat_accounting",
+          "path": [
+            "accounting",
+            "financial-consulting"
+          ],
+          "slug": "financial-consulting",
+          "type": "service"
+        }
+      ],
+      "facets": [
+        "location",
+        "rate",
+        "experience",
+        "credentials",
+        "availability",
+        "rating"
+      ]
+    },
+    "success": true
+  }
+}

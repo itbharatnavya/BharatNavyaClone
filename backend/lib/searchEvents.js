@@ -13,14 +13,13 @@
  * failure here is swallowed.
  */
 
-const store = require("./store");
+const directory = require("../modules/directory");
 
 async function logSearchEvent({ query, categorySlug, city, userId }) {
   try {
     const q = String(query || "").trim();
     if (!q) return;
-    await store.appendJsonl("search-events.jsonl", {
-      id: await store.nextId("srch"),
+    await directory.appendSearchEvent({
       query: q,
       categorySlug: categorySlug || null,
       city: city || null,

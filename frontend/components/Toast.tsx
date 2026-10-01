@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 
-type ToastType = "success" | "error" | "info";
+type ToastType = "success" | "error" | "info" | "chat";
 
 interface ToastItem {
   id: number;
@@ -26,12 +26,14 @@ const ACCENT: Record<ToastType, string> = {
   success: "var(--counter-success, #16834f)",
   error: "var(--counter-error, #b42318)",
   info: "var(--counter-indigo, #1b3fa0)",
+  chat: "var(--brand, #2563EB)",
 };
 
 const ICON: Record<ToastType, string> = {
   success: "M20 6L9 17l-5-5",
   error: "M18 6L6 18M6 6l12 12",
   info: "M12 16v-4M12 8h.01",
+  chat: "M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11.5 4h.5A8.4 8.4 0 0 1 21 11.5Z",
 };
 
 let counter = 0;

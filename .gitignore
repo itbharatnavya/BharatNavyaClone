@@ -13,6 +13,7 @@
 !*.env.example
 backend/.env
 frontend/.env.local
+TESTING-SERVER.md
 
 # Dependencies
 node_modules/
@@ -38,6 +39,10 @@ frontend/public/uploads/
 
 # Client-facing cost/planning deliverables — not for the repo
 docs/production-plan/
+
+# Local snapshot of frontend/ taken before the in-place UI redesign.
+# Reference-only, never committed — see WEB-REDESIGN.md.
+frontend-backup/
 
 # OS / editor cruft
 .DS_Store

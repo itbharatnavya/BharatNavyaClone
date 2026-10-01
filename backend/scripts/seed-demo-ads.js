@@ -19,7 +19,7 @@
  * Run:  node scripts/seed-demo-ads.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const HOME_HERO_ADS = [
   {

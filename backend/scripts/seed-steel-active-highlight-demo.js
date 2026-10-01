@@ -15,7 +15,7 @@
  * Run:  node scripts/seed-steel-active-highlight-demo.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const SELLER_ID = "usr_cat_metalssteelalloys";
 const DAY_MS = 24 * 60 * 60 * 1000;

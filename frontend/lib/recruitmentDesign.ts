@@ -51,8 +51,10 @@ export function formatSalary(job: Job, includePeriod = false): string {
 
 export function jobLocation(job: Job): string {
   const city = job.location?.city;
-  if (job.location?.remote) return city ? `${city} · Remote` : "Remote";
-  return [city, job.location?.state].filter(Boolean).join(", ") || "Location not specified";
+  const workplaceType = job.location?.workplaceType || (job.location?.remote ? "remote" : undefined);
+  if (workplaceType === "remote") return city ? `${city} · Remote` : "Remote";
+  const place = [city, job.location?.state].filter(Boolean).join(", ") || "Location not specified";
+  return workplaceType === "hybrid" ? `${place} · Hybrid` : place;
 }
 
 export function jobFreshness(date: string): string {

@@ -10,7 +10,7 @@
 
 const path = require("path");
 const crypto = require("crypto");
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 const auth = require("../lib/auth");
 
 async function main() {

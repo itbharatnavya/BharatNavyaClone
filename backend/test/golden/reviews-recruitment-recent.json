@@ -1,0 +1,86 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "buyerName": "Aditya Kulkarni",
+        "company": {
+          "id": "usr_emp9",
+          "logo": null,
+          "name": "UrbanCart Retail Pvt Ltd",
+          "slug": "urbancart-retail"
+        },
+        "createdAt": "<volatile>",
+        "rating": 5,
+        "reviewId": "rev_demo17",
+        "reviewText": "Fast-moving process — applied, interviewed and got an offer within 10 days."
+      },
+      {
+        "buyerName": "Vikram Singh",
+        "company": {
+          "id": "usr_emp15",
+          "logo": null,
+          "name": "ChemPure Industries Ltd",
+          "slug": "chempure-industries"
+        },
+        "createdAt": "<volatile>",
+        "rating": 4,
+        "reviewId": "rev_demo29",
+        "reviewText": "Good technical discussion on QC processes, plant visit was informative."
+      },
+      {
+        "buyerName": "Pooja Iyengar",
+        "company": {
+          "id": "usr_emp4",
+          "logo": null,
+          "name": "Suryoday Textile Mills Pvt Ltd",
+          "slug": "suryoday-textile-mills"
+        },
+        "createdAt": "<volatile>",
+        "rating": 4,
+        "reviewId": "rev_demo8",
+        "reviewText": "Straightforward process, offer came within a week of the final interview."
+      },
+      {
+        "buyerName": "Karan Malhotra",
+        "company": {
+          "id": "usr_emp14",
+          "logo": null,
+          "name": "PackRight Industries Pvt Ltd",
+          "slug": "packright-industries"
+        },
+        "createdAt": "<volatile>",
+        "rating": 3,
+        "reviewId": "rev_demo27",
+        "reviewText": "Process took a bit longer than expected but the team was courteous throughout."
+      },
+      {
+        "buyerName": "Meera Krishnan",
+        "company": {
+          "id": "usr_emp11",
+          "logo": null,
+          "name": "NextGen EdTech Pvt Ltd",
+          "slug": "nextgen-edtech"
+        },
+        "createdAt": "<volatile>",
+        "rating": 5,
+        "reviewId": "rev_demo21",
+        "reviewText": "Genuinely excited team, gave detailed feedback on my writing samples."
+      },
+      {
+        "buyerName": "Vikram Singh",
+        "company": {
+          "id": "usr_emp6",
+          "logo": null,
+          "name": "Bluewave Electronics Manufacturing Ltd",
+          "slug": "bluewave-electronics-manufacturing"
+        },
+        "createdAt": "<volatile>",
+        "rating": 4,
+        "reviewId": "rev_demo11",
+        "reviewText": "Technical round was well-structured and relevant to the actual job."
+      }
+    ],
+    "success": true
+  }
+}

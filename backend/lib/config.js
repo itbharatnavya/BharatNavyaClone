@@ -62,12 +62,40 @@ module.exports = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "30d",
   BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || "10", 10),
   OTP_TTL_MS: parseInt(process.env.OTP_TTL_MS || String(5 * 60 * 1000), 10),
+
+  // --- Rate limiting (lib/security.js, Phase 1 §1c/1d) ---
+  // Set RATE_LIMIT_ENABLED=false to disable all limiters (used by the test suite).
+  // The three maxes are per-window; windows are fixed in lib/security.js
+  // (global 15min, auth 15min, AI 1hr).
+  RATE_LIMIT_ENABLED: process.env.RATE_LIMIT_ENABLED !== "false",
+  RL_GLOBAL_MAX: parseInt(process.env.RL_GLOBAL_MAX || "1000", 10),
+  RL_AUTH_MAX: parseInt(process.env.RL_AUTH_MAX || "10", 10),
+  RL_AI_MAX: parseInt(process.env.RL_AI_MAX || "30", 10),
+  // Max characters accepted for a free-text AI prompt (need / query / message).
+  AI_PROMPT_MAX: parseInt(process.env.AI_PROMPT_MAX || "4000", 10),
+
+  // --- Postgres pool hardening (lib/pg-store.js, Phase 1 §1e) ---
+  PG_STATEMENT_TIMEOUT_MS: parseInt(process.env.PG_STATEMENT_TIMEOUT_MS || "10000", 10),
+  PG_CONNECT_TIMEOUT_MS: parseInt(process.env.PG_CONNECT_TIMEOUT_MS || "5000", 10),
+  PG_IDLE_TIMEOUT_MS: parseInt(process.env.PG_IDLE_TIMEOUT_MS || "30000", 10),
+  // Set PG_SSL=true for a managed Postgres that requires TLS (most cloud providers).
+  PG_SSL: process.env.PG_SSL === "true",
   // Present only once the AI phase is configured; guarded at point of use.
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || null,
   // When there's no API key, the AI paths fall back to the locally authenticated
   // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
   AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
-  PG_URL: process.env.PG_URL || process.env.DATABASE_URL || null,
+  // In the test env (NODE_ENV=test — set by test/_env.js), PG_URL_TEST takes
+  // precedence so `npm test` runs against a dedicated, disposable database
+  // (scripts/setup-test-db.js builds it) and never the working dev DB. Falls back
+  // to the normal PG_URL when PG_URL_TEST is unset, so a machine without a test DB
+  // still runs the suite the way it did before (BACKEND-AUDIT.md Phase 0).
+  PG_URL:
+    (NODE_ENV === "test" &&
+      (process.env.PG_URL_TEST || process.env.DATABASE_URL_TEST)) ||
+    process.env.PG_URL ||
+    process.env.DATABASE_URL ||
+    null,
 
   // --- File uploads (backend/lib/uploadStorage.js) ---
   // "local" (default, dev) writes into frontend/public/uploads/, served as a static
@@ -85,6 +113,18 @@ module.exports = {
   // Optional custom domain in front of the bucket (e.g. a CloudFront distribution) —
   // when set, uploaded-file URLs use this instead of the raw *.s3.amazonaws.com host.
   S3_PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || null,
+
+  // --- Social login (Google) ---
+  // POST /api/auth/oauth/google verifies the Google id_token against this client
+  // id (google-auth-library). Unset (default) leaves the route disabled (503) —
+  // no fake/placeholder client id is ever accepted. Get one free from
+  // console.cloud.google.com (OAuth client ID, Web application) — no billing
+  // account needed. Use a SEPARATE client per environment (dev/staging/prod),
+  // same var name, different value in each deploy's own .env.
+  // Facebook and Apple are NOT wired yet (Apple requires a paid $99/yr Apple
+  // Developer account; Facebook deferred) — add the same shape when credentials
+  // exist.
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || null,
 
   // --- Recruitment go-live gate (RECRUITMENT.md §5) ---
   // Unset (default) defers to the admin-editable featureFlags.recruitmentLive in
@@ -109,8 +149,25 @@ module.exports = {
       : process.env.CONSULTATIONS_LIVE === "false"
         ? false
         : null,
+
+  // --- FCM push (lib/fcm.js) ---
+  // Path to a Firebase service account JSON (never the JSON itself — see
+  // .env.example). Unset (default) leaves push disabled; lib/fcm.js no-ops
+  // rather than throwing, same pattern as GOOGLE_CLIENT_ID above.
+  FCM_SERVICE_ACCOUNT_PATH: process.env.FCM_SERVICE_ACCOUNT_PATH || null,
 };
 
 if (module.exports.UPLOAD_STORAGE === "s3" && !isDev && !module.exports.AWS_S3_BUCKET) {
   throw new Error("AWS_S3_BUCKET must be set when UPLOAD_STORAGE=s3 in production (see backend/.env)");
+}
+
+// Postgres is the only backend as of the Phase 8 demolition (the file-DB fallback
+// and lib/store.js dispatch layer are gone) — fail fast at boot with a clear
+// message instead of a confusing pool error on the first query.
+if (!module.exports.PG_URL) {
+  throw new Error(
+    NODE_ENV === "test"
+      ? "PG_URL_TEST (or PG_URL) must be set for the test suite — run `npm run test:setup` (see BACKEND-AUDIT.md Phase 0)"
+      : "PG_URL (or DATABASE_URL) must be set — Postgres is required (see backend/.env / POSTGRES-MIGRATION.md)"
+  );
 }

@@ -42,7 +42,7 @@
  * then this script.
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 // Shared demo password hash — same one already used across most other seeded demo
 // accounts in backend/DB/users.json (see HANDOVER.md for the plaintext).
@@ -1417,6 +1417,11 @@ const BLOGS = BLOG_SPECS.map((b) => ({
   }
 
   for (const job of JOBS) {
+    // jobs.questions is JSONB NOT NULL DEFAULT '[]' — demo jobs that don't define
+    // screening questions omit the field entirely, but the mapper sends a bare
+    // `undefined` field as SQL NULL rather than letting the column default apply
+    // (lib/db/util.js toParam), so it must be explicit here.
+    if (job.questions === undefined) job.questions = [];
     const existing = await store.getById("jobs.json", job.id);
     if (existing) {
       // Preserve live counters across re-runs instead of resetting demo view/application

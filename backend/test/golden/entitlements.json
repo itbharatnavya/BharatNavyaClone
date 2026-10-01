@@ -1,0 +1,550 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "features": [
+        {
+          "description": "Moderate listings/stories/reports, manage sellers, view analytics.",
+          "group": "Admin & Ops",
+          "id": "admin-dashboard",
+          "name": "Admin Dashboard",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Set featured/boost, assign plans, ad bookings, mark payments paid.",
+          "group": "Admin & Ops",
+          "id": "admin-monetization",
+          "name": "Monetization Controls",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "This living list — so the sales team always knows what the platform sells.",
+          "group": "Admin & Ops",
+          "id": "features-catalog",
+          "name": "Features Catalog",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Sponsored banner/slots on home, category, and city pages.",
+          "group": "Monetization",
+          "id": "ads",
+          "name": "In-App Ads",
+          "plans": [
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Performance dashboard for paid sellers.",
+          "group": "Monetization",
+          "id": "analytics",
+          "name": "Seller Analytics",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Sellers pay to rank higher in category/city/search (labeled Sponsored).",
+          "group": "Monetization",
+          "id": "featured",
+          "name": "Featured / Boosted Listings",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Businesses receive/pay for qualified inquiries (JustDial-style).",
+          "group": "Monetization",
+          "id": "leads",
+          "name": "Lead-Gen (Pay per Inquiry)",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Free / Silver / Gold tiers unlock listings, leads, badges, analytics.",
+          "group": "Monetization",
+          "id": "subscriptions",
+          "name": "Business Subscription Plans",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Auto-writes title, description, and category from an uploaded photo (Claude vision).",
+          "group": "Marketplace Listings",
+          "id": "ai-autofill",
+          "name": "AI Listing Auto-fill",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "beta"
+        },
+        {
+          "description": "New / Used condition on product listings.",
+          "group": "Marketplace Listings",
+          "id": "condition",
+          "name": "Item Condition",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Sellers update, deactivate, or mark their listings Sold.",
+          "group": "Marketplace Listings",
+          "id": "edit-mark-sold",
+          "name": "Edit / Mark as Sold",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "List a product or a service with photos, price, description, category, and location.",
+          "group": "Marketplace Listings",
+          "id": "post-listing",
+          "name": "Post a Listing",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "One catalog handles physical products (price/MOQ/specs) and services (rate-card/credentials/service-area).",
+          "group": "Marketplace Listings",
+          "id": "product-service",
+          "name": "Products & Services",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Type a natural request (\"CA in Pune for GST filing\") — AI returns matches or routes to the right page.",
+          "group": "Discovery & Search",
+          "id": "ai-concierge",
+          "name": "AI Search Concierge",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Search with filters: category, price tiers, city, verified, condition, type.",
+          "group": "Discovery & Search",
+          "id": "browse-filters",
+          "name": "Browse & Faceted Search",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Dedicated page per category with nested sub-categories (250+ nodes, 5 levels deep).",
+          "group": "Discovery & Search",
+          "id": "category-pages",
+          "name": "Category Landing Pages",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "City-scoped pages showing trending listings/businesses.",
+          "group": "Discovery & Search",
+          "id": "city-pages",
+          "name": "City Pages & Trending",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Toggle listings/businesses onto an interactive map (OpenStreetMap).",
+          "group": "Discovery & Search",
+          "id": "map-view",
+          "name": "Map View",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "beta"
+        },
+        {
+          "description": "Distance-sorted results from your city + radius filter.",
+          "group": "Discovery & Search",
+          "id": "near-me",
+          "name": "Near-Me / Distance",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Speak your query instead of typing (browser voice).",
+          "group": "Discovery & Search",
+          "id": "voice-search",
+          "name": "Voice Input for AI Search",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "beta"
+        },
+        {
+          "description": "Sellers publish SEO articles/guides for organic reach.",
+          "group": "Reach & Content",
+          "id": "blogs",
+          "name": "Seller Blogs",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Language toggle for wider tier-2/3 reach.",
+          "group": "Reach & Content",
+          "id": "multilang",
+          "name": "Multi-Language (EN / हिन्दी)",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "beta"
+        },
+        {
+          "description": "Invite friends for listing-boost credits.",
+          "group": "Reach & Content",
+          "id": "referral",
+          "name": "Referral Program",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Name, category, services, hours, photos, map location, reviews, and trust badges.",
+          "group": "Business Directory",
+          "id": "business-profile",
+          "name": "Business Profile Page",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "One-tap contact from any profile or listing.",
+          "group": "Business Directory",
+          "id": "contact-buttons",
+          "name": "Call / WhatsApp / Chat",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Follow to get notified of new listings and stories.",
+          "group": "Business Directory",
+          "id": "follow",
+          "name": "Follow Sellers & Businesses",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Secure buyer↔seller messaging; contact number not shared until agreed.",
+          "group": "Communication",
+          "id": "chat",
+          "name": "In-App Chat",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "In-app alerts for messages, story views, new followers.",
+          "group": "Communication",
+          "id": "notifications",
+          "name": "Notification Center",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "One-tap share of listings/stories via WhatsApp + copy-link.",
+          "group": "Communication",
+          "id": "share",
+          "name": "Share to WhatsApp",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Create and run your own ad campaigns from the dashboard.",
+          "group": "Growth & Monetization",
+          "id": "feat_000001",
+          "name": "Self-Serve Advertising",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Auto-earned Top Rated (4.5+ star) and Fast Responder (≤2h) badges.",
+          "group": "Accounts & Identity",
+          "id": "gamified-badges",
+          "name": "Gamified Badges",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Sign up / log in with mobile + OTP. Real JWT sessions.",
+          "group": "Accounts & Identity",
+          "id": "otp-login",
+          "name": "Mobile OTP Login",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "One account — any user can both buy and sell. No separate buyer/seller logins; the listing decides the role.",
+          "group": "Accounts & Identity",
+          "id": "unified-identity",
+          "name": "Unified Account (Buy & Sell)",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Name, photo, city, category interests, and contact-visibility settings (public / on-request / hidden).",
+          "group": "Accounts & Identity",
+          "id": "user-profile",
+          "name": "User Profile",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Admin-granted verification and trust badges to build buyer confidence.",
+          "group": "Accounts & Identity",
+          "id": "verification",
+          "name": "Verified & TrustSEAL Badges",
+          "plans": [
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Admins review reports, resolve or dismiss.",
+          "group": "Trust & Safety",
+          "id": "moderation",
+          "name": "Moderation Queue",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Flag suspicious/fraudulent listings for admin review.",
+          "group": "Trust & Safety",
+          "id": "report",
+          "name": "Report Listing",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Buyers and sellers rate each other after an interaction.",
+          "group": "Trust & Safety",
+          "id": "reviews",
+          "name": "Two-Way Ratings & Reviews",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Post photo/video that disappears after 24h, linked to a listing/profile.",
+          "group": "Stories",
+          "id": "stories",
+          "name": "24-Hour Stories",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Pin best stories permanently to a profile.",
+          "group": "Stories",
+          "id": "story-highlights",
+          "name": "Story Highlights",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        },
+        {
+          "description": "Sellers see how many people viewed each story.",
+          "group": "Stories",
+          "id": "story-views",
+          "name": "Story View Counts",
+          "plans": [
+            "free",
+            "silver",
+            "gold"
+          ],
+          "status": "live"
+        }
+      ],
+      "tiers": [
+        {
+          "key": "free",
+          "limits": {
+            "analyticsEnabled": false,
+            "featuredCreditsPerCycle": 0,
+            "leadQuotaPerCycle": 5,
+            "listingLimit": 10,
+            "perLeadPrice": 0,
+            "priceInfo": {
+              "currency": "INR",
+              "label": "Free",
+              "monthly": 0
+            },
+            "verifiedBadgeIncluded": false
+          },
+          "name": "Free",
+          "tierRank": 0
+        },
+        {
+          "key": "silver",
+          "limits": {
+            "analyticsEnabled": true,
+            "featuredCreditsPerCycle": 5,
+            "leadQuotaPerCycle": 50,
+            "listingLimit": 50,
+            "perLeadPrice": 20,
+            "priceInfo": {
+              "currency": "INR",
+              "label": "₹2,999 / mo",
+              "monthly": 2999
+            },
+            "verifiedBadgeIncluded": true
+          },
+          "name": "Silver",
+          "tierRank": 1
+        },
+        {
+          "key": "gold",
+          "limits": {
+            "analyticsEnabled": true,
+            "featuredCreditsPerCycle": 20,
+            "leadQuotaPerCycle": 200,
+            "listingLimit": null,
+            "perLeadPrice": 10,
+            "priceInfo": {
+              "currency": "INR",
+              "label": "₹7,999 / mo",
+              "monthly": 7999
+            },
+            "verifiedBadgeIncluded": true
+          },
+          "name": "Gold",
+          "tierRank": 2
+        }
+      ]
+    },
+    "success": true
+  }
+}

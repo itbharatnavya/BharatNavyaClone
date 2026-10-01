@@ -12,7 +12,7 @@
  * upserts in place rather than duplicating. All writes go through lib/store.
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const REVIEWS = [
   { id: "rev_seed_01", sellerId: "usr_s001", buyerId: "usr_b001", rating: 5, reviewText: "Good product and service is fast", daysAgo: 1 },

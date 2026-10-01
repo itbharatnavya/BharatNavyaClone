@@ -6,8 +6,15 @@
  * same way the automatic fan-out does, without duplicating the logic.
  */
 
-const store = require("./store");
+const { pool } = require("../modules/_shared/pool");
+const { nextId } = require("../modules/_shared/ids");
+const { createLeadsLedgerStore } = require("./db/leads-ledger");
 const notify = require("./notify");
+const logger = require("./logger");
+
+// The append-only leads ledger, wired to the shared pool — the same mapper the
+// legacy store dispatched to (BACKEND-AUDIT.md Phase 8).
+const ledger = createLeadsLedgerStore(pool);
 
 /**
  * Flat seller "mini" resolved from a users.json record — the same shape
@@ -28,7 +35,7 @@ function sellerMini(user) {
 /** Append one Lead row for a (seller, listing) delivery of an inquiry. */
 async function appendLead({ sellerId, buyerId, inquiryId, listingId }) {
   const lead = {
-    leadId: await store.nextId("lead"),
+    leadId: await nextId("lead"),
     sellerId,
     buyerId: buyerId || null,
     inquiryId,
@@ -40,7 +47,44 @@ async function appendLead({ sellerId, buyerId, inquiryId, listingId }) {
     billingStatus: "free_quota",
     status: "new",
   };
-  await store.appendJsonl("leads-ledger.jsonl", lead);
+  await ledger.append(lead);
+  return lead;
+}
+
+/** The whole leads-ledger, as rows. The one read path for the append-only ledger —
+ *  lets routes reach it without importing lib/store directly (BACKEND-AUDIT.md
+ *  Phase 7). Same underlying mapper as `store.readJsonl("leads-ledger.jsonl")`. */
+function readLedger() {
+  return ledger.readAll();
+}
+
+/** Patch one lead row by leadId (the RFQ "Connect" contact-status fields —
+ *  contactedAt / contactedVia). The one write path for the append-only ledger
+ *  that routes reach through, so they don't import lib/store directly
+ *  (BACKEND-AUDIT.md Phase 7). Same underlying op as store.updateLead. */
+function updateLead(leadId, patch) {
+  return ledger.update(leadId, patch);
+}
+
+/** Append a Lead row for a consultation booking — same ledger, `leadType`
+ *  "consultation", carries `bookingId` instead of `inquiryId`/`listingId`
+ *  (routes/consultations.js). Best-effort at the call site. */
+async function appendConsultationLead({ expertId, buyerId, bookingId }) {
+  const lead = {
+    leadId: await nextId("lead"),
+    sellerId: expertId,
+    buyerId: buyerId || null,
+    bookingId,
+    inquiryId: null,
+    listingId: null,
+    leadType: "consultation",
+    deliveredDate: new Date().toISOString(),
+    consumedFromQuota: true,
+    chargeable: false,
+    billingStatus: "free_quota",
+    status: "new",
+  };
+  await ledger.append(lead);
   return lead;
 }
 
@@ -68,7 +112,7 @@ async function notifySellerOfLead(sellerId, inquiry) {
     });
   } catch (err) {
     // Notifications are non-critical: log and move on, never fail the caller.
-    console.error("notifySellerOfLead failed:", err && err.message);
+    logger.error({ err }, "notifySellerOfLead failed");
   }
 }
 
@@ -106,4 +150,12 @@ function attachSellerDeliveries(inquiries, allLeads, allUsers) {
   });
 }
 
-module.exports = { appendLead, notifySellerOfLead, sellerMini, attachSellerDeliveries };
+module.exports = {
+  appendLead,
+  appendConsultationLead,
+  notifySellerOfLead,
+  sellerMini,
+  attachSellerDeliveries,
+  readLedger,
+  updateLead,
+};

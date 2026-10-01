@@ -1,0 +1,103 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "boostToTopLastUsed": null,
+      "categoryId": "cat_gifts-crafts-sports",
+      "categoryPath": [
+        "gifts-crafts-sports"
+      ],
+      "createdAt": "<volatile>",
+      "description": "Birthday Gift Hamper Box. Quality-checked stock available for bulk orders. (demo seed)",
+      "featuredEndDate": null,
+      "featuredStartDate": null,
+      "id": "lst_000003",
+      "isFeatured": true,
+      "isSponsored": false,
+      "isVerifiedSeller": true,
+      "keywords": [
+        "birthday",
+        "gift",
+        "hamper",
+        "box"
+      ],
+      "legacyCategory": null,
+      "location": {
+        "panIndia": true
+      },
+      "locationId": null,
+      "manualPinRank": null,
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/retail-1.jpg"
+        },
+        {
+          "type": "image",
+          "url": "/demo/retail-2.jpg"
+        }
+      ],
+      "panIndia": true,
+      "product": {
+        "availability": "in_stock",
+        "brand": null,
+        "certifications": [],
+        "condition": null,
+        "currency": "INR",
+        "leadTime": null,
+        "moq": 10,
+        "price": 349,
+        "priceTiers": [],
+        "sampleAvailable": false,
+        "sku": null,
+        "specifications": {},
+        "stockQty": null,
+        "unitOfMeasure": "box",
+        "variants": []
+      },
+      "productKey": null,
+      "rankBoostScore": 0,
+      "rating": 0,
+      "reviewCount": 0,
+      "seller": {
+        "city": "Ahmedabad",
+        "companyName": "Arvind Textiles Pvt Ltd",
+        "gstNumber": "24AAAAA0000A1Z5",
+        "id": "usr_s001",
+        "isVerified": true,
+        "logo": null,
+        "name": "Arvind Textiles Pvt Ltd",
+        "rating": 5,
+        "responseRate": 96,
+        "reviewCount": 1,
+        "sellerProfile": {
+          "companyName": "Arvind Textiles Pvt Ltd",
+          "isVerified": true,
+          "location": {
+            "city": "Ahmedabad",
+            "pincode": "380001",
+            "state": "Gujarat"
+          },
+          "rating": 5,
+          "responseRate": 96,
+          "reviewCount": 1,
+          "slug": "arvind-textiles-pvt-ltd"
+        },
+        "slug": "arvind-textiles-pvt-ltd",
+        "state": "Gujarat",
+        "trustSealVerified": true,
+        "yearEstablished": 1991
+      },
+      "sellerId": "usr_s001",
+      "service": null,
+      "serviceCities": [],
+      "slug": "birthday-gift-hamper-box-1000",
+      "status": "active",
+      "title": "Birthday Gift Hamper Box",
+      "type": "product",
+      "verification": null,
+      "views": 0
+    },
+    "success": true
+  }
+}

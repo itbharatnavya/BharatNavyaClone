@@ -25,6 +25,7 @@ import type {
   RecentActivityItem,
   Conversation,
   Message,
+  MessagesPage,
   Blog,
   Story,
   StoryGroup,
@@ -54,6 +55,7 @@ import type {
   EmploymentType,
   ExperienceLevel,
   JobAnswer,
+  WorkplaceType,
 } from "./types";
 
 // Extend the shared AiSearchResult with the optional NEVER-BLANK `message` the AI
@@ -161,6 +163,17 @@ async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T>
         window.dispatchEvent(new Event("bs:session-expired"));
       }
     }
+    // 429 (helmet + express-rate-limit — auth, AI, and the global /api limiter):
+    // give callers a stable, friendly message instead of the raw backend body,
+    // and honour Retry-After when the server sent it.
+    if (res.status === 429) {
+      const retryAfter = Number(res.headers.get("retry-after"));
+      const wait =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? ` Try again in about ${retryAfter}s.`
+          : " Please wait a moment and try again.";
+      throw new Error(`Too many requests.${wait}`);
+    }
     throw new Error(message);
   }
 
@@ -221,6 +234,9 @@ export function login(email: string, password: string): Promise<AuthResult> {
   });
 }
 
+// POST /api/auth/oauth/google — idToken is the Google Identity Services
+// "credential" JWT. Backend verifies it, auto-registers on first sign-in
+// (find-or-create — same {token,user} shape as login/verify-otp).
 export function loginWithGoogle(idToken: string): Promise<AuthResult> {
   return request<AuthResult>(`/api/auth/oauth/google`, {
     method: "POST",
@@ -688,25 +704,31 @@ export function logSearchSelection(params: {
 // ============================================================
 // Chat
 // ============================================================
-export function getConversations(): Promise<Conversation[]> {
-  return request<Conversation[]>(`/api/chat/conversations`);
+export function getConversations(listingId?: string): Promise<Conversation[]> {
+  return request<Conversation[]>(
+    `/api/chat/conversations${toQuery({ listingId })}`
+  );
+}
+
+export function getConversation(id: string): Promise<Conversation> {
+  return request<Conversation>(`/api/chat/conversations/${id}`);
 }
 
 export function createConversation(
-  listingId: string,
+  listingId: string | null | undefined,
   toUserId: string
 ): Promise<Conversation> {
   return request<Conversation>(`/api/chat/conversations`, {
     method: "POST",
-    body: JSON.stringify({ listingId, toUserId }),
+    body: JSON.stringify({ listingId: listingId || null, toUserId }),
   });
 }
 
 export function getMessages(
   convId: string,
   afterSeq?: number
-): Promise<Message[]> {
-  return request<Message[]>(
+): Promise<MessagesPage> {
+  return request<MessagesPage>(
     `/api/chat/conversations/${convId}/messages${toQuery({ afterSeq })}`
   );
 }
@@ -1032,6 +1054,21 @@ export function markNotificationRead(
 export function markAllNotificationsRead(): Promise<{ updated: number }> {
   return request<{ updated: number }>(`/api/notifications/read-all`, {
     method: "PUT",
+  });
+}
+
+// FCM push token registration (CHAT-PLAN.md Phase 10) — lib/fcm.ts calls
+// this once it has a token; the token itself is never read back.
+export function registerFcmToken(token: string, platform = "web"): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/fcm/token`, {
+    method: "POST",
+    body: JSON.stringify({ token, platform }),
+  });
+}
+export function unregisterFcmToken(token: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/api/fcm/token`, {
+    method: "DELETE",
+    body: JSON.stringify({ token }),
   });
 }
 
@@ -1720,6 +1757,7 @@ export interface JobQuery {
   city?: string;
   state?: string;
   remote?: boolean;
+  workplaceType?: WorkplaceType;
   minSalary?: number;
   maxSalary?: number;
   page?: number;

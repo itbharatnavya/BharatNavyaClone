@@ -15,11 +15,11 @@
  *   • 1 active employer story for selected recruitment employers — shows in the
  *     Recruitment homepage StoryRail through the same Stories API.
  *
- * Additive/idempotent: fixed ids, store.insert() upserts in place on re-run.
+ * Additive/idempotent: fixed ids, upsertStory() updates in place on re-run.
  * Run:  node scripts/seed-demo-stories.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 const SELLERS = [
   {
@@ -137,6 +137,18 @@ const DIRECTORY_SELLERS = [
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// store.insert() is a plain INSERT (no ON CONFLICT) — a fixed id on a re-run throws
+// 23505 duplicate-key and aborts the whole script, silently skipping every doc after
+// it (this is how the EMPLOYERS loop below ended up with 0 rows despite the header
+// comment's "upserts in place" claim). Upsert for real: update if the row exists.
+async function upsertStory(doc) {
+  const existing = await store.getById("stories.json", doc.id);
+  if (existing) {
+    return store.update("stories.json", doc.id, doc);
+  }
+  return store.insert("stories.json", doc);
+}
+
 function storyDoc({ id, sellerId, authorType = "seller", img, caption, listingId, isHighlight, createdAt }) {
   return {
     id,
@@ -165,8 +177,7 @@ async function main() {
       continue;
     }
 
-    await store.insert(
-      "stories.json",
+    await upsertStory(
       storyDoc({
         id: `story_demo_${s.id}_active`,
         sellerId: s.id,
@@ -179,8 +190,7 @@ async function main() {
     );
     created++;
 
-    await store.insert(
-      "stories.json",
+    await upsertStory(
       storyDoc({
         id: `story_demo_${s.id}_highlight`,
         sellerId: s.id,
@@ -201,8 +211,7 @@ async function main() {
       console.log(`skip ${seller.id} — seller not found`);
       continue;
     }
-    await store.insert(
-      "stories.json",
+    await upsertStory(
       storyDoc({
         id: `story_demo_${seller.id}_active`,
         sellerId: seller.id,
@@ -222,8 +231,7 @@ async function main() {
       console.log(`skip ${employer.id} — employer not found`);
       continue;
     }
-    await store.insert(
-      "stories.json",
+    await upsertStory(
       storyDoc({
         id: `story_demo_${employer.id}_active`,
         sellerId: employer.id,

@@ -1,0 +1,78 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "applications": [
+        {
+          "answers": [
+            {
+              "questionId": "q_0",
+              "text": "Yes"
+            }
+          ],
+          "appliedAt": "<timestamp>",
+          "candidateId": "usr_000026",
+          "coverNote": "",
+          "employerId": "usr_000027",
+          "id": "app_000005",
+          "job": {
+            "id": "job_000003",
+            "jobFunction": null,
+            "questions": [
+              {
+                "id": "q_0",
+                "required": true,
+                "text": "Willing to relocate?"
+              },
+              {
+                "id": "q_1",
+                "required": false,
+                "text": "Notice period?"
+              }
+            ],
+            "status": "active",
+            "title": "Backend Engineer"
+          },
+          "jobId": "job_000003",
+          "resumeUrl": "/uploads/test-resume.pdf",
+          "status": "applied",
+          "statusHistory": [
+            {
+              "changedAt": "<timestamp>",
+              "note": null,
+              "status": "applied"
+            }
+          ],
+          "updatedAt": "<volatile>"
+        },
+        {
+          "answers": [],
+          "appliedAt": "<timestamp>",
+          "candidateId": "usr_000026",
+          "coverNote": "",
+          "employerId": "usr_emp1",
+          "id": "app_000004",
+          "job": {
+            "id": "job_demo2",
+            "jobFunction": "engineering",
+            "questions": [],
+            "status": "active",
+            "title": "Frontend Engineer (React)"
+          },
+          "jobId": "job_demo2",
+          "resumeUrl": "/uploads/test-resume.pdf",
+          "status": "applied",
+          "statusHistory": [
+            {
+              "changedAt": "<timestamp>",
+              "note": null,
+              "status": "applied"
+            }
+          ],
+          "updatedAt": "<volatile>"
+        }
+      ]
+    },
+    "success": true
+  }
+}

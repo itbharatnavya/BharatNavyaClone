@@ -1,0 +1,139 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "badges": [
+          "top_rated",
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Coimbatore",
+        "id": "usr_cat_industrialmachinerye",
+        "isVerified": true,
+        "listingCount": 25,
+        "name": "Coimbatore Precision Machinery Works",
+        "rating": 5,
+        "responseRate": 89,
+        "reviewCount": 1,
+        "slug": "coimbatore-precision-machinery-works",
+        "state": "Tamil Nadu"
+      },
+      {
+        "badges": [
+          "top_rated",
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Surat",
+        "id": "usr_cat_textilesfabricsyarn",
+        "isVerified": true,
+        "listingCount": 24,
+        "name": "Surat Silk & Textile Mills",
+        "rating": 5,
+        "responseRate": 88,
+        "reviewCount": 1,
+        "slug": "surat-silk-textile-mills",
+        "state": "Gujarat"
+      },
+      {
+        "badges": [
+          "top_rated",
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Meerut",
+        "id": "usr_cat_tools",
+        "isVerified": true,
+        "listingCount": 44,
+        "name": "Meerut Tools & Hardware Depot",
+        "rating": 5,
+        "responseRate": 90,
+        "reviewCount": 1,
+        "slug": "meerut-tools-hardware-depot",
+        "state": "Uttar Pradesh"
+      },
+      {
+        "badges": [
+          "top_rated",
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Raipur",
+        "id": "usr_pv1",
+        "isVerified": true,
+        "listingCount": 4,
+        "name": "Jindal Steel & Metals Depot",
+        "rating": 5,
+        "responseRate": 96,
+        "reviewCount": 1,
+        "slug": "jindal-steel-metals-depot",
+        "state": "Chhattisgarh"
+      },
+      {
+        "badges": [
+          "verified"
+        ],
+        "city": "Bengaluru",
+        "id": "usr_cat_electronicselectrica",
+        "isVerified": true,
+        "listingCount": 22,
+        "name": "Bengaluru Circuit & Electricals",
+        "rating": 4,
+        "responseRate": 91,
+        "reviewCount": 1,
+        "slug": "bengaluru-circuit-electricals",
+        "state": "Karnataka"
+      },
+      {
+        "badges": [
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Bengaluru",
+        "id": "usr_svc3",
+        "isVerified": true,
+        "listingCount": 2,
+        "name": "TechNova IT Solutions",
+        "rating": 4,
+        "responseRate": 97,
+        "reviewCount": 1,
+        "slug": "technova-it-solutions",
+        "state": "Karnataka"
+      },
+      {
+        "badges": [
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Pune",
+        "id": "usr_cat_accounting",
+        "isVerified": true,
+        "listingCount": 39,
+        "name": "Pune TaxPro Accounting Services",
+        "rating": 0,
+        "responseRate": 95,
+        "reviewCount": 0,
+        "slug": "pune-taxpro-accounting-services",
+        "state": "Maharashtra"
+      },
+      {
+        "badges": [
+          "fast_responder",
+          "verified"
+        ],
+        "city": "Nashik",
+        "id": "usr_cat_agriculturefarming",
+        "isVerified": true,
+        "listingCount": 21,
+        "name": "Nashik AgroFarm Supplies",
+        "rating": 0,
+        "responseRate": 97,
+        "reviewCount": 0,
+        "slug": "nashik-agrofarm-supplies",
+        "state": "Maharashtra"
+      }
+    ],
+    "success": true
+  }
+}

@@ -1,13 +1,25 @@
 /**
- * pg-store.js — Postgres-backed implementation of the store.js interface, dispatching
- * each collection name to its relational mapper (lib/db/*). Every mapper exposes the
- * same shape { all, findOne, findMany, getById, insert, update, remove, writeJson },
- * so most of this file is just routing; see lib/db/schema.sql for the actual tables.
+ * pg-store.js — the bundled composite-mapper data layer, kept for OFFLINE use
+ * only (BACKEND-AUDIT.md Phase 8.10).
+ *
+ * `lib/store.js` (the dispatch + file-DB backend) is GONE. The running server no
+ * longer imports this file — every runtime read/write goes through a
+ * `modules/<domain>` port or a `repoForCollection(...)` repo.
+ *
+ * What still uses it, by name:
+ *   - `scripts/seed-*.js` / `scripts/migrate-*.js` — bulk seed + one-off migrations
+ *   - `test/*.js` — as a byte-for-byte oracle when asserting a module port matches
+ *     the legacy composite mapper
+ *
+ * It dispatches each collection name to its relational mapper (`lib/db/*`); every
+ * mapper exposes `{ all, findOne, findMany, getById, insert, update, remove,
+ * writeJson }` (+ the jsonl / singleton helpers). Postgres only — `PG_URL` (or
+ * `DATABASE_URL`) is required. See `lib/db/schema.sql` for the tables.
  */
 
-const { Pool } = require("pg");
-const config = require("./config");
-const { FlatCollectionStore, buildFlatConfigs } = require("./db/flat");
+const { pool, ping, close } = require("../modules/_shared/pool");
+const { nextId, seedCounter } = require("../modules/_shared/ids");
+const { FlatCollectionStore, buildFlatConfigs } = require("../modules/_shared/mappings/flat.mappings");
 const { createUsersStore } = require("./db/users");
 const { createListingsStore } = require("./db/listings");
 const { createChatSupport, isMessagesPath, isReadStatePath } = require("./db/chat");
@@ -15,50 +27,13 @@ const { createLeadsLedgerStore } = require("./db/leads-ledger");
 const { createSearchEventsStore } = require("./db/search-events");
 const { createSettingsStore } = require("./db/settings");
 
-const pool = new Pool({ connectionString: config.PG_URL, max: 10 });
+// The pool, its hardening (Phase 1 §1e), and ping()/close() now live in
+// modules/_shared/pool.js — one pool shared by this legacy store and every module
+// repository (Phase 2). Re-exported below so store.js consumers are unaffected.
 const _locks = new Map();
 
-/* ------------------------------------------------------------- id counters ---- */
-
-async function ensureCountersTable() {
-  await pool.query(
-    `CREATE TABLE IF NOT EXISTS counters (key TEXT PRIMARY KEY, value BIGINT NOT NULL DEFAULT 0)`
-  );
-}
-
-async function nextId(prefix) {
-  await ensureCountersTable();
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const res = await client.query(`SELECT value FROM counters WHERE key = $1 FOR UPDATE`, [prefix]);
-    const current = res.rowCount ? Number(res.rows[0].value) : 0;
-    const next = current + 1;
-    if (res.rowCount) {
-      await client.query(`UPDATE counters SET value = $1 WHERE key = $2`, [next, prefix]);
-    } else {
-      await client.query(`INSERT INTO counters(key, value) VALUES($1, $2)`, [prefix, next]);
-    }
-    await client.query("COMMIT");
-    return `${prefix}_${String(next).padStart(6, "0")}`;
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
-  } finally {
-    client.release();
-  }
-}
-
-/** Seed a counter's floor (raises only — GREATEST) so post-migration ids never collide
- *  with ids already present in the migrated data. */
-async function seedCounter(prefix, value) {
-  await ensureCountersTable();
-  await pool.query(
-    `INSERT INTO counters(key, value) VALUES ($1, $2)
-     ON CONFLICT (key) DO UPDATE SET value = GREATEST(counters.value, EXCLUDED.value)`,
-    [prefix, value]
-  );
-}
+// nextId / seedCounter moved to modules/_shared/ids.js (Phase 4d) — imported above,
+// re-exported below so lib/pg-store.js consumers (migration scripts) are unaffected.
 
 /* -------------------------------------------------------------- mutex ------- */
 
@@ -153,17 +128,9 @@ async function updateLead(leadId, patch) {
   return leadsLedgerStore.update(leadId, patch);
 }
 
-// store.js's file-backed branch tracks a per-collection version counter for
-// route-level memoization (see routes/categories.js, brands.js, users.js).
-// Postgres has no equivalent in-process cache to invalidate, so this always
-// returns a changing value — any caller keying a memo on it just recomputes
-// every time, which is safe (never stale), it simply doesn't benefit from
-// the memoization under this backend.
-function getVersion() {
-  return Date.now();
-}
-
 module.exports = {
+  ping,
+  close,
   withLock,
   readJson,
   writeJson,
@@ -180,5 +147,4 @@ module.exports = {
   insert,
   update,
   remove,
-  getVersion,
 };

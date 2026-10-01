@@ -7,7 +7,7 @@
  * Run: node scripts/seed-siteconfig.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 async function main() {
   const s = await store.readJson("settings.json", {});

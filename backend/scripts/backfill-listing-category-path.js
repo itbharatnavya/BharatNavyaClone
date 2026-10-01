@@ -14,7 +14,7 @@
  * Run:  node scripts/backfill-listing-category-path.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 async function main() {
   const [listings, categories] = await Promise.all([

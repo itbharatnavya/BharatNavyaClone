@@ -1,13 +1,19 @@
 /**
- * Pure-function unit tests for routes/jobs.js's validation/normalization helpers.
- * No DB, no server — run with `npm test` (node:test).
+ * Pure-function unit tests for the Recruitment job service + policy
+ * (modules/recruitment/service/job.service.js + policy.js, extracted from
+ * routes/jobs.js in Phase 4b). No DB, no server — run with `npm test` (node:test).
  */
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { paginationOf, buildLocation, buildSalaryRange, normalizeStringList, isOwnerOrAdmin } =
-  require("../routes/jobs")._internal;
+const {
+  jobsPaginationOf: paginationOf,
+  buildLocation,
+  buildSalaryRange,
+  normalizeStringList,
+  isJobOwnerOrAdmin: isOwnerOrAdmin,
+} = require("../modules/recruitment");
 
 test("paginationOf clamps limit to MAX_LIMIT (50) even if the client asks for more", () => {
   const { page, limit } = paginationOf({ page: "1", limit: "999999" });
@@ -16,8 +22,8 @@ test("paginationOf clamps limit to MAX_LIMIT (50) even if the client asks for mo
 });
 
 test("paginationOf floors page/limit at 1 for zero/negative/garbage input", () => {
-  assert.deepEqual(paginationOf({ page: "0", limit: "-5" }), { page: 1, limit: 1 });
-  assert.deepEqual(paginationOf({ page: "not-a-number", limit: "" }), { page: 1, limit: 12 });
+  assert.deepEqual(paginationOf({ page: "0", limit: "-5" }), { page: 1, limit: 1, offset: 0 });
+  assert.deepEqual(paginationOf({ page: "not-a-number", limit: "" }), { page: 1, limit: 12, offset: 0 });
 });
 
 test("buildLocation coerces remote to a real boolean and trims city/state", () => {

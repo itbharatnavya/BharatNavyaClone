@@ -16,7 +16,7 @@ import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useToast } from "@/components/Toast";
 import { getJobFunctions, createJob, updateJob, getJob } from "@/lib/api";
 import { employerProfileGaps } from "@/lib/recruitmentProfile";
-import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion, JobStatus } from "@/lib/types";
+import type { EmploymentType, ExperienceLevel, Job, JobFunction, JobQuestion, JobStatus, WorkplaceType } from "@/lib/types";
 
 // YYYY-MM-DD for an <input type="date">, from a stored ISO timestamp.
 function toDateInputValue(iso?: string | null): string {
@@ -39,6 +39,11 @@ const EXPERIENCE_LEVELS: { value: ExperienceLevel; label: string }[] = [
   { value: "senior", label: "Senior" },
   { value: "lead", label: "Lead" },
   { value: "executive", label: "Executive" },
+];
+const WORKPLACE_TYPES: { value: WorkplaceType; label: string }[] = [
+  { value: "onsite", label: "On-site" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "remote", label: "Remote" },
 ];
 
 function PostJobInner() {
@@ -64,7 +69,7 @@ function PostJobInner() {
   const [description, setDescription] = useState("");
   const [city, setCity] = useState(user?.city || "");
   const [state, setState] = useState(user?.state || "");
-  const [remote, setRemote] = useState(false);
+  const [workplaceType, setWorkplaceType] = useState<WorkplaceType>("onsite");
   const [salaryMin, setSalaryMin] = useState("");
   const [salaryMax, setSalaryMax] = useState("");
   const [salaryDisclosed, setSalaryDisclosed] = useState(true);
@@ -103,7 +108,7 @@ function PostJobInner() {
         setDescription(job.description || "");
         setCity(job.location?.city || "");
         setState(job.location?.state || "");
-        setRemote(!!job.location?.remote);
+        setWorkplaceType(job.location?.workplaceType || (job.location?.remote ? "remote" : "onsite"));
         setSalaryMin(job.salaryRange?.min != null ? String(job.salaryRange.min) : "");
         setSalaryMax(job.salaryRange?.max != null ? String(job.salaryRange.max) : "");
         setSalaryDisclosed(job.salaryRange?.isDisclosed ?? true);
@@ -126,7 +131,7 @@ function PostJobInner() {
 
   function validate(): string | null {
     if (!title.trim()) return "Job title is required.";
-    if (!remote && !city.trim()) return "Add a city, or mark the role as remote.";
+    if (workplaceType !== "remote" && !city.trim()) return "Add a city, or set the workplace to Remote.";
     return null;
   }
 
@@ -147,7 +152,7 @@ function PostJobInner() {
         jobFunction: jobFunction || null,
         employmentType: (employmentType || null) as EmploymentType | null,
         experienceLevel: (experienceLevel || null) as ExperienceLevel | null,
-        location: { city: city.trim(), state: state.trim(), remote },
+        location: { city: city.trim(), state: state.trim(), workplaceType },
         salaryRange: {
           min: salaryMin ? Number(salaryMin) : null,
           max: salaryMax ? Number(salaryMax) : null,
@@ -273,11 +278,13 @@ function PostJobInner() {
 
         <Section title="Location">
           <div style={{ display: "grid", gap: 14 }}>
-            <label className="pj-checkbox">
-              <input type="checkbox" checked={remote} onChange={(e) => setRemote(e.target.checked)} />
-              This role can be done remotely
-            </label>
-            {!remote && (
+            <Select
+              label="Workplace"
+              value={workplaceType}
+              onChange={(e) => setWorkplaceType(e.target.value as WorkplaceType)}
+              options={WORKPLACE_TYPES}
+            />
+            {workplaceType !== "remote" && (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
                 <Input label="City" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Bengaluru" />
                 <Input label="State" value={state} onChange={(e) => setState(e.target.value)} placeholder="e.g. Karnataka" />

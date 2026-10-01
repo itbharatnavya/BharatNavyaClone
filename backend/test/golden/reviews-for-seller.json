@@ -1,0 +1,34 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "buyerId": "usr_b002",
+        "buyerName": "Priya Nair",
+        "context": null,
+        "createdAt": "<volatile>",
+        "direction": "buyer_to_seller",
+        "id": "rev_seed_02",
+        "rating": 5,
+        "reviewText": "Reliable packaging supplier, on-time delivery every time.",
+        "sellerId": "usr_s002",
+        "status": "approved",
+        "targetUserId": "usr_s002"
+      },
+      {
+        "buyerId": "usr_000002",
+        "buyerName": "9812340000",
+        "context": null,
+        "createdAt": "<volatile>",
+        "direction": "buyer_to_seller",
+        "id": "rev_000002",
+        "rating": 5,
+        "reviewText": "great",
+        "sellerId": "usr_s002",
+        "status": "approved",
+        "targetUserId": "usr_s002"
+      }
+    ],
+    "success": true
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "Rahul",
+        "createdAt": "<volatile>",
+        "image": "/demo/textile-3.jpg",
+        "rating": 5,
+        "reviewId": "rev_000026",
+        "reviewText": "Fabric quality was better than expected, packaging was neat too.",
+        "sellerCity": "Surat",
+        "sellerId": "usr_cat_textilesfabricsyarn",
+        "sellerName": "Surat Silk & Textile Mills",
+        "sellerSlug": "surat-silk-textile-mills",
+        "whatsappNumber": "9800000000"
+      },
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "Test Account",
+        "createdAt": "<volatile>",
+        "image": "/demo/business-1.jpg",
+        "rating": 4,
+        "reviewId": "rev_000025",
+        "reviewText": "Helped us set up our internal tools quickly, would work with them again.",
+        "sellerCity": "Bengaluru",
+        "sellerId": "usr_svc3",
+        "sellerName": "TechNova IT Solutions",
+        "sellerSlug": "technova-it-solutions",
+        "whatsappNumber": "9800000000"
+      },
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "Anand",
+        "createdAt": "<volatile>",
+        "image": "/demo/steel-1.jpg",
+        "rating": 5,
+        "reviewId": "rev_000024",
+        "reviewText": "Reliable steel supplier, matched the specs we asked for exactly.",
+        "sellerCity": "Raipur",
+        "sellerId": "usr_pv1",
+        "sellerName": "Jindal Steel & Metals Depot",
+        "sellerSlug": "jindal-steel-metals-depot",
+        "whatsappNumber": "9800000000"
+      },
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "9855550001",
+        "createdAt": "<volatile>",
+        "image": "/demo/electronics-3.jpg",
+        "rating": 4,
+        "reviewId": "rev_000023",
+        "reviewText": "Good pricing on electrical components, communication over WhatsApp was quick.",
+        "sellerCity": "Bengaluru",
+        "sellerId": "usr_cat_electronicselectrica",
+        "sellerName": "Bengaluru Circuit & Electricals",
+        "sellerSlug": "bengaluru-circuit-electricals",
+        "whatsappNumber": "9800000000"
+      },
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "9812340000",
+        "createdAt": "<volatile>",
+        "image": "/demo/industry-4.jpg",
+        "rating": 5,
+        "reviewId": "rev_000022",
+        "reviewText": "Ordered a batch of hand tools, quality was solid and delivery was on time.",
+        "sellerCity": "Meerut",
+        "sellerId": "usr_cat_tools",
+        "sellerName": "Meerut Tools & Hardware Depot",
+        "sellerSlug": "meerut-tools-hardware-depot",
+        "whatsappNumber": "9800000000"
+      },
+      {
+        "buyerAvatarUrl": null,
+        "buyerName": "Jamshedpur Steel & Metal Works",
+        "createdAt": "<volatile>",
+        "image": "/demo/machinery-4.jpg",
+        "rating": 5,
+        "reviewId": "rev_000021",
+        "reviewText": "",
+        "sellerCity": "Coimbatore",
+        "sellerId": "usr_cat_industrialmachinerye",
+        "sellerName": "Coimbatore Precision Machinery Works",
+        "sellerSlug": "coimbatore-precision-machinery-works",
+        "whatsappNumber": "9800000000"
+      }
+    ],
+    "success": true
+  }
+}

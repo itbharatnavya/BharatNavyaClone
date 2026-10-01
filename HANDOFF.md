@@ -220,6 +220,14 @@ Evidence recorded for the Feni-content and Mahir-feedback source audit (2026-10-
 - A fresh desktop/mobile browser pass covered `/`, `/directory`, `/recruitment`, `/about`, `/blog`, `/pricing`, `/login`, and `/register` at 1440×900 and 390×844. The document width stayed within the viewport on every audited route; spacing, text wrapping, fixed-control clearance, and footer layout were checked from rendered output.
 - The only unresolved design/product choice remains the exact Directory highlights content and counts. Parth said he will confirm that choice separately, so no unsupported metrics or highlights were invented. Google credentials/backend persistence, international OTP/provider support, deployment, and production API acceptance remain developer-owned.
 
+Evidence recorded for the `feature/design-integration` merge (2026-10-01):
+
+- The integration branch was merged into `design` from an isolated worktree so the unrelated dirty backend and documentation files in the original checkout were not overwritten.
+- The branch contains substantially more than the chat and pagination notes: product-linked chat UI, Socket.IO/FCM notification support, Google authentication/backend hooks, Vercel backend support, a PostgreSQL modular-backend migration, security/query work, tests, refreshed seed media, and related frontend integrations.
+- One content conflict occurred in `frontend/app/brand/[slug]/page.tsx`. It was resolved by retaining the developer's 12-item pagination while preserving the approved single labelled ad placement; the branch's repeated sidebar/in-feed ad stack was not restored.
+- `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, JavaScript syntax checks, and `git diff --check` passed after resolution. The backend architecture-only checks passed, but the database-backed suite could not run in this environment because `PG_URL_TEST`/`PG_URL` is not configured; it requires the developer-owned disposable PostgreSQL test database.
+- Dependency audit remains follow-up work: the merged lockfiles currently report frontend and backend advisories, including a critical advisory against the current Next.js line and Firebase-related transitive advisories. No automatic major-version upgrade was attempted during the merge.
+
 Run these from `frontend/` after changes:
 
 ```bash

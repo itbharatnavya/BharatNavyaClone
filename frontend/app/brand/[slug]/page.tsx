@@ -12,6 +12,7 @@ import type { Listing } from "@/lib/types";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
+import Pagination from "@/components/Pagination";
 import EmptyState from "@/components/discovery/EmptyState";
 import { Monogram } from "@/components/brand/BrandCard";
 
@@ -84,6 +85,8 @@ function priceOf(l: Listing): number | null {
   return typeof p === "number" ? p : null;
 }
 
+const PAGE_SIZE = 12;
+
 function sortListings(listings: Listing[], sort: Sort): Listing[] {
   const out = listings.slice();
   if (sort === "newest") {
@@ -131,6 +134,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [sort, setSort] = useState<Sort>("newest");
+  const [page, setPage] = useState(1);
   const [view, setView] = useState<ViewValue>("list");
 
   useEffect(() => {
@@ -160,7 +164,16 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   }, [listings]);
 
   const sorted = useMemo(() => sortListings(listings, sort), [listings, sort]);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const pageItems = useMemo(
+    () => sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [sorted, page]
+  );
 
+  // A new brand or sort order starts again from page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [slug, sort]);
 
   // ---- Unknown brand ----
   if (!loading && (notFound || !data)) {
@@ -331,13 +344,25 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
               <div className="brand-main">
                 {view === "list" ? (
                   <div className="brand-list">
-                    {sorted.map((entry) => <ListingCard key={entry.id} listing={entry} layout="row" />)}
+                    {pageItems.map((entry) => <ListingCard key={entry.id} listing={entry} layout="row" />)}
                   </div>
                 ) : (
                   <div className="brand-grid">
-                    {sorted.map((entry) => (
+                    {pageItems.map((entry) => (
                       <div key={entry.id} style={{ minWidth: 0 }}><ListingCard listing={entry} /></div>
                     ))}
+                  </div>
+                )}
+                {totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
+                    <Pagination
+                      page={page}
+                      totalPages={totalPages}
+                      onChange={(next) => {
+                        setPage(next);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    />
                   </div>
                 )}
               </div>

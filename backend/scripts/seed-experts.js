@@ -12,7 +12,7 @@
  * run repeatedly without duplicating users or listings. All writes go through lib/store.
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 /* ------------------------------------------------------------- Part A/1 ---- *
  * The `expert` block for each EXISTING service seller. experienceYears mirrors the

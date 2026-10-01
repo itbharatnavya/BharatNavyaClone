@@ -1,0 +1,2457 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "facets": {
+        "categories": [
+          {
+            "count": 15,
+            "value": "professional-consulting-services"
+          },
+          {
+            "count": 7,
+            "value": "building-construction"
+          },
+          {
+            "count": 7,
+            "value": "electronics-electrical"
+          },
+          {
+            "count": 7,
+            "value": "metals-steel-alloys"
+          },
+          {
+            "count": 6,
+            "value": "gifts-crafts-sports"
+          },
+          {
+            "count": 5,
+            "value": "Textiles"
+          },
+          {
+            "count": 4,
+            "value": "agriculture-farming"
+          },
+          {
+            "count": 4,
+            "value": "deep-cleaning"
+          },
+          {
+            "count": 4,
+            "value": "education-training-events"
+          },
+          {
+            "count": 4,
+            "value": "face-wash-and-cleansers"
+          },
+          {
+            "count": 4,
+            "value": "food"
+          },
+          {
+            "count": 4,
+            "value": "gst-filing"
+          },
+          {
+            "count": 4,
+            "value": "office-stationery-supplies"
+          },
+          {
+            "count": 4,
+            "value": "pharmaceuticals-lab-supplies"
+          },
+          {
+            "count": 4,
+            "value": "plastics-polymers-rubber"
+          },
+          {
+            "count": 4,
+            "value": "t-shirts"
+          },
+          {
+            "count": 4,
+            "value": "tools"
+          },
+          {
+            "count": 3,
+            "value": "abrasives"
+          },
+          {
+            "count": 3,
+            "value": "ac-annual-maintenance"
+          },
+          {
+            "count": 3,
+            "value": "adhesives-sealants"
+          },
+          {
+            "count": 3,
+            "value": "agrochemicals"
+          },
+          {
+            "count": 3,
+            "value": "alloys"
+          },
+          {
+            "count": 3,
+            "value": "architecture-design"
+          },
+          {
+            "count": 3,
+            "value": "Automotive"
+          },
+          {
+            "count": 3,
+            "value": "automotive-parts-accessories"
+          },
+          {
+            "count": 3,
+            "value": "bathroom-cleaning"
+          },
+          {
+            "count": 3,
+            "value": "beauty-personal-care-wellness"
+          },
+          {
+            "count": 3,
+            "value": "bedding-linen"
+          },
+          {
+            "count": 3,
+            "value": "besan-gram-flour"
+          },
+          {
+            "count": 3,
+            "value": "bookkeeping"
+          },
+          {
+            "count": 3,
+            "value": "bottles-containers"
+          },
+          {
+            "count": 3,
+            "value": "brooms-mops"
+          },
+          {
+            "count": 3,
+            "value": "career-counseling"
+          },
+          {
+            "count": 3,
+            "value": "carpentry"
+          },
+          {
+            "count": 3,
+            "value": "cement-concrete"
+          },
+          {
+            "count": 3,
+            "value": "certification-programs"
+          },
+          {
+            "count": 3,
+            "value": "cnc-lathe-machines"
+          },
+          {
+            "count": 3,
+            "value": "cnc-milling-machines"
+          },
+          {
+            "count": 3,
+            "value": "cold-chain-logistics"
+          },
+          {
+            "count": 3,
+            "value": "combed-cotton"
+          },
+          {
+            "count": 3,
+            "value": "Construction"
+          },
+          {
+            "count": 3,
+            "value": "consumer-electronics"
+          },
+          {
+            "count": 3,
+            "value": "contract-drafting"
+          },
+          {
+            "count": 3,
+            "value": "corporate-training"
+          },
+          {
+            "count": 3,
+            "value": "corrugated-boxes"
+          },
+          {
+            "count": 3,
+            "value": "cosmetics-makeup"
+          },
+          {
+            "count": 3,
+            "value": "cotton-canvas"
+          },
+          {
+            "count": 3,
+            "value": "curtains-blinds"
+          },
+          {
+            "count": 3,
+            "value": "cutting-tools"
+          },
+          {
+            "count": 3,
+            "value": "dairy-products"
+          },
+          {
+            "count": 3,
+            "value": "dental-supplies"
+          },
+          {
+            "count": 3,
+            "value": "diagnostic-equipment"
+          },
+          {
+            "count": 3,
+            "value": "dining-furniture"
+          },
+          {
+            "count": 3,
+            "value": "disposables-consumables"
+          },
+          {
+            "count": 3,
+            "value": "dry-fruits-nuts"
+          },
+          {
+            "count": 3,
+            "value": "electrician-services"
+          },
+          {
+            "count": 3,
+            "value": "Electronics"
+          },
+          {
+            "count": 3,
+            "value": "event-management"
+          },
+          {
+            "count": 3,
+            "value": "farm-tools"
+          },
+          {
+            "count": 3,
+            "value": "fe-500-tmt-bars"
+          },
+          {
+            "count": 3,
+            "value": "financial-consulting"
+          },
+          {
+            "count": 3,
+            "value": "fleet-transport"
+          },
+          {
+            "count": 3,
+            "value": "floor-scrubbers"
+          },
+          {
+            "count": 3,
+            "value": "formal-shirts"
+          },
+          {
+            "count": 3,
+            "value": "fragrances"
+          },
+          {
+            "count": 3,
+            "value": "freight-cargo"
+          },
+          {
+            "count": 3,
+            "value": "greenhouse-polyhouse"
+          },
+          {
+            "count": 3,
+            "value": "gst-advisory"
+          },
+          {
+            "count": 3,
+            "value": "gst-audit"
+          },
+          {
+            "count": 3,
+            "value": "gst-registration"
+          },
+          {
+            "count": 3,
+            "value": "haircare-products"
+          },
+          {
+            "count": 3,
+            "value": "handheld-vacuum-cleaners"
+          },
+          {
+            "count": 3,
+            "value": "hardware-fasteners"
+          },
+          {
+            "count": 3,
+            "value": "harvesting-equipment"
+          },
+          {
+            "count": 3,
+            "value": "home-furniture-furnishings"
+          },
+          {
+            "count": 3,
+            "value": "housekeeping-office"
+          },
+          {
+            "count": 3,
+            "value": "income-tax-filing"
+          },
+          {
+            "count": 3,
+            "value": "income-tax-services"
+          },
+          {
+            "count": 3,
+            "value": "it-software-services"
+          },
+          {
+            "count": 3,
+            "value": "lab-equipment"
+          },
+          {
+            "count": 3,
+            "value": "labels-stickers"
+          },
+          {
+            "count": 3,
+            "value": "led-lighting"
+          },
+          {
+            "count": 3,
+            "value": "lighting-lamps"
+          },
+          {
+            "count": 3,
+            "value": "living-room-furniture"
+          },
+          {
+            "count": 3,
+            "value": "market-research"
+          },
+          {
+            "count": 3,
+            "value": "material-handling-equipment"
+          },
+          {
+            "count": 3,
+            "value": "measuring-instruments"
+          },
+          {
+            "count": 3,
+            "value": "millets"
+          },
+          {
+            "count": 3,
+            "value": "moisturizers-and-creams"
+          },
+          {
+            "count": 3,
+            "value": "office-electronics"
+          },
+          {
+            "count": 3,
+            "value": "online-courses"
+          },
+          {
+            "count": 3,
+            "value": "packaging-consumables"
+          },
+          {
+            "count": 3,
+            "value": "packaging-machinery"
+          },
+          {
+            "count": 3,
+            "value": "packaging-printing"
+          },
+          {
+            "count": 3,
+            "value": "packers-movers"
+          },
+          {
+            "count": 3,
+            "value": "paints-coatings"
+          },
+          {
+            "count": 3,
+            "value": "pantry-supplies"
+          },
+          {
+            "count": 3,
+            "value": "payroll-services"
+          },
+          {
+            "count": 3,
+            "value": "pcb-connectors"
+          },
+          {
+            "count": 3,
+            "value": "pcb-relays"
+          },
+          {
+            "count": 3,
+            "value": "personal-hygiene"
+          },
+          {
+            "count": 3,
+            "value": "pest-control"
+          },
+          {
+            "count": 3,
+            "value": "plastic-granules"
+          },
+          {
+            "count": 3,
+            "value": "plumbing"
+          },
+          {
+            "count": 3,
+            "value": "ppe-safety"
+          },
+          {
+            "count": 3,
+            "value": "printers-cartridges"
+          },
+          {
+            "count": 3,
+            "value": "printing-machinery"
+          },
+          {
+            "count": 3,
+            "value": "printing-services-packaging"
+          },
+          {
+            "count": 3,
+            "value": "pulses-lentils"
+          },
+          {
+            "count": 3,
+            "value": "pumps-compressors"
+          },
+          {
+            "count": 3,
+            "value": "refrigerator-repair"
+          },
+          {
+            "count": 3,
+            "value": "robotic-vacuum-cleaners"
+          },
+          {
+            "count": 3,
+            "value": "rugs-carpets"
+          },
+          {
+            "count": 3,
+            "value": "salon-equipment"
+          },
+          {
+            "count": 3,
+            "value": "seeds-saplings"
+          },
+          {
+            "count": 3,
+            "value": "solvents"
+          },
+          {
+            "count": 3,
+            "value": "specialty-chemicals"
+          },
+          {
+            "count": 3,
+            "value": "sports-goods"
+          },
+          {
+            "count": 3,
+            "value": "sportswear"
+          },
+          {
+            "count": 3,
+            "value": "stainless-steel"
+          },
+          {
+            "count": 3,
+            "value": "stationery-gifts"
+          },
+          {
+            "count": 3,
+            "value": "steam-cleaners"
+          },
+          {
+            "count": 3,
+            "value": "steel-iron"
+          },
+          {
+            "count": 3,
+            "value": "sunscreen"
+          },
+          {
+            "count": 3,
+            "value": "tds-services"
+          },
+          {
+            "count": 3,
+            "value": "tea-coffee-beverages"
+          },
+          {
+            "count": 3,
+            "value": "technical-textiles"
+          },
+          {
+            "count": 3,
+            "value": "textile-machinery"
+          },
+          {
+            "count": 3,
+            "value": "tiles-flooring"
+          },
+          {
+            "count": 3,
+            "value": "tractor-implements"
+          },
+          {
+            "count": 3,
+            "value": "trademark-registration"
+          },
+          {
+            "count": 3,
+            "value": "translation-services"
+          },
+          {
+            "count": 3,
+            "value": "two-wheeler-parts"
+          },
+          {
+            "count": 3,
+            "value": "uniforms-workwear"
+          },
+          {
+            "count": 3,
+            "value": "warehousing"
+          },
+          {
+            "count": 3,
+            "value": "water-purifier-service"
+          },
+          {
+            "count": 3,
+            "value": "water-treatment-chemicals"
+          },
+          {
+            "count": 3,
+            "value": "wet-dry-vacuum-cleaners"
+          },
+          {
+            "count": 3,
+            "value": "whole-wheat-atta"
+          },
+          {
+            "count": 3,
+            "value": "woolen-fabric"
+          },
+          {
+            "count": 2,
+            "value": "ac-gas-refilling"
+          },
+          {
+            "count": 2,
+            "value": "ac-installation"
+          },
+          {
+            "count": 2,
+            "value": "active-pharmaceutical-ingredients"
+          },
+          {
+            "count": 2,
+            "value": "aggregates-sand"
+          },
+          {
+            "count": 2,
+            "value": "agri-pumps"
+          },
+          {
+            "count": 2,
+            "value": "Agriculture"
+          },
+          {
+            "count": 2,
+            "value": "aluminium"
+          },
+          {
+            "count": 2,
+            "value": "apparel-clothing-garments"
+          },
+          {
+            "count": 2,
+            "value": "auditing-assurance"
+          },
+          {
+            "count": 2,
+            "value": "auto-electricals"
+          },
+          {
+            "count": 2,
+            "value": "ayurvedic-herbal"
+          },
+          {
+            "count": 2,
+            "value": "batteries-power"
+          },
+          {
+            "count": 2,
+            "value": "bearings-bushings"
+          },
+          {
+            "count": 2,
+            "value": "bedroom-furniture"
+          },
+          {
+            "count": 2,
+            "value": "braking-systems"
+          },
+          {
+            "count": 2,
+            "value": "bricks-blocks"
+          },
+          {
+            "count": 2,
+            "value": "business-consulting"
+          },
+          {
+            "count": 2,
+            "value": "car-accessories"
+          },
+          {
+            "count": 2,
+            "value": "cleaning-chemicals"
+          },
+          {
+            "count": 2,
+            "value": "coaching-tutoring"
+          },
+          {
+            "count": 2,
+            "value": "company-registration"
+          },
+          {
+            "count": 2,
+            "value": "connectors-cables"
+          },
+          {
+            "count": 2,
+            "value": "copper-brass"
+          },
+          {
+            "count": 2,
+            "value": "corporate-gifts"
+          },
+          {
+            "count": 2,
+            "value": "corporate-legal-advisory"
+          },
+          {
+            "count": 2,
+            "value": "courier-parcel"
+          },
+          {
+            "count": 2,
+            "value": "customs-clearance"
+          },
+          {
+            "count": 2,
+            "value": "denim-fabric"
+          },
+          {
+            "count": 2,
+            "value": "digital-marketing"
+          },
+          {
+            "count": 2,
+            "value": "doors-windows"
+          },
+          {
+            "count": 2,
+            "value": "dyes-pigments"
+          },
+          {
+            "count": 2,
+            "value": "edible-oils-ghee"
+          },
+          {
+            "count": 2,
+            "value": "electronic-instruments"
+          },
+          {
+            "count": 2,
+            "value": "engine-components"
+          },
+          {
+            "count": 2,
+            "value": "ethnic-wear"
+          },
+          {
+            "count": 2,
+            "value": "fe-550-tmt-bars"
+          },
+          {
+            "count": 2,
+            "value": "fertilizers"
+          },
+          {
+            "count": 2,
+            "value": "festival-decorative"
+          },
+          {
+            "count": 2,
+            "value": "files-folders"
+          },
+          {
+            "count": 2,
+            "value": "fitness-equipment"
+          },
+          {
+            "count": 2,
+            "value": "fitness-outdoor"
+          },
+          {
+            "count": 2,
+            "value": "flexible-packaging"
+          },
+          {
+            "count": 2,
+            "value": "formulations-tablets"
+          },
+          {
+            "count": 2,
+            "value": "gst-return-filing"
+          },
+          {
+            "count": 2,
+            "value": "hand-tools"
+          },
+          {
+            "count": 2,
+            "value": "handicrafts"
+          },
+          {
+            "count": 2,
+            "value": "home-decor"
+          },
+          {
+            "count": 2,
+            "value": "home-local-services"
+          },
+          {
+            "count": 2,
+            "value": "hospital-furniture"
+          },
+          {
+            "count": 2,
+            "value": "housekeeping-supplies"
+          },
+          {
+            "count": 2,
+            "value": "hr-recruitment"
+          },
+          {
+            "count": 2,
+            "value": "Industrial Machinery"
+          },
+          {
+            "count": 2,
+            "value": "industrial-chemicals"
+          },
+          {
+            "count": 2,
+            "value": "industrial-vacuum-cleaners"
+          },
+          {
+            "count": 2,
+            "value": "innerwear-lingerie"
+          },
+          {
+            "count": 2,
+            "value": "interior-design"
+          },
+          {
+            "count": 2,
+            "value": "international-taxation"
+          },
+          {
+            "count": 2,
+            "value": "irrigation-equipment"
+          },
+          {
+            "count": 2,
+            "value": "kids-wear"
+          },
+          {
+            "count": 2,
+            "value": "kitchenware"
+          },
+          {
+            "count": 2,
+            "value": "knitted-fabric"
+          },
+          {
+            "count": 2,
+            "value": "laboratory-chemicals"
+          },
+          {
+            "count": 2,
+            "value": "language-classes"
+          },
+          {
+            "count": 2,
+            "value": "last-mile-delivery"
+          },
+          {
+            "count": 2,
+            "value": "logistics-transport-warehousing"
+          },
+          {
+            "count": 2,
+            "value": "machine-tools"
+          },
+          {
+            "count": 2,
+            "value": "maize-corn"
+          },
+          {
+            "count": 2,
+            "value": "Medical Supplies"
+          },
+          {
+            "count": 2,
+            "value": "medical-devices"
+          },
+          {
+            "count": 2,
+            "value": "metal-scrap"
+          },
+          {
+            "count": 2,
+            "value": "metal-sheets-coils"
+          },
+          {
+            "count": 2,
+            "value": "microwave-repair"
+          },
+          {
+            "count": 2,
+            "value": "moulded-components"
+          },
+          {
+            "count": 2,
+            "value": "multigrain-atta"
+          },
+          {
+            "count": 2,
+            "value": "musical-instruments"
+          },
+          {
+            "count": 2,
+            "value": "nutraceuticals"
+          },
+          {
+            "count": 2,
+            "value": "office-furniture"
+          },
+          {
+            "count": 2,
+            "value": "organic-cotton"
+          },
+          {
+            "count": 2,
+            "value": "orthopedic-supplies"
+          },
+          {
+            "count": 2,
+            "value": "painting-services"
+          },
+          {
+            "count": 2,
+            "value": "paper-board"
+          },
+          {
+            "count": 2,
+            "value": "paper-notebooks"
+          },
+          {
+            "count": 2,
+            "value": "pipes-tubes"
+          },
+          {
+            "count": 2,
+            "value": "plastic-products"
+          },
+          {
+            "count": 2,
+            "value": "plastic-sheets-films"
+          },
+          {
+            "count": 2,
+            "value": "polymer-resins"
+          },
+          {
+            "count": 2,
+            "value": "power-tools"
+          },
+          {
+            "count": 2,
+            "value": "pressure-washers"
+          },
+          {
+            "count": 2,
+            "value": "pvc-pipes"
+          },
+          {
+            "count": 2,
+            "value": "reagents-chemicals"
+          },
+          {
+            "count": 2,
+            "value": "recycled-plastics"
+          },
+          {
+            "count": 2,
+            "value": "refined-wheat-flour-maida"
+          },
+          {
+            "count": 2,
+            "value": "rice"
+          },
+          {
+            "count": 2,
+            "value": "rubber-products"
+          },
+          {
+            "count": 2,
+            "value": "safety-equipment"
+          },
+          {
+            "count": 2,
+            "value": "sanitaryware-fittings"
+          },
+          {
+            "count": 2,
+            "value": "semolina-sooji"
+          },
+          {
+            "count": 2,
+            "value": "sensors-modules"
+          },
+          {
+            "count": 2,
+            "value": "silk-fabric"
+          },
+          {
+            "count": 2,
+            "value": "skill-development"
+          },
+          {
+            "count": 2,
+            "value": "snacks-packaged-food"
+          },
+          {
+            "count": 2,
+            "value": "sofa-cleaning"
+          },
+          {
+            "count": 2,
+            "value": "spa-wellness-services"
+          },
+          {
+            "count": 2,
+            "value": "spices-masala"
+          },
+          {
+            "count": 2,
+            "value": "split-ac-repair"
+          },
+          {
+            "count": 2,
+            "value": "storage-organization"
+          },
+          {
+            "count": 2,
+            "value": "surgical-dressings"
+          },
+          {
+            "count": 2,
+            "value": "surgical-instruments"
+          },
+          {
+            "count": 2,
+            "value": "switchgear-panels"
+          },
+          {
+            "count": 2,
+            "value": "synthetic-fabric"
+          },
+          {
+            "count": 2,
+            "value": "tapes-films"
+          },
+          {
+            "count": 2,
+            "value": "tds-compliance"
+          },
+          {
+            "count": 2,
+            "value": "toys-games"
+          },
+          {
+            "count": 2,
+            "value": "transmission-parts"
+          },
+          {
+            "count": 2,
+            "value": "trousers"
+          },
+          {
+            "count": 2,
+            "value": "tyres-tubes"
+          },
+          {
+            "count": 2,
+            "value": "veterinary-medicines"
+          },
+          {
+            "count": 2,
+            "value": "washing-machine-repair"
+          },
+          {
+            "count": 2,
+            "value": "welding-equipment"
+          },
+          {
+            "count": 2,
+            "value": "window-ac-repair"
+          },
+          {
+            "count": 2,
+            "value": "winter-wear"
+          },
+          {
+            "count": 2,
+            "value": "women-s-clothing"
+          },
+          {
+            "count": 2,
+            "value": "writing-instruments"
+          },
+          {
+            "count": 2,
+            "value": "yarn-thread"
+          },
+          {
+            "count": 1,
+            "value": "accounting"
+          },
+          {
+            "count": 1,
+            "value": "Agriculture & Farming"
+          },
+          {
+            "count": 1,
+            "value": "Batteries & Power"
+          },
+          {
+            "count": 1,
+            "value": "Chemicals"
+          },
+          {
+            "count": 1,
+            "value": "Cotton Fabric"
+          },
+          {
+            "count": 1,
+            "value": "furniture"
+          },
+          {
+            "count": 1,
+            "value": "IT & Software Services"
+          },
+          {
+            "count": 1,
+            "value": "LED & Lighting"
+          },
+          {
+            "count": 1,
+            "value": "PCB Connectors"
+          },
+          {
+            "count": 1,
+            "value": "Toys & Games"
+          }
+        ],
+        "cities": [
+          {
+            "count": 55,
+            "value": "Pune"
+          },
+          {
+            "count": 45,
+            "value": "Gurugram"
+          },
+          {
+            "count": 45,
+            "value": "Indore"
+          },
+          {
+            "count": 44,
+            "value": "Meerut"
+          },
+          {
+            "count": 37,
+            "value": "Delhi"
+          },
+          {
+            "count": 34,
+            "value": "Mumbai"
+          },
+          {
+            "count": 32,
+            "value": "Chennai"
+          },
+          {
+            "count": 29,
+            "value": "Surat"
+          },
+          {
+            "count": 27,
+            "value": "Bengaluru"
+          },
+          {
+            "count": 26,
+            "value": "Jodhpur"
+          },
+          {
+            "count": 25,
+            "value": "Coimbatore"
+          },
+          {
+            "count": 25,
+            "value": "Hyderabad"
+          },
+          {
+            "count": 24,
+            "value": "Vadodara"
+          },
+          {
+            "count": 23,
+            "value": "Tiruppur"
+          },
+          {
+            "count": 22,
+            "value": "Jaipur"
+          },
+          {
+            "count": 22,
+            "value": "Nagpur"
+          },
+          {
+            "count": 21,
+            "value": "Faridabad"
+          },
+          {
+            "count": 21,
+            "value": "Kota"
+          },
+          {
+            "count": 21,
+            "value": "Nashik"
+          },
+          {
+            "count": 20,
+            "value": "Noida"
+          },
+          {
+            "count": 19,
+            "value": "Jamshedpur"
+          },
+          {
+            "count": 17,
+            "value": "Baddi"
+          },
+          {
+            "count": 17,
+            "value": "Ludhiana"
+          },
+          {
+            "count": 17,
+            "value": "Vapi"
+          },
+          {
+            "count": 9,
+            "value": "Ahmedabad"
+          },
+          {
+            "count": 7,
+            "value": "Kolkata"
+          },
+          {
+            "count": 5,
+            "value": "Rajkot"
+          },
+          {
+            "count": 4,
+            "value": "Raipur"
+          }
+        ],
+        "featured": 101,
+        "priceBuckets": [
+          {
+            "count": 157,
+            "label": "Under ₹500",
+            "max": 500
+          },
+          {
+            "count": 222,
+            "label": "Under ₹1k",
+            "max": 1000
+          },
+          {
+            "count": 303,
+            "label": "Under ₹2k",
+            "max": 2000
+          },
+          {
+            "count": 403,
+            "label": "Under ₹5k",
+            "max": 5000
+          }
+        ],
+        "states": [
+          {
+            "count": 132,
+            "value": "Maharashtra"
+          },
+          {
+            "count": 84,
+            "value": "Gujarat"
+          },
+          {
+            "count": 80,
+            "value": "Tamil Nadu"
+          },
+          {
+            "count": 69,
+            "value": "Rajasthan"
+          },
+          {
+            "count": 66,
+            "value": "Haryana"
+          },
+          {
+            "count": 64,
+            "value": "Uttar Pradesh"
+          },
+          {
+            "count": 45,
+            "value": "Madhya Pradesh"
+          },
+          {
+            "count": 37,
+            "value": "Delhi"
+          },
+          {
+            "count": 27,
+            "value": "Karnataka"
+          },
+          {
+            "count": 25,
+            "value": "Telangana"
+          },
+          {
+            "count": 19,
+            "value": "Jharkhand"
+          },
+          {
+            "count": 17,
+            "value": "Himachal Pradesh"
+          },
+          {
+            "count": 17,
+            "value": "Punjab"
+          },
+          {
+            "count": 7,
+            "value": "West Bengal"
+          },
+          {
+            "count": 4,
+            "value": "Chhattisgarh"
+          }
+        ],
+        "total": 718,
+        "types": [
+          {
+            "count": 532,
+            "value": "product"
+          },
+          {
+            "count": 186,
+            "value": "service"
+          }
+        ],
+        "verified": 699
+      },
+      "listings": [
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_pest-control",
+          "categoryPath": [
+            "home-local-services",
+            "pest-control"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Pest Control – Express Service by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00470",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "pest",
+            "control",
+            "express",
+            "service"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional pest control completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 11,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 1088,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "pest-control-express-service-470",
+          "status": "active",
+          "title": "Pest Control – Express Service",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_electrician-services",
+          "categoryPath": [
+            "home-local-services",
+            "electrician-services"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Electrician Services by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00459",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "electrician",
+            "services"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional electrician services completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 11,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 2918,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "electrician-services-459",
+          "status": "active",
+          "title": "Electrician Services",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_deep-cleaning",
+          "categoryPath": [
+            "home-local-services",
+            "home-cleaning",
+            "deep-cleaning"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Deep Cleaning – Annual Plan by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00457",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "deep",
+            "cleaning",
+            "annual",
+            "plan"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-1.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-2.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional deep cleaning completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 6,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 2613,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "deep-cleaning-annual-plan-457",
+          "status": "active",
+          "title": "Deep Cleaning – Annual Plan",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_carpentry",
+          "categoryPath": [
+            "home-local-services",
+            "carpentry"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Carpentry by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00453",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "carpentry"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional carpentry completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 7,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 1554,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "carpentry-453",
+          "status": "active",
+          "title": "Carpentry",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_bathroom-cleaning",
+          "categoryPath": [
+            "home-local-services",
+            "home-cleaning",
+            "bathroom-cleaning"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Bathroom Cleaning by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00450",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "bathroom",
+            "cleaning"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional bathroom cleaning completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 9,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 636,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "bathroom-cleaning-450",
+          "status": "active",
+          "title": "Bathroom Cleaning",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_ac-installation",
+          "categoryPath": [
+            "home-local-services",
+            "appliance-repair",
+            "ac-services",
+            "ac-installation"
+          ],
+          "createdAt": "<volatile>",
+          "description": "AC Installation by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00448",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "installation"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional ac installation completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 4,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 641,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "ac-installation-448",
+          "status": "active",
+          "title": "AC Installation",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_ac-gas-refilling",
+          "categoryPath": [
+            "home-local-services",
+            "appliance-repair",
+            "ac-services",
+            "ac-gas-refilling"
+          ],
+          "createdAt": "<volatile>",
+          "description": "AC Gas Refilling – Annual Plan by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00447",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "gas",
+            "refilling",
+            "annual",
+            "plan"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional ac gas refilling completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 5,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 952,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "ac-gas-refilling-annual-plan-447",
+          "status": "active",
+          "title": "AC Gas Refilling – Annual Plan",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_ac-annual-maintenance",
+          "categoryPath": [
+            "home-local-services",
+            "appliance-repair",
+            "ac-services",
+            "ac-annual-maintenance"
+          ],
+          "createdAt": "<volatile>",
+          "description": "AC Annual Maintenance – Express Service by Gurugram HomeCare Services, serving Gurugram and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00445",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "annual",
+            "maintenance",
+            "express",
+            "service"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Gurugram",
+            "pincode": "",
+            "state": "Haryana"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/home-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/home-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Gurugram",
+            "companyName": "Gurugram HomeCare Services",
+            "id": "usr_cat_homelocalservices",
+            "isVerified": true,
+            "logo": null,
+            "name": "Gurugram HomeCare Services",
+            "rating": 0,
+            "responseRate": 92,
+            "reviewCount": 0,
+            "slug": "gurugram-homecare-services",
+            "state": "Haryana"
+          },
+          "sellerId": "usr_cat_homelocalservices",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional ac annual maintenance completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 3,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 890,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Gurugram",
+              "Remote"
+            ],
+            "serviceMode": "on-site",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-5 technicians",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "ac-annual-maintenance-express-service-445",
+          "status": "active",
+          "title": "AC Annual Maintenance – Express Service",
+          "type": "service",
+          "verification": null,
+          "views": 0
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_personal-hygiene",
+          "categoryPath": [
+            "beauty-personal-care-wellness",
+            "personal-hygiene"
+          ],
+          "createdAt": "<volatile>",
+          "description": "PureSkin Personal Hygiene – Premium sourced from Mumbai Beauty & Wellness Traders, Mumbai. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00415",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "pureskin",
+            "personal",
+            "hygiene",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Mumbai",
+            "pincode": "",
+            "state": "Maharashtra"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/retail-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/retail-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "PureSkin",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 4153,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-PERSON-40131",
+            "specifications": {
+              "Grade": "Grade A",
+              "Packaging": "Retail Pack",
+              "Warranty": "1 year"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "pureskin-personal-hygiene",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Mumbai",
+            "companyName": "Mumbai Beauty & Wellness Traders",
+            "id": "usr_cat_beautypersonalcarewe",
+            "isVerified": true,
+            "logo": null,
+            "name": "Mumbai Beauty & Wellness Traders",
+            "rating": 0,
+            "responseRate": 97,
+            "reviewCount": 0,
+            "slug": "mumbai-beauty-wellness-traders",
+            "state": "Maharashtra"
+          },
+          "sellerId": "usr_cat_beautypersonalcarewe",
+          "service": null,
+          "serviceCities": [],
+          "slug": "pureskin-personal-hygiene-premium-415",
+          "status": "active",
+          "title": "PureSkin Personal Hygiene – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_moisturizers-and-creams",
+          "categoryPath": [
+            "beauty-personal-care-wellness",
+            "skincare-products",
+            "moisturizers-and-creams"
+          ],
+          "createdAt": "<volatile>",
+          "description": "PureSkin Moisturizers & Creams – Premium sourced from Mumbai Beauty & Wellness Traders, Mumbai. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00412",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "pureskin",
+            "moisturizers",
+            "creams",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Mumbai",
+            "pincode": "",
+            "state": "Maharashtra"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/retail-3.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/retail-4.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "PureSkin",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 3712,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-MOISTU-79731",
+            "specifications": {
+              "Grade": "Grade A",
+              "Packaging": "Retail Pack",
+              "Warranty": "1 year"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "piece",
+            "variants": []
+          },
+          "productKey": "pureskin-moisturizers-creams",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Mumbai",
+            "companyName": "Mumbai Beauty & Wellness Traders",
+            "id": "usr_cat_beautypersonalcarewe",
+            "isVerified": true,
+            "logo": null,
+            "name": "Mumbai Beauty & Wellness Traders",
+            "rating": 0,
+            "responseRate": 97,
+            "reviewCount": 0,
+            "slug": "mumbai-beauty-wellness-traders",
+            "state": "Maharashtra"
+          },
+          "sellerId": "usr_cat_beautypersonalcarewe",
+          "service": null,
+          "serviceCities": [],
+          "slug": "pureskin-moisturizers-creams-premium-412",
+          "status": "active",
+          "title": "PureSkin Moisturizers & Creams – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_cosmetics-makeup",
+          "categoryPath": [
+            "beauty-personal-care-wellness",
+            "cosmetics-makeup"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Cosmetics & Makeup – Express Service by Mumbai Beauty & Wellness Traders, serving Mumbai and surrounding areas.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00399",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "cosmetics",
+            "makeup",
+            "express",
+            "service"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Mumbai",
+            "pincode": "",
+            "state": "Maharashtra"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/retail-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/retail-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": null,
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Mumbai",
+            "companyName": "Mumbai Beauty & Wellness Traders",
+            "id": "usr_cat_beautypersonalcarewe",
+            "isVerified": true,
+            "logo": null,
+            "name": "Mumbai Beauty & Wellness Traders",
+            "rating": 0,
+            "responseRate": 97,
+            "reviewCount": 0,
+            "slug": "mumbai-beauty-wellness-traders",
+            "state": "Maharashtra"
+          },
+          "sellerId": "usr_cat_beautypersonalcarewe",
+          "service": {
+            "availabilitySchedule": "Mon–Sat, 9am–7pm",
+            "bookingType": "enquiry",
+            "credentials": [],
+            "deliverables": [
+              "Professional cosmetics & makeup completion",
+              "Dedicated service executive",
+              "Post-service support"
+            ],
+            "experienceYears": 8,
+            "portfolio": [],
+            "pricingModel": "fixed",
+            "rateCard": [
+              {
+                "label": "Starting",
+                "price": 2328,
+                "unit": "onwards"
+              }
+            ],
+            "serviceArea": [
+              "Mumbai",
+              "Remote"
+            ],
+            "serviceMode": "on-site/at-salon",
+            "sla": "Responds within 2-4 hours",
+            "teamSize": "2-6 staff",
+            "timeline": "1-5 working days",
+            "warranty": "Service guarantee"
+          },
+          "serviceCities": [],
+          "slug": "cosmetics-makeup-express-service-399",
+          "status": "active",
+          "title": "Cosmetics & Makeup – Express Service",
+          "type": "service",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_nutraceuticals",
+          "categoryPath": [
+            "pharmaceuticals-lab-supplies",
+            "nutraceuticals"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Himalayan Herbals Nutraceuticals – Premium sourced from Baddi Pharma & Lab Supplies, Baddi. Quality-assured with pan-India bulk supply.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "lst_cat00370",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "himalayan",
+            "herbals",
+            "nutraceuticals",
+            "premium"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Baddi",
+            "pincode": "",
+            "state": "Himachal Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/medical-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/medical-1.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "Himalayan Herbals",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 100,
+            "price": 5492,
+            "priceTiers": [],
+            "sampleAvailable": false,
+            "sku": "SKU-NUTRAC-54261",
+            "specifications": {
+              "Grade": "Industrial Grade",
+              "Packaging": "Standard Pack",
+              "Warranty": "Replacement warranty"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "box",
+            "variants": []
+          },
+          "productKey": "himalayan-herbals-nutraceuticals",
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "seller": {
+            "city": "Baddi",
+            "companyName": "Baddi Pharma & Lab Supplies",
+            "id": "usr_cat_pharmaceuticalslabsu",
+            "isVerified": true,
+            "logo": null,
+            "name": "Baddi Pharma & Lab Supplies",
+            "rating": 0,
+            "responseRate": 90,
+            "reviewCount": 0,
+            "slug": "baddi-pharma-lab-supplies",
+            "state": "Himachal Pradesh"
+          },
+          "sellerId": "usr_cat_pharmaceuticalslabsu",
+          "service": null,
+          "serviceCities": [],
+          "slug": "himalayan-herbals-nutraceuticals-premium-370",
+          "status": "active",
+          "title": "Himalayan Herbals Nutraceuticals – Premium",
+          "type": "product",
+          "verification": null,
+          "views": null
+        }
+      ],
+      "page": 2,
+      "total": 718,
+      "totalPages": 60
+    },
+    "success": true
+  }
+}

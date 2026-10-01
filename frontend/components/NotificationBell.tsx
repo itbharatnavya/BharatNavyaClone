@@ -15,6 +15,9 @@ import {
 } from "@/lib/api";
 import type { NotificationItem } from "@/lib/api";
 import { useT } from "@/lib/i18n";
+import { getSocket } from "@/lib/socket";
+import { registerPushToken } from "@/lib/fcm";
+import { useToast } from "@/components/Toast";
 
 const POLL_MS = 30_000;
 
@@ -34,8 +37,12 @@ function describe(n: NotificationItem): string {
   switch (n.type) {
     case "new_follower":
       return `${who} started following you`;
-    case "new_message":
-      return `New message${data.from ? ` from ${String(data.from)}` : ""}`;
+    case "new_message": {
+      const product =
+        typeof data.productName === "string" && data.productName.trim() ? data.productName.trim() : "";
+      if (product && who !== "Someone") return `New message from ${who} about ${product}`;
+      return `New message${who !== "Someone" ? ` from ${who}` : ""}`;
+    }
     case "new_lead":
     case "new_inquiry": {
       const product =
@@ -84,6 +91,8 @@ function notificationHref(n: NotificationItem): string | null {
       return jobId ? `/recruitment/dashboard?tab=applications&job=${jobId}` : "/recruitment/dashboard?tab=applications";
     case "application_status":
       return "/recruitment/dashboard?tab=myapplications";
+    case "new_message":
+      return typeof data.link === "string" ? data.link : "/dashboard?tab=inbox";
     default:
       return null;
   }
@@ -105,6 +114,7 @@ function timeAgo(iso: string): string {
 export default function NotificationBell() {
   const { t } = useT();
   const router = useRouter();
+  const { addToast } = useToast();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -120,12 +130,44 @@ export default function NotificationBell() {
     }
   }, []);
 
-  // Initial load + steady polling.
+  // Initial load + steady polling — the fallback path (also catches
+  // notification types nothing pushes live, e.g. new_lead/new_review).
   useEffect(() => {
     void load();
     const id = window.setInterval(load, POLL_MS);
     return () => window.clearInterval(id);
   }, [load]);
+
+  // FCM push registration — reaches this user even when no tab is open.
+  // NotificationBell only renders once logged in (Navbar gate), so mounting
+  // it is the right moment to ask for permission + register the token.
+  useEffect(() => {
+    void registerPushToken();
+  }, []);
+
+  // Live push — reuses the same Socket.IO singleton ChatThread/InboxTab
+  // already open (lib/socket.ts), so this doesn't add a second connection.
+  // The server auto-joins every authenticated socket to `user:<id>` and
+  // emits "notification" there on new_message (realtime/chat.js); this is
+  // what makes the bell/toast update instantly instead of waiting ~30s.
+  useEffect(() => {
+    let socket: ReturnType<typeof getSocket>;
+    try {
+      socket = getSocket();
+    } catch {
+      return;
+    }
+    const onNotification = (n: NotificationItem) => {
+      setItems((prev) => [n, ...prev.filter((x) => x.id !== n.id)]);
+      setUnread((u) => u + 1);
+      addToast(describe(n), n.type === "new_message" ? "chat" : "info");
+    };
+    socket.on("notification", onNotification);
+    return () => {
+      socket.off("notification", onNotification);
+      // NB: do not disconnect — getSocket() returns a shared singleton.
+    };
+  }, [addToast]);
 
   // Close on outside click.
   useEffect(() => {

@@ -20,7 +20,8 @@
  * maxSponsoredPerPage.
  */
 
-const store = require("../lib/store");
+const { settingsRepo } = require("../modules/platform");
+const identity = require("../modules/identity");
 
 const DEFAULTS = { wOrganic: 0.7, wPaid: 0.3, maxSponsoredPerPage: 3 };
 
@@ -34,7 +35,7 @@ const FEATURED_BONUS = 1;
 /* ------------------------------------------------------------- helpers ----- */
 
 async function loadWeights() {
-  const s = await store.readJson("settings.json", {});
+  const s = await settingsRepo.read({});
   const r = (s && s.ranking) || s || {};
   const num = (v, d) => (typeof v === "number" && !Number.isNaN(v) ? v : d);
   return {
@@ -88,25 +89,31 @@ function isEligible(listing, { query, categorySlug }) {
  * with `isSponsored` (true for the top boosted results, capped) and attaches a
  * `_finalScore`. Input listings may carry `_relevance` (normalized BM25 from search).
  */
-async function rankListings(listings, { query, categorySlug } = {}) {
+async function rankListings(listings, { query, categorySlug, tierBySeller } = {}) {
   const items = Array.isArray(listings) ? listings.slice() : [];
   if (items.length === 0) return items;
 
   const weights = await loadWeights();
   const now = Date.now();
 
-  // Seller lookup for priorityTier.
-  const users = await store.all("users.json");
-  const sellerById = new Map(users.map((u) => [u.id, u]));
+  // Seller priorityTier lookup. The route passes a Map<sellerId, tier> built from
+  // one indexed query (BACKEND-AUDIT.md Phase 5c); only fall back to a full user
+  // load if a caller didn't supply it.
+  const tierMap =
+    tierBySeller ||
+    (await identity.getSellerPriorityTiers(
+      [...new Set(items.map((l) => l.sellerId).filter(Boolean))]
+    ));
 
-  // Normalization bases across the candidate set.
+  // Normalization bases across the candidate set. reduce, not Math.min(...times)
+  // — a large candidate set would blow the call-stack limit on the spread.
   const times = items.map((l) => Date.parse(l.createdAt) || 0);
-  const minT = Math.min(...times, 0);
-  const maxT = Math.max(...times, 1);
+  const minT = times.reduce((m, t) => (t < m ? t : m), 0);
+  const maxT = times.reduce((m, t) => (t > m ? t : m), 1);
   const tSpan = maxT - minT || 1;
 
   const relScores = items.map((l) => (typeof l._relevance === "number" ? l._relevance : 0));
-  const maxRel = Math.max(...relScores, 0);
+  const maxRel = relScores.reduce((m, r) => (r > m ? r : m), 0);
   const hasQuery = !!(query && String(query).trim());
 
   for (const l of items) {
@@ -116,13 +123,14 @@ async function rankListings(listings, { query, categorySlug } = {}) {
     const recency = ((Date.parse(l.createdAt) || 0) - minT) / tSpan;
     const verified = l.isVerifiedSeller ? 1 : 0;
     // Average the active components so organic stays within ~[0,1].
+    // With a text query, relevance carries 4 of 7 parts so a strong text match is not
+    // outranked by rating/recency/paid placement.
     const organic = hasQuery
-      ? (relevance + rating + recency + verified) / 4
+      ? (relevance * 4 + rating + recency + verified) / 7
       : (rating + recency + verified) / 3;
 
     // ---- paid boost ----
-    const seller = sellerById.get(l.sellerId);
-    const tier = (seller && seller.sellerProfile && seller.sellerProfile.priorityTier) || "none";
+    const tier = tierMap.get(l.sellerId) || "none";
     const normBoost = Math.min(1, Math.max(0, (l.rankBoostScore || 0) / RANK_BOOST_CAP));
     const tierBaseline = TIER_BASELINE[tier] || 0;
     const featuredBonus = featuredActive(l, now) ? FEATURED_BONUS : 0;

@@ -14,7 +14,7 @@
  * Run:  node scripts/seed-monetization.js
  */
 
-const store = require("../lib/store");
+const store = require("../lib/pg-store");
 
 /* ------------------------------------------------------- subscription plans -- */
 // Free / Silver / Gold. Every limit field the ranking + entitlement code expects

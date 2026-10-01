@@ -1,0 +1,440 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "avatarUrl": null,
+      "city": "Indore",
+      "id": "usr_pv6",
+      "listings": [
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_agriculture-farming",
+          "categoryPath": [
+            "agriculture-farming"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Whole Wheat Atta 50kg — AgriPure brand, quality-assured, bulk supply with pan-India delivery.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "usr_pv6a",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "agripure",
+            "whole",
+            "wheat",
+            "atta",
+            "50kg"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Indore",
+            "pincode": "",
+            "state": "Madhya Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/agriculture-5.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-5.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-2.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "AgriPure",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 20,
+            "price": 1650,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-_PV6A",
+            "specifications": {
+              "Shelf Life": "6 months",
+              "Type": "Chakki Fresh",
+              "Weight": "50 kg"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "bag",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "sellerId": "usr_pv6",
+          "service": null,
+          "serviceCities": [],
+          "slug": "whole-wheat-atta-50kg-v6a",
+          "status": "active",
+          "title": "Whole Wheat Atta 50kg",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_agriculture-farming",
+          "categoryPath": [
+            "agriculture-farming"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Basmati Rice 25kg — AgriPure brand, quality-assured, bulk supply with pan-India delivery.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "usr_pv6b",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "agripure",
+            "basmati",
+            "rice",
+            "25kg"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Indore",
+            "pincode": "",
+            "state": "Madhya Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/agriculture-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-5.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "AgriPure",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 20,
+            "price": 2100,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-_PV6B",
+            "specifications": {
+              "Grade": "1121 Steam",
+              "Weight": "25 kg"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "bag",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "sellerId": "usr_pv6",
+          "service": null,
+          "serviceCities": [],
+          "slug": "basmati-rice-25kg-v6b",
+          "status": "active",
+          "title": "Basmati Rice 25kg",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_agriculture-farming",
+          "categoryPath": [
+            "agriculture-farming"
+          ],
+          "createdAt": "<volatile>",
+          "description": "Toor Dal 30kg — AgriPure brand, quality-assured, bulk supply with pan-India delivery.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "usr_pv6c",
+          "isFeatured": false,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "agripure",
+            "toor",
+            "dal",
+            "30kg"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Indore",
+            "pincode": "",
+            "state": "Madhya Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/agriculture-1.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "AgriPure",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 10,
+            "price": 3300,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-_PV6C",
+            "specifications": {
+              "Type": "Unpolished",
+              "Weight": "30 kg"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "bag",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "sellerId": "usr_pv6",
+          "service": null,
+          "serviceCities": [],
+          "slug": "toor-dal-30kg-v6c",
+          "status": "active",
+          "title": "Toor Dal 30kg",
+          "type": "product",
+          "verification": null,
+          "views": null
+        },
+        {
+          "boostToTopLastUsed": null,
+          "categoryId": "cat_agriculture-farming",
+          "categoryPath": [
+            "agriculture-farming"
+          ],
+          "createdAt": "<volatile>",
+          "description": "NPK Fertilizer 50kg — IFFCO brand, quality-assured, bulk supply with pan-India delivery.",
+          "featuredEndDate": null,
+          "featuredStartDate": null,
+          "id": "usr_pv6d",
+          "isFeatured": true,
+          "isSponsored": false,
+          "isVerifiedSeller": true,
+          "keywords": [
+            "iffco",
+            "npk",
+            "fertilizer",
+            "50kg"
+          ],
+          "legacyCategory": null,
+          "location": {
+            "city": "Indore",
+            "pincode": "",
+            "state": "Madhya Pradesh"
+          },
+          "locationId": null,
+          "manualPinRank": null,
+          "media": [
+            {
+              "type": "image",
+              "url": "/demo/agriculture-2.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-4.jpg"
+            },
+            {
+              "type": "image",
+              "url": "/demo/agriculture-3.jpg"
+            }
+          ],
+          "panIndia": null,
+          "product": {
+            "availability": "in_stock",
+            "brand": "IFFCO",
+            "certifications": [
+              "ISI"
+            ],
+            "condition": "new",
+            "currency": "INR",
+            "leadTime": "3-7 days",
+            "moq": 20,
+            "price": 1350,
+            "priceTiers": [],
+            "sampleAvailable": true,
+            "sku": "SKU-_PV6D",
+            "specifications": {
+              "Grade": "10:26:26",
+              "Weight": "50 kg"
+            },
+            "stockQty": null,
+            "unitOfMeasure": "bag",
+            "variants": []
+          },
+          "productKey": null,
+          "rankBoostScore": 0,
+          "rating": 0,
+          "reviewCount": 0,
+          "sellerId": "usr_pv6",
+          "service": null,
+          "serviceCities": [],
+          "slug": "npk-fertilizer-50kg-v6d",
+          "status": "active",
+          "title": "NPK Fertilizer 50kg",
+          "type": "product",
+          "verification": null,
+          "views": null
+        }
+      ],
+      "name": "AgriPure Traders",
+      "seller": {
+        "about": "Bulk supplier of wheat flour (atta), rice, pulses, spices and farm inputs.",
+        "accountManagerId": null,
+        "adminNotes": null,
+        "analyticsEnabled": true,
+        "annualTurnover": "₹25–100 Cr",
+        "avatarUrl": null,
+        "badges": [
+          "fast_responder",
+          "verified"
+        ],
+        "boostCategoryIds": [],
+        "boostGeoLocations": [],
+        "boostKeywords": [],
+        "certifications": [
+          "FSSAI",
+          "APEDA"
+        ],
+        "cinNumber": "U20557MH2007PTC100557",
+        "city": "Indore",
+        "companyName": "AgriPure Traders",
+        "coverImage": "/demo/agriculture-5.jpg",
+        "createdAt": "<volatile>",
+        "employeeCount": "50-200",
+        "featuredCredits": 3,
+        "featuredEndDate": null,
+        "featuredStartDate": null,
+        "gstNumber": "23ABCDE1557F1Z5",
+        "id": "usr_pv6",
+        "isFeaturedSeller": true,
+        "isVerified": true,
+        "leadQuotaPerCycle": null,
+        "leadQuotaResetDate": null,
+        "leadsConsumed": 0,
+        "legacyCategories": [],
+        "listingLimit": null,
+        "location": {
+          "city": "Indore",
+          "lat": 22.7196,
+          "lng": 75.8577,
+          "pincode": "",
+          "state": "Madhya Pradesh"
+        },
+        "logo": null,
+        "name": "AgriPure Traders",
+        "natureOfBusiness": "Wholesaler",
+        "panNumber": "ABCDE1557F",
+        "perLeadPrice": null,
+        "performance": {
+          "avgResponseTimeHours": 2,
+          "onTimeDelivery": 96,
+          "orderCompletion": 97,
+          "performanceScore": 90,
+          "repeatBuyers": 45
+        },
+        "planEndDate": null,
+        "planId": null,
+        "planStartDate": null,
+        "planStatus": "active",
+        "planTier": "gold",
+        "priorityTier": "star",
+        "rankBoostScore": 0,
+        "rating": 0,
+        "responseRate": 95,
+        "reviewCount": 0,
+        "slug": "agripure-traders",
+        "state": "Madhya Pradesh",
+        "status": "approved",
+        "trustBand": "Fair",
+        "trustFactors": [
+          {
+            "key": "verified",
+            "label": "Verified business",
+            "max": 30,
+            "points": 30
+          },
+          {
+            "key": "trustSeal",
+            "label": "Trust seal",
+            "max": 10,
+            "points": 10
+          },
+          {
+            "key": "rating",
+            "label": "Customer rating",
+            "max": 30,
+            "points": 0
+          },
+          {
+            "key": "reviews",
+            "label": "Review volume",
+            "max": 20,
+            "points": 0
+          },
+          {
+            "key": "experience",
+            "label": "Years established",
+            "max": 10,
+            "points": 9
+          }
+        ],
+        "trustScore": 49,
+        "trustSealVerified": true,
+        "verifiedBadgeExpiry": null,
+        "website": "https://www.agripuretraders.example.com",
+        "yearEstablished": 2017
+      },
+      "state": "Madhya Pradesh"
+    },
+    "success": true
+  }
+}

@@ -129,7 +129,7 @@ export default function UnifiedListingWorkbench({
   const initialKey = JSON.stringify(initialFilters);
   const [filters, setFilters] = useState<ListingFilterState>(initialFilters);
   const [sort, setSort] = useState<ListingSort>(initialFilters.sort || "relevance");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get("page")) || 1));
   const [data, setData] = useState<ListingsResponse | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -137,11 +137,21 @@ export default function UnifiedListingWorkbench({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const didMount = useRef(false);
 
+  const seededKey = useRef(initialKey);
   useEffect(() => {
+    // Keyed on the serialized filters only: parents rebuild `initialFilters` as a new
+    // object every render, and the URL-sync below re-renders them on each page click,
+    // which used to reset `page` to 1 straight after the click. Comparing against the
+    // key seen last (a ref, so dev StrictMode's double effect run is harmless) keeps the
+    // page read from the URL on first load and resets it only when the filters change.
     setFilters(initialFilters);
     setSort(initialFilters.sort || "relevance");
-    setPage(1);
-  }, [initialKey, initialFilters]);
+    if (seededKey.current !== initialKey) {
+      seededKey.current = initialKey;
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialKey]);
 
   const serverKey = JSON.stringify({
     fixedCategory,

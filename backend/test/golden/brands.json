@@ -1,0 +1,878 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "categorySlugs": [
+          "plastics-polymers-rubber",
+          "building-construction",
+          "packaging-printing",
+          "electronics-electrical",
+          "industrial-machinery-equipment"
+        ],
+        "count": 16,
+        "name": "Supreme",
+        "sampleImage": "/demo/industry-1.jpg",
+        "slug": "supreme"
+      },
+      {
+        "categorySlugs": [
+          "tools",
+          "automotive-parts-accessories"
+        ],
+        "count": 15,
+        "name": "Bosch",
+        "sampleImage": "/demo/machinery-1.jpg",
+        "slug": "bosch"
+      },
+      {
+        "categorySlugs": [
+          "food",
+          "agriculture-farming"
+        ],
+        "count": 14,
+        "name": "AgriPure",
+        "sampleImage": "/demo/food-1.jpg",
+        "slug": "agripure"
+      },
+      {
+        "categorySlugs": [
+          "electronics-electrical",
+          "textiles-fabrics-yarn",
+          "automotive-parts-accessories",
+          "medical-healthcare-supplies",
+          "building-construction"
+        ],
+        "count": 13,
+        "name": "Havells",
+        "sampleImage": "/demo/electronics-1.jpg",
+        "slug": "havells"
+      },
+      {
+        "categorySlugs": [
+          "tools"
+        ],
+        "count": 13,
+        "name": "Sparkle Clean",
+        "sampleImage": "/demo/industry-2.jpg",
+        "slug": "sparkle-clean"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys",
+          "textiles-fabrics-yarn",
+          "chemicals-dyes-solvents"
+        ],
+        "count": 11,
+        "name": "Jindal",
+        "sampleImage": "/demo/steel-2.jpg",
+        "slug": "jindal"
+      },
+      {
+        "categorySlugs": [
+          "building-construction",
+          "textiles-fabrics-yarn",
+          "medical-healthcare-supplies"
+        ],
+        "count": 11,
+        "name": "UltraTech",
+        "sampleImage": "/demo/construction-1.jpg",
+        "slug": "ultratech"
+      },
+      {
+        "categorySlugs": [
+          "tools"
+        ],
+        "count": 10,
+        "name": "ToolPro",
+        "sampleImage": "/demo/industry-1.jpg",
+        "slug": "toolpro"
+      },
+      {
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "count": 9,
+        "name": "Ganga Textiles",
+        "sampleImage": "/demo/textile-3.jpg",
+        "slug": "ganga-textiles"
+      },
+      {
+        "categorySlugs": [
+          "automotive-parts-accessories",
+          "agriculture-farming",
+          "building-construction"
+        ],
+        "count": 9,
+        "name": "MRF",
+        "sampleImage": "/demo/automotive-1.jpg",
+        "slug": "mrf"
+      },
+      {
+        "categorySlugs": [
+          "food"
+        ],
+        "count": 8,
+        "name": "Indore Foods",
+        "sampleImage": "/demo/food-4.jpg",
+        "slug": "indore-foods"
+      },
+      {
+        "categorySlugs": [
+          "tools"
+        ],
+        "count": 8,
+        "name": "Meerut Hardware Co.",
+        "sampleImage": "/demo/industry-4.jpg",
+        "slug": "meerut-hardware-co"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys",
+          "automotive-parts-accessories",
+          "agriculture-farming",
+          "building-construction"
+        ],
+        "count": 8,
+        "name": "Tata",
+        "sampleImage": "/demo/steel-1.jpg",
+        "slug": "tata"
+      },
+      {
+        "categorySlugs": [
+          "electronics-electrical"
+        ],
+        "count": 7,
+        "name": "CircuitPro",
+        "sampleImage": "/demo/electronics-4.jpg",
+        "slug": "circuitpro"
+      },
+      {
+        "categorySlugs": [
+          "packaging-printing"
+        ],
+        "count": 7,
+        "name": "EcoPack",
+        "sampleImage": "/demo/packaging-4.jpg",
+        "slug": "ecopack"
+      },
+      {
+        "categorySlugs": [
+          "home-furniture-furnishings"
+        ],
+        "count": 7,
+        "name": "Jodhpur Craft House",
+        "sampleImage": "/demo/home-2.jpg",
+        "slug": "jodhpur-craft-house"
+      },
+      {
+        "categorySlugs": [
+          "building-construction",
+          "packaging-printing",
+          "electronics-electrical",
+          "industrial-machinery-equipment"
+        ],
+        "count": 7,
+        "name": "Kajaria",
+        "sampleImage": "/demo/construction-2.jpg",
+        "slug": "kajaria"
+      },
+      {
+        "categorySlugs": [
+          "food"
+        ],
+        "count": 7,
+        "name": "Malwa Traders",
+        "sampleImage": "/demo/food-2.jpg",
+        "slug": "malwa-traders"
+      },
+      {
+        "categorySlugs": [
+          "food"
+        ],
+        "count": 7,
+        "name": "Sattva",
+        "sampleImage": "/demo/food-4.jpg",
+        "slug": "sattva"
+      },
+      {
+        "categorySlugs": [
+          "industrial-machinery-equipment"
+        ],
+        "count": 7,
+        "name": "Servotech",
+        "sampleImage": "/demo/machinery-4.jpg",
+        "slug": "servotech"
+      },
+      {
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "count": 7,
+        "name": "Trident",
+        "sampleImage": "/demo/textile-4.jpg",
+        "slug": "trident"
+      },
+      {
+        "categorySlugs": [
+          "home-furniture-furnishings"
+        ],
+        "count": 7,
+        "name": "UrbanNest",
+        "sampleImage": "/demo/home-3.jpg",
+        "slug": "urbannest"
+      },
+      {
+        "categorySlugs": [
+          "electronics-electrical"
+        ],
+        "count": 6,
+        "name": "Bengaluru Electricals",
+        "sampleImage": "/demo/electronics-5.jpg",
+        "slug": "bengaluru-electricals"
+      },
+      {
+        "categorySlugs": [
+          "apparel-clothing-garments"
+        ],
+        "count": 6,
+        "name": "Cottonworld",
+        "sampleImage": "/demo/apparel-3.jpg",
+        "slug": "cottonworld"
+      },
+      {
+        "categorySlugs": [
+          "food"
+        ],
+        "count": 6,
+        "name": "GrainKing",
+        "sampleImage": "/demo/food-3.jpg",
+        "slug": "grainking"
+      },
+      {
+        "categorySlugs": [
+          "agriculture-farming"
+        ],
+        "count": 6,
+        "name": "Kisan Pro",
+        "sampleImage": "/demo/agriculture-4.jpg",
+        "slug": "kisan-pro"
+      },
+      {
+        "categorySlugs": [
+          "agriculture-farming"
+        ],
+        "count": 6,
+        "name": "Nashik AgroTools",
+        "sampleImage": "/demo/agriculture-3.jpg",
+        "slug": "nashik-agrotools"
+      },
+      {
+        "categorySlugs": [
+          "industrial-machinery-equipment"
+        ],
+        "count": 6,
+        "name": "Precitech",
+        "sampleImage": "/demo/machinery-1.jpg",
+        "slug": "precitech"
+      },
+      {
+        "categorySlugs": [
+          "chemicals-dyes-solvents"
+        ],
+        "count": 5,
+        "name": "Chemtech",
+        "sampleImage": "/demo/chemical-1.jpg",
+        "slug": "chemtech"
+      },
+      {
+        "categorySlugs": [
+          "apparel-clothing-garments"
+        ],
+        "count": 5,
+        "name": "Classic Weave",
+        "sampleImage": "/demo/apparel-2.jpg",
+        "slug": "classic-weave"
+      },
+      {
+        "categorySlugs": [
+          "office-stationery-supplies"
+        ],
+        "count": 5,
+        "name": "DeskPro",
+        "sampleImage": "/demo/business-5.jpg",
+        "slug": "deskpro"
+      },
+      {
+        "categorySlugs": [
+          "packaging-printing"
+        ],
+        "count": 5,
+        "name": "Faridabad Packaging Co.",
+        "sampleImage": "/demo/packaging-3.jpg",
+        "slug": "faridabad-packaging-co"
+      },
+      {
+        "categorySlugs": [
+          "electronics-electrical"
+        ],
+        "count": 5,
+        "name": "Finolex",
+        "sampleImage": "/demo/electronics-3.jpg",
+        "slug": "finolex"
+      },
+      {
+        "categorySlugs": [
+          "plastics-polymers-rubber"
+        ],
+        "count": 5,
+        "name": "GreenPlast",
+        "sampleImage": "/demo/industry-4.jpg",
+        "slug": "greenplast"
+      },
+      {
+        "categorySlugs": [
+          "home-furniture-furnishings"
+        ],
+        "count": 5,
+        "name": "Marwar Decor",
+        "sampleImage": "/demo/home-4.jpg",
+        "slug": "marwar-decor"
+      },
+      {
+        "categorySlugs": [
+          "beauty-personal-care-wellness"
+        ],
+        "count": 5,
+        "name": "Mumbai Beauty Co.",
+        "sampleImage": "/demo/retail-3.jpg",
+        "slug": "mumbai-beauty-co"
+      },
+      {
+        "categorySlugs": [
+          "building-construction"
+        ],
+        "count": 5,
+        "name": "Nagpur Cement Traders",
+        "sampleImage": "/demo/construction-4.jpg",
+        "slug": "nagpur-cement-traders"
+      },
+      {
+        "categorySlugs": [
+          "office-stationery-supplies"
+        ],
+        "count": 5,
+        "name": "Noida Office Supplies",
+        "sampleImage": "/demo/business-2.jpg",
+        "slug": "noida-office-supplies"
+      },
+      {
+        "categorySlugs": [
+          "packaging-printing"
+        ],
+        "count": 5,
+        "name": "PackRight",
+        "sampleImage": "/demo/packaging-3.jpg",
+        "slug": "packright"
+      },
+      {
+        "categorySlugs": [
+          "gifts-crafts-sports"
+        ],
+        "count": 5,
+        "name": "PlayZone",
+        "sampleImage": "/demo/retail-2.jpg",
+        "slug": "playzone"
+      },
+      {
+        "categorySlugs": [
+          "electronics-electrical",
+          "packaging-printing",
+          "textiles-fabrics-yarn"
+        ],
+        "count": 5,
+        "name": "Polycab",
+        "sampleImage": "/demo/electronics-2.jpg",
+        "slug": "polycab"
+      },
+      {
+        "categorySlugs": [
+          "chemicals-dyes-solvents"
+        ],
+        "count": 5,
+        "name": "PureChem",
+        "sampleImage": "/demo/chemical-1.jpg",
+        "slug": "purechem"
+      },
+      {
+        "categorySlugs": [
+          "medical-healthcare-supplies"
+        ],
+        "count": 5,
+        "name": "SafeGuard",
+        "sampleImage": "/demo/medical-4.jpg",
+        "slug": "safeguard"
+      },
+      {
+        "categorySlugs": [
+          "tools"
+        ],
+        "count": 5,
+        "name": "Stanley",
+        "sampleImage": "/demo/industry-3.jpg",
+        "slug": "stanley"
+      },
+      {
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "count": 5,
+        "name": "Suryavanshi Weaves",
+        "sampleImage": "/demo/textile-2.jpg",
+        "slug": "suryavanshi-weaves"
+      },
+      {
+        "categorySlugs": [
+          "apparel-clothing-garments"
+        ],
+        "count": 5,
+        "name": "UrbanFit",
+        "sampleImage": "/demo/apparel-1.jpg",
+        "slug": "urbanfit"
+      },
+      {
+        "categorySlugs": [
+          "chemicals-dyes-solvents"
+        ],
+        "count": 4,
+        "name": "Anand Solvents",
+        "sampleImage": "/demo/chemical-2.jpg",
+        "slug": "anand-solvents"
+      },
+      {
+        "categorySlugs": [
+          "industrial-machinery-equipment"
+        ],
+        "count": 4,
+        "name": "Bharat Machine Tools",
+        "sampleImage": "/demo/machinery-4.jpg",
+        "slug": "bharat-machine-tools"
+      },
+      {
+        "categorySlugs": [
+          "beauty-personal-care-wellness"
+        ],
+        "count": 4,
+        "name": "Biotique",
+        "sampleImage": "/demo/retail-1.jpg",
+        "slug": "biotique"
+      },
+      {
+        "categorySlugs": [
+          "building-construction"
+        ],
+        "count": 4,
+        "name": "BuildCore",
+        "sampleImage": "/demo/construction-3.jpg",
+        "slug": "buildcore"
+      },
+      {
+        "categorySlugs": [
+          "office-stationery-supplies"
+        ],
+        "count": 4,
+        "name": "Classmate",
+        "sampleImage": "/demo/business-1.jpg",
+        "slug": "classmate"
+      },
+      {
+        "categorySlugs": [
+          "industrial-machinery-equipment"
+        ],
+        "count": 4,
+        "name": "Coimbatore Engg Works",
+        "sampleImage": "/demo/machinery-2.jpg",
+        "slug": "coimbatore-engg-works"
+      },
+      {
+        "categorySlugs": [
+          "automotive-parts-accessories"
+        ],
+        "count": 4,
+        "name": "Exide",
+        "sampleImage": "/demo/automotive-4.jpg",
+        "slug": "exide"
+      },
+      {
+        "categorySlugs": [
+          "agriculture-farming"
+        ],
+        "count": 4,
+        "name": "GreenField",
+        "sampleImage": "/demo/agriculture-5.jpg",
+        "slug": "greenfield"
+      },
+      {
+        "categorySlugs": [
+          "chemicals-dyes-solvents"
+        ],
+        "count": 4,
+        "name": "Gujarat Chemicals",
+        "sampleImage": "/demo/chemical-3.jpg",
+        "slug": "gujarat-chemicals"
+      },
+      {
+        "categorySlugs": [
+          "pharmaceuticals-lab-supplies"
+        ],
+        "count": 4,
+        "name": "Himalayan Herbals",
+        "sampleImage": "/demo/medical-2.jpg",
+        "slug": "himalayan-herbals"
+      },
+      {
+        "categorySlugs": [
+          "medical-healthcare-supplies"
+        ],
+        "count": 4,
+        "name": "Hyderabad Surgicals",
+        "sampleImage": "/demo/medical-2.jpg",
+        "slug": "hyderabad-surgicals"
+      },
+      {
+        "categorySlugs": [
+          "agriculture-farming"
+        ],
+        "count": 4,
+        "name": "IFFCO",
+        "sampleImage": "/demo/agriculture-2.jpg",
+        "slug": "iffco"
+      },
+      {
+        "categorySlugs": [
+          "industrial-machinery-equipment"
+        ],
+        "count": 4,
+        "name": "IndTech Machines",
+        "sampleImage": "/demo/machinery-3.jpg",
+        "slug": "indtech-machines"
+      },
+      {
+        "categorySlugs": [
+          "gifts-crafts-sports"
+        ],
+        "count": 4,
+        "name": "Jaipur Handicrafts",
+        "sampleImage": "/demo/retail-3.jpg",
+        "slug": "jaipur-handicrafts"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys"
+        ],
+        "count": 4,
+        "name": "Jamshedpur Metals",
+        "sampleImage": "/demo/steel-3.jpg",
+        "slug": "jamshedpur-metals"
+      },
+      {
+        "categorySlugs": [
+          "medical-healthcare-supplies"
+        ],
+        "count": 4,
+        "name": "LifeLine Medical",
+        "sampleImage": "/demo/medical-4.jpg",
+        "slug": "lifeline-medical"
+      },
+      {
+        "categorySlugs": [
+          "pharmaceuticals-lab-supplies"
+        ],
+        "count": 4,
+        "name": "MedFormula",
+        "sampleImage": "/demo/medical-2.jpg",
+        "slug": "medformula"
+      },
+      {
+        "categorySlugs": [
+          "medical-healthcare-supplies"
+        ],
+        "count": 4,
+        "name": "MedTech",
+        "sampleImage": "/demo/medical-2.jpg",
+        "slug": "medtech"
+      },
+      {
+        "categorySlugs": [
+          "packaging-printing"
+        ],
+        "count": 4,
+        "name": "PrintCraft",
+        "sampleImage": "/demo/packaging-1.jpg",
+        "slug": "printcraft"
+      },
+      {
+        "categorySlugs": [
+          "pharmaceuticals-lab-supplies"
+        ],
+        "count": 4,
+        "name": "PureLab",
+        "sampleImage": "/demo/medical-1.jpg",
+        "slug": "purelab"
+      },
+      {
+        "categorySlugs": [
+          "gifts-crafts-sports"
+        ],
+        "count": 4,
+        "name": "Rajasthan Arts",
+        "sampleImage": "/demo/retail-1.jpg",
+        "slug": "rajasthan-arts"
+      },
+      {
+        "categorySlugs": [
+          "home-furniture-furnishings"
+        ],
+        "count": 4,
+        "name": "Rajasthan Furnishings",
+        "sampleImage": "/demo/home-4.jpg",
+        "slug": "rajasthan-furnishings"
+      },
+      {
+        "categorySlugs": [
+          "apparel-clothing-garments"
+        ],
+        "count": 4,
+        "name": "Southern Threads",
+        "sampleImage": "/demo/apparel-4.jpg",
+        "slug": "southern-threads"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys"
+        ],
+        "count": 4,
+        "name": "Tata Steel",
+        "sampleImage": "/demo/steel-3.jpg",
+        "slug": "tata-steel"
+      },
+      {
+        "categorySlugs": [
+          "packaging-printing"
+        ],
+        "count": 3,
+        "name": "BoxIndia",
+        "sampleImage": "/demo/packaging-2.jpg",
+        "slug": "boxindia"
+      },
+      {
+        "categorySlugs": [
+          "medical-healthcare-supplies"
+        ],
+        "count": 3,
+        "name": "CarePlus",
+        "sampleImage": "/demo/medical-3.jpg",
+        "slug": "careplus"
+      },
+      {
+        "categorySlugs": [
+          "plastics-polymers-rubber"
+        ],
+        "count": 3,
+        "name": "DuraPoly",
+        "sampleImage": "/demo/industry-3.jpg",
+        "slug": "durapoly"
+      },
+      {
+        "categorySlugs": [
+          "gifts-crafts-sports"
+        ],
+        "count": 3,
+        "name": "GiftCraft",
+        "sampleImage": "/demo/retail-2.jpg",
+        "slug": "giftcraft"
+      },
+      {
+        "categorySlugs": [
+          "beauty-personal-care-wellness"
+        ],
+        "count": 3,
+        "name": "GlowUp",
+        "sampleImage": "/demo/retail-1.jpg",
+        "slug": "glowup"
+      },
+      {
+        "categorySlugs": [
+          "home-furniture-furnishings"
+        ],
+        "count": 3,
+        "name": "HomeStyle",
+        "sampleImage": "/demo/home-3.jpg",
+        "slug": "homestyle"
+      },
+      {
+        "categorySlugs": [
+          "pharmaceuticals-lab-supplies"
+        ],
+        "count": 3,
+        "name": "LabCore",
+        "sampleImage": "/demo/medical-1.jpg",
+        "slug": "labcore"
+      },
+      {
+        "categorySlugs": [
+          "beauty-personal-care-wellness"
+        ],
+        "count": 3,
+        "name": "Lakme",
+        "sampleImage": "/demo/retail-4.jpg",
+        "slug": "lakme"
+      },
+      {
+        "categorySlugs": [
+          "office-stationery-supplies"
+        ],
+        "count": 3,
+        "name": "PaperTrail",
+        "sampleImage": "/demo/business-3.jpg",
+        "slug": "papertrail"
+      },
+      {
+        "categorySlugs": [
+          "beauty-personal-care-wellness"
+        ],
+        "count": 3,
+        "name": "PureSkin",
+        "sampleImage": "/demo/retail-3.jpg",
+        "slug": "pureskin"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys"
+        ],
+        "count": 3,
+        "name": "SteelCraft",
+        "sampleImage": "/demo/steel-1.jpg",
+        "slug": "steelcraft"
+      },
+      {
+        "categorySlugs": [
+          "apparel-clothing-garments"
+        ],
+        "count": 3,
+        "name": "Tirupur Knits",
+        "sampleImage": "/demo/apparel-4.jpg",
+        "slug": "tirupur-knits"
+      },
+      {
+        "categorySlugs": [
+          "chemicals-dyes-solvents"
+        ],
+        "count": 3,
+        "name": "Vadodara Dyechem",
+        "sampleImage": "/demo/chemical-2.jpg",
+        "slug": "vadodara-dyechem"
+      },
+      {
+        "categorySlugs": [
+          "plastics-polymers-rubber"
+        ],
+        "count": 3,
+        "name": "Vapi Polymers",
+        "sampleImage": "/demo/industry-1.jpg",
+        "slug": "vapi-polymers"
+      },
+      {
+        "categorySlugs": [
+          "office-stationery-supplies"
+        ],
+        "count": 3,
+        "name": "WorkEasy",
+        "sampleImage": "/demo/business-4.jpg",
+        "slug": "workeasy"
+      },
+      {
+        "categorySlugs": [
+          "pharmaceuticals-lab-supplies"
+        ],
+        "count": 2,
+        "name": "Baddi Pharma",
+        "sampleImage": "/demo/medical-2.jpg",
+        "slug": "baddi-pharma"
+      },
+      {
+        "categorySlugs": [
+          "gifts-crafts-sports"
+        ],
+        "count": 2,
+        "name": "FestiveWorks",
+        "sampleImage": "/demo/retail-1.jpg",
+        "slug": "festiveworks"
+      },
+      {
+        "categorySlugs": [
+          "plastics-polymers-rubber"
+        ],
+        "count": 2,
+        "name": "FlexiPlast",
+        "sampleImage": "/demo/industry-2.jpg",
+        "slug": "flexiplast"
+      },
+      {
+        "categorySlugs": [
+          "automotive-parts-accessories"
+        ],
+        "count": 2,
+        "name": "GearPro",
+        "sampleImage": "/demo/automotive-4.jpg",
+        "slug": "gearpro"
+      },
+      {
+        "categorySlugs": [
+          "metals-steel-alloys"
+        ],
+        "count": 2,
+        "name": "IronWorks",
+        "sampleImage": "/demo/steel-1.jpg",
+        "slug": "ironworks"
+      },
+      {
+        "categorySlugs": [
+          "automotive-parts-accessories"
+        ],
+        "count": 2,
+        "name": "Ludhiana Auto Spares",
+        "sampleImage": "/demo/automotive-4.jpg",
+        "slug": "ludhiana-auto-spares"
+      },
+      {
+        "categorySlugs": [
+          "agriculture-farming"
+        ],
+        "count": 2,
+        "name": "Mahindra Agri",
+        "sampleImage": "/demo/agriculture-1.jpg",
+        "slug": "mahindra-agri"
+      },
+      {
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "count": 2,
+        "name": "Raymond",
+        "sampleImage": "/demo/textile-5.jpg",
+        "slug": "raymond"
+      },
+      {
+        "categorySlugs": [
+          "textiles-fabrics-yarn"
+        ],
+        "count": 1,
+        "name": "Vardhman",
+        "sampleImage": "/demo/textile-1.jpg",
+        "slug": "vardhman"
+      }
+    ],
+    "success": true
+  }
+}

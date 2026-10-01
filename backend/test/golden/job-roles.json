@@ -1,0 +1,400 @@
+{
+  "status": 200,
+  "body": {
+    "data": [
+      {
+        "id": "jr_backend-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 0,
+        "slug": "backend-engineer",
+        "title": "Backend Engineer"
+      },
+      {
+        "id": "jr_frontend-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 1,
+        "slug": "frontend-engineer",
+        "title": "Frontend Engineer"
+      },
+      {
+        "id": "jr_full-stack-developer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 2,
+        "slug": "full-stack-developer",
+        "title": "Full Stack Developer"
+      },
+      {
+        "id": "jr_devops-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 3,
+        "slug": "devops-engineer",
+        "title": "DevOps Engineer"
+      },
+      {
+        "id": "jr_qa-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 4,
+        "slug": "qa-engineer",
+        "title": "QA Engineer"
+      },
+      {
+        "id": "jr_mobile-app-developer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 5,
+        "slug": "mobile-app-developer",
+        "title": "Mobile App Developer"
+      },
+      {
+        "id": "jr_data-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 6,
+        "slug": "data-engineer",
+        "title": "Data Engineer"
+      },
+      {
+        "id": "jr_machine-learning-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 7,
+        "slug": "machine-learning-engineer",
+        "title": "Machine Learning Engineer"
+      },
+      {
+        "id": "jr_site-reliability-engineer",
+        "isActive": true,
+        "jobFunction": "engineering",
+        "order": 8,
+        "slug": "site-reliability-engineer",
+        "title": "Site Reliability Engineer"
+      },
+      {
+        "id": "jr_sales-executive",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 9,
+        "slug": "sales-executive",
+        "title": "Sales Executive"
+      },
+      {
+        "id": "jr_business-development-executive",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 10,
+        "slug": "business-development-executive",
+        "title": "Business Development Executive"
+      },
+      {
+        "id": "jr_regional-sales-manager",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 11,
+        "slug": "regional-sales-manager",
+        "title": "Regional Sales Manager"
+      },
+      {
+        "id": "jr_key-account-manager",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 12,
+        "slug": "key-account-manager",
+        "title": "Key Account Manager"
+      },
+      {
+        "id": "jr_inside-sales-representative",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 13,
+        "slug": "inside-sales-representative",
+        "title": "Inside Sales Representative"
+      },
+      {
+        "id": "jr_channel-sales-manager",
+        "isActive": true,
+        "jobFunction": "sales",
+        "order": 14,
+        "slug": "channel-sales-manager",
+        "title": "Channel Sales Manager"
+      },
+      {
+        "id": "jr_digital-marketing-executive",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 15,
+        "slug": "digital-marketing-executive",
+        "title": "Digital Marketing Executive"
+      },
+      {
+        "id": "jr_content-marketing-specialist",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 16,
+        "slug": "content-marketing-specialist",
+        "title": "Content Marketing Specialist"
+      },
+      {
+        "id": "jr_seo-specialist",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 17,
+        "slug": "seo-specialist",
+        "title": "SEO Specialist"
+      },
+      {
+        "id": "jr_social-media-manager",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 18,
+        "slug": "social-media-manager",
+        "title": "Social Media Manager"
+      },
+      {
+        "id": "jr_brand-manager",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 19,
+        "slug": "brand-manager",
+        "title": "Brand Manager"
+      },
+      {
+        "id": "jr_performance-marketing-manager",
+        "isActive": true,
+        "jobFunction": "marketing",
+        "order": 20,
+        "slug": "performance-marketing-manager",
+        "title": "Performance Marketing Manager"
+      },
+      {
+        "id": "jr_ui-ux-designer",
+        "isActive": true,
+        "jobFunction": "design",
+        "order": 21,
+        "slug": "ui-ux-designer",
+        "title": "UI/UX Designer"
+      },
+      {
+        "id": "jr_product-designer",
+        "isActive": true,
+        "jobFunction": "design",
+        "order": 22,
+        "slug": "product-designer",
+        "title": "Product Designer"
+      },
+      {
+        "id": "jr_graphic-designer",
+        "isActive": true,
+        "jobFunction": "design",
+        "order": 23,
+        "slug": "graphic-designer",
+        "title": "Graphic Designer"
+      },
+      {
+        "id": "jr_visual-designer",
+        "isActive": true,
+        "jobFunction": "design",
+        "order": 24,
+        "slug": "visual-designer",
+        "title": "Visual Designer"
+      },
+      {
+        "id": "jr_motion-designer",
+        "isActive": true,
+        "jobFunction": "design",
+        "order": 25,
+        "slug": "motion-designer",
+        "title": "Motion Designer"
+      },
+      {
+        "id": "jr_operations-manager",
+        "isActive": true,
+        "jobFunction": "operations",
+        "order": 26,
+        "slug": "operations-manager",
+        "title": "Operations Manager"
+      },
+      {
+        "id": "jr_supply-chain-analyst",
+        "isActive": true,
+        "jobFunction": "operations",
+        "order": 27,
+        "slug": "supply-chain-analyst",
+        "title": "Supply Chain Analyst"
+      },
+      {
+        "id": "jr_logistics-coordinator",
+        "isActive": true,
+        "jobFunction": "operations",
+        "order": 28,
+        "slug": "logistics-coordinator",
+        "title": "Logistics Coordinator"
+      },
+      {
+        "id": "jr_warehouse-manager",
+        "isActive": true,
+        "jobFunction": "operations",
+        "order": 29,
+        "slug": "warehouse-manager",
+        "title": "Warehouse Manager"
+      },
+      {
+        "id": "jr_procurement-executive",
+        "isActive": true,
+        "jobFunction": "operations",
+        "order": 30,
+        "slug": "procurement-executive",
+        "title": "Procurement Executive"
+      },
+      {
+        "id": "jr_customer-support-executive",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "order": 31,
+        "slug": "customer-support-executive",
+        "title": "Customer Support Executive"
+      },
+      {
+        "id": "jr_customer-success-manager",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "order": 32,
+        "slug": "customer-success-manager",
+        "title": "Customer Success Manager"
+      },
+      {
+        "id": "jr_technical-support-engineer",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "order": 33,
+        "slug": "technical-support-engineer",
+        "title": "Technical Support Engineer"
+      },
+      {
+        "id": "jr_call-center-agent",
+        "isActive": true,
+        "jobFunction": "customer-support",
+        "order": 34,
+        "slug": "call-center-agent",
+        "title": "Call Center Agent"
+      },
+      {
+        "id": "jr_accountant",
+        "isActive": true,
+        "jobFunction": "finance",
+        "order": 35,
+        "slug": "accountant",
+        "title": "Accountant"
+      },
+      {
+        "id": "jr_financial-analyst",
+        "isActive": true,
+        "jobFunction": "finance",
+        "order": 36,
+        "slug": "financial-analyst",
+        "title": "Financial Analyst"
+      },
+      {
+        "id": "jr_finance-manager",
+        "isActive": true,
+        "jobFunction": "finance",
+        "order": 37,
+        "slug": "finance-manager",
+        "title": "Finance Manager"
+      },
+      {
+        "id": "jr_accounts-payable-executive",
+        "isActive": true,
+        "jobFunction": "finance",
+        "order": 38,
+        "slug": "accounts-payable-executive",
+        "title": "Accounts Payable Executive"
+      },
+      {
+        "id": "jr_tax-consultant",
+        "isActive": true,
+        "jobFunction": "finance",
+        "order": 39,
+        "slug": "tax-consultant",
+        "title": "Tax Consultant"
+      },
+      {
+        "id": "jr_hr-executive",
+        "isActive": true,
+        "jobFunction": "hr",
+        "order": 40,
+        "slug": "hr-executive",
+        "title": "HR Executive"
+      },
+      {
+        "id": "jr_talent-acquisition-specialist",
+        "isActive": true,
+        "jobFunction": "hr",
+        "order": 41,
+        "slug": "talent-acquisition-specialist",
+        "title": "Talent Acquisition Specialist"
+      },
+      {
+        "id": "jr_hr-business-partner",
+        "isActive": true,
+        "jobFunction": "hr",
+        "order": 42,
+        "slug": "hr-business-partner",
+        "title": "HR Business Partner"
+      },
+      {
+        "id": "jr_hr-manager",
+        "isActive": true,
+        "jobFunction": "hr",
+        "order": 43,
+        "slug": "hr-manager",
+        "title": "HR Manager"
+      },
+      {
+        "id": "jr_payroll-executive",
+        "isActive": true,
+        "jobFunction": "hr",
+        "order": 44,
+        "slug": "payroll-executive",
+        "title": "Payroll Executive"
+      },
+      {
+        "id": "jr_product-manager",
+        "isActive": true,
+        "jobFunction": "product",
+        "order": 45,
+        "slug": "product-manager",
+        "title": "Product Manager"
+      },
+      {
+        "id": "jr_associate-product-manager",
+        "isActive": true,
+        "jobFunction": "product",
+        "order": 46,
+        "slug": "associate-product-manager",
+        "title": "Associate Product Manager"
+      },
+      {
+        "id": "jr_business-analyst",
+        "isActive": true,
+        "jobFunction": "product",
+        "order": 47,
+        "slug": "business-analyst",
+        "title": "Business Analyst"
+      },
+      {
+        "id": "jr_product-owner",
+        "isActive": true,
+        "jobFunction": "product",
+        "order": 48,
+        "slug": "product-owner",
+        "title": "Product Owner"
+      }
+    ],
+    "success": true
+  }
+}

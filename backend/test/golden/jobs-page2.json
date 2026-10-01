@@ -1,0 +1,640 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "jobs": [
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Shift allowance"
+          ],
+          "description": "Coordinate daily line-haul and last-mile schedules across our Mumbai hub.",
+          "employer": {
+            "city": "Mumbai",
+            "companyName": "Vantage Logistics India Pvt Ltd",
+            "id": "usr_emp3",
+            "isVerified": true,
+            "logo": null,
+            "slug": "vantage-logistics-india",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp3",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo7",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Mumbai",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "2+ years in logistics/transport coordination"
+          ],
+          "responsibilities": [
+            "Plan daily dispatch schedules",
+            "Track SLA adherence with transport vendors"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 800000,
+            "min": 500000
+          },
+          "skills": [
+            "Logistics Planning",
+            "Vendor Management",
+            "ERP Software"
+          ],
+          "status": "active",
+          "title": "Logistics Coordinator",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Travel allowance"
+          ],
+          "description": "Sell fabric rolls and finished garments to domestic wholesale buyers.",
+          "employer": {
+            "city": "Surat",
+            "companyName": "Suryoday Textile Mills Pvt Ltd",
+            "id": "usr_emp4",
+            "isVerified": false,
+            "logo": null,
+            "slug": "suryoday-textile-mills",
+            "state": "Gujarat"
+          },
+          "employerId": "usr_emp4",
+          "employmentType": "full-time",
+          "experienceLevel": "entry",
+          "expiresAt": null,
+          "id": "job_demo10",
+          "jobFunction": "sales",
+          "location": {
+            "city": "Surat",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "1+ years textile/apparel sales preferred"
+          ],
+          "responsibilities": [
+            "Visit wholesale markets and onboard new buyers",
+            "Follow up on repeat orders"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 450000,
+            "min": 300000
+          },
+          "skills": [
+            "B2B Sales",
+            "Negotiation"
+          ],
+          "status": "active",
+          "title": "Sales Executive",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Performance bonus"
+          ],
+          "description": "Oversee rolling-mill production planning and dispatch scheduling.",
+          "employer": {
+            "city": "Jamshedpur",
+            "companyName": "Prakash Steel & Alloys Ltd",
+            "id": "usr_emp10",
+            "isVerified": true,
+            "logo": null,
+            "slug": "prakash-steel-alloys",
+            "state": "Jharkhand"
+          },
+          "employerId": "usr_emp10",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": null,
+          "id": "job_demo28",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Jamshedpur",
+            "remote": false,
+            "state": "Jharkhand"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "8+ years steel/metals manufacturing operations"
+          ],
+          "responsibilities": [
+            "Plan production against order book",
+            "Coordinate dispatch with logistics partners"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1900000,
+            "min": 1300000
+          },
+          "skills": [
+            "Supply Chain Management",
+            "Six Sigma",
+            "ERP Software"
+          ],
+          "status": "active",
+          "title": "Operations Manager",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Travel allowance",
+            "Performance bonus"
+          ],
+          "description": "Grow OEM accounts for our precision-machined component lines.",
+          "employer": {
+            "city": "Pune",
+            "companyName": "Zenith Auto Components Ltd",
+            "id": "usr_emp8",
+            "isVerified": false,
+            "logo": null,
+            "slug": "zenith-auto-components",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp8",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": null,
+          "id": "job_demo22",
+          "jobFunction": "sales",
+          "location": {
+            "city": "Pune",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "5+ years automotive B2B sales"
+          ],
+          "responsibilities": [
+            "Manage relationships with 2-wheeler and 4-wheeler OEMs",
+            "Negotiate annual rate contracts"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1400000,
+            "min": 900000
+          },
+          "skills": [
+            "B2B Sales",
+            "Account Management",
+            "Negotiation"
+          ],
+          "status": "active",
+          "title": "Business Development Executive",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Plan produce collection routes and cold-storage capacity across our network.",
+          "employer": {
+            "city": "Nashik",
+            "companyName": "AgriGrow Farm Solutions Pvt Ltd",
+            "id": "usr_emp13",
+            "isVerified": false,
+            "logo": null,
+            "slug": "agrigrow-farm-solutions",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp13",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo37",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Nashik",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "2+ years supply chain, agri-supply chain a plus"
+          ],
+          "responsibilities": [
+            "Plan farm-to-hub collection schedules",
+            "Track cold-storage utilization"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 800000,
+            "min": 500000
+          },
+          "skills": [
+            "Supply Chain Management",
+            "Inventory Management",
+            "Excel"
+          ],
+          "status": "active",
+          "title": "Supply Chain Analyst",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Incentive on closures"
+          ],
+          "description": "Generate and close channel-partner tie-ups for our residential projects.",
+          "employer": {
+            "city": "Gurugram",
+            "companyName": "Metrocore Constructions Pvt Ltd",
+            "id": "usr_emp5",
+            "isVerified": true,
+            "logo": null,
+            "slug": "metrocore-constructions",
+            "state": "Haryana"
+          },
+          "employerId": "usr_emp5",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo13",
+          "jobFunction": "sales",
+          "location": {
+            "city": "Gurugram",
+            "remote": false,
+            "state": "Haryana"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years real-estate or B2B sales"
+          ],
+          "responsibilities": [
+            "Build broker/channel-partner network",
+            "Track leads through CRM to closure"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1000000,
+            "min": 600000
+          },
+          "skills": [
+            "B2B Sales",
+            "Lead Generation",
+            "CRM Software"
+          ],
+          "status": "active",
+          "title": "Business Development Executive",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Run performance-marketing campaigns across Meta and Google for our storefront.",
+          "employer": {
+            "city": "New Delhi",
+            "companyName": "UrbanCart Retail Pvt Ltd",
+            "id": "usr_emp9",
+            "isVerified": true,
+            "logo": null,
+            "slug": "urbancart-retail",
+            "state": "Delhi"
+          },
+          "employerId": "usr_emp9",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo26",
+          "jobFunction": "marketing",
+          "location": {
+            "city": "New Delhi",
+            "remote": false,
+            "state": "Delhi"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "2+ years performance marketing, D2C preferred"
+          ],
+          "responsibilities": [
+            "Plan and execute paid campaigns",
+            "Report weekly on ROAS and CAC"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 900000,
+            "min": 550000
+          },
+          "skills": [
+            "Google Ads (SEM)",
+            "Social Media Marketing",
+            "Google Analytics"
+          ],
+          "status": "active",
+          "title": "Digital Marketing Executive",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Run quality-control testing on chemical intermediates before dispatch.",
+          "employer": {
+            "city": "Vadodara",
+            "companyName": "ChemPure Industries Ltd",
+            "id": "usr_emp15",
+            "isVerified": false,
+            "logo": null,
+            "slug": "chempure-industries",
+            "state": "Gujarat"
+          },
+          "employerId": "usr_emp15",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo43",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Vadodara",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years QC/QA in chemical manufacturing",
+            "B.Sc/B.Tech Chemical preferred"
+          ],
+          "responsibilities": [
+            "Run batch QC testing per specification",
+            "Maintain QC documentation for audits"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 950000,
+            "min": 600000
+          },
+          "skills": [
+            "System Design"
+          ],
+          "status": "active",
+          "title": "QA Engineer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Track component inventory and support demand planning for the assembly lines.",
+          "employer": {
+            "city": "Chennai",
+            "companyName": "Bluewave Electronics Manufacturing Ltd",
+            "id": "usr_emp6",
+            "isVerified": true,
+            "logo": null,
+            "slug": "bluewave-electronics-manufacturing",
+            "state": "Tamil Nadu"
+          },
+          "employerId": "usr_emp6",
+          "employmentType": "full-time",
+          "experienceLevel": "entry",
+          "expiresAt": null,
+          "id": "job_demo17",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Chennai",
+            "remote": false,
+            "state": "Tamil Nadu"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "1-2 years supply chain/analytics experience"
+          ],
+          "responsibilities": [
+            "Maintain component-level inventory reports",
+            "Flag shortage risks to procurement"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 600000,
+            "min": 400000
+          },
+          "skills": [
+            "Inventory Management",
+            "Excel",
+            "ERP Software"
+          ],
+          "status": "active",
+          "title": "Supply Chain Analyst",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Performance bonus"
+          ],
+          "description": "Run production planning across our corrugated and flexible-packaging lines.",
+          "employer": {
+            "city": "Ahmedabad",
+            "companyName": "PackRight Industries Pvt Ltd",
+            "id": "usr_emp14",
+            "isVerified": true,
+            "logo": null,
+            "slug": "packright-industries",
+            "state": "Gujarat"
+          },
+          "employerId": "usr_emp14",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": null,
+          "id": "job_demo40",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Ahmedabad",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "6+ years packaging/manufacturing operations"
+          ],
+          "responsibilities": [
+            "Plan production against order book",
+            "Drive OEE improvements on the shop floor"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1500000,
+            "min": 1000000
+          },
+          "skills": [
+            "Supply Chain Management",
+            "ERP Software",
+            "Six Sigma"
+          ],
+          "status": "active",
+          "title": "Operations Manager",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Flexible hours"
+          ],
+          "description": "Create exam-prep content and manage our blog's editorial calendar.",
+          "employer": {
+            "city": "Bengaluru",
+            "companyName": "NextGen EdTech Pvt Ltd",
+            "id": "usr_emp11",
+            "isVerified": false,
+            "logo": null,
+            "slug": "nextgen-edtech",
+            "state": "Karnataka"
+          },
+          "employerId": "usr_emp11",
+          "employmentType": "contract",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo32",
+          "jobFunction": "marketing",
+          "location": {
+            "city": "Bengaluru",
+            "remote": true,
+            "state": "Karnataka"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "2+ years content marketing, edtech a plus"
+          ],
+          "responsibilities": [
+            "Write and edit exam-prep articles",
+            "Plan monthly content calendar"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 800000,
+            "min": 500000
+          },
+          "skills": [
+            "Content Writing",
+            "SEO",
+            "Copywriting"
+          ],
+          "status": "active",
+          "title": "Content Marketing Specialist",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Performance bonus"
+          ],
+          "description": "Run day-to-day operations at our 80,000 sq ft Bhiwandi fulfilment centre.",
+          "employer": {
+            "city": "Mumbai",
+            "companyName": "Vantage Logistics India Pvt Ltd",
+            "id": "usr_emp3",
+            "isVerified": true,
+            "logo": null,
+            "slug": "vantage-logistics-india",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp3",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": null,
+          "id": "job_demo8",
+          "jobFunction": "operations",
+          "location": {
+            "city": "Mumbai",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "6+ years warehouse management experience"
+          ],
+          "responsibilities": [
+            "Manage a 40-member warehouse team",
+            "Drive inventory accuracy and throughput"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1300000,
+            "min": 900000
+          },
+          "skills": [
+            "Warehouse Operations",
+            "Inventory Management",
+            "Six Sigma"
+          ],
+          "status": "active",
+          "title": "Warehouse Manager",
+          "viewCount": 0
+        }
+      ],
+      "page": 2,
+      "total": 47,
+      "totalPages": 4
+    },
+    "success": true
+  }
+}

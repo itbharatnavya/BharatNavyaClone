@@ -1,0 +1,504 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "jobs": [
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Stock options",
+            "Flexible hours"
+          ],
+          "description": "Own the payments and settlements service that powers every transaction on our platform. You'll design APIs, harden reliability, and mentor two junior engineers.",
+          "employer": {
+            "city": "Bengaluru",
+            "companyName": "BrightPath Technologies Pvt Ltd",
+            "id": "usr_000047",
+            "isVerified": true,
+            "logo": "/uploads/up_1787641801612_o8c5rr.jpg",
+            "slug": "brightpath-technologies-pvt-ltd",
+            "state": "Karnataka"
+          },
+          "employerId": "usr_000047",
+          "employmentType": "full-time",
+          "experienceLevel": "senior",
+          "expiresAt": "<volatile>",
+          "id": "job_000011",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Bengaluru",
+            "remote": false,
+            "state": "Karnataka"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": "Bachelor's degree in Computer Science or related field",
+          "questions": [
+            {
+              "id": "q_0",
+              "required": true,
+              "text": "How many years of hands-on Node.js experience do you have?"
+            },
+            {
+              "id": "q_1",
+              "required": true,
+              "text": "Are you comfortable being on a weekly on-call rotation?"
+            }
+          ],
+          "requirements": [
+            "5+ years backend experience",
+            "Strong Node.js and SQL skills",
+            "Experience with distributed systems"
+          ],
+          "responsibilities": [
+            "Design and own the payments microservice",
+            "Set up monitoring and on-call rotations",
+            "Review PRs and mentor junior engineers",
+            "Partner with product on roadmap"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 2800000,
+            "min": 1800000
+          },
+          "skills": [
+            "Node.js",
+            "PostgreSQL",
+            "AWS",
+            "System Design",
+            "Redis"
+          ],
+          "status": "active",
+          "title": "Senior Backend Engineer — Payments",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Remote-friendly"
+          ],
+          "description": "Own the buyer-facing search and discovery experience.",
+          "employer": {
+            "city": "Bengaluru",
+            "companyName": "TechNova Solutions Pvt Ltd",
+            "id": "usr_emp1",
+            "isVerified": true,
+            "logo": null,
+            "slug": "technova-solutions",
+            "state": "Karnataka"
+          },
+          "employerId": "usr_emp1",
+          "employmentType": "full-time",
+          "experienceLevel": "entry",
+          "expiresAt": null,
+          "id": "job_demo2",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Bengaluru",
+            "remote": true,
+            "state": "Karnataka"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": [],
+          "requirements": [
+            "1+ years with React",
+            "Strong CSS fundamentals"
+          ],
+          "responsibilities": [
+            "Build responsive UI",
+            "Collaborate with design on new flows"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1400000,
+            "min": 800000
+          },
+          "skills": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "status": "active",
+          "title": "Frontend Engineer (React)",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Flexible hours"
+          ],
+          "description": "Build and scale the APIs powering our supplier-matching engine.",
+          "employer": {
+            "city": "Bengaluru",
+            "companyName": "TechNova Solutions Pvt Ltd",
+            "id": "usr_emp1",
+            "isVerified": true,
+            "logo": null,
+            "slug": "technova-solutions",
+            "state": "Karnataka"
+          },
+          "employerId": "usr_emp1",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo1",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Bengaluru",
+            "remote": false,
+            "state": "Karnataka"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": [],
+          "requirements": [
+            "3+ years with Node.js",
+            "Comfortable with SQL and query optimization"
+          ],
+          "responsibilities": [
+            "Design and ship backend services",
+            "Own API performance and reliability"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 2000000,
+            "min": 1200000
+          },
+          "skills": [
+            "Node.js",
+            "PostgreSQL",
+            "REST APIs"
+          ],
+          "status": "active",
+          "title": "Backend Engineer (Node.js)",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Own quality testing for PCB assembly lines and finished-goods inspection.",
+          "employer": {
+            "city": "Chennai",
+            "companyName": "Bluewave Electronics Manufacturing Ltd",
+            "id": "usr_emp6",
+            "isVerified": true,
+            "logo": null,
+            "slug": "bluewave-electronics-manufacturing",
+            "state": "Tamil Nadu"
+          },
+          "employerId": "usr_emp6",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo16",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Chennai",
+            "remote": false,
+            "state": "Tamil Nadu"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years QA in electronics manufacturing"
+          ],
+          "responsibilities": [
+            "Design test protocols for new SKUs",
+            "Track defect rates and drive corrective actions"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 950000,
+            "min": 600000
+          },
+          "skills": [
+            "System Design",
+            "Git"
+          ],
+          "status": "active",
+          "title": "QA Engineer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Remote-friendly"
+          ],
+          "description": "Build interactive learning modules used by 200,000+ students.",
+          "employer": {
+            "city": "Bengaluru",
+            "companyName": "NextGen EdTech Pvt Ltd",
+            "id": "usr_emp11",
+            "isVerified": false,
+            "logo": null,
+            "slug": "nextgen-edtech",
+            "state": "Karnataka"
+          },
+          "employerId": "usr_emp11",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo31",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Bengaluru",
+            "remote": true,
+            "state": "Karnataka"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years React experience"
+          ],
+          "responsibilities": [
+            "Ship new lesson-player features",
+            "Optimize load times on low-end devices"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1600000,
+            "min": 1000000
+          },
+          "skills": [
+            "React",
+            "TypeScript"
+          ],
+          "status": "active",
+          "title": "Frontend Engineer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Remote-friendly"
+          ],
+          "description": "Build storefront and checkout-adjacent features for our D2C platform.",
+          "employer": {
+            "city": "New Delhi",
+            "companyName": "UrbanCart Retail Pvt Ltd",
+            "id": "usr_emp9",
+            "isVerified": true,
+            "logo": null,
+            "slug": "urbancart-retail",
+            "state": "Delhi"
+          },
+          "employerId": "usr_emp9",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo25",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "New Delhi",
+            "remote": true,
+            "state": "Delhi"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years full-stack development",
+            "Comfortable owning features end-to-end"
+          ],
+          "responsibilities": [
+            "Ship features across the web storefront",
+            "Own performance of high-traffic pages"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1900000,
+            "min": 1200000
+          },
+          "skills": [
+            "React",
+            "Node.js",
+            "PostgreSQL"
+          ],
+          "status": "active",
+          "title": "Full Stack Developer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Run quality-control testing on chemical intermediates before dispatch.",
+          "employer": {
+            "city": "Vadodara",
+            "companyName": "ChemPure Industries Ltd",
+            "id": "usr_emp15",
+            "isVerified": false,
+            "logo": null,
+            "slug": "chempure-industries",
+            "state": "Gujarat"
+          },
+          "employerId": "usr_emp15",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo43",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Vadodara",
+            "remote": false,
+            "state": "Gujarat"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years QC/QA in chemical manufacturing",
+            "B.Sc/B.Tech Chemical preferred"
+          ],
+          "responsibilities": [
+            "Run batch QC testing per specification",
+            "Maintain QC documentation for audits"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 950000,
+            "min": 600000
+          },
+          "skills": [
+            "System Design"
+          ],
+          "status": "active",
+          "title": "QA Engineer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance"
+          ],
+          "description": "Own in-line and final quality inspection for precision-machined parts.",
+          "employer": {
+            "city": "Pune",
+            "companyName": "Zenith Auto Components Ltd",
+            "id": "usr_emp8",
+            "isVerified": false,
+            "logo": null,
+            "slug": "zenith-auto-components",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp8",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo23",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Pune",
+            "remote": false,
+            "state": "Maharashtra"
+          },
+          "openings": 2,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years QA in auto-components manufacturing"
+          ],
+          "responsibilities": [
+            "Run dimensional inspection against OEM specs",
+            "Drive root-cause analysis on rejections"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 900000,
+            "min": 550000
+          },
+          "skills": [
+            "System Design",
+            "Six Sigma"
+          ],
+          "status": "active",
+          "title": "QA Engineer",
+          "viewCount": 0
+        },
+        {
+          "applicationCount": 0,
+          "benefits": [
+            "Health insurance",
+            "Remote-friendly"
+          ],
+          "description": "Build the pricing and demand-forecasting data pipelines for our marketplace.",
+          "employer": {
+            "city": "Nashik",
+            "companyName": "AgriGrow Farm Solutions Pvt Ltd",
+            "id": "usr_emp13",
+            "isVerified": false,
+            "logo": null,
+            "slug": "agrigrow-farm-solutions",
+            "state": "Maharashtra"
+          },
+          "employerId": "usr_emp13",
+          "employmentType": "full-time",
+          "experienceLevel": "mid",
+          "expiresAt": null,
+          "id": "job_demo39",
+          "jobFunction": "engineering",
+          "location": {
+            "city": "Nashik",
+            "remote": true,
+            "state": "Maharashtra"
+          },
+          "openings": 1,
+          "postedAt": "<volatile>",
+          "qualification": null,
+          "questions": null,
+          "requirements": [
+            "3+ years data engineering experience"
+          ],
+          "responsibilities": [
+            "Build ETL pipelines from mandi price feeds",
+            "Support demand-forecasting models"
+          ],
+          "salaryRange": {
+            "currency": "INR",
+            "isDisclosed": true,
+            "max": 1600000,
+            "min": 1000000
+          },
+          "skills": [
+            "Python",
+            "PostgreSQL",
+            "AWS"
+          ],
+          "status": "active",
+          "title": "Data Engineer",
+          "viewCount": 0
+        }
+      ],
+      "page": 1,
+      "total": 9,
+      "totalPages": 1
+    },
+    "success": true
+  }
+}
