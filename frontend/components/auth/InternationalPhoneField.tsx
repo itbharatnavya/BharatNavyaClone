@@ -29,8 +29,11 @@ export default function InternationalPhoneField({
     <fieldset className={`international-phone${compact ? " is-compact" : ""}`}>
       <legend className="field-label">Mobile number</legend>
       <div className="international-phone-row">
-        <label>
+        <label className="international-phone-country-field">
           <span className="sr-only">Country or region</span>
+          <span className="international-phone-country-value" aria-hidden="true">
+            {selected.dialCode}
+          </span>
           <select
             className="select international-phone-country"
             aria-label="Country or region"
