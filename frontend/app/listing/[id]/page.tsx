@@ -456,10 +456,26 @@ export default function ListingDetailPage() {
                   {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
                 </div>
 
-                <h1 style={{ fontSize: 24, fontWeight: 800, color: "var(--ink)", lineHeight: 1.3, margin: "10px 0 16px" }}>
+                <h1 style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 800, color: "var(--ink)", lineHeight: 1.12, letterSpacing: "-0.02em", margin: "12px 0 10px" }}>
                   {listing.title}
                 </h1>
 
+                {locationLabel && (
+                  <div style={{ margin: "0 0 18px", display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: 14 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span>
+                      {isPanIndia && (
+                        <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
+                          {t("listing.availableIn", "Available in")}
+                        </span>
+                      )}
+                      <span style={{ color: "var(--ink)", fontWeight: 600 }}>{locationLabel}</span>
+                    </span>
+                  </div>
+                )}
                 <PriceBlock listing={listing} />
 
                 {/* Save (shortlist) toggle */}
@@ -505,22 +521,6 @@ export default function ListingDetailPage() {
                   </div>
                 )}
 
-                {locationLabel && (
-                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: 14 }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <span>
-                      {isPanIndia && (
-                        <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
-                          {t("listing.availableIn", "Available in")}
-                        </span>
-                      )}
-                      <span style={{ color: "var(--ink)", fontWeight: 600 }}>{locationLabel}</span>
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -577,10 +577,11 @@ export default function ListingDetailPage() {
           </div>
 
           {/* STICKY SELLER CARD */}
-          <aside className="ld-aside">
+          <aside className="ld-aside" id="seller-contact">
             <SellerContactCard listing={listing} seller={contact} onContactUnlocked={refreshContact} />
           </aside>
         </div>
+        <a className="ld-mobile-cta" href="#seller-contact">Contact seller</a>
 
         <ApiAdvertisingSlot compact placement={["listing_detail", "category_top"]} kind="native" context="Sponsored near listing details" summary="A related promoted service or product, kept separate from this listing’s seller evidence and terms." action="View promoted record" />
 
@@ -709,9 +710,6 @@ export default function ListingDetailPage() {
         @media (max-width: 720px) {
           .ld-top {
             grid-template-columns: minmax(0, 1fr);
-          }
-          .ld-summary {
-            order: -1;
           }
           .listing-terms-grid {
             grid-template-columns: minmax(0, 1fr);

@@ -32,7 +32,7 @@ export default function Breadcrumbs({ items, className = "" }: BreadcrumbsProps)
                   color: "var(--muted)",
                   transition: "color 150ms ease",
                 }}
-                className="hover:text-brand"
+                className=""
               >
                 {item.label}
               </Link>

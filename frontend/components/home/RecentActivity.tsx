@@ -62,7 +62,7 @@ export default function RecentActivity({ limit = 6, className = "" }: { limit?: 
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "14px 16px 0" }}>
                   <Link
                     href={it.sellerSlug ? `/seller/${it.sellerSlug}` : "#"}
-                    className="line-clamp-1 hover:text-brand"
+                    className="line-clamp-1"
                     style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}
                   >
                     {it.sellerName}

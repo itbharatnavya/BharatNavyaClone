@@ -418,7 +418,7 @@ export default function CategoryMegaMenu() {
                       </div>
                       <Link
                         href={`/${active.slug}`}
-                        className="hover:text-brand-hover"
+                        className=""
                         style={{ fontSize: 13, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
                       >
                         {tr("megamenu.viewAll", "View all in")} {active.name} →
@@ -437,7 +437,7 @@ export default function CategoryMegaMenu() {
                           <div key={child.id} className="megamenu-cell">
                             <Link
                               href={`/${child.slug}`}
-                              className="hover:text-brand"
+                              className=""
                               style={{
                                 display: "block",
                                 fontSize: 14,
@@ -464,7 +464,7 @@ export default function CategoryMegaMenu() {
                                   <li key={g.id} style={{ minWidth: 0 }}>
                                     <Link
                                       href={`/${g.slug}`}
-                                      className="line-clamp-1 hover:text-brand"
+                                      className="line-clamp-1"
                                       style={{ fontSize: 13, color: "var(--muted)", transition: "color 120ms ease" }}
                                     >
                                       {g.name}
@@ -497,7 +497,7 @@ export default function CategoryMegaMenu() {
             >
               <Link
                 href="/categories"
-                className="hover:text-brand-hover"
+                className=""
                 style={{ fontSize: 13, fontWeight: 600, color: "var(--brand)" }}
               >
                 {tr("megamenu.browseAll", "Browse all categories")} →
@@ -535,7 +535,7 @@ export function MobileCategoryAccordion() {
         <span className="text-xs font-semibold uppercase tracking-wide text-faint">
           {tr("nav.categories", "Categories")}
         </span>
-        <Link href="/categories" className="text-xs font-semibold text-brand hover:text-brand-hover">
+        <Link href="/categories" className="text-xs font-semibold text-brand">
           {tr("megamenu.browseAll", "Browse all")} →
         </Link>
       </div>
@@ -578,7 +578,7 @@ export function MobileCategoryAccordion() {
                     <div key={child.id} style={{ minWidth: 0 }}>
                       <Link
                         href={`/${child.slug}`}
-                        className="block rounded-lg px-3 py-2 text-sm text-muted hover:bg-bg-subtle hover:text-ink line-clamp-1"
+                        className="block rounded-lg px-3 py-2 text-sm text-muted hover:bg-bg-subtle line-clamp-1"
                       >
                         {child.name}
                       </Link>
@@ -588,7 +588,7 @@ export function MobileCategoryAccordion() {
                             <Link
                               key={g.id}
                               href={`/${g.slug}`}
-                              className="block rounded-lg px-3 py-1.5 text-[13px] text-faint hover:bg-bg-subtle hover:text-ink line-clamp-1"
+                              className="block rounded-lg px-3 py-1.5 text-[13px] text-faint hover:bg-bg-subtle line-clamp-1"
                             >
                               {g.name}
                             </Link>

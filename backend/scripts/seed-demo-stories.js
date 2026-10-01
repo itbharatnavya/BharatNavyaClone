@@ -2,7 +2,7 @@
  * seed-demo-stories.js — demo Stories (DESIGN §3.7) so the feature has something real
  * to show:
  *   • 1 "active" story per seller — shows in the Directory homepage StoryRail
- *     (components/StoryRail.tsx), expires 24h from when this script runs.
+ *     (components/StoryRail.tsx), kept permanently (SEEDED_STATUS_EXPIRES_AT).
  *   • 1 "highlight" (isHighlight:true) story per seller — pinned, shows on that
  *     seller's profile Highlights row (components/seller/HighlightsRow.tsx),
  *     never expires.
@@ -136,6 +136,11 @@ const DIRECTORY_SELLERS = [
 ];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+// ponytail: seeded active statuses are kept permanently (owner request) so the
+// Directory/Recruitment status rails are never empty pre-launch. Drop this and
+// re-seed to restore the 24h demo lifetime. Highlights keep 24h so they stay
+// out of the live feed (they are pinned in storage regardless).
+const SEEDED_STATUS_EXPIRES_AT = "2099-12-31T23:59:59.000Z";
 
 // store.insert() is a plain INSERT (no ON CONFLICT) — a fixed id on a re-run throws
 // 23505 duplicate-key and aborts the whole script, silently skipping every doc after
@@ -158,7 +163,7 @@ function storyDoc({ id, sellerId, authorType = "seller", img, caption, listingId
     caption,
     linkListingId: listingId || null,
     createdAt: createdAt.toISOString(),
-    expiresAt: new Date(createdAt.getTime() + DAY_MS).toISOString(),
+    expiresAt: isHighlight ? new Date(createdAt.getTime() + DAY_MS).toISOString() : SEEDED_STATUS_EXPIRES_AT,
     views: Math.floor(20 + Math.random() * 300),
     isHighlight,
     status: "published",

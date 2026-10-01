@@ -44,7 +44,7 @@ export default function SectionHeading({
       {actionLabel && actionHref && (
         <Link
           href={actionHref}
-          className="hover:text-brand"
+          className=""
           style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap" }}
         >
           {actionLabel} →

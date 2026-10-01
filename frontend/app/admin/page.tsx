@@ -322,7 +322,7 @@ export default function AdminPage() {
               aria-selected={active}
               onClick={() => gotoSection(s.key)}
               className={`flex-shrink-0 rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors ${
-                active ? "bg-white text-brand shadow-sm" : "text-muted hover:text-ink"
+                active ? "bg-white text-brand shadow-sm" : "text-muted"
               }`}
             >
               {s.label}
@@ -350,7 +350,7 @@ export default function AdminPage() {
                     className={`flex flex-shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                       active
                         ? "bg-brand-tint text-brand"
-                        : "text-muted hover:bg-bg-subtle hover:text-ink"
+                        : "text-muted hover:bg-bg-subtle"
                     }`}
                     style={active ? { fontWeight: 600 } : undefined}
                   >

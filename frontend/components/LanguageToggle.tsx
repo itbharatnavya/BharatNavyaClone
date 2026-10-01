@@ -12,7 +12,7 @@ export default function LanguageToggle() {
   const base =
     "px-2 py-1 text-xs font-semibold rounded-md transition-colors leading-none";
   const active = "bg-canvas text-ink shadow-sm";
-  const idle = "text-muted hover:text-ink";
+  const idle = "text-muted";
 
   return (
     <div

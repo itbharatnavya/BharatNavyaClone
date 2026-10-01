@@ -115,7 +115,7 @@ export default function CollectionCard({ collection }: { collection: Collection 
             <LayersIcon size={16} />
           </span>
           <h3
-            className="line-clamp-1 group-hover:text-brand"
+            className="line-clamp-1"
             style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease", minWidth: 0 }}
           >
             {collection.title}

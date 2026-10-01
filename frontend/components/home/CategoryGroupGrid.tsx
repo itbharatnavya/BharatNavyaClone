@@ -38,7 +38,7 @@ export default function CategoryGroupGrid({ categories, className = "" }: Catego
           <div className="card card-flat" style={{ padding: 18, minWidth: 0 }}>
             <Link
               href={`/${group.slug}`}
-              className="hover:text-brand"
+              className=""
               style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease" }}
             >
               {group.name}
@@ -68,7 +68,7 @@ export default function CategoryGroupGrid({ categories, className = "" }: Catego
                     />
                   </div>
                   <span
-                    className="line-clamp-1 hover:text-brand"
+                    className="line-clamp-1"
                     style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink)", textAlign: "center", transition: "color 120ms ease" }}
                   >
                     {sub.name}

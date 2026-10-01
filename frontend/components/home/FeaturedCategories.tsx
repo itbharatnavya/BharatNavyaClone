@@ -17,7 +17,7 @@ export interface FeaturedCategoriesProps {
 }
 
 // Family → small inline SVG icon (viewBox 0 0 24 24, currentColor).
-function iconFor(cat: Category): React.ReactNode {
+export function iconFor(cat: Pick<Category, "slug" | "name">): React.ReactNode {
   const hay = `${(cat.slug || "").toLowerCase()} ${(cat.name || "").toLowerCase()}`;
   const p = (d: string) => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

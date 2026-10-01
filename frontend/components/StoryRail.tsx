@@ -134,7 +134,6 @@ export default function StoryRail({ groups: provided, className = "", heading, e
                         {initials(g.sellerName)}
                       </span>
                     )}
-                    {unseen && <span className="story-card-unseen" />}
                   </span>
                   <span className="story-card-name line-clamp-2">{g.sellerName}</span>
                 </button>

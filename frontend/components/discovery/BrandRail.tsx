@@ -73,7 +73,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
         </div>
         <Link
           href="/brands"
-          className="hover:text-brand-hover"
+          className=""
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -118,7 +118,7 @@ export default function BrandRail({ slug, max = 10 }: { slug: string; max?: numb
             <Monogram name={b.name} size={38} />
             <span style={{ minWidth: 0 }}>
               <span
-                className="line-clamp-1 group-hover:text-brand"
+                className="line-clamp-1"
                 style={{
                   display: "block",
                   fontSize: 14,

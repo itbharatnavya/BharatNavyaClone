@@ -22,7 +22,7 @@
   --faint: #717681;
   --border: var(--counter-line);
   --border-strong: #b8ae99;
-  --bg-subtle: #f3eee3;
+  --bg-subtle: #dce9fb;
   --surface: var(--counter-ivory);
   --radius: 0;
   color: var(--counter-ink);
@@ -307,7 +307,7 @@
 .counter-listing-type.is-service { grid-column: span 2; background: var(--counter-green) !important; }
 .counter-listing-type.is-service :is(div, svg) { color: white !important; }
 .counter-listing-type.is-service > div:last-child { color: var(--counter-on-green) !important; }
-.counter-listing-type.is-product { background: #f3eee3 !important; }
+.counter-listing-type.is-product { background: #dce9fb !important; }
 .counter-listing-type:hover { transform: translateY(-3px); }
 .counter-listing-type.is-active { outline: 3px solid var(--counter-saffron) !important; outline-offset: -3px; }
 
@@ -350,7 +350,7 @@
   min-height: 5.5rem;
   padding: 1rem;
   border: 1px solid var(--counter-line);
-  background: #f3eee3;
+  background: #dce9fb;
 }
 
 .counter-workspace-nav-item {
@@ -377,7 +377,7 @@
 .counter-dashboard-page :is(th, td),
 .counter-admin-page :is(th, td) { border-color: var(--counter-line) !important; }
 .counter-dashboard-page th,
-.counter-admin-page th { background: #f3eee3 !important; color: var(--counter-ink) !important; }
+.counter-admin-page th { background: #dce9fb !important; color: var(--counter-ink) !important; }
 
 /* Admin stays dense and calm: section switcher, index, working surface. */
 .counter-admin-page { max-width: 90rem; padding-top: 2rem !important; padding-bottom: 5rem !important; }

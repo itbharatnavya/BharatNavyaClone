@@ -6,9 +6,14 @@ const COUNTER_PUBLIC_EXACT = new Set([
   "/directory",
   "/search",
   "/rfq",
+  "/categories",
+  "/brands",
+  "/collections",
 ]);
 
 const COUNTER_PUBLIC_PREFIXES = [
+  "/brand/",
+  "/collection/",
   "/blog/",
   "/directory/",
   "/search/",
@@ -36,8 +41,22 @@ export function isRecruitmentPublicRoute(pathname: string) {
     && !pathname.startsWith("/recruitment/dashboard/");
 }
 
+// app/[category]/ owns every top-level path that no other route claims, so a first
+// segment missing from this list is a category (or category/city) page.
+const ROOT_ROUTES = new Set([
+  "about", "admin", "blog", "brand", "brands", "categories", "collection", "collections", "consultations",
+  "credit-card", "dashboard", "design-system", "directory", "employer", "features", "job", "listing", "login",
+  "mutual", "offer", "post-job", "pricing", "profile", "recruitment", "register", "rfq", "search", "sell",
+  "seller", "shortlist",
+]);
+
+function isCategoryRoute(pathname: string) {
+  const first = pathname.split("/")[1];
+  return Boolean(first) && !ROOT_ROUTES.has(first);
+}
+
 export function isCounterPublicRoute(pathname: string) {
-  return COUNTER_PUBLIC_EXACT.has(pathname)
+  return isCategoryRoute(pathname) || COUNTER_PUBLIC_EXACT.has(pathname)
     || COUNTER_PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
     || isRecruitmentPublicRoute(pathname);
 }
@@ -47,9 +66,15 @@ export function isCounterWorkspaceRoute(pathname: string) {
 }
 
 export function isDirectoryRoute(pathname: string) {
-  return pathname.startsWith("/directory")
+  return isCategoryRoute(pathname)
+    || pathname.startsWith("/directory")
     || pathname.startsWith("/search")
     || pathname.startsWith("/seller/")
     || pathname.startsWith("/listing/")
-    || pathname === "/rfq";
+    || pathname === "/rfq"
+    || pathname === "/categories"
+    || pathname === "/brands"
+    || pathname === "/collections"
+    || pathname.startsWith("/brand/")
+    || pathname.startsWith("/collection/");
 }

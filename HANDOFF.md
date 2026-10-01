@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-Updated: 1 October 2026
+Updated: 1 October 2026 (afternoon session; see section 0)
 
 Official branch: `design`
 
@@ -15,6 +15,54 @@ Continuation note: if the current Codex task appears visually blank, start a fre
 Git identity: `itbharatnavya <314251907+itbharatnavya@users.noreply.github.com>`
 
 This is the single continuation source of truth for current Bharat Navya product and visual work. Read it after `AGENTS.md`. `HANDOVER.md` is legacy engineering/setup context only; the tracked `Design/` Vite tree is a frozen reference and must not be used as the implementation target.
+
+## 0. Current working state (1 October 2026, afternoon session)
+
+Read this first. It supersedes the older "committed and pushed" wording above for the work listed here.
+
+**Nothing from this session is committed or pushed.** It sits uncommitted in `~/.codex/worktrees/design-integration-merge/BharatConnect` (branch `codex/design-integration-merge`, HEAD `2baba22`, equal to `origin/design`): about 38 modified files plus two new components (`frontend/components/discovery/LandingHero.tsx`, `frontend/components/recruitment/RecruitmentHero.tsx`). Stage by file when committing; do not sweep in `backend/DB/*`, the Feni PDFs or the other pre-existing dirty documents. `backend/scripts/seed-demo-ads.js`, `seed-demo-stories.js` and `seed-recruitment-demo.js` were edited on purpose (see "Seeds" below). Checks last run clean: `npx tsc --noEmit`, `npm run validate:design`, `git diff --check`. ESLint is not configured in this project (`next lint` prompts for setup), so there is no lint result.
+
+### Runtime state left behind
+
+- **Frontend, port 3000:** the Codex-started `next dev --turbo` process. At the end of the session `/about` and `/blog` return **500** there ("Cannot read properties of null (reading 'useContext')"). It is not the code: the committed code and the current working tree both serve those pages 200 on a fresh server (verified on a throwaway checkout on port 3200, since removed). The long-running process is stuck, most likely after a CSS syntax error mid-session. Restart it (`cd frontend && npm run dev`); it was not restarted because it is not this session's process.
+- **Backend, port 4000:** started by this session (`node index.js` in `backend/`). On this branch the backend **requires Postgres** (`PG_URL`); the old JSON file-DB mode is gone. A local database `bharatnavya` was created (the unrelated `bnchat` database was not touched) and `backend/.env` (git-ignored) holds `PG_URL=postgresql://<user>@localhost:5432/bharatnavya` and `PORT=4000`.
+- **How the local data was loaded, in this order:** `npm run setup-pg-schema`, `npm run migrate-all`, `npm run seed-recruitment-demo`, `npm run seed-demo-stories`, `node scripts/seed-demo-ads.js`, then the 4 Directory blogs from `backend/DB/blogs.json` inserted straight into the `blogs` table with `author_type = 'seller'` (the fixture has no `author_type`, so `migrate-all` rejects it).
+- **`migrate-all` caveats:** it fails for `inquiries.json`, `blogs.json`, `leads-ledger.jsonl` and `quotes.json` (fixture/schema drift), and it **deletes any row not present in the JSON files**. Re-running it after the seed scripts wipes the recruitment, story and ad seeds, so re-run the seeds after it, in the order above.
+- Production still cannot reach a local backend (see section 9); the developer owns connecting the real database. The owner asked for the frontend to be designed against the API, with the developer wiring the data.
+
+### What changed this session
+
+- **Header:** on desktop, when the search docks into the header, the hamburger now opens a dropdown (it toggled but stayed hidden above 899px). The docked location chip opens its "Keep exploring" search popup directly below the header at every width (it was a bottom sheet).
+- **Guest reminder:** `GuestAccountNudge` now opens the shared `ContactAuthModal` with `purpose="account"` instead of its own card; timing and the 7-day dismissal are unchanged.
+- **Home:** the outlined container around the four suite cards and the One / Four / Before ledger strip were removed.
+- **Directory hero** (`LandingHero`): photo-slideshow underlay with a route-colour scrim, no subtitle, compact search (lens, arrow-only submit), four short category chips, three neutral action cards straddling the bottom edge; phone/tablet use the same underlay with a vertical fade and a swipe row of cards.
+- **Recruitment hero** (`RecruitmentHero`): deliberately different layout (copy + search + function shortcuts, live "Latest roles" board, two audience paths); no subtitle.
+- **Feed band** (`.bn-feed` in `counter-soft-system.css`): full section width; short status strip (white card, 4.75rem bubbles, no title or dot, hidden when empty), tall image-only promotion, and the category heading as a tab with a rounded straight-sided step and a rounded inside corner, joined to the body.
+- **Category body** (`CategoryShowcase`): two auto-scrolling card rows (8 live categories or job functions; opposite directions; plays by default, hover/focus pauses, reduced motion gives scrollable rows). No pause button and no browse-all card; the heading button is the only browse-all link.
+- **Promotion:** the feed-band ad is image-only (`imageOnly` prop): the card is the photo and one link, with a short title on a scrim, the Sponsored label and the rotation dots. `ApiAdvertisingSlot` rotates up to 5 ads every 4 seconds on every page that uses it.
+- **Search suggestions:** sit above the hero cards, with larger option text and a thin custom scrollbar.
+- **Hover text colour removed everywhere (owner request, temporary):** 19 `:hover` rules lost their `color` declaration (focus/selected states keep it via companion rules) and all Tailwind `hover:text-*` / `group-hover:text-*` classes were stripped. Background/border/shadow hover effects are unchanged. A hover-and-compare check over Home, Directory, Recruitment, Search, Jobs, Pricing, Login, Sell, Categories, About and Blog found zero colour changes (and a deliberate control rule was detected, so the check works).
+- **Category photos:** `lib/categoryImages.ts` now maps by what the files actually show (several `/demo` names do not match their content).
+- **Seeds:** seeded active statuses never expire (`SEEDED_STATUS_EXPIRES_AT`); two untargeted `category_top` ads and a fifth `recruitment_home` ad were added so each landing slot has 5. These edits only take effect when the developer re-runs the seeds on the real database.
+
+**Home hero stage (added after the afternoon session).** `frontend/components/home/HeroStage.tsx` replaces the old `.bn-home-suite` row: four cards (flex-grow 1 vs 2.2), one active at a time, each playing a scripted scene (typing, fake cursor, click) as a pure function of a 50ms clock `t`. Rows come from `getFeaturedSellers` / `getJobs`, skeleton bars if empty. `HomeAgent` has a `variant="stage"`. CSS is the `bn-hstage-*` / `bn-scene-*` block at the end of `counter-soft-system.css` (not `bn-stage-*`, which a legacy rule in `bharat-navya-home.css` styles). Dead now: `.bn-home-suite` CSS and `HomeAgent variant="feature"`. Header is a floating bar (`.bn-header.is-counter-public`), page canvas is light blue (`--canvas #dce9fb`, `--counter-ivory #eaf3ff`).
+
+**Catalog pass (product/service/category pages).** `ListingCard` is one design in two layouts (`.lcard*` in `counter-soft-system.css`; props unchanged, `RatingPill` still exported). `/categories` is rebuilt as an even photo grid (`.bn-catalog*`); `SubcategoryTiles` uses `imgFor` so every tile has a photo (`.bn-sub*`). `lib/routePresentation.ts` now treats categories/brands/collections and any `app/[category]` path as Counter public routes (floating header), keep `ROOT_ROUTES` in sync with `app/` folders. Listing detail: summary order is title, place, price; photo first on phones; `.ld-mobile-cta` is a fixed "Contact seller" button. Ad chip (`.le-ad-disclosure`) had no background token and sat bare over photos; fixed. Hero search "flies" into the header via `useDockFlight` (`SectionSearchDock.tsx`, pages publish `data-dock-source`). Dev-server note: after editing `lib/` modules, a stale Turbopack cache can leave some routes on old output; `rm -rf .next` and restart.
+
+### Gotchas learned this session
+
+- `living-evidence.css` sets `.le-hero > .le-shell { z-index: 1 }`. New hero/band stacking rules use a parent selector to outrank it, and their media-query counterparts must keep the same specificity or they silently lose (this broke the phone layout once).
+- Blind regex clean-ups of CSS can leave dangling selectors that merge into the next rule and take the whole page down. After any bulk CSS edit, parse every stylesheet with PostCSS (`postcss.parse`) before trusting it.
+- Any screenshot helper that injects `animation: none` will also report the marquee and ad rotation as static; remove it before measuring motion.
+- The `.counter-directory-page > section` rule gives every top-level section a rounded, shadowed card treatment; sections that are not cards (the feed band) must opt out explicitly.
+
+### Open questions for the owner
+
+1. Each page still has its older section below the new category block (six hard-coded service families on Directory, role families on Recruitment). They now overlap with the new category rows. Remove them?
+2. Ad rotation lives in the shared `ApiAdvertisingSlot`, so listing, job, seller and brand pages rotate too. Keep, or limit to the landing pages?
+3. Recruitment's heading tab has empty space under it because its job-function cards are a full-width grid. Shrinking it needs a shorter promotion card; leave as is?
+4. Category rows show the same card twice at once on wide screens because each row has only 4 cards. More than 8 categories would avoid the repeat.
+5. Restore hover text colours when the owner is ready (see `git diff`).
 
 ## 1. Start here in a new session
 
@@ -132,22 +180,24 @@ Primary live style sources:
 - A clearly labelled promotional surface and current blog content remain intact.
 - The homepage no longer carries the blog-card preview; that editorial preview now belongs to About so Home stays focused on product discovery and the decision journey.
 - The full Ask Navya card has a restrained breathing glow around its outer container. The reduced-motion path remains static.
+- The outlined container around the four suite cards and the One / Four / Before ledger strip were removed (owner request, 1 October 2026).
 
 ### Directory home `/directory`
 
 - Feni-approved page content is integrated while preserving live data sections.
 - The hero and docked search use local drafts and provide grouped, API-backed category, company, and product/service recommendations with keyboard selection. A partial typed query is not committed to shared state until submit or selection.
 - Suggestion choices route to the current filtered `/search`, `/seller/:slug`, or `/listing/:id` destinations rather than legacy category/list routes.
-- Company statuses use `getStories("seller")` and remain visible as a truthful empty state when no active status exists.
-- The post-hero band is 2:1: statuses on the left, boosted-company placement on the right; it stacks in that order on narrow screens.
+- Hero (`components/discovery/LandingHero.tsx`, owner-supplied ofbusiness.com layout reference in Counter styling): no subtitle; headline, a compact search (lens first, arrow-only submit) and four short API-backed category chips sit over a pausable local-photo slideshow underlay (a route-colour scrim keeps the copy legible; holds on hover/focus/hidden tab, static under reduced motion; no caption tag). Three neutral route cards (Search / List your business / Promote) straddle the bottom edge. On tablet and phone the photo moves below the copy, full-bleed, with the cards as a swipe row over its edge.
+- The status strip, promotion and **Browse by category** (`CategoryShowcase`) share one grid (`.bn-feed`): short strip top-left (4.75rem bubbles, white card), tall promotion on the right, and the category heading nestled beneath the strip beside the promotion joined to the full-width body as one L-shaped card (rounded tab, straight side, rounded inside corner via a `::before` fillet on the body; on Directory the group list and photo rise `--feed-rise` into the tab while the sub-category list stays lower under the promotion). Stacks on phones. Category body (`CategoryShowcase`): two auto-scrolling image-card rows (top right-to-left, bottom left-to-right; 8 live categories or job functions, sorted by listing count on Directory, ). Each row renders four copies for a seamless loop; it plays by default (owner decision: no pause button), hovering/focusing pauses it, and reduced-motion users get plain scrollable rows. The `All categories` button in the heading is the only browse-all link. Omitted entirely when the API returns no categories. The older six hard-coded service families section still follows it.
+- Company statuses use `getStories("seller")`. The rail is bubbles only on a white (ivory) card: no title, subtitle or unseen dot. When there is no active status it is not rendered at all and the boosted placement takes the full row (owner decision, 1 October 2026).
 - Service families, providers, products, journey, company insights, closing CTA, ads, and API listings remain present.
 
 ### Recruitment home `/recruitment`
 
 - Feni-approved page content is integrated and role-family descriptions map to live API categories without renaming API labels/routes.
 - The hero and docked search provide grouped job-family, role, and employer recommendations with keyboard selection. Employer matching uses the existing `company=` jobs filter alongside the ordinary `q=` role search.
-- Hiring statuses use `getStories("employer")`; blogs/updates are separate.
-- The post-hero band mirrors Directory: 2:1 statuses plus boosted-employer/recruiter placement.
+- Hero (`components/recruitment/RecruitmentHero.tsx`) is deliberately different from Directory: no subtitle; headline, role search (two rows, one tall submit) and job-function shortcuts on the left, a live "Latest roles" board (real API jobs, hidden when empty) on the right, and two audience paths (Find your next role / Post a job). **Browse jobs by function** shows every active job function as an image card.
+- Hiring statuses use `getStories("employer")`; blogs/updates are separate. Same strip/promotion/function-card layout as Directory (the function cards are the L body), strip hidden when empty.
 - Fresh roles, hiring companies, application journey, updates, closing profile section, ads, and live job behavior remain present.
 
 ### Directory results `/search`
@@ -177,14 +227,21 @@ Primary live style sources:
 - Category routes use the unified Directory workbench without the legacy List/Grid toggle or duplicated filter bar.
 - Listing detail spacing is corrected around the share/report sidebar and labelled advertising. Recommendations prefer distinct real listing imagery, use an honest missing-image treatment when necessary, and include suggested listings without floating-control overlap.
 - Company profiles restore separate Services, Products, Work evidence, and Reviews sections with API-backed data and truthful empty states. Internal scroll constraints were removed, ad spacing was increased, and the inquiry card no longer overlaps its CTA.
-- Directory and Recruitment status rails use circular story controls and retain truthful compact empty states rather than fabricated activity.
+- Directory and Recruitment status rails use circular story controls and are hidden entirely when no status is active. `backend/scripts/seed-demo-stories.js` now seeds active demo statuses with a far-future expiry (`SEEDED_STATUS_EXPIRES_AT`) so the rails stay populated pre-launch; remove it and re-seed to restore the 24-hour demo lifetime.
 - Login and registration use a full-height desktop context panel without unused strips above or below it; mobile controls retain a minimum readable input size.
 - Login includes the frontend presentation and integration hook for the developer-owned Google Identity Services flow. Only Google is exposed; Facebook and Apple remain absent. The control appears only when `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is configured. Backend endpoint behavior, credentials, persistence, and deployment acceptance remain outside the UI scope.
 - Feni content was integrated into Home, Directory, Recruitment, About, Navya Blog, Pricing, Login, and Register while preserving behavior and localization boundaries.
 - About now includes an API-backed preview of up to four current blog posts before its closing actions. The cards use a dense responsive grid: four across on wide screens, three at intermediate desktop widths, two on tablet, and one on narrow phones. The full `/blog` route and blog API remain unchanged.
 - The country selector in shared phone fields shows only the selected dial code when closed and uses a compact width sized for supported codes. Its opened list is a bounded, scrollable Counter-styled panel with full dial-code plus country-name labels, visible selection/focus states, outside-click dismissal, and keyboard navigation.
 - Mobile OTP and Email & password remain equal-width tabs in one row on narrow login layouts instead of stacking and consuming extra vertical space.
-- The delayed guest-account reminder is centred in the viewport on desktop and mobile, including throughout its entrance animation. It remains dismissible and non-modal.
+- The feed-band promotion is image-only (`imageOnly` on `ApiAdvertisingSlot`/`AdvertisingSlot`): the whole card is the ad photo and one link, with the headline shortened to the part before the dash overlaid on a legibility scrim, the Sponsored label top-left and the dots top-right; no separate text area or button.
+- `ApiAdvertisingSlot` now rotates up to 5 ads from its placement every 4 seconds (fade, dots, holds on hover/focus/hidden tab, first ad only under reduced motion) on every page that uses it; the headline reserves three lines so the layout does not jump. `seed-demo-ads.js` adds two untargeted `category_top` ads and `seed-recruitment-demo.js` a fifth `recruitment_home` ad so both landing slots have 5.
+- Search suggestions sit above the hero action cards/paths. Note `living-evidence.css` sets `.le-hero > .le-shell { z-index: 1 }`; the new hero stacking rules use a parent selector to outrank it, and their media-query counterparts must keep the same specificity.
+- The docked-header location chip opens its "Keep exploring" search popup directly below the header (all widths) instead of as a bottom sheet.
+- Hover text-colour changes are removed everywhere for now (owner request, 1 October 2026): 19 `:hover` rules in `counter-direction.css`, `counter-soft-system.css` and `globals.css` lost their `color` declaration (rules that also cover `:focus-visible` or selected/active states keep colour for those, via a companion rule) and every Tailwind `hover:text-*`/`group-hover:text-*` class was stripped. Background, border and shadow hover effects are unchanged. A hover-and-compare check across Home, Directory, Recruitment, Search, Pricing, Login, Sell, Categories, About and Blog found no remaining colour changes. To restore, use `git diff` on those files.
+- The delayed guest-account reminder now opens the shared `ContactAuthModal` (the same sign-in/register modal used for contact and apply gates, `purpose="account"`) instead of its own card. Timing and the 7-day dismissal are unchanged.
+- When the search docks into the desktop header, the hamburger opens a dropdown anchored under it (previously the menu toggled but stayed `display:none` above 899px).
+- `lib/categoryImages.ts` maps categories to photos chosen by content: several `/demo` file names do not match their images (see the comment there).
 
 ## 7. Verification evidence and how to re-check
 
@@ -286,6 +343,8 @@ Expected local URLs:
 - Backend: `http://localhost:4000`
 - Browser calls `/api/*` through the frontend proxy; port 3000 is the site, port 4000 is the API.
 
+On this branch the backend needs Postgres (`PG_URL` in the git-ignored `backend/.env`); without it `node index.js` exits at startup. See section 0 for the local database, the seed order, and the `migrate-all` warning.
+
 Verify both before judging missing statuses, blogs, jobs, listings, ads, or suggestions.
 
 ## 9. Deployment truth
@@ -299,7 +358,7 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-No immediate auth UI request remains from this pass. The scoped product choice still pending is the exact Directory highlights content and counts, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, dependency remediation, database-backed test configuration, and production API smoke testing are developer-owned and intentionally excluded from this design continuation.
+Open owner questions from the 1 October afternoon session are listed in section 0. No immediate auth UI request remains from this pass. The scoped product choice still pending is the exact Directory highlights content and counts, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, dependency remediation, database-backed test configuration, and production API smoke testing are developer-owned and intentionally excluded from this design continuation.
 
 ## 11. Non-negotiable hygiene
 

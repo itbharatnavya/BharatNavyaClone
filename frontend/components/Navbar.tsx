@@ -65,7 +65,6 @@ export default function Navbar() {
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" />
-          <span>Bharat Navya</span>
         </Link>
         {!searchDocked && <nav className="bn-primary-nav" aria-label="Primary navigation">
           {links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}
@@ -91,9 +90,9 @@ export default function Navbar() {
             </div>}
           </div>}
           <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}><MenuIcon open={menuOpen} /></button>
+          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation">{links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
         </div>
       </div>
-      {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation">{links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
     </header>
   );
 }

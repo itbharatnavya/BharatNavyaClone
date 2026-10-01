@@ -144,7 +144,7 @@ export default function SuiteProductsMenu() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-muted transition-colors"
       >
         Products
         <ChevronDown />

@@ -24,7 +24,7 @@
  *   8. 30 demo company reviews (2 per employer) via the existing generic reviews.json
  *      (targetUserId = employer's user id) — RECRUITMENT.md §"reviews are already
  *      generic" — no new collection needed.
- *   9. 7 demo ad bookings (4 recruitment_home + 3 recruitment_search_top) via the
+ *   9. 8 demo ad bookings (5 recruitment_home + 3 recruitment_search_top) via the
  *      existing generic ad-bookings.json, against the recruitment_home /
  *      recruitment_search_top slots already in ad-slots.json — the homepage's
  *      AdSlider rendered nothing before this (no bookings existed for either slot).
@@ -1199,6 +1199,7 @@ const AD_BOOKING_SPECS = [
   { id: "adb_recruit2", adSlotId: "recruitment_home", placementType: "recruitment_home", sellerId: "usr_emp9", creativeImageUrl: "/demo/retail-3.jpg", headline: "UrbanCart Retail is growing its Delhi team — full-time & remote roles open now.", targetUrl: "/employer/urbancart-retail", priority: 9, amount: 4000 },
   { id: "adb_recruit3", adSlotId: "recruitment_home", placementType: "recruitment_home", sellerId: "usr_emp3", creativeImageUrl: "/demo/logistics-1.jpg", headline: "Vantage Logistics is expanding — Warehouse & Ops roles open in Mumbai.", targetUrl: "/employer/vantage-logistics-india", priority: 8, amount: 3500 },
   { id: "adb_recruit4", adSlotId: "recruitment_home", placementType: "recruitment_home", sellerId: "usr_emp12", creativeImageUrl: "/demo/business-1.jpg", headline: "Post your first job free this week — reach verified candidates today.", targetUrl: "/post-job", priority: 7, amount: 0 },
+  { id: "adb_recruit8", adSlotId: "recruitment_home", placementType: "recruitment_home", sellerId: "usr_emp11", creativeImageUrl: "/demo/business-3.jpg", headline: "NextGen EdTech is hiring remote engineers and marketers — apply this week.", targetUrl: "/employer/nextgen-edtech", priority: 6, amount: 3000 },
   { id: "adb_recruit5", adSlotId: "recruitment_search_top", placementType: "recruitment_search_top", sellerId: "usr_emp8", creativeImageUrl: "/demo/automotive-2.jpg", headline: "Zenith Auto Components is hiring Sales & QA talent in Pune.", targetUrl: "/employer/zenith-auto-components", priority: 10, amount: 3000 },
   { id: "adb_recruit6", adSlotId: "recruitment_search_top", placementType: "recruitment_search_top", sellerId: "usr_emp11", creativeImageUrl: "/demo/business-3.jpg", headline: "NextGen EdTech is remote-hiring engineers & marketers.", targetUrl: "/employer/nextgen-edtech", priority: 9, amount: 3000 },
   { id: "adb_recruit7", adSlotId: "recruitment_search_top", placementType: "recruitment_search_top", sellerId: "usr_emp12", creativeImageUrl: "/demo/business-1.jpg", headline: "FinEdge Capital Advisors is growing its Mumbai finance team — apply today.", targetUrl: "/employer/finedge-capital-advisors", priority: 8, amount: 3000 },

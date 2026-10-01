@@ -220,7 +220,7 @@ export default function ChatAssistant() {
               type="button"
               aria-label="Close Navya AI Agent"
               onClick={closeAssistant}
-              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink"
+              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle"
             >
               <CloseIcon />
             </button>
@@ -273,7 +273,7 @@ export default function ChatAssistant() {
                           key={`${i}-${j}`}
                           href={s.href || "#"}
                           onClick={() => setOpen(false)}
-                          className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-xs font-medium text-brand-hover transition-colors hover:bg-brand hover:text-white"
+                          className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-xs font-medium text-brand-hover transition-colors hover:bg-brand"
                         >
                           <span className="truncate">{s.label}</span>
                         </Link>
@@ -292,7 +292,7 @@ export default function ChatAssistant() {
                     key={q}
                     type="button"
                     onClick={() => send(q)}
-                    className="inline-flex min-h-11 max-w-full items-center rounded-full border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-faint hover:text-ink"
+                    className="inline-flex min-h-11 max-w-full items-center rounded-full border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-faint"
                   >
                     <span className="truncate">{q}</span>
                   </button>

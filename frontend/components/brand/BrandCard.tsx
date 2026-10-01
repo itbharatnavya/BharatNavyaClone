@@ -85,7 +85,7 @@ export default function BrandCard({ brand }: { brand: BrandCardBrand }) {
       <Monogram name={brand.name} />
       <span style={{ minWidth: 0 }}>
         <span
-          className="line-clamp-1 group-hover:text-brand"
+          className="line-clamp-1"
           style={{
             display: "block",
             fontSize: 16,

@@ -415,7 +415,7 @@ export default function LoginPage() {
             <Link href={(() => {
               const validated = safeNext(next, DEFAULT_NEXT);
               return validated !== DEFAULT_NEXT ? `/register?next=${encodeURIComponent(validated)}` : "/register";
-            })()} className="hover:text-brand" style={{ color: "var(--brand)", fontWeight: 600 }}>
+            })()} className="" style={{ color: "var(--brand)", fontWeight: 600 }}>
               {t("auth.createAccountLink", "Create an account")}
             </Link>
           </div>

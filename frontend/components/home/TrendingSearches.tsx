@@ -95,7 +95,7 @@ export default function TrendingSearches({ className = "" }: { className?: strin
                   </span>
                   <Link
                     href={hrefFor(item as SearchTrendItem)}
-                    className="hover:text-brand-hover"
+                    className=""
                     style={{ fontSize: 12.5, fontWeight: 600, color: "var(--brand)" }}
                   >
                     Explore →

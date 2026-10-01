@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ALL_CITIES, PAN_INDIA_LABEL } from "@/lib/indiaGeo";
-import { useSearchDock } from "@/lib/searchDock";
+import { dockEdge, useSearchDock } from "@/lib/searchDock";
 import { flattenCategories, useCategories } from "@/lib/catalog";
 import { getJobFunctions, getJobs, getListings, searchSellers } from "@/lib/api";
 import type { Job, JobFunction, Listing } from "@/lib/types";
@@ -203,14 +203,55 @@ export function DirectoryMobileSearchDrawer({ open, onClose }: { open: boolean; 
   </div>;
 }
 
+// Wide screens: while the hero search is still on screen the docked bar overlays
+// it and travels up into the header as the page scrolls, so the move is seen
+// instead of a swap. Position and width are interpolated between the hero form
+// and the header slot; it finishes (no offset) once the hero bar reaches the header.
+function useDockFlight(ref: RefObject<HTMLElement>) {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const wide = window.matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)");
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      el.style.transform = "";
+      el.style.width = "";
+      const form = document.querySelector<HTMLElement>("[data-dock-source] form");
+      el.classList.toggle("is-flying", wide.matches && Boolean(form));
+      if (!wide.matches || !form) return;
+      const slot = el.getBoundingClientRect();
+      const from = form.getBoundingClientRect();
+      const dy = from.top - slot.top;
+      if (dy <= 0) return;
+      const f = Math.min(1, dy / Math.max(1, dockEdge() - from.height - slot.top));
+      el.style.width = `${slot.width + (from.width - slot.width) * f}px`;
+      el.style.transform = `translate(${(from.left - slot.left) * f}px, ${dy}px)`;
+    };
+    const queue = () => { if (!frame) frame = window.requestAnimationFrame(place); };
+    place();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+      el.style.transform = "";
+      el.style.width = "";
+    };
+  }, [ref]);
+}
+
 export function DirectoryDockedSearch() {
   const { query, city } = useSearchDock();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
   const summary = query.trim() || "Search companies";
+  const dockRef = useRef<HTMLDivElement>(null);
+  useDockFlight(dockRef);
   return <>
-    <div className="bn-header-search" data-section="directory">
-      <div className="bn-header-search-desktop"><DirectorySectionSearch variant="compact" /><button type="button" className="bn-header-search-filters" onClick={() => setDrawerOpen(true)} aria-label={`Change location: ${city}`}><LocationIcon /><span>{city}</span></button></div>
+    <div ref={dockRef} className="bn-header-search" data-section="directory">
+      <div className="bn-header-search-desktop"><DirectorySectionSearch variant="compact" /></div>
       <button type="button" className="bn-header-search-mobile" onClick={() => setDrawerOpen(true)} aria-label={`Edit ${summary}, ${city}`}><SearchIcon /><span><strong>{summary}</strong><small>{city}</small></span><ArrowIcon /></button>
     </div>
     <DirectoryMobileSearchDrawer open={drawerOpen} onClose={closeDrawer} />
@@ -363,5 +404,7 @@ export function RecruitmentDockedSearch() {
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
   const summary = roleQuery.trim() || "Search jobs";
   const filters = `${roleCity || "All locations"} · ${roleWorkplace}`;
-  return <><div className="bn-header-search" data-section="recruitment"><div className="bn-header-search-desktop"><RecruitmentSectionSearch variant="compact" /><button type="button" className="bn-header-search-filters" onClick={() => setDrawerOpen(true)} aria-label={`Change job filters: ${filters}`}><LocationIcon /><span>{filters}</span></button></div><button type="button" className="bn-header-search-mobile" onClick={() => setDrawerOpen(true)} aria-label={`Edit ${summary}, ${filters}`}><SearchIcon /><span><strong>{summary}</strong><small>{filters}</small></span><ArrowIcon /></button></div><RecruitmentMobileSearchDrawer open={drawerOpen} onClose={closeDrawer} /></>;
+  const dockRef = useRef<HTMLDivElement>(null);
+  useDockFlight(dockRef);
+  return <><div ref={dockRef} className="bn-header-search" data-section="recruitment"><div className="bn-header-search-desktop"><RecruitmentSectionSearch variant="compact" /></div><button type="button" className="bn-header-search-mobile" onClick={() => setDrawerOpen(true)} aria-label={`Edit ${summary}, ${filters}`}><SearchIcon /><span><strong>{summary}</strong><small>{filters}</small></span><ArrowIcon /></button></div><RecruitmentMobileSearchDrawer open={drawerOpen} onClose={closeDrawer} /></>;
 }

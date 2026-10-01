@@ -77,7 +77,7 @@
   --bn-section-hero-end: #f1f5fc;
 
   /* canvas / surfaces */
-  --canvas: #ffffff;
+  --canvas: #dce9fb;
   --bg-subtle: #f7f8fa;
   --surface: #ffffff;
 
@@ -340,9 +340,6 @@ p {
   font-weight: 600;
   white-space: nowrap;
 }
-.category-strip-trigger:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
 
 /* CategoryMegaMenu's right panel — each sub-category (+ its own children)
    sits in its own bordered, tinted tile instead of a bare text list, so the
@@ -555,7 +552,6 @@ p {
 }
 .btn-ghost:hover:not(:disabled) {
   background: var(--bg-subtle);
-  color: var(--ink);
 }
 
 /* danger */
@@ -578,16 +574,16 @@ p {
 }
 
 .bn-toast {
-  border: 1px solid var(--counter-line, #d8d0be);
+  border: 1px solid var(--counter-line, #b9cce6);
   border-radius: var(--counter-radius-control, 1.25rem);
-  background: var(--counter-ivory, #fffdf7);
+  background: var(--counter-ivory, #eaf3ff);
   color: var(--counter-ink, #12141b);
   box-shadow: var(--counter-shadow-lift, 0 16px 40px rgba(18, 20, 27, 0.16));
 }
 
-.bn-toast-success { border-color: color-mix(in srgb, #16a34a 40%, var(--counter-line, #d8d0be)); }
-.bn-toast-error { border-color: color-mix(in srgb, #dc2626 40%, var(--counter-line, #d8d0be)); }
-.bn-toast-info { border-color: color-mix(in srgb, var(--counter-indigo, #1b3fa0) 40%, var(--counter-line, #d8d0be)); }
+.bn-toast-success { border-color: color-mix(in srgb, #16a34a 40%, var(--counter-line, #b9cce6)); }
+.bn-toast-error { border-color: color-mix(in srgb, #dc2626 40%, var(--counter-line, #b9cce6)); }
+.bn-toast-info { border-color: color-mix(in srgb, var(--counter-indigo, #1b3fa0) 40%, var(--counter-line, #b9cce6)); }
 .btn-lg {
   padding: 13px 22px;
   font-size: 15px;
@@ -699,16 +695,6 @@ p {
 }
 .story-card.is-unseen .story-card-avatar { border-color: var(--action); }
 .story-card-initials { color: var(--brand); font-size: 1.15rem; font-weight: 800; }
-.story-card-unseen {
-  position: absolute;
-  right: 0.05rem;
-  bottom: 0.15rem;
-  width: 0.9rem;
-  height: 0.9rem;
-  border: 2px solid var(--surface);
-  border-radius: 50%;
-  background: var(--tricolor-green, var(--success));
-}
 .story-card-name {
   width: 100%;
   min-height: 2.2em;
@@ -852,7 +838,6 @@ p {
 }
 .chip:hover {
   border-color: var(--faint);
-  color: var(--ink);
   background: var(--bg-subtle);
 }
 .chip-active,
@@ -865,7 +850,6 @@ p {
 .chip[aria-pressed="true"]:hover {
   background: var(--brand-hover);
   border-color: var(--brand-hover);
-  color: #ffffff;
 }
 
 /* ============================================================

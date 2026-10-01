@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Modal from "@/components/Modal";
 import { assistantChat } from "@/lib/api";
@@ -44,10 +44,15 @@ function SendIcon() {
 }
 
 interface HomeAgentProps {
-  variant?: "default" | "feature";
+  variant?: "default" | "feature" | "stage";
+  // "stage" renders the Ask Navya card of the Home hero stage: `scene` is the
+  // animated screen and `children` the label shown on the launch button.
+  stageClassName?: string;
+  scene?: ReactNode;
+  children?: ReactNode;
 }
 
-export default function HomeAgent({ variant = "default" }: HomeAgentProps) {
+export default function HomeAgent({ variant = "default", stageClassName, scene, children }: HomeAgentProps) {
   const inputId = useId();
   const errorId = `${inputId}-error`;
   const [open, setOpen] = useState(false);
@@ -122,7 +127,10 @@ export default function HomeAgent({ variant = "default" }: HomeAgentProps) {
   }
 
   return <>
-    {variant === "feature" ? <article className="bn-home-agent is-feature">
+    {variant === "stage" ? <article className={stageClassName}>
+      {scene}
+      <button className="bn-hstage-label" type="button" onClick={() => setOpen(true)}>{children}</button>
+    </article> : variant === "feature" ? <article className="bn-home-agent is-feature">
       <div className="bn-home-agent-intro">
         <span className="bn-home-agent-mark"><AgentIcon /></span>
         <span><small>AI guide</small><strong>Ask Navya</strong></span>

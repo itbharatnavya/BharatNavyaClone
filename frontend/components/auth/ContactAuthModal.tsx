@@ -24,7 +24,7 @@ export interface ContactAuthModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  purpose?: "contact" | "apply";
+  purpose?: "contact" | "apply" | "account";
 }
 
 type Mode = "login" | "register";
@@ -270,14 +270,18 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
         mode === "login"
           ? purpose === "apply"
             ? "Sign in to apply"
-            : t("auth.contactGate.loginTitle", "Log in to contact this seller")
+            : purpose === "account"
+              ? "Sign in to Bharat Navya"
+              : t("auth.contactGate.loginTitle", "Log in to contact this seller")
           : t("auth.contactGate.registerTitle", "Create your account")
       }
     >
       <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -8, marginBottom: 18 }}>
         {purpose === "apply"
           ? "Sign in or create an account to continue. Your application is not submitted until you complete the review step."
-          : t(
+          : purpose === "account"
+            ? "Sign in or create an account to return to shortlisted companies and roles without starting over."
+            : t(
               "auth.contactGate.subtitle",
               "Phone and WhatsApp details are shown to logged-in members only."
             )}

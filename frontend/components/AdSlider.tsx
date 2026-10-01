@@ -202,7 +202,7 @@ export default function AdSlider({
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    padding: "12px 16px 20px",
+                    padding: multi ? "12px 16px 40px" : "12px 16px 20px", // multi: clear the indicator row
                     background: OVERLAY_GRADIENT,
                     color: "#fff",
                     fontSize: 14,

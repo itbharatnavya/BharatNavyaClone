@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import HomeAgent from "@/components/home/HomeAgent";
+import HeroStage from "@/components/home/HeroStage";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 
-function DirectoryIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" /></svg>; }
-function RecruitmentIcon() { return <svg aria-hidden viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" /></svg>; }
-function GrowthIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7m4 7H2M4 9l6-4 6 7 4-5" /></svg>; }
 
 const standards = [
   {
@@ -70,19 +66,7 @@ export default function BharatNavyaHome() {
     <section className="le-hero bn-home-hero" aria-labelledby="home-title"><div className="le-shell">
       <h1 id="home-title"><span>The B2B platform</span> built for what’s next.</h1>
       <p>Discover products, evaluate suppliers, explore roles, and turn everyday business requirements into new opportunities.</p>
-      <div id="ask-navya" className="bn-home-suite">
-        <HomeAgent variant="feature" />
-        <div className="le-gateways" aria-label="Explore Bharat Navya">
-          <Link href="/directory" className="le-gateway is-directory"><span><DirectoryIcon /></span><span><strong>Directory</strong><small>Businesses, products, services and company information</small></span><b aria-hidden>→</b></Link>
-          <Link href="/recruitment" className="le-gateway is-recruitment"><span><RecruitmentIcon /></span><span><strong>Recruitment</strong><small>Roles, employers and workplace information</small></span><b aria-hidden>→</b></Link>
-          <div className="le-gateway is-growth" aria-disabled="true"><span><GrowthIcon /></span><span><em>Coming soon</em><strong>Growth OS</strong><small>Business intelligence designed to support better decisions</small></span></div>
-        </div>
-      </div>
-      <div className="bn-home-hero-ledger" aria-label="The Bharat Navya standard">
-        <span><b>One</b> connected company identity</span>
-        <span><b>Four</b> decision signals</span>
-        <span><b>Before</b> action, not after</span>
-      </div>
+      <HeroStage />
     </div></section>
 
     <section className="le-section bn-home-standard" aria-labelledby="standard-title"><div className="le-shell">
