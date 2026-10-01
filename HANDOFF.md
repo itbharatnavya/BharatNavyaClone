@@ -377,3 +377,8 @@ Open owner questions from the 1 October afternoon session are listed in section 
 - About is `components/about/AboutSections.tsx` (`.ab-*`); old `counter-support-*` About CSS and `components/about/AboutBlogPreview.tsx` are unused.
 - Demo articles: `node backend/scripts/seed-blogs-demo.js` (12 posts, covers for the original four). Uses `lib/pg-store`, idempotent.
 - Home, Directory, Recruitment and About all use GSAP through `components/home/useStory.ts`; see DESIGN-SYSTEM.md section 10.
+
+## Attraction kit (components/attract)
+- `Compare` (Without / With), `FeatureCards` + `Art` (looping SVG illustrations: radar, tracker, funnel, shield, fanout; they run only once a card has `is-live`), `Staircase` (live counts + CTA banner), `Count`. Pattern borrowed from ofbusiness.com product pages.
+- Recruitment: Compare, FeatureCards, Staircase (counts via `getJobs` totals). Directory: product showcase, FeatureCards, Staircase. Home: proof band, pinned showcase, Compare, FeatureCards, closing.
+- Removed: the old role / company / story listing sections and `components/discovery/StoriesCta.tsx`. Their `.ps-company*`, `.ps-need*`, `.ps-role*`, `.ps-stories*`, `.ps-cta*`, and Home `.hs-record*`, `.hs-aud*` CSS is now unused.

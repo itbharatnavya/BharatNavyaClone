@@ -3,8 +3,8 @@
 // Home page below the hero. Five sections, each with one authored motion idea:
 //   proof     live counts + an ambient category marquee
 //   showcase  pinned, scrubbed three-state sequence (Directory, Recruitment, Ask Navya)
-//   record    a scroll-scrubbed wipe from a thin listing to a Bharat Navya record
-//   audience  two sides of business converge, with pointer tilt on desktop
+//   compare   Without / With Bharat Navya, wiped in as you scroll (components/attract)
+//   features  three illustrated cards that come alive on scroll (components/attract)
 //   close     a headline revealed word by word under a panel that rises into place
 // Everything is plain readable content first: motion only ever starts from the
 // final layout (see useStory), so reduced motion, small screens and no-JS all get
@@ -16,6 +16,9 @@ import { getCategories, getFeaturedSellers, getJobs, getListings } from "@/lib/a
 import { mapSeller } from "@/components/home/FeaturedSellers";
 import { formatSalary, jobLocation } from "@/lib/recruitmentDesign";
 import { useStory, type StoryKit } from "@/components/home/useStory";
+import Count from "@/components/attract/Count";
+import Compare from "@/components/attract/Compare";
+import FeatureCards from "@/components/attract/FeatureCards";
 
 interface Row { name?: string; meta?: string; tag?: string }
 interface Data { categories: string[]; categoryCount: number; listings: number; jobs: number; companies: Row[]; roles: Row[] }
@@ -53,36 +56,6 @@ const PATHS = {
   people: "M16 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20|M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3|M15.5 4.3a3.5 3.5 0 0 1 0 6.4",
 };
 
-/** Whole number that counts up once when it scrolls into view. No React children:
- *  the text is owned by the effect so the animation never fights a re-render. */
-function Count({ to }: { to: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const format = (value: number) => Math.round(value).toLocaleString("en-IN");
-    const final = () => { el.textContent = to ? format(to) : "–"; };
-    final();
-    if (!to || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let frame = 0;
-    el.textContent = "0";
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-      const start = performance.now();
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - start) / 1400);
-        el.textContent = format(to * (1 - Math.pow(1 - progress, 3)));
-        if (progress < 1) frame = requestAnimationFrame(tick);
-      };
-      frame = requestAnimationFrame(tick);
-    }, { threshold: 0.6 });
-    observer.observe(el);
-    return () => { observer.disconnect(); cancelAnimationFrame(frame); final(); };
-  }, [to]);
-  return <span ref={ref} />;
-}
-
 function Person({ row }: { row: Row }) {
   return <>
     <span className="hs-m-avatar">{row.name ? row.name.trim().charAt(0).toUpperCase() : <i className="hs-sk" />}</span>
@@ -114,24 +87,21 @@ const SHOWCASE = [
   },
 ];
 
-const RECORD = [
-  { icon: PATHS.id, title: "Identity", body: "Who is behind it, where they are and whether they are verified." },
-  { icon: PATHS.proof, title: "Evidence", body: "Products, capabilities, work samples and public reviews." },
-  { icon: PATHS.terms, title: "Terms", body: "Minimum orders, pricing and timelines before you ask." },
-  { icon: PATHS.next, title: "Next step", body: "Enquire, shortlist, compare or apply from the same page." },
+const WITHOUT = [
+  { icon: "M4 6h16v12H4z|m4 7 8 6 8-6", title: "Thin listings", body: "A name, a category and a phone number, and little else to go on." },
+  { icon: "M9 3H5v4|M15 3h4v4|M9 21H5v-4|M15 21h4v-4|M4 12h16", title: "Scattered tools", body: "One site for suppliers, another for hiring, none of them connected." },
+  { icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z|M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7|M12 17h.01", title: "Dead ends", body: "Searches that stop at no results and leave you to start over." },
+];
+const WITH = [
+  { icon: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z|m9 12 2 2 4-4", title: "Records with substance", body: "Identity, evidence and terms sit behind every company, product and role." },
+  { icon: "M16 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20|M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3|M15.5 4.3a3.5 3.5 0 0 1 0 6.4", title: "One connected platform", body: "Companies, products, services and roles work from a single account." },
+  { icon: "M6 7h12a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 2v-3.2A3 3 0 0 1 3 15v-5a3 3 0 0 1 3-3Z|M8 12h.01|M12 12h.01|M16 12h.01", title: "Never a dead end", body: "Search and Ask Navya always point somewhere useful." },
 ];
 
-const AUDIENCE = [
-  {
-    key: "business", icon: PATHS.building, kicker: "For businesses", title: "Be found by people ready to act.",
-    points: ["A verified company profile that carries your proof", "Products and services buyers can compare", "Enquiries and requirements in one inbox", "Post roles and hire from the same account"],
-    primary: { href: "/sell", label: "List your business" }, secondary: { href: "/post-job", label: "Post a job" },
-  },
-  {
-    key: "buyer", icon: PATHS.people, kicker: "For buyers and job seekers", title: "Skip the guesswork.",
-    points: ["See who is behind every listing", "Shortlist, compare and send enquiries", "Apply for roles with one profile", "Ask Navya whenever you are unsure"],
-    primary: { href: "/directory", label: "Explore the Directory" }, secondary: { href: "/recruitment", label: "Find a role" },
-  },
+const FEATURES = [
+  { art: "radar" as const, title: "Find what you need", body: "Search companies, products, services and roles from one place, in your own words." },
+  { art: "tracker" as const, title: "Follow every step", body: "Enquiries and applications show a clear status, visible to you and to the other side." },
+  { art: "shield" as const, title: "Trust what you see", body: "Identity, evidence and terms sit behind every record before you reach out." },
 ];
 
 const CLOSING = "Start with what you need. We’ll show you the rest.".split(" ");
@@ -197,42 +167,6 @@ function pinShowcase({ gsap, q, wide }: StoryKit, root: HTMLElement): (() => voi
   return () => { nav.forEach((button, i) => button.removeEventListener("click", handlers[i])); delete section.dataset.pinned; };
 }
 
-function wipeRecord({ gsap, q }: StoryKit) {
-  const rich = q(".hs-rich")[0];
-  if (!rich) return;
-  gsap.from(q(".hs-record-copy li"), { y: 24, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out", scrollTrigger: { trigger: ".hs-record-copy", start: "top 82%", once: true } });
-  const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: ".hs-compare", start: "top 78%", end: "bottom 55%", scrub: 0.5, invalidateOnRefresh: true } });
-  tl.fromTo(rich, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" }, 0)
-    .fromTo(".hs-compare-edge", { left: "0%", opacity: 1 }, { left: "100%" }, 0)
-    .to(".hs-compare-edge", { opacity: 0, duration: 0.08 }, 0.92)
-    .fromTo(q(".hs-rich-row"), { x: -16, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.12, duration: 0.22 }, 0.08);
-}
-
-function convergeAudience({ gsap, q, fine }: StoryKit): (() => void) | void {
-  const cards = q(".hs-aud-card");
-  cards.forEach((card, i) => {
-    const side = i === 0 ? -1 : 1;
-    const enter = { trigger: card, start: "top 86%", once: true };
-    gsap.from(card, { xPercent: side * 5, opacity: 0, clipPath: "inset(10% 0% 0% 0% round 24px)", duration: 0.9, ease: "power3.out", scrollTrigger: enter });
-    gsap.from(card.querySelectorAll(".hs-aud-body > *"), { y: 18, opacity: 0, duration: 0.5, stagger: 0.07, delay: 0.25, ease: "power2.out", scrollTrigger: enter });
-  });
-  if (!fine) return;
-  const cleanups = cards.map((card) => {
-    const rx = gsap.quickTo(card, "rotateX", { duration: 0.5, ease: "power3.out" });
-    const ry = gsap.quickTo(card, "rotateY", { duration: 0.5, ease: "power3.out" });
-    const move = (event: PointerEvent) => {
-      const box = card.getBoundingClientRect();
-      ry(((event.clientX - box.left) / box.width - 0.5) * 6);
-      rx(-((event.clientY - box.top) / box.height - 0.5) * 6);
-    };
-    const leave = () => { rx(0); ry(0); };
-    card.addEventListener("pointermove", move);
-    card.addEventListener("pointerleave", leave);
-    return () => { card.removeEventListener("pointermove", move); card.removeEventListener("pointerleave", leave); };
-  });
-  return () => cleanups.forEach((cleanup) => cleanup());
-}
-
 function riseClosing({ gsap, q }: StoryKit) {
   const panel = q(".hs-close-panel")[0];
   if (!panel) return;
@@ -247,10 +181,9 @@ function riseClosing({ gsap, q }: StoryKit) {
 export default function HomeSections({ children }: { children?: React.ReactNode }) {
   const data = useHomeData();
   const root = useRef<HTMLDivElement>(null);
-  const first = data.companies[0];
 
   useStory(root, (kit) => {
-    const cleanups = [pinShowcase(kit, root.current!), wipeRecord(kit), convergeAudience(kit), riseClosing(kit)];
+    const cleanups = [pinShowcase(kit, root.current!), riseClosing(kit)];
     return () => cleanups.forEach((cleanup) => typeof cleanup === "function" && cleanup());
   });
 
@@ -308,49 +241,22 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
       </div>
     </div></section>
 
-    <section className="hs-sec hs-record" aria-labelledby="record-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="record-title">More than a name and a phone number.</h2></div><p>A listing alone tells you little. Bharat Navya puts the identity, evidence and terms behind it within reach, so you can decide before you reach out.</p></header>
-      <div className="hs-record-board">
-        <ul className="hs-record-copy">{RECORD.map((item) => <li key={item.title}><span><Icon d={item.icon} /></span><div><strong>{item.title}</strong><p>{item.body}</p></div></li>)}</ul>
-        <div className="hs-compare" aria-label="A thin listing compared with a Bharat Navya record">
-          <article className="hs-thin">
-            <span className="hs-tag">A thin listing</span>
-            <strong>{first?.name || "Company name"}</strong>
-            <p>Category · {first?.meta || "City"}</p>
-            <b>Contact now</b>
-          </article>
-          <article className="hs-rich">
-            <span className="hs-tag is-navya">A Bharat Navya record</span>
-            <div className="hs-rich-head"><span className="hs-m-avatar">{(first?.name || "B").trim().charAt(0).toUpperCase()}</span><div><strong>{first?.name || "Company name"}</strong><p>{first?.meta || "City"}</p></div><em className="hs-m-tag">Verified</em></div>
-            <ul>
-              <li className="hs-rich-row"><Icon d={PATHS.id} /><span>Identity</span><b>Named and verified</b></li>
-              <li className="hs-rich-row"><Icon d={PATHS.proof} /><span>Evidence</span><b>Products, samples, reviews</b></li>
-              <li className="hs-rich-row"><Icon d={PATHS.terms} /><span>Terms</span><b>MOQ, price, timelines</b></li>
-              <li className="hs-rich-row"><Icon d={PATHS.next} /><span>Next step</span><b>Enquire or shortlist</b></li>
-            </ul>
-          </article>
-          <i className="hs-compare-edge" aria-hidden />
-        </div>
-      </div>
-    </div></section>
+    <Compare
+      id="record-title"
+      title="More than a name and a phone number."
+      lead="A listing alone tells you little. Bharat Navya puts the identity, evidence and terms behind it within reach."
+      labelWithout="Without Bharat Navya"
+      labelWith="With Bharat Navya"
+      without={WITHOUT}
+      withItems={WITH}
+    />
 
-    <section className="hs-sec hs-aud" aria-labelledby="aud-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="aud-title">Built for both sides of business.</h2></div><p>The same account works whether you are offering, buying or hiring.</p></header>
-      <div className="hs-aud-grid">
-        {AUDIENCE.map((item) => <article key={item.key} className={`hs-aud-card is-${item.key}`}>
-          <div className="hs-aud-body">
-            <span className="hs-prod-icon"><Icon d={item.icon} /></span>
-            <p className="hs-eyebrow">{item.kicker}</p>
-            <h3>{item.title}</h3>
-            <ul>{item.points.map((point) => <li key={point}><Icon d={PATHS.check} />{point}</li>)}</ul>
-            <div className="hs-aud-actions">
-              <Link className="le-button is-primary" href={item.primary.href}>{item.primary.label}</Link>
-              <Link className="le-button" href={item.secondary.href}>{item.secondary.label}</Link>
-            </div>
-          </div>
-        </article>)}
-      </div>
-    </div></section>
+    <FeatureCards
+      id="aud-title"
+      title="Built for both sides of business."
+      lead="Whether you are offering, buying, hiring or applying, the same account and the same clarity."
+      features={FEATURES}
+    />
 
     {children}
 

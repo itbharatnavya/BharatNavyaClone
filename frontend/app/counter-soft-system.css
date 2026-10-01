@@ -5022,7 +5022,7 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .feat-card h3 { margin: 0; color: var(--counter-indigo); font: 800 var(--fs-xl)/1.1 var(--font-anek-latin), sans-serif; }
 .feat-card p { margin: 0; color: var(--counter-muted); font-size: var(--fs-md); line-height: 1.55; }
 .feat-art { display: grid; place-items: end center; margin: 0 -1.4rem; padding: 1rem 1rem 0; background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--counter-indigo-soft) 50%, white)); }
-.art { width: 100%; max-width: 19rem; height: auto; fill: none; stroke: none; }
+svg.art { width: 100%; max-width: 19rem; height: auto; fill: none; stroke: none; }
 .art-ring { fill: none; stroke: var(--counter-line); stroke-width: 1.2; }
 .art-text { fill: var(--counter-indigo); font: 700 10px var(--font-work-sans, system-ui), sans-serif; }
 .art-wire { stroke: var(--counter-line); stroke-width: 1.5; stroke-dasharray: 3 5; }
