@@ -230,7 +230,7 @@ export default function NotificationBell() {
         <BellIcon />
         {unread > 0 && (
           <span
-            className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+            className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-xs font-bold text-white"
             style={{ background: "#DC2626" }}
           >
             {unread > 9 ? "9+" : unread}

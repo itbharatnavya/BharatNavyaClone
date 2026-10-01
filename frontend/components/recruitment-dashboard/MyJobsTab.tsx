@@ -18,7 +18,7 @@ function statusBadge(status: JobStatus): { bg: string; color: string; label: str
     case "active":
       return { bg: "#DCFCE7", color: "#166534", label: "Active" };
     case "paused":
-      return { bg: "#FEF3C7", color: "#92400E", label: "Paused" };
+      return { bg: "#E3EBFF", color: "#1B3FA0", label: "Paused" };
     case "closed":
       return { bg: "#F1F5F9", color: "#475569", label: "Closed" };
     case "draft":

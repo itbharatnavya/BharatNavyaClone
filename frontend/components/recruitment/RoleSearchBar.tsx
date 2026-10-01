@@ -497,7 +497,7 @@ export default function RoleSearchBar({
           align-items: center;
           gap: 6px;
           padding: 8px 10px 4px;
-          font-size: 11px;
+          font-size: 0.75rem;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -522,7 +522,7 @@ export default function RoleSearchBar({
         }
         .rsb-opt small {
           color: var(--muted);
-          font-size: 11px;
+          font-size: 0.75rem;
           font-weight: 500;
         }
         .rsb-opt-active {

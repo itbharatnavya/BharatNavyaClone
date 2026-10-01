@@ -66,10 +66,9 @@ function SectionLabel({
   style?: React.CSSProperties;
   children: React.ReactNode;
 }) {
-  const palette =
-    tone === "green"
-      ? { bg: "var(--tricolor-green-tint)", fg: "var(--tricolor-green-hover)" }
-      : { bg: "var(--brand-tint)", fg: "var(--brand-hover)" };
+  // One blue for every section icon (tone is kept for call sites, not for colour).
+  void tone;
+  const palette = { bg: "var(--counter-indigo-soft)", fg: "var(--counter-indigo)" };
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, ...style }}>
       <span
@@ -449,11 +448,25 @@ export default function ListingDetailPage() {
               <div className="ld-gallery-wrap"><Gallery media={listing.media} title={listing.title} /></div>
 
               <div className="ld-summary" style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
-                  {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
-                  {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
-                  {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
+                <div className="ld-topline">
+                  <div className="ld-badges">
+                    <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
+                    {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
+                    {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
+                    {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
+                  </div>
+                  <button
+                    type="button"
+                    className={`ld-save${shortlist.has(listing.id) ? " is-saved" : ""}`}
+                    aria-pressed={shortlist.has(listing.id)}
+                    aria-label={shortlist.has(listing.id) ? t("listing.saved", "Saved") : t("listing.save", "Save")}
+                    title={shortlist.has(listing.id) ? t("listing.saved", "Saved") : t("listing.save", "Save")}
+                    onClick={() => shortlist.toggle(listing.id)}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={shortlist.has(listing.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" />
+                    </svg>
+                  </button>
                 </div>
 
                 <h1 style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 800, color: "var(--ink)", lineHeight: 1.12, letterSpacing: "-0.02em", margin: "12px 0 10px" }}>
@@ -477,38 +490,6 @@ export default function ListingDetailPage() {
                   </div>
                 )}
                 <PriceBlock listing={listing} />
-
-                {/* Save (shortlist) toggle */}
-                <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    aria-pressed={shortlist.has(listing.id)}
-                    onClick={() => shortlist.toggle(listing.id)}
-                    style={
-                      shortlist.has(listing.id)
-                        ? { color: "var(--action)", borderColor: "var(--action)" }
-                        : undefined
-                    }
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill={shortlist.has(listing.id) ? "var(--action)" : "none"}
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" />
-                    </svg>
-                    {shortlist.has(listing.id)
-                      ? t("listing.saved", "Saved")
-                      : t("listing.save", "Save")}
-                  </button>
-                </div>
 
                 {condition && (
                   <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
@@ -564,15 +545,6 @@ export default function ListingDetailPage() {
                 </section>
               )}
 
-              {listing.keywords && listing.keywords.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {listing.keywords.map((kw) => (
-                    <span key={kw} style={{ fontSize: 13, color: "var(--faint)" }}>
-                      #{kw}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
@@ -606,7 +578,7 @@ export default function ListingDetailPage() {
             </div>
             <div className="ld-grid">
               {sellerListingCards.map((l) => (
-                <ListingCard key={l.id} listing={l} />
+                <ListingCard key={l.id} listing={l} hideSeller />
               ))}
             </div>
           </section>
@@ -681,7 +653,7 @@ export default function ListingDetailPage() {
         }
         .listing-terms-grid dt {
           color: var(--faint);
-          font-size: 11px;
+          font-size: 0.75rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;

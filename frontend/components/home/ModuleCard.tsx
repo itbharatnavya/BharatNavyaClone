@@ -27,7 +27,7 @@ export interface ModuleCardProps {
 const ACCENT = {
   brand: { bg: "var(--brand-tint)", color: "var(--brand)", border: "#d3e2f7" },
   green: { bg: "var(--tricolor-green-tint)", color: "var(--tricolor-green)", border: "#cdebd7" },
-  orange: { bg: "var(--action-tint)", color: "var(--action)", border: "#f9d9b8" },
+  orange: { bg: "var(--action-tint)", color: "var(--action)", border: "#C4D3F7" },
 } as const;
 
 export default function ModuleCard({ icon, title, tagline, href, status, accent = "brand", badgeLabel }: ModuleCardProps) {

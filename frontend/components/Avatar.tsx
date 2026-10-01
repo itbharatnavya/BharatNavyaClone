@@ -18,8 +18,8 @@ function initials(name?: string): string {
 
 // Deterministic soft background from the name.
 function bgFromName(name?: string): string {
-  const palette = ["#EFF6FF", "#FFF7ED", "#ECFDF5", "#F5F3FF", "#FEF2F2", "#F0F9FF"];
-  const fg = ["#1D4ED8", "#C2410C", "#15803D", "#6D28D9", "#B91C1C", "#0369A1"];
+  const palette = ["#EFF6FF", "#E3EBFF", "#DBE4FB", "#DBE4FB", "#E3EBFF", "#F0F9FF"];
+  const fg = ["#1D4ED8", "#1B3FA0", "#2556C8", "#12307E", "#1D4ED8", "#0369A1"];
   let h = 0;
   const s = name || "?";
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;

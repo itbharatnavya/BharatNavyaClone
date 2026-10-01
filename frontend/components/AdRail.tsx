@@ -153,7 +153,7 @@ export function InFeedAd({ ad }: { ad: AdCreative }) {
         }}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--brand)" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--brand)" }}>
           Ad
         </span>
         <div className="line-clamp-2" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)", marginTop: 2, lineHeight: 1.35 }}>

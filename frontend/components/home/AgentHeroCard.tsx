@@ -87,7 +87,7 @@ export default function AgentHeroCard() {
                 justifyContent: "center",
                 background: "var(--action-tint)",
                 color: "var(--action)",
-                border: "1px solid #f9d9b8",
+                border: "1px solid #C4D3F7",
                 flexShrink: 0,
               }}
             >
@@ -95,7 +95,7 @@ export default function AgentHeroCard() {
             </span>
             <span
               className="badge"
-              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#fed7aa" }}
+              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#C4D3F7" }}
             >
               In development
             </span>
@@ -148,7 +148,7 @@ export default function AgentHeroCard() {
                 <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>{p.title}</span>
                   {p.badge && (
-                    <span className="badge badge-neutral" style={{ fontSize: 9.5 }}>
+                    <span className="badge badge-neutral" style={{ fontSize: 12 }}>
                       {p.badge}
                     </span>
                   )}

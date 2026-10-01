@@ -168,7 +168,7 @@ export default function MyRfqsTab({ user }: Props) {
                               <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>
                                 {s.companyName || "Seller"}
                                 {s.isVerified && (
-                                  <span style={{ marginLeft: 6, fontSize: 11, color: "var(--brand)" }}>
+                                  <span style={{ marginLeft: 6, fontSize: 12, color: "var(--brand)" }}>
                                     {tr("dashboard.myrfqs.verified", "Verified")}
                                   </span>
                                 )}

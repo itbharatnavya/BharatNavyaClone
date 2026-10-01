@@ -183,7 +183,7 @@ export default function OtherSellers({
           min-width: 640px;
         }
         .os-table thead th {
-          font-size: 11px;
+          font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.04em;

@@ -17,7 +17,7 @@ function Star({ fill, size }: { fill: number; size: number }) {
     <svg width={size} height={size} viewBox="0 0 24 24" style={{ display: "block" }}>
       <defs>
         <linearGradient id={id}>
-          <stop offset={`${fill * 100}%`} stopColor="#F59E0B" />
+          <stop offset={`${fill * 100}%`} stopColor="#3B6CF5" />
           <stop offset={`${fill * 100}%`} stopColor="#E5E7EB" />
         </linearGradient>
       </defs>

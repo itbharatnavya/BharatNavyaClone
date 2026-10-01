@@ -347,7 +347,7 @@ export default function ListingVerificationTab() {
                         <span className="line-clamp-1 block font-semibold text-brand hover:underline">
                           {r.title}
                         </span>
-                        <span className="text-[11px] capitalize text-faint">{r.type}</span>
+                        <span className="text-xs capitalize text-faint">{r.type}</span>
                       </span>
                     </button>
                   </Td>
@@ -358,7 +358,7 @@ export default function ListingVerificationTab() {
                     <Pill tone={verificationTone(r.verification?.status)}>
                       {verificationLabel(r.verification?.status)}
                     </Pill>
-                    <span className="ml-1.5 font-mono text-[11px] text-faint">
+                    <span className="ml-1.5 font-mono text-xs text-faint">
                       {r.verification ? `${r.verification.score}/100` : ""}
                     </span>
                   </Td>

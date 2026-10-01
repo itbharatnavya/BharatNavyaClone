@@ -165,8 +165,8 @@ export default function AutofillButton({
                 marginTop: 10,
                 fontSize: 12.5,
                 color: "var(--warn)",
-                background: "#fffbeb",
-                border: "1px solid #fde68a",
+                background: "#E3EBFF",
+                border: "1px solid #C4D3F7",
                 borderRadius: 8,
                 padding: "8px 10px",
               }}

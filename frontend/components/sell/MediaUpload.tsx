@@ -142,7 +142,7 @@ export default function MediaUpload({
                     position: "absolute",
                     left: 6,
                     top: 6,
-                    fontSize: 10,
+                    fontSize: 12,
                     background: "var(--brand)",
                     color: "#fff",
                     padding: "2px 6px",

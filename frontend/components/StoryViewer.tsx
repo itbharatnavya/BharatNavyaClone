@@ -188,7 +188,7 @@ export default function StoryViewer({
             type="button"
             aria-label="Close"
             onClick={onClose}
-            style={{ marginLeft: "auto", background: "transparent", border: "none", color: "#fff", cursor: "pointer", lineHeight: 0, padding: 0 }}
+            style={{ marginLeft: "auto", width: 40, height: 40, display: "grid", placeItems: "center", background: "#fff", border: "none", borderRadius: "50%", color: "#12141b", cursor: "pointer", lineHeight: 0, padding: 0 }}
           >
             <svg
               width="22"
@@ -221,7 +221,7 @@ export default function StoryViewer({
                 color: "#fff",
                 fontSize: 16,
                 fontWeight: 600,
-                background: "linear-gradient(135deg,#1D4ED8,#F97316)",
+                background: "linear-gradient(135deg,#1D4ED8,#9db8ff)",
               }}
             >
               {story.caption || group.sellerName}

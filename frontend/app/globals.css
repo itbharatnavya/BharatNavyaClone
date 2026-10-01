@@ -98,17 +98,17 @@
 
   /* action accent (saffron orange) — from the BharatNavya wordmark's arrow.
      Bharat Agent's signature color. */
-  --action: #f5821f;
-  --action-hover: #dd6d0f;
-  --action-tint: #fff2e2;
+  --action: #1b3fa0;
+  --action-hover: #12307e;
+  --action-tint: #dbe4fb;
 
   /* third module accent (green) — from the BharatNavya wordmark's swoosh.
      Recruitment's module color, plus the eyebrow flourish tick. This is a
      real, visible third accent now (module identity), not just decoration —
      see frontend-design-guide.md's color-to-module mapping. */
-  --tricolor-green: #1e9e52;
-  --tricolor-green-hover: #167d40;
-  --tricolor-green-tint: #e8f8ee;
+  --tricolor-green: #2556c8;
+  --tricolor-green-hover: #1b3fa0;
+  --tricolor-green-tint: #dbe4fb;
 
   /* deep navy — the BharatNavya wordmark's actual lettering color (v5.4,
      picked from the logo directly). Deliberately kept OUT of interactive
@@ -127,7 +127,7 @@
      frame, after the two blended together at matching darkness). Same
      "decorative surface only" rule as --navy: never for buttons, links or
      body text. See frontend-design-guide.md. */
-  --violet: #6d28d9;
+  --violet: #1B3FA0;
   --violet-deep: #3b0764;
   --violet-darker: #1e0442;
 
@@ -576,7 +576,7 @@ p {
 .bn-toast {
   border: 1px solid var(--counter-line, #b9cce6);
   border-radius: var(--counter-radius-control, 1.25rem);
-  background: var(--counter-ivory, #eaf3ff);
+  background: var(--counter-ivory, #ffffff);
   color: var(--counter-ink, #12141b);
   box-shadow: var(--counter-shadow-lift, 0 16px 40px rgba(18, 20, 27, 0.16));
 }
@@ -698,7 +698,7 @@ p {
 .story-card-name {
   width: 100%;
   min-height: 2.2em;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -710,7 +710,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
   padding: 4px 8px;
@@ -720,24 +720,24 @@ p {
   letter-spacing: 0.01em;
 }
 .badge-verified {
-  background: var(--brand-tint);
-  color: var(--brand-hover);
-  border-color: #bfdbfe;
+  background: #dbe4fb;
+  color: #1b3fa0;
+  border-color: #b9c9f2;
 }
 .badge-sponsored {
-  background: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  background: #12141b;
+  color: #ffffff;
+  border-color: #12141b;
 }
 .badge-premium {
-  background: #f5f3ff;
-  color: #6d28d9;
-  border-color: #ddd6fe;
+  background: #dbe4fb;
+  color: #1b3fa0;
+  border-color: #b9c9f2;
 }
 .badge-new {
-  background: #ecfdf5;
-  color: #15803d;
-  border-color: #bbf7d0;
+  background: #e3ebff;
+  color: #2556c8;
+  border-color: #c4d3f7;
 }
 .badge-neutral {
   background: var(--bg-subtle);
@@ -1107,7 +1107,7 @@ p {
 }
 .agent-hero-side-label {
   display: block;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;

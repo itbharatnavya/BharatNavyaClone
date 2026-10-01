@@ -159,7 +159,7 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
                         {c.otherUserName || "Buyer"}
                       </span>
                       {c.lastMsgAt && (
-                        <span style={{ fontSize: 11, color: "var(--faint)", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: 12, color: "var(--faint)", whiteSpace: "nowrap" }}>
                           {timeAgo(c.lastMsgAt)}
                         </span>
                       )}
@@ -173,7 +173,7 @@ export default function ProductInboxModal({ open, onClose, listingId, listingTit
                           style={{
                             background: "var(--action)",
                             color: "#fff",
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: 700,
                             minWidth: 18,
                             height: 18,

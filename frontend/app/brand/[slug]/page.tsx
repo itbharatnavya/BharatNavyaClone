@@ -61,7 +61,7 @@ function BrandRfqCard() {
     <Link href="/rfq" className="card card-pad" style={{ display: "block", textDecoration: "none" }}>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 700,
           letterSpacing: "0.05em",
           textTransform: "uppercase",

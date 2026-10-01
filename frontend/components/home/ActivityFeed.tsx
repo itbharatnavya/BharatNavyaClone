@@ -43,7 +43,7 @@ export default function ActivityFeed() {
               <span aria-hidden style={{ width: 7, height: 7, borderRadius: "50%", background: DOT_COLOR[item.dot], marginTop: 6, flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: 13.5, color: "var(--ink)", lineHeight: 1.5 }}>{item.text}</p>
-                <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{item.time}</span>
+                <span style={{ fontSize: 12, color: "var(--faint)" }}>{item.time}</span>
               </div>
             </li>
           ))}

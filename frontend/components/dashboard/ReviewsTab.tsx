@@ -81,7 +81,7 @@ export default function ReviewsTab({ user, context = "directory" }: Props) {
             <StatCard
               label={tr("dashboard.reviews.avg", "Average rating")}
               value={avg.toFixed(1)}
-              accent="#F59E0B"
+              accent="#3B6CF5"
               icon={<Icon name="reviews" size={18} />}
               hint={tr("dashboard.reviews.outOf", "out of 5")}
             />

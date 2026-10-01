@@ -495,7 +495,7 @@ export default function AISearchBar({
           }}
         >
           {catSug.length > 0 && (
-            <div style={{ padding: "6px 10px 4px", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div style={{ padding: "6px 10px 4px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
               {t("common.category")}
             </div>
           )}
@@ -527,7 +527,7 @@ export default function AISearchBar({
           })}
 
           {listSug.length > 0 && (
-            <div style={{ padding: "8px 10px 4px", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
+            <div style={{ padding: "8px 10px 4px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--faint)" }}>
               {t("common.products")}
             </div>
           )}

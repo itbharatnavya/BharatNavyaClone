@@ -6,7 +6,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import Filters, { type FilterOption, type ListingFilterState } from "@/components/Filters";
 import Pagination from "@/components/Pagination";
+import ListingCard from "@/components/ListingCard";
 import { getListings, type ListingQuery } from "@/lib/api";
+import { flattenCategories, useCategories } from "@/lib/catalog";
 import type { Listing, ListingsResponse } from "@/lib/types";
 
 type ListingSort = NonNullable<ListingFilterState["sort"]>;
@@ -89,27 +91,28 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   const media = listingImage(listing);
   const company = sellerName(listing);
   const verified = listing.isVerifiedSeller || listing.seller?.isVerified;
-  return <section className="directory-listing-preview" aria-label={`${listing.title} preview`}>
-    <div className="directory-listing-preview-media">
+  const rating = listing.seller?.rating;
+  const facts: [string, string][] = [
+    ["Terms", termsLabel(listing)],
+    ["Delivery", deliveryLabel(listing).replace(/_/g, " ")],
+    ["Location", locationLabel(listing)],
+  ];
+  return <section className="directory-listing-preview lp" aria-label={`${listing.title} preview`}>
+    <div className="lp-media">
       {media ? <img src={media.url} alt={media.alt || `${listing.title} preview`} loading="lazy" decoding="async" /> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
-      <b>{listing.type}</b>
-      {onClose && <button className="directory-listing-preview-close" type="button" onClick={onClose} aria-label="Close selected listing">Close ×</button>}
+      <b className="lp-type">{listing.type === "service" ? "Service" : "Product"}</b>
+      {onClose && <button className="lp-close" type="button" onClick={onClose} aria-label="Close selected listing"><svg aria-hidden viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>}
     </div>
-    <div className="directory-listing-preview-body">
-      <span className="directory-listing-kicker">Selected {listing.type}</span>
+    <div className="lp-body">
       <h2>{listing.title}</h2>
-      <div className="directory-listing-company">
+      <p className="lp-price"><strong>{priceLabel(listing)}</strong>{rating ? <span className="lp-rating"><svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg>{rating.toFixed(1)}</span> : null}</p>
+      <div className="lp-company">
         <Avatar src={listing.seller?.logo} name={company} size={40} />
-        <span><strong>{company}</strong><small>{verified ? "Identity verified" : "Company record"} · {locationLabel(listing)}</small></span>
+        <span><strong>{company}</strong><small>{verified ? "Identity verified" : "Company record"}</small></span>
       </div>
-      <p>{listing.description}</p>
-      <dl>
-        <div><dt>Price</dt><dd>{priceLabel(listing)}</dd></div>
-        <div><dt>Terms</dt><dd>{termsLabel(listing)}</dd></div>
-        <div><dt>Delivery</dt><dd>{deliveryLabel(listing)}</dd></div>
-        <div><dt>Company rating</dt><dd>{listing.seller?.rating ? `${listing.seller.rating.toFixed(1)} / 5` : "Not rated yet"}</dd></div>
-      </dl>
-      <Link href={`/listing/${listing.id}`}>Open complete listing <Arrow /></Link>
+      {listing.description && <p className="lp-about">{listing.description}</p>}
+      <ul className="lp-facts">{facts.map(([label, value]) => <li key={label}><span>{label}</span><strong>{value}</strong></li>)}</ul>
+      <Link className="lp-open" href={`/listing/${listing.id}`}>Open complete listing <Arrow /></Link>
     </div>
   </section>;
 }
@@ -135,6 +138,7 @@ export default function UnifiedListingWorkbench({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [view, setView] = useState<"list" | "grid">("list");
   const didMount = useRef(false);
 
   const seededKey = useRef(initialKey);
@@ -226,9 +230,13 @@ export default function UnifiedListingWorkbench({
     return true;
   }), [listings, filters.brands, filters.minRating]);
   const selected = visibleListings.find((listing) => listing.id === selectedId);
-  const categories = facetOptions(data?.facets?.categories);
+  const { categories: catalog } = useCategories();
+  const categoryNames = useMemo(() => new Map(flattenCategories(catalog).map((category) => [category.slug, category.name])), [catalog]);
+  const categories = facetOptions(data?.facets?.categories).map((option) => ({ ...option, label: categoryNames.get(option.value) || option.label }));
   const cities = facetOptions(data?.facets?.cities);
   const shownTotal = filters.brands?.length || filters.minRating ? visibleListings.length : data?.total || 0;
+
+  const activeCount = (filters.type ? 1 : 0) + (filters.verified ? 1 : 0) + (filters.featured ? 1 : 0) + (filters.category && !fixedCategory ? 1 : 0) + (filters.city ? 1 : 0) + (filters.priceMax ? 1 : 0) + (filters.minRating ? 1 : 0) + (filters.brands?.length || 0);
 
   function updateFilters(next: ListingFilterState) {
     setFilters(next);
@@ -239,10 +247,21 @@ export default function UnifiedListingWorkbench({
     <section className="directory-listing-master" aria-label="Service and product results">
       <div className="directory-listing-toolbar">
         <span><strong aria-live="polite">{loading ? "Finding listings…" : `${shownTotal} ${shownTotal === 1 ? "listing" : "listings"}`}</strong><small>Services and products together</small></span>
-        <label><span className="sr-only">Sort listings</span><select value={sort} onChange={(event) => { setSort(event.target.value as ListingSort); setPage(1); }}>{SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <div className="dlw-controls">
+          <button type="button" className="dlw-filter-toggle" aria-expanded={filtersOpen} aria-controls="directory-listing-filter-content" onClick={() => setFiltersOpen((open) => !open)}>
+            <svg aria-hidden viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4" /></svg>Filters{activeCount > 0 && <b>{activeCount}</b>}
+          </button>
+          <div className="dlw-view" role="group" aria-label="Result layout">
+            <button type="button" aria-pressed={view === "list"} aria-label="List view" onClick={() => { setView("list"); }}><svg aria-hidden viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg></button>
+            <button type="button" aria-pressed={view === "grid"} aria-label="Grid view" onClick={() => { setView("grid"); setSelectedId(null); }}><svg aria-hidden viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2" /></svg></button>
+          </div>
+          <label><span className="sr-only">Sort listings</span><select value={sort} onChange={(event) => { setSort(event.target.value as ListingSort); setPage(1); }}>{SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        </div>
       </div>
       {error && <div className="directory-listing-state" role="status"><strong>Listings could not be loaded.</strong><p>{error}</p></div>}
-      <div className="directory-listing-ledger">
+      {view === "grid" && !loading && !error && visibleListings.length > 0 && <ul className="dlw-grid" role="list">{visibleListings.map((listing) => <li key={listing.id}><ListingCard listing={listing} /></li>)}</ul>}
+      {view === "grid" && loading && <div className="dlw-grid is-loading" aria-hidden>{[1, 2, 3, 4, 5, 6].map((item) => <span key={item} />)}</div>}
+      <div className="directory-listing-ledger" hidden={view === "grid"}>
         {loading && [1, 2, 3, 4].map((item) => <div className="directory-listing-row is-loading" key={item} />)}
         {!loading && !error && visibleListings.map((listing) => {
           const media = listingImage(listing);
@@ -263,21 +282,10 @@ export default function UnifiedListingWorkbench({
 
     {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
 
-    <div className="directory-listing-filter-rail">
-      <aside className="directory-listing-filter-panel" aria-label="Filter services and products">
-        <div className="directory-listing-filter-quick" aria-label="Quick listing filters">
-          <strong>Filters</strong>
-          <div>
-            <button type="button" aria-pressed={!filters.type} onClick={() => updateFilters({ ...filters, type: undefined })}>All</button>
-            <button type="button" aria-pressed={filters.type === "service"} onClick={() => updateFilters({ ...filters, type: "service" })}>Services</button>
-            <button type="button" aria-pressed={filters.type === "product"} onClick={() => updateFilters({ ...filters, type: "product" })}>Products</button>
-            <button type="button" aria-pressed={!!filters.verified} onClick={() => updateFilters({ ...filters, verified: !filters.verified })}>Verified</button>
-            <button type="button" className="is-more" aria-expanded={filtersOpen} aria-controls="directory-listing-filter-content" onClick={() => setFiltersOpen((open) => !open)}>{filtersOpen ? "Hide more" : "More filters"}</button>
-          </div>
-        </div>
-        <div id="directory-listing-filter-content" className={`directory-listing-filter-content${filtersOpen ? " is-open" : ""}`}>
-          <Filters hideHeading hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
-        </div>
+    <div className={`directory-listing-filter-rail${filtersOpen ? " is-open" : ""}`}>
+      <aside id="directory-listing-filter-content" className="directory-listing-filter-panel" aria-label="Filter services and products">
+        <button type="button" className="flt-sheet-close" onClick={() => setFiltersOpen(false)} aria-label="Close filters"><svg aria-hidden viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+        <Filters hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
       </aside>
     </div>
   </div>;

@@ -195,7 +195,7 @@ export default function BlogIndexPage() {
           background: linear-gradient(
             120deg,
             var(--brand-tint, #eff6ff),
-            var(--action-tint, #fff7ed)
+            var(--action-tint, #E3EBFF)
           );
         }
         .blog-body {

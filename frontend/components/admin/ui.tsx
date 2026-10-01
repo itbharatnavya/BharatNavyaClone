@@ -159,10 +159,10 @@ type Tone = "green" | "blue" | "amber" | "red" | "gray" | "purple";
 const TONE: Record<Tone, { bg: string; color: string; border: string }> = {
   green: { bg: "#ecfdf5", color: "#15803d", border: "#bbf7d0" },
   blue: { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
-  amber: { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
+  amber: { bg: "#E3EBFF", color: "#1B3FA0", border: "#C4D3F7" },
   red: { bg: "#fef2f2", color: "#b91c1c", border: "#fecaca" },
   gray: { bg: "#f7f8fa", color: "#475569", border: "#e5e7eb" },
-  purple: { bg: "#f5f3ff", color: "#6d28d9", border: "#ddd6fe" },
+  purple: { bg: "#DBE4FB", color: "#1B3FA0", border: "#C4D3F7" },
 };
 
 const STATUS_TONE: Record<string, Tone> = {
@@ -219,7 +219,7 @@ export function Pill({
   const s = TONE[t];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-[11px] font-semibold capitalize"
+      className="inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-xs font-semibold capitalize"
       style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
     >
       {children}

@@ -106,7 +106,7 @@ export default function ApplicationsTab({ jobId }: { jobId?: string | null }) {
                       {c?.currentRole || c?.headline || "—"}{!jobId && app.job?.title ? ` · Applied to ${app.job.title}` : ""}
                     </div>
                   </div>
-                  <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{formatDate(app.appliedAt)}</span>
+                  <span style={{ fontSize: 12, color: "var(--faint)" }}>{formatDate(app.appliedAt)}</span>
                   <span className="badge" style={{ background: sc.bg, color: sc.color }}>
                     {STATUS_OPTIONS.find((s) => s.value === app.status)?.label || app.status}
                   </span>

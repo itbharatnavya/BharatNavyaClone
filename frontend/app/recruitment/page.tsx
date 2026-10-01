@@ -8,7 +8,6 @@ import StoryRail from "@/components/StoryRail";
 import UpdateFeature from "@/components/evidence/UpdateFeature";
 import EvidenceMedia from "@/components/evidence/EvidenceMedia";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
-import DecisionJourney from "@/components/evidence/DecisionJourney";
 import RoleContextPreview from "@/components/recruitment/RoleContextPreview";
 import { RecruitmentSectionSearch } from "@/components/SectionSearchDock";
 import { CategoryShowcase } from "@/components/discovery/LandingHero";
@@ -156,18 +155,6 @@ export default function RecruitmentPage() {
     <section className="le-section is-tinted" aria-labelledby="fresh-roles-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="fresh-roles-title">Your next career move starts with the right role.</h2><p>Explore positions from companies building their teams across different industries and functions.</p></div><Link className="le-button" href="/recruitment/jobs">Browse all jobs</Link></header><div className="le-role-showcase"><div className="le-role-list">{loading ? [1,2,3].map((item) => <div className="recruitment-skeleton" key={item} />) : freshJobs.map((job) => <Link href={`/job/${job.id}`} className={`le-evidence-record ${job.id === selectedJob?.id ? "is-selected" : ""}`} key={job.id} onMouseEnter={() => setSelectedJobId(job.id)} onFocus={() => setSelectedJobId(job.id)}><Avatar src={job.employer?.logo || undefined} name={job.employer?.companyName || "Company"} size={48} /><span><small>{job.employer?.isVerified ? "Verified employer" : "Employer profile"}</small><strong>{job.title}</strong><span>{job.employer?.companyName || "Company identity pending"} · {jobLocation(job)}</span><p>{formatSalary(job)} · {jobFreshness(job.postedAt)} · {closingContext(job.expiresAt)}</p></span><b aria-hidden>→</b></Link>)}{!loading && freshJobs.length === 0 && <div className="le-empty">Open roles are temporarily unavailable. Search and filters remain ready.</div>}</div><RoleContextPreview model={selectedJob ? rolePreviewModel(selectedJob) : undefined} /></div></div></section>
 
     <section className="le-section" aria-labelledby="hiring-companies-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-companies-title">Explore the companies behind the roles.</h2></div><p>Go beyond the job title and see the companies, teams, and workplace context behind opportunities on Bharat Navya.</p></header><div className="le-company-media-grid">{hiringCompanies.map((company, index) => <Link className="le-company-tile" href={company.slug ? `/employer/${company.slug}` : "/recruitment/jobs"} key={company.name}><EvidenceMedia asset={{ src: `/seed-media/company/company-${index + 1}.jpg`, alt: `Workplace at ${company.name}`, kind: "workplace", source: "prototype", attribution: "Prototype workplace media" }} ratio="wide" /><div><Avatar src={company.logo || undefined} name={company.name} size={44} /><span><strong>{company.name}</strong><small>{company.location} · {company.verified ? "Verified employer" : "Employer profile"}</small></span><b>{company.count} role{company.count === 1 ? "" : "s"}</b></div></Link>)}{!loading && hiringCompanies.length === 0 && <div className="le-empty">Company information will grow as employers build their presence on the platform.</div>}</div></div></section>
-
-    <DecisionJourney
-      id="application-journey-title"
-      title="Where applications lead to career moves."
-      context="recruitment"
-      steps={[
-        { label: "Inspect", detail: "Review the role, company, workplace, requirements, and other details before deciding to apply." },
-        { label: "Apply", detail: "Submit your application with the information and experience relevant to the role." },
-        { label: "Follow", detail: "Track your application status and stay informed as the hiring process progresses." },
-        { label: "Close", detail: "Reach a clear hiring outcome, whether that means joining the team or continuing your search." },
-      ]}
-    />
 
     <section ref={updatesAnchorRef} className="le-section" aria-labelledby="hiring-updates-title"><div className="le-shell"><header className="le-section-head"><div><h2 id="hiring-updates-title">Explore the role before you apply.</h2></div><p>Use workplace updates and employer guidance to understand more than the job title.</p><Link className="le-button" href="/recruitment/blog">View career guides</Link></header>{updates.length ? <UpdateFeature updates={updates} title="Hiring updates and insights" /> : <div className="le-empty">Recruiter updates and workplace media will appear here when published.</div>}</div></section>
 

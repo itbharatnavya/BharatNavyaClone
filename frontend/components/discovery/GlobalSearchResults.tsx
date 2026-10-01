@@ -110,7 +110,7 @@ function CategoryTile({ slug, name, icon, listingCount }: {
         {name}
       </span>
       {typeof listingCount === "number" && listingCount > 0 && (
-        <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{listingCount} listings</span>
+        <span style={{ fontSize: 12, color: "var(--faint)" }}>{listingCount} listings</span>
       )}
     </Link>
   );

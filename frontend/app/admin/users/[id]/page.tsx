@@ -222,7 +222,7 @@ export default function AdminUserDetailPage() {
                 </Button>
               )}
               {(isSelf || isAdminAccount) && !suspended && (
-                <span className="text-[11px] text-faint">
+                <span className="text-xs text-faint">
                   {isSelf ? "Can't suspend yourself" : "Admin — can't suspend"}
                 </span>
               )}

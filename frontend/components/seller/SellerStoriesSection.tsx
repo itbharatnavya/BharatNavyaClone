@@ -188,7 +188,7 @@ export default function SellerStoriesSection({
                         background: "linear-gradient(transparent, rgba(15,23,42,.82))",
                       }}
                     >
-                      <span className="line-clamp-1" style={{ display: "block", fontSize: 11.5, fontWeight: 700, color: "#fff", textAlign: "left" }}>
+                      <span className="line-clamp-1" style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#fff", textAlign: "left" }}>
                         {s.caption}
                       </span>
                     </span>

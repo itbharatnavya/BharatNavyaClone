@@ -49,7 +49,7 @@ export default function BharatAgentPanel() {
             </span>
             <span
               className="badge"
-              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#fed7aa" }}
+              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#C4D3F7" }}
             >
               In development
             </span>

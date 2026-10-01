@@ -177,7 +177,7 @@ function AsideRfqCard({ t }: { t: (key: string, fallback: string) => string }) {
     <Link href="/rfq" className="card card-pad" style={{ display: "block", textDecoration: "none" }}>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 700,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
@@ -1101,7 +1101,7 @@ export default function DiscoveryResults({
           background: transparent;
           color: var(--brand-hover);
           cursor: pointer;
-          font-size: 10px;
+          font-size: 0.75rem;
           line-height: 1;
           padding: 0;
         }

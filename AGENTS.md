@@ -6,3 +6,4 @@
 - Preserve the existing backend and unrelated modules unless the user explicitly authorizes backend or module work.
 - Bharat Navya's public product structure is Home, Directory, and Recruitment. Consultations, Credit Card, Mutual Fund, catalogue-first commerce, and RFQ-first journeys are not public navigation priorities.
 - Reuse existing API and authentication contracts where they align. Document missing or conflicting backend behavior instead of simulating a successful persisted action.
+- **UI work follows `DESIGN-SYSTEM.md`** (colours, type, radii, spacing, CTA and component rules, new-work checklist). It overrides older colour or style notes elsewhere. Do not restyle the deliberately custom sections it lists (section 7) without asking the owner first.

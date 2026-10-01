@@ -129,7 +129,7 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
           <span style={{ color: "#fff", fontSize: 12, fontWeight: 600 }}>{tr("dashboard.stories.preview", "Preview")}</span>
         </span>
 
-        <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(15,23,42,.7)", color: "#fff", fontSize: 11, borderRadius: 999, padding: "2px 8px" }}>
+        <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(15,23,42,.7)", color: "#fff", fontSize: 12, borderRadius: 999, padding: "2px 8px" }}>
           {s.views ?? 0} views
         </div>
         {s.isHighlight && (
@@ -143,7 +143,7 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
               gap: 4,
               background: "var(--brand)",
               color: "#fff",
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 600,
               borderRadius: 999,
               padding: "2px 8px",
@@ -161,7 +161,7 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
             {s.caption}
           </div>
         )}
-        <div style={{ fontSize: 11, color: "var(--faint)", marginTop: 4 }}>{timeAgo(s.createdAt)}</div>
+        <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 4 }}>{timeAgo(s.createdAt)}</div>
         <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
           <Button size="sm" variant={s.isHighlight ? "ghost" : "secondary"} leftIcon={<Icon name="pin" size={14} />} onClick={onToggleHighlight} style={{ flex: 1, minWidth: 0 }}>
             {s.isHighlight ? tr("dashboard.stories.removeHighlight", "Remove") : tr("dashboard.stories.highlight", "Highlight")}

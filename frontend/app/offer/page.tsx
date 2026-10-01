@@ -129,7 +129,7 @@ function TierPills({
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 600,
               lineHeight: 1,
               padding: "4px 8px",

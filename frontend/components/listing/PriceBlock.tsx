@@ -20,7 +20,7 @@ function Fact({ label, value }: { label: string; value: React.ReactNode }) {
     <div>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 12,
           color: "var(--faint)",
           textTransform: "uppercase",
           letterSpacing: "0.04em",

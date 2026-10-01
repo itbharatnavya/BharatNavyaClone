@@ -20,6 +20,8 @@ export interface ListingCardProps {
   /** "grid" (default, photo-first tile) or "row" (list row: photo left, details middle,
    * price and actions right), used by DiscoveryResults' list view. */
   layout?: "grid" | "row";
+  /** Omit the seller line, for pages that already sit inside one company's profile. */
+  hideSeller?: boolean;
 }
 
 function formatINR(value: number): string {
@@ -144,7 +146,7 @@ function Identity({ listing }: { listing: Listing }) {
   );
 }
 
-export default function ListingCard({ listing, href, onContact, className = "", layout = "grid" }: ListingCardProps) {
+export default function ListingCard({ listing, href, onContact, className = "", layout = "grid", hideSeller = false }: ListingCardProps) {
   const [broken, setBroken] = React.useState(false);
   const detailHref = href || `/listing/${listing.id}`;
   const image = listing.media?.find((m) => m.type !== "video")?.url || listing.media?.[0]?.url;
@@ -183,7 +185,7 @@ export default function ListingCard({ listing, href, onContact, className = "", 
       <div className="lcard-body">
         <span className="lcard-kind">{isService ? "Service" : "Product"}</span>
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        <Identity listing={listing} />
+        {!hideSeller && <Identity listing={listing} />}
         {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
 
         <footer className="lcard-foot">

@@ -89,7 +89,7 @@ function ModuleRow({ module, onNavigate }: { module: NavModule; onNavigate?: () 
       <span style={{ minWidth: 0 }}>
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{module.name}</span>
-          {soon && <span className="badge badge-neutral" style={{ fontSize: 10 }}>Soon</span>}
+          {soon && <span className="badge badge-neutral" style={{ fontSize: 12 }}>Soon</span>}
         </span>
         <span className="line-clamp-2" style={{ display: "block", fontSize: 12.5, color: "var(--muted)", marginTop: 2, lineHeight: 1.45 }}>
           {module.tagline}

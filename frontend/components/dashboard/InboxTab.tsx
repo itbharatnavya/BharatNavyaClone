@@ -184,7 +184,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                     {otherName(c)}
                   </span>
                   {c.lastMsgAt && (
-                    <span style={{ fontSize: 11, color: "var(--faint)", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 12, color: "var(--faint)", whiteSpace: "nowrap" }}>
                       {timeAgo(c.lastMsgAt)}
                     </span>
                   )}
@@ -192,7 +192,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                 {c.listingTitle && (
                   <span
                     className="line-clamp-1"
-                    style={{ fontSize: 11, color: "var(--brand)", display: "block", marginTop: 1 }}
+                    style={{ fontSize: 12, color: "var(--brand)", display: "block", marginTop: 1 }}
                   >
                     {c.listingTitle}
                   </span>
@@ -209,7 +209,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                       style={{
                         background: "var(--action)",
                         color: "#fff",
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: 700,
                         minWidth: 18,
                         height: 18,

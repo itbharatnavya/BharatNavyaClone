@@ -18,6 +18,9 @@ This is the single continuation source of truth for current Bharat Navya product
 
 ## 0. Current working state (1 October 2026, afternoon session)
 
+**Design system (read first for any UI work): `DESIGN-SYSTEM.md`.** It supersedes the colour and style notes in section 5 below and in older docs (no orange, no green except success, white cards on the light-blue page, one CTA look, round white icon-only close buttons). Also added in the latest session: themed dropdowns for every `<select>` (`DropdownEnhancer`), new `Filters` / `JobFilters`, list/grid toggle and ad-below-results on `/search`, Post requirement pill + assistant bubble on all pages, company profile and About/Pricing/Blog restyled into the shell. Local note: `frontend/.env.local` (git-ignored) sets `NEXT_PUBLIC_RECRUITMENT_DESIGN_PREVIEW=true`; without it `/recruitment/jobs`, `/job/*` and `/employer/*` show "Coming soon".
+
+
 Read this first. It supersedes the older "committed and pushed" wording above for the work listed here.
 
 **Nothing from this session is committed or pushed.** It sits uncommitted in `~/.codex/worktrees/design-integration-merge/BharatConnect` (branch `codex/design-integration-merge`, HEAD `2baba22`, equal to `origin/design`): about 38 modified files plus two new components (`frontend/components/discovery/LandingHero.tsx`, `frontend/components/recruitment/RecruitmentHero.tsx`). Stage by file when committing; do not sweep in `backend/DB/*`, the Feni PDFs or the other pre-existing dirty documents. `backend/scripts/seed-demo-ads.js`, `seed-demo-stories.js` and `seed-recruitment-demo.js` were edited on purpose (see "Seeds" below). Checks last run clean: `npx tsc --noEmit`, `npm run validate:design`, `git diff --check`. ESLint is not configured in this project (`next lint` prompts for setup), so there is no lint result.

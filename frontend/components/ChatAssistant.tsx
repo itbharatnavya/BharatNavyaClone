@@ -36,16 +36,6 @@ const QUICK_PROMPTS = [
   "How do I publish a listing?",
 ];
 
-const ASSISTANT_HUB_ROUTES = new Set([
-  "/directory",
-  "/search",
-  "/recruitment",
-  "/recruitment/jobs",
-  "/about",
-  "/pricing",
-  "/blog",
-]);
-
 function AssistantIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -108,13 +98,11 @@ export default function ChatAssistant() {
     setOpen(false);
   }, [pathname]);
 
-  // Feature-gated (default on). Task-heavy workspaces keep the assistant out of
-  // the way of forms, tables and persistent actions; hooks stay above this gate.
-  const embeddedAgentRoute = pathname === "/";
-  const workspaceRoute = pathname === "/login" || pathname === "/register" || pathname === "/sell" || pathname === "/post-job" || pathname === "/dashboard" || pathname === "/recruitment/dashboard" || pathname === "/profile" || pathname === "/shortlist" || pathname === "/admin" || pathname.startsWith("/admin/");
-  const assistantHubRoute = ASSISTANT_HUB_ROUTES.has(pathname);
+  // Feature-gated (default on). Present across the whole platform; only the sign-in
+  // screens and the admin console keep it out of the way. Hooks stay above this gate.
+  const hiddenRoute = pathname === "/login" || pathname === "/register" || pathname === "/admin" || pathname.startsWith("/admin/");
 
-  if (featureFlags.ai === false || embeddedAgentRoute || workspaceRoute || !assistantHubRoute) return null;
+  if (featureFlags.ai === false || hiddenRoute) return null;
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -211,7 +199,7 @@ export default function ChatAssistant() {
             </span>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight">Navya AI Agent</div>
-              <div className="text-[11px] leading-tight text-muted">
+              <div className="text-xs leading-tight text-muted">
                 {remaining !== null ? `AI · ${remaining} left this hour` : "Here to help you navigate"}
               </div>
             </div>
@@ -220,7 +208,7 @@ export default function ChatAssistant() {
               type="button"
               aria-label="Close Navya AI Agent"
               onClick={closeAssistant}
-              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle"
+              className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-bg-subtle text-ink"
             >
               <CloseIcon />
             </button>
@@ -343,7 +331,7 @@ export default function ChatAssistant() {
           </form>
 
           {error && (
-            <div className="px-4 pb-2 text-[11px] text-error flex-shrink-0" role="alert" aria-live="assertive">
+            <div className="px-4 pb-2 text-xs text-error flex-shrink-0" role="alert" aria-live="assertive">
               {error}
             </div>
           )}

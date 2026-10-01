@@ -151,7 +151,7 @@ function JobChips({ skills, max }: { skills: string[]; max: number }) {
       {more > 0 && <span className="jc-chip jc-chip-more">+{more}</span>}
       <style jsx>{`
         .jc-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-        .jc-chip { font-size: 11.5px; font-weight: 500; color: var(--tricolor-green-hover); background: var(--tricolor-green-tint); border: 1px solid #cdebd7; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+        .jc-chip { font-size: 0.75rem; font-weight: 500; color: var(--tricolor-green-hover); background: var(--tricolor-green-tint); border: 1px solid #cdebd7; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
         .jc-chip-more { color: var(--muted); background: var(--bg-subtle); border-color: var(--border); }
       `}</style>
     </div>
@@ -252,9 +252,9 @@ export default function JobCard({ job, href, className = "", layout = "row" }: J
         .jc-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
         .jc-row-headline { display: flex; align-items: baseline; gap: 10px; }
         .jc-row-title { font-size: 16.5px; font-weight: 700; color: var(--ink); flex: 1; min-width: 0; }
-        .jc-posted { flex-shrink: 0; font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+        .jc-posted { flex-shrink: 0; font-size: 0.75rem; color: var(--faint); white-space: nowrap; }
         .jc-row-company { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); font-weight: 500; min-width: 0; }
-        .jc-verified { flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--tricolor-green-hover); white-space: nowrap; }
+        .jc-verified { flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; font-size: 0.75rem; font-weight: 700; color: var(--tricolor-green-hover); white-space: nowrap; }
         .jc-row-side { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; padding-top: 2px; }
         .jc-salary { font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; }
 

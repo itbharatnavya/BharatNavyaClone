@@ -194,7 +194,7 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
                 <div>{m.body}</div>
                 <div
                   style={{
-                    fontSize: 10,
+                    fontSize: 12,
                     marginTop: 3,
                     textAlign: "right",
                     color: mine ? "rgba(255,255,255,.75)" : "var(--faint)",

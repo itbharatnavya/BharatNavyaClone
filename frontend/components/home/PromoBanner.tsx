@@ -56,7 +56,7 @@ const CARDS: PromoCard[] = [
     href: "/brands",
     image: "retail-2",
     overlay: "linear-gradient(160deg, rgba(245,130,31,0.88) 0%, rgba(196,94,10,0.95) 100%)",
-    dot: "#f5821f",
+    dot: "#1B3FA0",
   },
   {
     title: "Verified Suppliers",
@@ -135,7 +135,7 @@ export default function PromoBanner() {
         <div style={{ position: "relative", zIndex: 1, padding: "20px 22px", maxWidth: "62%" }}>
           <span
             style={{
-              fontSize: 11.5,
+              fontSize: 12,
               fontWeight: 700,
               letterSpacing: "0.05em",
               textTransform: "uppercase",

@@ -53,7 +53,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
             onClick={() => onChange(n)}
             style={{ background: "transparent", border: "none", cursor: "pointer", padding: 2, lineHeight: 0 }}
           >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#F59E0B" : "#E5E7EB"}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#3B6CF5" : "#E5E7EB"}>
               <path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" />
             </svg>
           </button>

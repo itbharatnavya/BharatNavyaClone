@@ -30,7 +30,7 @@ function statusStyle(status: string): { bg: string; color: string; label: string
     case "paused":
       return { bg: "#F1F5F9", color: "#475569", label: "Paused" };
     default:
-      return { bg: "#FEF3C7", color: "#92400E", label: "Pending review" };
+      return { bg: "#E3EBFF", color: "#1B3FA0", label: "Pending review" };
   }
 }
 
