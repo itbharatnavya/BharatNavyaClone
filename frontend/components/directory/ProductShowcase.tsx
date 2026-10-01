@@ -1,7 +1,7 @@
 "use client";
 
-// Directory products: category tabs over a dense grid of compact cards (featured
-// products first, then newest) and a final tile that opens the full search for the
+// Directory products: category tabs over an asymmetric four-column grid (featured
+// products first, then newest; a few cards span two columns) and a final tile that opens the full search for the
 // chosen category. Tabs come from the
 // busiest product categories; each tab's results are fetched once and cached.
 // Styles: .ps-products* in app/counter-soft-system.css.
@@ -13,11 +13,21 @@ import { getListings } from "@/lib/api";
 import { useCategoryTree } from "@/lib/catalog";
 import type { Listing } from "@/lib/types";
 
-const LIMIT = 14;
+const LIMIT = 12;
 const TABS = 6;
 interface Result { listings: Listing[]; total: number }
 
 const shortName = (name: string) => name.split(/[,&]/)[0].trim();
+
+// Asymmetric rhythm on a four-column grid: some cards span two columns. How many is
+// chosen so the cells (products + wide extras + a two-wide "more" tile) fill whole
+// rows, and they are spread through the list. Grid auto-flow is dense, so any
+// positions work.
+function wideIndexes(count: number, hasMore: boolean): Set<number> {
+  const extra = (4 - ((count + (hasMore ? 2 : 0)) % 4)) % 4;
+  if (extra === 0 || count < 4) return new Set();
+  return new Set(Array.from({ length: extra }, (_, i) => (i === 0 ? 0 : Math.min(count - 1, Math.round((count * i) / extra) + 1))));
+}
 
 export default function ProductShowcase() {
   const { tree } = useCategoryTree();
@@ -57,6 +67,8 @@ export default function ProductShowcase() {
   const label = tabs.find((tab) => tab.slug === active)?.label || "all categories";
   const href = `/search?type=product${active ? `&category=${encodeURIComponent(active)}` : ""}`;
   const listings = result?.listings || [];
+  const hasMore = !!result && result.total > listings.length;
+  const wide = wideIndexes(listings.length, hasMore);
 
   return <div className="ps-products">
     <div className="ps-products-bar">
@@ -74,8 +86,8 @@ export default function ProductShowcase() {
         : listings.length === 0
           ? <div className="le-empty">No products in this category yet. <button type="button" className="hs-link" onClick={() => setActive("")}>Show all products</button></div>
           : <ul key={active} className={`bn-product-grid ps-product-grid${busy ? " is-busy" : ""}`} role="list">
-            {listings.map((listing, index) => <li key={listing.id} style={{ ["--i" as string]: index }}><ListingCard listing={listing} /></li>)}
-            {result.total > listings.length && <li className="ps-more" style={{ ["--i" as string]: listings.length }}>
+            {listings.map((listing, index) => <li key={listing.id} className={wide.has(index) ? "is-wide" : undefined} style={{ ["--i" as string]: index }}><ListingCard listing={listing} /></li>)}
+            {hasMore && <li className="ps-more" style={{ ["--i" as string]: listings.length }}>
               <Link href={href}>
                 <small>More in {label}</small>
                 <strong>{(result.total - listings.length).toLocaleString("en-IN")}+</strong>

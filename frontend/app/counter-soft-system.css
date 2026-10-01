@@ -4903,7 +4903,7 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .ps-tabs button[aria-selected="true"] { background: var(--counter-indigo); color: #fff; }
 .ps-tabs small { padding: 0.05rem 0.45rem; border-radius: var(--r-pill); background: color-mix(in srgb, currentColor 14%, transparent); font-size: var(--fs-xs); }
 .ps-products-count { margin: 0; color: var(--counter-muted); font-size: var(--fs-sm); font-weight: 600; }
-.ps-product-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--counter-space-3); transition: opacity 0.2s ease; }
+.ps-product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--counter-space-3); transition: opacity 0.2s ease; }
 .ps-product-grid.is-busy { opacity: 0.55; }
 .ps-product-grid > li { animation: ps-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
 @keyframes ps-pop { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
@@ -4915,22 +4915,24 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .ps-more span { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--fs-sm); font-weight: 800; }
 .ps-more svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease; }
 .ps-more > a:hover svg { transform: translateX(4px); }
-/* Compact cards: smaller photo, no kind label, price above a full-width action row. */
+/* Asymmetric four-column grid: mid-sized cards, some spanning two columns. */
+.ps-product-grid { grid-auto-flow: dense; }
 .ps-product-grid .lcard-kind { display: none; }
-.ps-product-grid .lcard-media { aspect-ratio: 1 / 1; }
-.ps-product-grid .lcard-body { gap: 0.35rem; padding: 0.7rem 0.75rem 0.75rem; }
-.ps-product-grid .lcard-title { font-size: var(--fs-sm); }
-.ps-product-grid .lcard-foot { flex-direction: column; align-items: stretch; gap: 0.5rem; padding-top: 0.55rem; }
-.ps-product-grid .lcard-price strong { font-size: var(--fs-md); }
-.ps-product-grid .lcard-actions { width: 100%; }
-.ps-product-grid .lcard-cta { flex: 1; justify-content: center; min-height: 2rem; padding: 0 0.7rem; }
-.ps-product-grid .lcard-info { width: 2rem; height: 2rem; }
-.ps-product-grid .lcard-flag { top: 0.5rem; left: 0.5rem; }
-.ps-product-grid .lcard-save { top: 0.5rem; right: 0.5rem; width: 2rem; height: 2rem; }
+.ps-product-grid .lcard-media { aspect-ratio: 4 / 3; }
+.ps-product-grid .lcard-body { gap: 0.4rem; padding: 0.8rem 0.85rem 0.85rem; }
+.ps-product-grid .lcard-title { font-size: var(--fs-md); }
+.ps-product-grid .lcard-price strong { font-size: var(--fs-lg); }
+.ps-product-grid .lcard-cta { min-height: 2.1rem; padding: 0 0.85rem; }
+.ps-product-grid .lcard-info { width: 2.1rem; height: 2.1rem; }
+.ps-product-grid > li.is-wide { grid-column: span 2; }
+.ps-product-grid > li.is-wide .lcard-media { flex: 1 1 auto; aspect-ratio: auto; min-height: 12rem; }
+.ps-product-grid > li.is-wide .lcard-media img { position: absolute; inset: 0; }
+.ps-product-grid > li.is-wide .lcard-title { font-size: var(--fs-lg); }
+.ps-product-grid > li.is-wide .lcard-price strong { font-size: var(--fs-xl); }
+.ps-more { grid-column: span 2; }
 .ps-more > a { min-height: 100%; }
-@media (max-width: 900px) { .ps-product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 700px) { .ps-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 520px) { .ps-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; } .ps-more strong { font-size: var(--fs-2xl); } }
+@media (max-width: 900px) { .ps-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .ps-product-grid { gap: 0.5rem; } .ps-product-grid .lcard-foot { flex-direction: column; align-items: stretch; } .ps-product-grid .lcard-actions { width: 100%; } .ps-product-grid .lcard-cta { flex: 1; justify-content: center; } .ps-more strong { font-size: var(--fs-2xl); } }
 @media (prefers-reduced-motion: reduce) { .ps-product-grid > li { animation: none; } }
 
 
