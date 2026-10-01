@@ -31,13 +31,23 @@ export default function HireScene() {
     const scores = q(".hire-score");
     const rows = q(".hire-row");
     const proxy = { t: 0, s: 0 };
+    // Text is written from the trigger as well as the tweens: GSAP skips tween callbacks when it re-measures.
+    const sync = () => {
+      title.textContent = fullTitle.slice(0, Math.round(fullTitle.length * proxy.t));
+      scores.forEach((el, i) => { el.textContent = String(Math.round(CANDIDATES[i].score * proxy.s)); });
+    };
     const step = () => (rows[0]?.offsetHeight || 64) + parseFloat(getComputedStyle(rows[0].parentElement!).rowGap || "0");
-    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".hire-board")[0], start: "top 78%", end: "top 18%", scrub: 0.5, invalidateOnRefresh: true } })
-      .to(proxy, { t: 1, duration: 1, onUpdate: () => { title.textContent = fullTitle.slice(0, Math.round(fullTitle.length * proxy.t)); } }, 0)
+    gsap.set(q(".hire-skills li"), { scale: 0, opacity: 0 });
+    gsap.set(rows, { opacity: 0, y: (i: number) => (START[i] - i) * step() + 14 });
+    gsap.set(q(".hire-bar i"), { scaleX: 0 });
+    gsap.set(q(".hire-best"), { scale: 0 });
+    gsap.set(q(".hire-done"), { opacity: 0 });
+    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".hire-board")[0], start: "top 80%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true, onUpdate: sync, onRefresh: sync } })
+      .to(proxy, { t: 1, duration: 1 }, 0)
       .fromTo(q(".hire-skills li"), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, stagger: 0.12, ease: "power2.out" }, 1)
       .fromTo(rows, { opacity: 0, y: (i: number) => (START[i] - i) * step() + 14 }, { opacity: 1, y: (i: number) => (START[i] - i) * step(), duration: 0.5, stagger: 0.15 }, 1.6)
       .fromTo(q(".hire-bar i"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, stagger: 0.1 }, 1.8)
-      .to(proxy, { s: 1, duration: 0.8, onUpdate: () => scores.forEach((el, i) => { el.textContent = String(Math.round(CANDIDATES[i].score * proxy.s)); }) }, 1.8)
+      .to(proxy, { s: 1, duration: 0.8 }, 1.8)
       .to(rows, { y: 0, duration: 0.8 }, 3)
       .fromTo(q(".hire-best"), { scale: 0 }, { scale: 1, duration: 0.3, ease: "power2.out" }, 3.8)
       .to(q(".hire-shortlist"), { scale: 0.94, duration: 0.1 }, 4.3)

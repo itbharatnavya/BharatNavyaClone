@@ -8,6 +8,26 @@
 import { useEffect, type RefObject } from "react";
 
 type Gsap = typeof import("gsap").gsap;
+
+// Content above a pinned section can change height after the triggers were measured
+// (product grids and feeds load late), which would leave the pin starting in the wrong
+// place and overlapping its neighbours. One page-wide observer re-measures whenever
+// the document height changes.
+let watching = false;
+function watchLayout(refresh: () => void) {
+  if (watching || typeof ResizeObserver === "undefined") return;
+  watching = true;
+  let last = document.body.scrollHeight;
+  let timer = 0;
+  new ResizeObserver(() => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      if (Math.abs(document.body.scrollHeight - last) <= 2) return;
+      refresh();
+      requestAnimationFrame(() => { last = document.body.scrollHeight; });
+    }, 150);
+  }).observe(document.body);
+}
 type Trigger = typeof import("gsap/ScrollTrigger").ScrollTrigger;
 
 export interface StoryKit {
@@ -28,6 +48,7 @@ export function useStory(scope: RefObject<HTMLElement>, build: (kit: StoryKit) =
       const root = scope.current;
       if (dead || !root) return;
       gsap.registerPlugin(ScrollTrigger);
+      watchLayout(() => ScrollTrigger.refresh());
       const mm = gsap.matchMedia(root);
       media = mm;
       mm.add(

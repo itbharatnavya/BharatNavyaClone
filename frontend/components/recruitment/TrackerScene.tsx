@@ -39,7 +39,18 @@ export default function TrackerScene() {
       label.textContent = STAGES[index].title;
     };
     set(0);
-    steps.forEach((step, index) => ScrollTrigger.create({ trigger: step, start: "top 62%", end: "bottom 62%", onToggle: (self) => { if (self.isActive) set(index); } }));
+    // The active stage is the last one whose top has passed 45% of the viewport. Read from
+    // live positions on every update, so it never depends on triggers measured earlier.
+    let current = 0;
+    const pick = () => {
+      const line = window.innerHeight * 0.45;
+      let best = 0;
+      steps.forEach((step, i) => { if (step.getBoundingClientRect().top <= line) best = i; });
+      // The list ends before the last stage reaches the line, so once it is fully in view it counts as reached.
+      if (steps[steps.length - 1].getBoundingClientRect().bottom <= window.innerHeight * 0.92) best = steps.length - 1;
+      if (best !== current) { current = best; set(best); }
+    };
+    ScrollTrigger.create({ trigger: q(".trk-steps")[0], start: "top bottom", end: "bottom top", onUpdate: pick, onRefresh: pick });
     // The list itself fades in: its rows carry their own CSS opacity transition, which fights a per-row tween.
     gsap.from(q(".trk-steps"), { y: 30, opacity: 0, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: q(".trk-steps")[0], start: "top 85%", once: true } });
     return () => { delete section.dataset.live; steps.forEach((step) => step.classList.remove("is-active")); notes.forEach((note) => note.classList.remove("is-in")); };

@@ -33,9 +33,13 @@ export default function RfqScene() {
     const spans = q(".rfq-req dd span");
     const full = spans.map((span) => span.textContent || "");
     const proxy = { p: 0 };
+    // Also run from the trigger: GSAP skips tween callbacks when it re-measures the page.
     const write = () => spans.forEach((span, i) => { const part = Math.min(1, Math.max(0, proxy.p * 3 - i)); span.textContent = full[i].slice(0, Math.round(full[i].length * part)); });
-    gsap.set(q(".rfq-wire"), { svgOrigin: "0 150" });
-    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".rfq-board")[0], start: "top 78%", end: "top 20%", scrub: 0.5, invalidateOnRefresh: true } })
+    // Start states are set explicitly: a staggered fromTo inside a timeline only guarantees the first target.
+    gsap.set(q(".rfq-wire"), { svgOrigin: "0 150", scaleX: 0, opacity: 0 });
+    gsap.set(q(".rfq-quote"), { x: 36, opacity: 0 });
+    gsap.set(q(".rfq-badge"), { scale: 0 });
+    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".rfq-board")[0], start: "top 80%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true, onUpdate: write, onRefresh: write } })
       .to(proxy, { p: 1, duration: 3, onUpdate: write }, 0)
       .to(q(".rfq-post"), { scale: 0.94, duration: 0.12 }, 3.1)
       .to(q(".rfq-post"), { scale: 1, duration: 0.12 }, 3.22)

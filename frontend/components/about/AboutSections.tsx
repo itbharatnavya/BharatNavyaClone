@@ -46,7 +46,8 @@ export default function AboutSections() {
   const root = useRef<HTMLDivElement>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   useEffect(() => { getBlogs().then((list) => setBlogs(list.filter((blog) => blog.coverImage))).catch(() => setBlogs([])); }, []);
-  const [feature, ...more] = blogs.slice().sort((a, b) => +new Date(b.publishedAt || 0) - +new Date(a.publishedAt || 0)).slice(0, 4);
+  const [feature, ...rest] = blogs.slice().sort((a, b) => +new Date(b.publishedAt || 0) - +new Date(a.publishedAt || 0));
+  const more = rest.slice(0, 9);
 
   useStory(root, ({ gsap, q, fine }) => {
     const once = (trigger: string | Element, start = "top 86%") => ({ trigger, start, once: true });
@@ -75,7 +76,7 @@ export default function AboutSections() {
     stops.forEach((stop, index) => line.fromTo(stop, { opacity: 0.35, y: 18 }, { opacity: 1, y: 0, duration: 0.6 }, index * 0.9));
 
     gsap.fromTo(q(".ab-feature img"), { yPercent: -7, scale: 1.14 }, { yPercent: 7, ease: "none", scrollTrigger: { trigger: ".ab-feature", start: "top bottom", end: "bottom top", scrub: true } });
-    gsap.from(q(".ab-more li"), { y: 28, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out", scrollTrigger: once(".ab-more") });
+    gsap.from(q(".ab-rail li"), { x: 40, opacity: 0, duration: 0.6, stagger: 0.08, ease: "power2.out", scrollTrigger: once(".ab-rail") });
 
     const panel = q(".hs-close-panel")[0];
     gsap.fromTo(panel, { scale: 0.94, y: 40 }, { scale: 1, y: 0, ease: "none", scrollTrigger: { trigger: panel, start: "top 100%", end: "top 55%", scrub: true } });
@@ -134,16 +135,15 @@ export default function AboutSections() {
 
     {feature && <section className="hs-sec" aria-labelledby="articles-title"><div className="le-shell">
       <header className="le-section-head"><div><h2 id="articles-title">Ideas shaping better business decisions.</h2></div><p>Practical context from companies and employers across Bharat Navya.</p><Link className="le-button" href="/blog">View all articles</Link></header>
-      <div className="ab-articles">
-        <Link href={`/blog/${feature.slug}`} className="ab-feature">
-          <span className="ab-feature-media">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={feature.coverImage!} alt="" /></span>
-          <span className="ab-feature-copy"><small>{feature.author?.companyName || feature.authorName || "Bharat Navya"}</small><strong>{feature.title}</strong><em>Read the article<Icon d={ARROW} /></em></span>
-        </Link>
-        <ul className="ab-more">{more.map((blog) => <li key={blog.id}><Link href={`/blog/${blog.slug}`}>
-          <span className="ps-thumb">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={blog.coverImage!} alt="" loading="lazy" /></span>
-          <span className="ps-story-copy"><small>{blog.author?.companyName || blog.authorName || "Bharat Navya"}</small><strong>{blog.title}</strong></span>
-        </Link></li>)}</ul>
-      </div>
+      <Link href={`/blog/${feature.slug}`} className="ab-feature">
+        <span className="ab-feature-media">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={feature.coverImage!} alt="" /></span>
+        <span className="ab-feature-copy"><small>{feature.author?.companyName || feature.authorName || "Bharat Navya"}</small><strong>{feature.title}</strong><em>Read the article<Icon d={ARROW} /></em></span>
+      </Link>
+      <ul className="ab-rail" aria-label="More articles">{more.map((blog) => <li key={blog.id}><Link href={`/blog/${blog.slug}`}>
+        <span className="ab-rail-media">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={blog.coverImage!} alt="" loading="lazy" /></span>
+        <small>{blog.author?.companyName || blog.authorName || "Bharat Navya"}</small>
+        <strong>{blog.title}</strong>
+      </Link></li>)}</ul>
     </div></section>}
 
     <section className="hs-sec hs-close" aria-labelledby="about-close-title"><div className="le-shell">

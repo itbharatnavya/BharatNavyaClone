@@ -181,160 +181,67 @@ export default function ChatAssistant() {
         </div>
       )}
 
-      {/* Chat panel — full-width sheet on mobile, floating panel on desktop */}
+      {/* Chat panel: a full-width sheet on phones, a floating card on desktop */}
       {open && (
-        <div
-          id="bharat-navya-assistant"
-          role="dialog"
-          aria-modal="false"
-          aria-label="Navya AI Agent"
-          className="navya-agent-panel fixed z-[120] flex flex-col overflow-hidden bg-surface
-                     inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
-                     sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:h-[560px] sm:max-h-[calc(100vh-2.5rem)]"
-        >
-          {/* Header */}
-          <div className="navya-agent-header flex flex-shrink-0 items-center gap-2.5 border-b border-border bg-surface px-4 py-3 text-ink">
-            <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand">
-              <AssistantIcon size={18} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold leading-tight">Navya AI Agent</div>
-              <div className="text-xs leading-tight text-muted">
-                {remaining !== null ? `AI · ${remaining} left this hour` : "Here to help you navigate"}
-              </div>
+        <div id="bharat-navya-assistant" role="dialog" aria-modal="false" aria-label="Navya AI Agent" className="navya-agent-panel na-panel">
+          <header className="na-head">
+            <span className="na-avatar"><AssistantIcon size={20} /></span>
+            <div className="na-title">
+              <strong>Ask Navya</strong>
+              <small><i className="na-dot" aria-hidden />{remaining !== null ? `${remaining} answers left this hour` : "Online, here to help"}</small>
             </div>
-            <button
-              ref={closeRef}
-              type="button"
-              aria-label="Close Navya AI Agent"
-              onClick={closeAssistant}
-              className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-bg-subtle text-ink"
-            >
-              <CloseIcon />
-            </button>
-            <span className="navya-agent-signal" aria-hidden>
-              <i />
-              <i />
-              <i />
-            </span>
-          </div>
+            <button ref={closeRef} type="button" aria-label="Close Navya AI Agent" onClick={closeAssistant} className="na-close"><CloseIcon /></button>
+          </header>
 
-          {/* Messages */}
-          <div
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto overscroll-contain px-3.5 py-4 flex flex-col gap-3"
-            style={{ background: "var(--bg-subtle)" }}
-          >
-            {messages.map((m, i) => (
-              <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-                <div className="flex flex-col gap-2 max-w-[88%] min-w-0">
-                  <div
-                    className={
-                      m.role === "user"
-                        ? "rounded-2xl rounded-br-sm bg-brand px-3.5 py-2.5 text-sm text-white whitespace-pre-wrap break-words"
-                        : "rounded-2xl rounded-bl-sm border border-border bg-surface px-3.5 py-2.5 text-sm text-ink whitespace-pre-wrap break-words"
-                    }
-                  >
-                    {m.content}
-                  </div>
+          <div ref={scrollRef} className="na-body">
+            <div className="na-intro">
+              <strong>Hi, I’m Navya.</strong>
+              <p>I can help you find companies, products, services and roles, and point you to the right place on Bharat Navya.</p>
+            </div>
 
-                  {m.results && m.results.length > 0 && (
-                    <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-surface p-1.5">
-                      {m.results.map((r, j) => (
-                        <Link
-                          key={`${i}-r-${j}`}
-                          href={r.href || "#"}
-                          onClick={() => setOpen(false)}
-                          className="flex min-h-11 flex-col justify-center gap-0.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-bg-subtle"
-                        >
-                          <span className="truncate text-sm font-medium text-ink">{r.title}</span>
-                          {r.subtitle && <span className="truncate text-xs text-muted">{r.subtitle}</span>}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-
-                  {m.suggestions && m.suggestions.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {m.suggestions.map((s, j) => (
-                        <Link
-                          key={`${i}-${j}`}
-                          href={s.href || "#"}
-                          onClick={() => setOpen(false)}
-                          className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-xs font-medium text-brand-hover transition-colors hover:bg-brand"
-                        >
-                          <span className="truncate">{s.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Quick starters (only before the first exchange) */}
             {showQuickPrompts && !loading && (
-              <div className="flex flex-wrap gap-2">
+              <div className="na-prompts" role="group" aria-label="Try asking">
                 {QUICK_PROMPTS.map((q) => (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => send(q)}
-                    className="inline-flex min-h-11 max-w-full items-center rounded-full border border-border-strong bg-surface px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-faint"
-                  >
-                    <span className="truncate">{q}</span>
+                  <button key={q} type="button" onClick={() => send(q)}>
+                    <span>{q}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
                   </button>
                 ))}
               </div>
             )}
 
-            {loading && (
-              <div className="flex justify-start">
-                <div className="rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3 text-sm text-faint">
-                  <span className="inline-flex gap-1">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint [animation-delay:-0.4s]" />
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint [animation-delay:-0.2s]" />
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-faint" />
-                  </span>
-                </div>
+            {messages.slice(1).map((m, i) => (
+              <div key={i} className={`na-msg ${m.role === "user" ? "is-user" : "is-bot"}`}>
+                <div className="na-bubble">{m.content}</div>
+
+                {m.results && m.results.length > 0 && (
+                  <div className="na-results">
+                    {m.results.map((r, j) => (
+                      <Link key={`${i}-r-${j}`} href={r.href || "#"} onClick={() => setOpen(false)}>
+                        <span><strong>{r.title}</strong>{r.subtitle && <small>{r.subtitle}</small>}</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {m.suggestions && m.suggestions.length > 0 && (
+                  <div className="na-chips">
+                    {m.suggestions.map((s, j) => <Link key={`${i}-${j}`} href={s.href || "#"} onClick={() => setOpen(false)}>{s.label}</Link>)}
+                  </div>
+                )}
               </div>
-            )}
+            ))}
+
+            {loading && <div className="na-msg is-bot"><div className="na-bubble na-typing" aria-label="Navya is typing"><i /><i /><i /></div></div>}
           </div>
 
-          {/* Composer */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void send(input);
-            }}
-            className="flex items-center gap-2 border-t border-border bg-surface px-3 py-2.5 flex-shrink-0"
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask anything…"
-              aria-label="Message Navya AI Agent"
-              className="input flex-1 min-w-0"
-              style={{ borderRadius: "var(--r-pill)" }}
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              aria-label="Send"
-              disabled={loading || !input.trim()}
-              className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-white transition-colors disabled:opacity-50"
-              style={{ background: "var(--brand)" }}
-            >
-              <SendIcon />
-            </button>
+          <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="na-composer">
+            <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask anything…" aria-label="Message Navya AI Agent" disabled={loading} />
+            <button type="submit" aria-label="Send" disabled={loading || !input.trim()}><SendIcon /></button>
           </form>
-
-          {error && (
-            <div className="px-4 pb-2 text-xs text-error flex-shrink-0" role="alert" aria-live="assertive">
-              {error}
-            </div>
-          )}
+          {error && <div className="na-error" role="alert" aria-live="assertive">{error}</div>}
+          <p className="na-foot">Navya can make mistakes. Check important details.</p>
         </div>
       )}
     </>

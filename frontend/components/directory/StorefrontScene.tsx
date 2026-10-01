@@ -24,19 +24,24 @@ export default function StorefrontScene() {
     const num = q(".sf-num")[0];
     const proxy = { n: 0 };
     const items = q(".sf-steps li");
+    const count = () => { num.textContent = String(Math.round(proxy.n)); }; // also run from the trigger: GSAP skips tween callbacks when it re-measures
     const mark = (index: number) => items.forEach((item, i) => item.setAttribute("aria-current", String(i === index)));
+    gsap.set(q(".sf-products li"), { y: 30, opacity: 0 });
+    gsap.set(q(".sf-verified"), { scale: 2.4, rotate: -14, opacity: 0 });
+    gsap.set(q(".sf-toast"), { x: 40, opacity: 0 });
+    gsap.set(q(".sf-foot"), { opacity: 0 });
     const build = (tl: gsap.core.Timeline) => tl
       .fromTo(q(".sf-verified"), { scale: 2.4, rotate: -14, opacity: 0 }, { scale: 1, rotate: 0, opacity: 1, duration: 0.6 }, 0.4)
       .fromTo(q(".sf-products li"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.12 }, 1.4)
       .fromTo(q(".sf-foot"), { opacity: 0 }, { opacity: 1, duration: 0.4 }, 1.4)
       .fromTo(q(".sf-stars-fill"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6 }, 1.6)
       .fromTo(q(".sf-toast"), { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, 2.4)
-      .fromTo(proxy, { n: 0 }, { n: 27, duration: 0.6, onUpdate: () => { num.textContent = String(Math.round(proxy.n)); } }, 2.4)
+      .fromTo(proxy, { n: 0 }, { n: 27, duration: 0.6 }, 2.4)
       .to({}, { duration: 0.4 }, 3);
 
     if (!wide) {
       // Phones and short windows: ordinary scrolling, the build plays once.
-      build(gsap.timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: q(".sf-card")[0], start: "top 80%", once: true } }));
+      build(gsap.timeline({ defaults: { ease: "power2.out" }, onUpdate: count, scrollTrigger: { trigger: q(".sf-card")[0], start: "top 80%", once: true } }));
       return;
     }
     section.dataset.pinned = "true";
@@ -48,7 +53,8 @@ export default function StorefrontScene() {
         end: () => `+=${Math.round(window.innerHeight * 0.9 * 3.4)}`,
         pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
         snap: { snapTo: "labels", duration: { min: 0.2, max: 0.5 }, ease: "power1.inOut" },
-        onUpdate: () => mark(Math.min(3, Math.round(tl.time()))),
+        onUpdate: () => { mark(Math.min(3, Math.round(tl.time()))); count(); },
+        onRefresh: count,
       },
     });
     build(tl);
