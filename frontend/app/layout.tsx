@@ -21,6 +21,7 @@ import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
 import RouteProgress from "@/components/RouteProgress";
 import BackToTop from "@/components/BackToTop";
+import GuestAccountNudge from "@/components/auth/GuestAccountNudge";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -76,6 +77,7 @@ export default function RootLayout({
                       </div>
                       <ChatAssistant />
                       <BackToTop />
+                      <GuestAccountNudge />
                     </SearchDockProvider>
                   </ShortlistProvider>
                 </AuthProvider>

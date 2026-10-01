@@ -1138,6 +1138,40 @@ checked, per the owner checklist above items 2/3/5/6 still need a manual pass be
 
 ---
 
+### Pulled `origin/design` again (`b909c44..9c40584`) — merged 2026-10-01
+
+Three new commits from the UI dev. Same owner rule as last pull: UI dev's code wins conflicts,
+visual or functional. `tsc --noEmit` clean after resolution.
+
+**What the UI dev changed:**
+- **Back-to-top placement/visibility fix** (`be9dfa9`, `9c40584`) — follow-up correction to the
+  right-side arrow-only control from the previous pull; `counter-soft-system.css` +
+  `BackToTop.tsx`, `HANDOFF.md` updated.
+- **Guest phone-number UI** — new `lib/phone.ts` + `components/auth/InternationalPhoneField.tsx`,
+  gated behind a new `NEXT_PUBLIC_INTERNATIONAL_PHONE_ENABLED` flag (default `false` — per its own
+  comment, stays off "until the backend OTP provider and auth validation accept E.164 numbers").
+  New `components/auth/GuestAccountNudge.tsx` wired into `ContactAuthModal.tsx`, `login`/
+  `register` pages.
+- **Brand page ad rail modernized** (`app/brand/[slug]/page.tsx`) — swapped the old `AdRail`/
+  `useAds` sponsored-rail approach for `ApiAdvertisingSlot`, the same component the rest of the
+  redesign (directory/recruitment/search) already uses. Related trims in `DiscoveryResults.tsx`,
+  `UnifiedListingWorkbench.tsx`, `recruitment/jobs/page.tsx`.
+
+**One conflict, resolved — `app/brand/[slug]/page.tsx`.** Not a real disagreement: this branch had
+separately added pagination (`Pagination`, `PAGE_SIZE`, `pageItems`/`totalPages`) to this file —
+unrelated prior work, nothing to do with the chat/FCM feature, just sitting uncommitted and swept
+into the `95db77f` commit. Orthogonal to the UI dev's ad-rail swap, so kept both: took
+`ApiAdvertisingSlot` from their side, kept pagination from ours. **Bug caught while resolving:**
+git's own auto-merge of the surrounding (non-conflicting) render JSX had quietly left the list/grid
+views mapping over the full unpaginated `sorted` array instead of `pageItems` — the `Pagination`
+control would have rendered but done nothing. Fixed by hand; not something `tsc` would have caught
+(both are `Listing[]`).
+
+**Not yet done:** same as last pull — no browser available this session to visually check the
+back-to-top fix or the new guest phone/nudge UI.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).

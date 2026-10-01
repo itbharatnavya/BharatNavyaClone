@@ -16,6 +16,8 @@ import { useTr } from "@/components/discovery/hooks";
 import { useGuestOnly } from "@/lib/useGuestOnly";
 import { safeNext } from "@/lib/redirect";
 import GoogleSignInButton, { GOOGLE_CLIENT_ID } from "@/components/auth/GoogleSignInButton";
+import InternationalPhoneField from "@/components/auth/InternationalPhoneField";
+import { phoneApiValue, phoneDisplayValue, validatePhone } from "@/lib/phone";
 
 type Tab = "otp" | "password";
 type Stage = "mobile" | "otp";
@@ -47,6 +49,7 @@ export default function LoginPage() {
   // OTP flow
   const [stage, setStage] = useState<Stage>("mobile");
   const [mobile, setMobile] = useState("");
+  const [mobileCountry, setMobileCountry] = useState("IN");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -78,15 +81,15 @@ export default function LoginPage() {
   const goNext = () => router.push(safeNext(next, DEFAULT_NEXT));
 
   const handleSendOtp = async () => {
-    const trimmed = mobile.trim();
-    if (!/^\d{10}$/.test(trimmed)) {
-      setMobileError("Enter a valid 10-digit mobile number.");
+    const validationError = validatePhone(mobileCountry, mobile);
+    if (validationError) {
+      setMobileError(validationError);
       return;
     }
     setMobileError("");
     setSending(true);
     try {
-      const res = await sendOtp(trimmed);
+      const res = await sendOtp(phoneApiValue(mobileCountry, mobile));
       setStage("otp");
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
@@ -128,7 +131,7 @@ export default function LoginPage() {
     setOtpError("");
     setVerifying(true);
     try {
-      await loginOtp(mobile.trim(), code);
+      await loginOtp(phoneApiValue(mobileCountry, mobile), code);
       addToast("Signed in. Welcome back.", "success");
       goNext();
     } catch (err) {
@@ -291,17 +294,17 @@ export default function LoginPage() {
           {tab === "otp" ? (
             stage === "mobile" ? (
               <div>
-                <Input
+                <InternationalPhoneField
                   id="login-mobile"
-                  name="mobile"
-                  label={t("auth.mobileLabel", "Mobile number")}
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  placeholder="10-digit mobile number"
-                  value={mobile}
-                  onChange={(e) => {
-                    setMobile(e.target.value);
+                  country={mobileCountry}
+                  number={mobile}
+                  onCountryChange={(value) => {
+                    setMobileCountry(value);
+                    setMobile("");
+                    if (mobileError) setMobileError("");
+                  }}
+                  onNumberChange={(value) => {
+                    setMobile(value);
                     if (mobileError) setMobileError("");
                   }}
                   error={mobileError}
@@ -316,7 +319,7 @@ export default function LoginPage() {
               <div>
                 <label className="field-label">
                   {t("auth.otpSentTo", "Enter the 6-digit OTP sent to")}{" "}
-                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{mobile}</span>
+                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{phoneDisplayValue(mobileCountry, mobile)}</span>
                 </label>
                 <div style={{ display: "flex", gap: 8, margin: "8px 0 4px" }}>
                   {otp.map((value, index) => (

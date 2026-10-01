@@ -18,6 +18,8 @@ import { useTr } from "@/components/discovery/hooks";
 import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
 import { useGuestOnly } from "@/lib/useGuestOnly";
 import { safeNext } from "@/lib/redirect";
+import InternationalPhoneField from "@/components/auth/InternationalPhoneField";
+import { phoneApiValue, validatePhone } from "@/lib/phone";
 
 const DEFAULT_NEXT = "/";
 
@@ -43,6 +45,7 @@ export default function RegisterPage() {
 
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
+  const [mobileCountry, setMobileCountry] = useState("IN");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [city, setCity] = useState("");
@@ -68,8 +71,9 @@ export default function RegisterPage() {
     } else {
       setNameError("");
     }
-    if (!/^\d{10}$/.test(mobile.trim())) {
-      setMobileError("Enter a valid 10-digit mobile number.");
+    const phoneError = validatePhone(mobileCountry, mobile);
+    if (phoneError) {
+      setMobileError(phoneError);
       hasError = true;
     } else {
       setMobileError("");
@@ -92,7 +96,7 @@ export default function RegisterPage() {
     try {
       const user = await register({
         name: name.trim(),
-        mobile: mobile.trim(),
+        mobile: phoneApiValue(mobileCountry, mobile),
         email: email.trim() || undefined,
         password: password || undefined,
         city: city.trim() || undefined,
@@ -190,16 +194,17 @@ export default function RegisterPage() {
                 }}
                 error={nameError}
               />
-              <Input
+              <InternationalPhoneField
                 id="register-mobile"
-                name="mobile"
-                label={t("auth.mobileLabel", "Mobile number")}
-                type="tel"
-                inputMode="numeric"
-                placeholder="10-digit mobile number"
-                value={mobile}
-                onChange={(e) => {
-                  setMobile(e.target.value);
+                country={mobileCountry}
+                number={mobile}
+                onCountryChange={(value) => {
+                  setMobileCountry(value);
+                  setMobile("");
+                  if (mobileError) setMobileError("");
+                }}
+                onNumberChange={(value) => {
+                  setMobile(value);
                   if (mobileError) setMobileError("");
                 }}
                 error={mobileError}

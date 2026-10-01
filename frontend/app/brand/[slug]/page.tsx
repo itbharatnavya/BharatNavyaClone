@@ -12,7 +12,7 @@ import type { Listing } from "@/lib/types";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
 import Pagination from "@/components/Pagination";
-import { useAds, AdCard, InFeedAd, interleaveAds, isAdSlot } from "@/components/AdRail";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import EmptyState from "@/components/discovery/EmptyState";
 import { Monogram } from "@/components/brand/BrandCard";
 
@@ -165,16 +165,11 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
   const sorted = useMemo(() => sortListings(listings, sort), [listings, sort]);
 
-  // Same sponsored rail as the search page: fetched once, feeds both the
-  // desktop sidebar (top 3, stacked) and the mobile/tablet in-feed slots
-  // (cycled) — the two are mutually exclusive by breakpoint.
-  const ads = useAds("search_top");
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const pageItems = useMemo(
     () => sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     [sorted, page]
   );
-  const listItemsWithAds = useMemo(() => interleaveAds(pageItems, ads), [pageItems, ads]);
 
   // A new brand or sort order starts again from page 1.
   useEffect(() => {
@@ -345,33 +340,18 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
               </span>
             </Link>
 
+            <ApiAdvertisingSlot compact placement={["brand_top", "category_top"]} kind="native" context="Sponsored near brand results" summary="One clearly labelled placement, separate from this brand's organic listings and sort order." action="View promoted record" />
             <div className="brand-layout">
               <div className="brand-main">
                 {view === "list" ? (
                   <div className="brand-list">
-                    {listItemsWithAds.map((entry, i) =>
-                      isAdSlot(entry) ? (
-                        <div key={`ad-${i}`} className="brand-infeed-ad">
-                          <InFeedAd ad={entry.adSlot} />
-                        </div>
-                      ) : (
-                        <ListingCard key={entry.id} listing={entry} layout="row" />
-                      )
-                    )}
+                    {pageItems.map((entry) => <ListingCard key={entry.id} listing={entry} layout="row" />)}
                   </div>
                 ) : (
                   <div className="brand-grid">
-                    {listItemsWithAds.map((entry, i) =>
-                      isAdSlot(entry) ? (
-                        <div key={`ad-${i}`} className="brand-infeed-ad" style={{ gridColumn: "1 / -1" }}>
-                          <InFeedAd ad={entry.adSlot} />
-                        </div>
-                      ) : (
-                        <div key={entry.id} style={{ minWidth: 0 }}>
-                          <ListingCard listing={entry} />
-                        </div>
-                      )
-                    )}
+                    {pageItems.map((entry) => (
+                      <div key={entry.id} style={{ minWidth: 0 }}><ListingCard listing={entry} /></div>
+                    ))}
                   </div>
                 )}
                 {totalPages > 1 && (
@@ -390,13 +370,6 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
               <aside className="brand-aside">
                 <BrandRfqCard />
-                {ads.length > 0 && (
-                  <div className="brand-ad-stack">
-                    {ads.slice(0, 3).map((ad, i) => (
-                      <AdCard key={ad.id || i} ad={ad} />
-                    ))}
-                  </div>
-                )}
               </aside>
             </div>
           </>

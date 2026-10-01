@@ -17,6 +17,8 @@ import Select from "@/components/Select";
 import Button from "@/components/Button";
 import { useTr } from "@/components/discovery/hooks";
 import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
+import InternationalPhoneField from "@/components/auth/InternationalPhoneField";
+import { phoneApiValue, phoneDisplayValue, validatePhone } from "@/lib/phone";
 
 export interface ContactAuthModalProps {
   open: boolean;
@@ -40,6 +42,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
   const [loginTab, setLoginTab] = useState<LoginTab>("otp");
   const [stage, setStage] = useState<OtpStage>("mobile");
   const [mobile, setMobile] = useState("");
+  const [mobileCountry, setMobileCountry] = useState("IN");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -54,6 +57,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
   // register
   const [regName, setRegName] = useState("");
   const [regMobile, setRegMobile] = useState("");
+  const [regMobileCountry, setRegMobileCountry] = useState("IN");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [regCity, setRegCity] = useState("");
@@ -85,11 +89,13 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
     setLoginTab("otp");
     setStage("mobile");
     setMobile("");
+    setMobileCountry("IN");
     setOtp(["", "", "", "", "", ""]);
     setEmail("");
     setPassword("");
     setRegName("");
     setRegMobile("");
+    setRegMobileCountry("IN");
     setRegEmail("");
     setRegPassword("");
     setRegCity("");
@@ -117,15 +123,15 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
   }
 
   const handleSendOtp = async () => {
-    const trimmed = mobile.trim();
-    if (!/^\d{10}$/.test(trimmed)) {
-      setMobileError("Enter a valid 10-digit mobile number.");
+    const phoneError = validatePhone(mobileCountry, mobile);
+    if (phoneError) {
+      setMobileError(phoneError);
       return;
     }
     setMobileError("");
     setSending(true);
     try {
-      const res = await sendOtp(trimmed);
+      const res = await sendOtp(phoneApiValue(mobileCountry, mobile));
       setStage("otp");
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
@@ -169,7 +175,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
     setOtpError("");
     setVerifying(true);
     try {
-      await loginOtp(mobile.trim(), code);
+      await loginOtp(phoneApiValue(mobileCountry, mobile), code);
       addToast("Logged in. Welcome back.", "success");
       handleSuccess();
     } catch (err) {
@@ -216,8 +222,9 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
     } else {
       setRegNameError("");
     }
-    if (!/^\d{10}$/.test(regMobile.trim())) {
-      setRegMobileError("Enter a valid 10-digit mobile number.");
+    const phoneError = validatePhone(regMobileCountry, regMobile);
+    if (phoneError) {
+      setRegMobileError(phoneError);
       hasError = true;
     } else {
       setRegMobileError("");
@@ -239,7 +246,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
     try {
       await register({
         name: regName.trim(),
-        mobile: regMobile.trim(),
+        mobile: phoneApiValue(regMobileCountry, regMobile),
         email: regEmail.trim() || undefined,
         password: regPassword || undefined,
         city: regCity.trim() || undefined,
@@ -319,15 +326,18 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
           {loginTab === "otp" ? (
             stage === "mobile" ? (
               <div>
-                <Input
-                  label={t("auth.mobileLabel", "Mobile number")}
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  placeholder="10-digit mobile number"
-                  value={mobile}
-                  onChange={(e) => {
-                    setMobile(e.target.value);
+                <InternationalPhoneField
+                  id="contact-login-mobile"
+                  country={mobileCountry}
+                  number={mobile}
+                  compact
+                  onCountryChange={(value) => {
+                    setMobileCountry(value);
+                    setMobile("");
+                    if (mobileError) setMobileError("");
+                  }}
+                  onNumberChange={(value) => {
+                    setMobile(value);
                     if (mobileError) setMobileError("");
                   }}
                   error={mobileError}
@@ -342,7 +352,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
               <div>
                 <label className="field-label">
                   {t("auth.otpSentTo", "Enter the 6-digit OTP sent to")}{" "}
-                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{mobile}</span>
+                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{phoneDisplayValue(mobileCountry, mobile)}</span>
                 </label>
                 <div style={{ display: "flex", gap: 8, margin: "8px 0 4px" }}>
                   {otp.map((value, index) => (
@@ -460,14 +470,18 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
               }}
               error={regNameError}
             />
-            <Input
-              label={t("auth.mobileLabel", "Mobile number")}
-              type="tel"
-              inputMode="numeric"
-              placeholder="10-digit mobile number"
-              value={regMobile}
-              onChange={(e) => {
-                setRegMobile(e.target.value);
+            <InternationalPhoneField
+              id="contact-register-mobile"
+              country={regMobileCountry}
+              number={regMobile}
+              compact
+              onCountryChange={(value) => {
+                setRegMobileCountry(value);
+                setRegMobile("");
+                if (regMobileError) setRegMobileError("");
+              }}
+              onNumberChange={(value) => {
+                setRegMobile(value);
                 if (regMobileError) setRegMobileError("");
               }}
               error={regMobileError}

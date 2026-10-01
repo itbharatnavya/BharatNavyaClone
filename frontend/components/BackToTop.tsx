@@ -1,18 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-
-const REVEAL_DISTANCE = 600;
 
 export default function BackToTop() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
+  const returningToTop = useRef(false);
 
   const updateVisibility = useCallback(() => {
-    const pageIsLongEnough =
-      document.documentElement.scrollHeight > window.innerHeight + REVEAL_DISTANCE;
-    setVisible(pageIsLongEnough && window.scrollY > REVEAL_DISTANCE);
+    const main = document.getElementById("main-content");
+    const topSection = main?.querySelector<HTMLElement>("section, header");
+    const boundary = topSection
+      ? topSection.getBoundingClientRect().bottom + window.scrollY
+      : window.innerHeight;
+
+    if (returningToTop.current) {
+      setVisible(false);
+      if (window.scrollY <= 1) returningToTop.current = false;
+      return;
+    }
+
+    setVisible(window.scrollY > boundary);
   }, []);
 
   useEffect(() => {
@@ -26,6 +35,7 @@ export default function BackToTop() {
   }, [updateVisibility]);
 
   useEffect(() => {
+    returningToTop.current = false;
     setVisible(false);
     const frame = window.requestAnimationFrame(updateVisibility);
     return () => window.cancelAnimationFrame(frame);
@@ -40,6 +50,8 @@ export default function BackToTop() {
       aria-label="Back to top"
       onClick={() => {
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        returningToTop.current = true;
+        setVisible(false);
         window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
       }}
     >

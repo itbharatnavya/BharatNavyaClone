@@ -23,7 +23,6 @@ import type { Listing, ListingsResponse, ListingType } from "@/lib/types";
 import Filters, { ListingFilterState, FilterOption, SubcategoryItem } from "@/components/Filters";
 import ListingCard from "@/components/ListingCard";
 import Pagination from "@/components/Pagination";
-import { useAds, AdCard, InFeedAd, interleaveAds, isAdSlot } from "@/components/AdRail";
 import EmptyState from "./EmptyState";
 import { useTr } from "./hooks";
 
@@ -75,8 +74,9 @@ export interface DiscoveryResultsProps {
   showTypeFilter?: boolean;
   /** Child categories to show as a drill-down section in the "More filters" drawer. */
   subcategories?: SubcategoryItem[];
-  /** Show a sticky right-hand rail (sponsored ad slot + a "post a requirement"
-   *  card) alongside the results, desktop-only. Off by default — opt in per
+  /** Show a sticky right-hand "post a requirement" rail alongside the results,
+   *  desktop-only. Sponsored inventory belongs in the page's single dedicated
+   *  placement, outside this reusable results engine. Off by default — opt in per
    *  page (currently just /search) rather than changing every DiscoveryResults
    *  consumer at once. */
   adRail?: boolean;
@@ -368,12 +368,6 @@ export default function DiscoveryResults({
   }, [listings, selectedBrands, filters.minRating]);
   const shownTotal = clientFiltered ? displayListings.length : total;
 
-  // Sponsored content for the rail (adRail=true only). Same fetched list
-  // feeds both the desktop sidebar (top 3, stacked) and the mobile/tablet
-  // in-feed slots (cycled) — the two never show at once, split by CSS
-  // breakpoint, so one fetch covers both.
-  const ads = useAds(adRail ? "search_top" : null);
-  const listItemsWithAds = useMemo(() => interleaveAds(displayListings, ads), [displayListings, ads]);
 
   const onFiltersChange = (next: ListingFilterState) => {
     setFilters(next);
@@ -771,17 +765,11 @@ export default function DiscoveryResults({
         ) : view === "list" ? (
           <>
             <div className="dr-list">
-              {listItemsWithAds.map((entry, i) =>
-                isAdSlot(entry) ? (
-                  <div key={`ad-${i}`} className="dr-infeed-ad">
-                    <InFeedAd ad={entry.adSlot} />
-                  </div>
-                ) : (
-                  <div key={entry.id} className="dr-enter" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
-                    <ListingCard listing={entry} layout="row" />
-                  </div>
-                )
-              )}
+              {displayListings.map((entry, i) => (
+                <div key={entry.id} className="dr-enter" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                  <ListingCard listing={entry} layout="row" />
+                </div>
+              ))}
             </div>
             {!clientFiltered && data && data.totalPages > 1 && (
               <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
@@ -792,21 +780,15 @@ export default function DiscoveryResults({
         ) : (
           <>
             <div className="dr-grid">
-              {listItemsWithAds.map((entry, i) =>
-                isAdSlot(entry) ? (
-                  <div key={`ad-${i}`} className="dr-infeed-ad" style={{ gridColumn: "1 / -1" }}>
-                    <InFeedAd ad={entry.adSlot} />
-                  </div>
-                ) : (
-                  <div
-                    key={entry.id}
-                    className="dr-enter"
-                    style={{ animationDelay: `${Math.min(i, 8) * 40}ms`, minWidth: 0 }}
-                  >
-                    <ListingCard listing={entry} />
-                  </div>
-                )
-              )}
+              {displayListings.map((entry, i) => (
+                <div
+                  key={entry.id}
+                  className="dr-enter"
+                  style={{ animationDelay: `${Math.min(i, 8) * 40}ms`, minWidth: 0 }}
+                >
+                  <ListingCard listing={entry} />
+                </div>
+              ))}
             </div>
 
             {/* Pagination is server-side; hide it while brand/rating narrow the page client-side. */}
@@ -822,13 +804,6 @@ export default function DiscoveryResults({
       {adRail && (
         <aside className="dr-aside">
           <AsideRfqCard t={t} />
-          {ads.length > 0 && (
-            <div className="dr-ad-stack">
-              {ads.slice(0, 3).map((ad, i) => (
-                <AdCard key={ad.id || i} ad={ad} />
-              ))}
-            </div>
-          )}
         </aside>
       )}
       </div>

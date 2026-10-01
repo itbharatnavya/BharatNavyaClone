@@ -8,7 +8,7 @@ Official application: `frontend/`
 
 Official committed checkpoint: the current tip of `origin/design`; verify it with `git rev-parse origin/design` before continuing.
 
-Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. The UI follow-up for the indigo auth/footer surfaces, the developer-owned Google sign-in integration point, the right-side arrow-only back-to-top control, and the denser About-page blog preview has completed its local visual review and is included in the current UI checkpoint. Deployment and backend integration remain developer-owned work outside this design handoff.
+Current implementation state: Mahir feedback reconciliation and search-integration repair are committed to and pushed on `origin/design`. The UI follow-up for the indigo auth/footer surfaces, the developer-owned Google sign-in integration point, the bottom-right arrow-only back-to-top control beside the unchanged Navya AI Agent, and the denser About-page blog preview has completed its local visual review and is included in the current UI checkpoint. Deployment and backend integration remain developer-owned work outside this design handoff.
 
 Continuation note: if the current Codex task appears visually blank, start a fresh task in this repository and read `AGENTS.md` followed by this file. Do not assume the blank task pane means the working tree was lost; confirm with `git status --short` and continue from the scoped local changes documented here.
 
@@ -194,10 +194,23 @@ Evidence recorded for the Google UI/auth/footer/back-to-top follow-up:
 - `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, the Impeccable detector, and `git diff --check` passed for the UI checkpoint.
 - Desktop and mobile browser checks confirmed the login context panel fills its intended space without black backgrounds or horizontal overflow; the public footer is indigo.
 - Source re-check on 2026-09-30 confirmed the public login context panel is Counter indigo, registration is Counter green, and the public footer is Counter indigo. The auth form card remains light; do not reintroduce black card or section backgrounds in these public/auth surfaces. Dark ink is still intentionally used for text, buttons, media viewers, and internal/admin states where it is not a card or page background.
-- The back-to-top control is arrow-only, on the right, does not overlap the Navya AI Agent, scrolls to the top, and disappears there while retaining the accessible `Back to top` name.
+- The back-to-top control is arrow-only and sits at the bottom-right immediately to the left of the Navya AI Agent; the assistant component and its position are unchanged. It is hidden on initial load, appears only after the visitor passes the bottom edge of the page's first content section, hides again when the visitor manually returns above that boundary, and disappears immediately when clicked while the smooth return completes. It retains the accessible `Back to top` name and is hidden while the assistant panel is open.
 - Directory search recommendations rendered from live data in the themed dropdown, and selecting `Coaching & Tutoring` navigated to `/search?category=coaching-tutoring`.
 - The final bounded visual pass covered `/`, `/directory`, `/search`, `/recruitment`, `/recruitment/jobs`, `/about`, `/login`, and `/register` at 1440×900, 390×844, and a 720×450 200%-zoom equivalent. No document-level overflow or browser-console errors were found. Ask Navya, mobile navigation, search recommendations, mobile inline detail, the About blog grid, footer, auth layouts, and back-to-top behavior were checked in the rendered app.
 - Live Google authentication, backend implementation, credentials, deployment, and production API smoke testing remain developer-owned and are not UI acceptance criteria for this checkpoint.
+
+Evidence recorded for the guest/account, international-phone, and advertising follow-up:
+
+- Guest visitors now receive one non-modal, dismissible account reminder only after two minutes plus meaningful browsing (a second public route or 35% scroll depth). Auth, dashboard, admin, onboarding, and account routes are excluded; dismissal is respected for seven days and the prompt never steals focus.
+- Login, registration, and the contact/apply auth modal share one country-aware phone field. Indian numbers preserve the existing 10-digit backend contract. International entries are normalized to E.164-format payloads only when `NEXT_PUBLIC_INTERNATIONAL_PHONE_ENABLED=true`; until the developer completes provider and backend validation support, the UI states that limitation and blocks a misleading OTP attempt.
+- Results advertising is consolidated to one clearly disclosed placement per page context. Repeated in-feed/sidebar stacks were removed from shared Directory/brand results, and the duplicate Recruitment results-rail placement was removed. Organic order, verification, filters, and backend ad contracts are unchanged.
+- `npm run validate:design`, `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. Browser checks covered desktop and 390px auth layouts, country selection/validation, guest-prompt dismissal and fixed-control spacing, a single `/search` ad placement, no repeated result ads, no horizontal overflow, and no console errors.
+
+Evidence recorded for the final back-to-top correction (`be9dfa9`):
+
+- `npx tsc --noEmit`, `npm run validate:design`, `npm run build`, the Impeccable detector, and `git diff --check` passed.
+- Live Directory checks confirmed the control is absent at the top, appears only after the hero/top section has been passed, sits beside the unchanged AI assistant on desktop and 390px mobile, disappears immediately after activation, and disappears when manually scrolling back above the top-section boundary.
+- Commit `be9dfa9` is pushed to `origin/design`.
 
 Run these from `frontend/` after changes:
 
@@ -250,7 +263,7 @@ Verify both before judging missing statuses, blogs, jobs, listings, ads, or sugg
 
 ## 10. Remaining work / next priorities
 
-The scoped UI follow-up is complete. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. Backend implementation, Google credentials, hosting, deployment, and production API smoke testing are developer-owned and are intentionally excluded from this design continuation.
+The scoped UI follow-up is complete except for the Directory highlights/product decision, which Parth is reviewing and will specify separately. Do not invent or redesign that content until the decision is supplied. Preserve Ask Navya as the Home experience and Navya AI Agent as the supporting-route helper unless Mahir explicitly changes their product roles. International OTP provider/backend validation, Google credentials, hosting, deployment, and production API smoke testing are developer-owned and are intentionally excluded from this design continuation.
 
 ## 11. Non-negotiable hygiene
 

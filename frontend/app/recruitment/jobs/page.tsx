@@ -130,9 +130,6 @@ function JobsBrowseInner() {
       <div className="recruitment-results-layout">
         <div className="recruitment-results-filter-rail">
           <aside className="recruitment-results-filters" aria-label="Filter roles">{filterPanel}</aside>
-          <div className="recruitment-results-filter-ad">
-            <ApiAdvertisingSlot compact placement={["recruitment_search_top", "recruitment_home"]} kind="native" context="Sponsored in Recruitment" summary="A clearly labelled employer or role placement, separate from organic results and filter choices." action="View opportunity" />
-          </div>
         </div>
         <section aria-label="Role results"><div className="recruitment-results-list">
           {loading && Array.from({ length: 5 }, (_, index) => <div className="recruitment-skeleton" key={index} />)}
