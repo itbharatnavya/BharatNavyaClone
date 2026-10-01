@@ -7,7 +7,7 @@ Code lives in `frontend/app/`: tokens in `counter-direction.css` (`:root`), comp
 ## 1. Principles
 
 1. **White surfaces on a light-blue page.** The page is `--canvas`; everything you read or click sits on a white card.
-2. **One family of blues, each with a job.** No orange, no violet, no green except for success. Colour is never decoration.
+2. **One family of blues plus one warm highlight.** Blues carry structure and state; a single amber highlight is reserved for primary actions (the 10% accent). No other orange, no violet, no green except for success. Colour is never decoration.
 3. **One CTA look.** Every primary action on the platform is the same shape, size and colour.
 4. **Rounded, contained, aligned.** Everything sits inside the page shell; no full-bleed bands, no sharp-edged panels.
 5. **Text never sits on a photo** except a short label chip. Facts, prices and actions live on solid surfaces.
@@ -21,7 +21,8 @@ Code lives in `frontend/app/`: tokens in `counter-direction.css` (`:root`), comp
 | `--counter-ivory` | `#ffffff` | card / panel / field surface |
 | `--counter-line` | `#b9cce6` | 1px borders on cards |
 | `--counter-line-strong` | derived | borders on fields, chips, secondary buttons |
-| `--counter-indigo` | `#1b3fa0` | **primary action**: every CTA, active tab/pill, selected filter, links, Recruitment surfaces |
+| `--counter-highlight` | `#ffbe2e` | **the one accent: every primary CTA** (label `--counter-on-highlight` `#12141b`, edge `--counter-highlight-edge`, hover `--counter-highlight-hover`). Amber pops on white and on blue, so primary buttons never need an inverted variant. Use it for nothing else except a rare key highlight |
+| `--counter-indigo` | `#1b3fa0` | active tab/pill, selected filter/chip, links, Recruitment surfaces, secondary emphasis |
 | `--counter-indigo-hover` | `#12307e` | hover/pressed for the above |
 | `--counter-green` | `#2556c8` | Directory surfaces (heroes, route cards). Name is legacy; it is blue |
 | `--counter-indigo-soft` | `#dbe4fb` | chips, icon tiles, selected-row tints |
@@ -58,8 +59,8 @@ Weights: 400 body, 600 to 700 UI and headings, 800 for price figures. Tailwind's
 
 ## 5. Components (use these, do not re-invent)
 
-- **Primary CTA:** classes `.btn-primary`, `.btn-brand`, `.directory-primary`, `.le-button.is-primary`, `.cp-button`, `.lcard-cta`. Filled `--counter-indigo`, white label, pill, `min-height: 2.75rem`; small variant `2.25rem` (`.btn-sm`). On a blue surface it inverts to white fill with a blue label (already handled for heroes, closing bands, support pages).
-- **Secondary:** `.btn-secondary`, `.le-button`, `.cp-button.is-quiet`. White, 1px strong border, ink label, same size.
+- **Primary CTA:** classes `.btn-primary`, `.btn-brand`, `.directory-primary`, `.le-button.is-primary`, `.cp-button`, `.lcard-cta`, search submit buttons, the header "Join / Sign in" and the floating "Post requirement". Filled amber (`--counter-highlight`), dark label, 1px amber edge, pill, `min-height: 2.75rem`; small variant `2.25rem` (`.btn-sm`). One primary per view.
+- **Secondary:** `.btn-secondary`, `.le-button`, `.cp-button.is-quiet`. White, 1px strong border, ink label, same size; on a blue surface it is outlined in white with a white label.
 - **Icon buttons:** round, `2.25 to 2.75rem`, white with a border (info, save, close). **Close is always an icon-only round white button**, never the word "Close".
 - **Cards:** white, 1px line, `1.25rem`, photo or content on top, facts and actions below. Listing cards are `ListingCard` (`.lcard`); do not make a second listing card.
 - **Chips and badges:** pill, `0.75rem`; blue-soft fill with blue text; neutral grey for plain facts; dark ink only for "Sponsored".
@@ -75,7 +76,7 @@ Weights: 400 body, 600 to 700 UI and headings, 800 for price figures. Tailwind's
 2. Colours from section 2 only. If you reach for a hex code, you are off-system.
 3. Sizes and radii from the tables (`var(--fs-*)`, `var(--r-*)`). A raw `13px` or `10px` is off-system.
 4. Inside the page shell, white card, 1px line, `1.25rem`.
-5. CTAs from section 5; one primary per view.
+5. CTAs from section 5; one amber primary per view. Never put dark text on a blue surface or blue text on blue: run the contrast check below.
 6. Check at 390px and 1440px: no sideways scroll, no clipped corners, no text under 0.75rem.
 7. No emoji; icons are inline SVG line glyphs (`stroke="currentColor"`, 1.7 to 2 stroke).
 
@@ -88,3 +89,10 @@ These are intentional and are **not** to be normalised without the owner's say-s
 - `frontend/app/counter-direction.css` `:root` defines `--r-*` and `--fs-*`. All older radius names (`--bn-radius-*`, `--counter-*-radius`) now resolve to these.
 - A one-off migration mapped every `font-size`, `border-radius`, `fontSize`, `borderRadius` and Tailwind arbitrary value in `frontend/app` and `frontend/components` onto the scale (about 1,400 declarations). Re-run a scan after big changes: distinct font sizes should stay at 7 and distinct radii at 5 plus circle.
 - Review new CSS for raw `px`, raw hex colours and `border-radius`/`font-size` that are not tokens before merging.
+
+## 9. Legibility rules (enforced by audit)
+
+- Text on a blue surface is white or `--counter-sky`; text on white or the light-blue page is ink or `--counter-muted` (`--faint` is `#54627a`, 4.5:1 or better on both).
+- A label is never the same colour as the surface behind it; selected (blue) states restyle their inner text to white.
+- Cards that sit on a hero use a distinct fill and a 1px light border (white, bright blue, navy, pale blue), never the hero's own colour.
+- Check with a contrast pass before shipping: every visible text element should reach 4.5:1 against its effective background (`node frontend/scripts/contrast-audit.mjs 1440 / /directory ...`; usage is at the top of the file).

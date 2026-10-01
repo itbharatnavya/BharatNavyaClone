@@ -25,6 +25,10 @@
   --counter-green: #2556c8; /* Directory blue */
   --counter-green-soft: #dbe4fb;
   --counter-saffron: #1b3fa0; /* legacy name, now the primary action blue */
+  --counter-highlight: #ffbe2e; /* the one warm accent: primary CTAs and key highlights only (10% rule) */
+  --counter-highlight-hover: #f5a800;
+  --counter-highlight-edge: #e0a000;
+  --counter-on-highlight: #12141b;
   --counter-sky: #9db8ff; /* accent text on blue surfaces */
   --counter-focus: #3b6cf5; /* focus rings, stars, chart lines */
   --counter-indigo-hover: #12307e;
@@ -299,7 +303,7 @@
 .counter-pricing-close p { max-width: 56ch; margin-top: 0.75rem; color: var(--counter-on-ink); }
 .counter-support-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .counter-support-actions > a { min-height: 3.5rem; display: inline-flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.85rem 1.1rem; border: 1px solid rgba(255, 255, 255, 0.38); border-radius: var(--r-lg) !important; background: transparent; color: white; font-weight: 800; }
-.counter-support-actions > a:first-child { background: var(--counter-saffron); border-color: var(--counter-indigo); color: #fff; }
+.counter-support-actions > a:first-child { background: var(--counter-highlight); border-color: var(--counter-highlight-edge); color: var(--counter-on-highlight); }
 
 .counter-pricing-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.6fr); gap: 4rem; align-items: end; }
 .counter-pricing-hero-copy { display: grid; justify-items: start; gap: 1.25rem; }
@@ -360,7 +364,7 @@
 .counter-article .vendor-card { margin-top: 3rem; padding: clamp(1.5rem, 4vw, 2.5rem); border-color: var(--counter-line); background: var(--counter-green); color: white; }
 .counter-article .vendor-card :is(p, div) { color: var(--counter-on-green) !important; }
 .counter-article .vendor-card a { color: white !important; }
-.counter-article .vendor-card .btn-primary { background: var(--counter-saffron); color: #fff !important; }
+.counter-article .vendor-card .btn-primary { background: var(--counter-highlight); color: var(--counter-on-highlight) !important; }
 .counter-article .vendor-card .btn-secondary { background: var(--counter-ivory); color: var(--counter-ink) !important; }
 
 .recruitment-result-row.is-selected .recruitment-result-skills span,
@@ -449,8 +453,8 @@
 }
 
 .bn-header.is-counter-public .bn-sign-in {
-  background: var(--counter-saffron);
-  color: #fff;
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
 }
 
 .bn-header.is-counter-public .bn-menu-button {
@@ -478,8 +482,8 @@
 .bn-header.is-counter-public .bn-section-search-submit,
 .bn-header.is-counter-public .bn-universal-compact button {
   border-radius: var(--r-lg);
-  background: var(--counter-saffron);
-  color: #fff;
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
 }
 
 .bn-header.is-counter-public.is-search-docked .bn-header-search {
@@ -555,8 +559,8 @@
 
 .recruitment-core .rsb-submit {
   border-radius: var(--r-lg) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
 }
 
 .recruitment-core .rsb-submit:hover {
@@ -568,8 +572,8 @@
 .directory-results-head .directory-search button,
 .recruitment-results-search button {
   border-radius: var(--r-lg);
-  background: var(--counter-saffron);
-  color: #fff;
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
 }
 
 .le-examples {
@@ -1467,7 +1471,7 @@
 .recruitment-role-ledger > div { border-color: #2c3040; }
 .recruitment-role-ledger dt { color: #9aa0ac; }
 .recruitment-apply-panel { border: 1.5px solid var(--counter-ink); background: var(--counter-ivory); }
-.recruitment-apply-panel .btn-brand { background: var(--counter-saffron); color: #fff; }
+.recruitment-apply-panel .btn-brand { background: var(--counter-highlight); color: var(--counter-on-highlight); }
 .employer-careers-identity { border-radius: var(--r-lg); }
 
 /* Public footer closes the service frame instead of fading away. */

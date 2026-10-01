@@ -91,18 +91,18 @@
 }
 
 .bn-header.is-counter-public .bn-sign-in {
-  border-color: var(--counter-indigo) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  border-color: var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
 }
 
 /* CTA hierarchy: saturated route color for ordinary actions, dark ink for the
    primary action when a pair is presented together. Tabs and filter controls
    deliberately remain neutral. */
 :is(.counter-home-page, .counter-directory-page, .counter-recruitment-page) .le-button {
-  border-color: var(--counter-indigo);
-  background: var(--counter-saffron);
-  color: #fff;
+  border-color: var(--counter-highlight-edge);
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
   box-shadow: 0 8px 20px rgba(18, 20, 27, 0.12);
   transition: transform var(--counter-motion), box-shadow var(--counter-motion), background-color var(--counter-motion);
 }
@@ -133,18 +133,18 @@
 }
 
 .recruitment-primary {
-  border-color: var(--counter-indigo) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  border-color: var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
   box-shadow: 0 8px 20px rgba(238, 139, 31, 0.2);
 }
 
 /* Counter actions always use ink on saffron. This protects CTA contrast when
    legacy `.btn-primary` styles are used inside a migrated route. */
 :is(.counter-public-page, .counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.btn-primary, .btn-brand) {
-  border-color: var(--counter-indigo) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  border-color: var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
 }
 
 :is(.counter-public-page, .counter-auth-page, .counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login) :is(.btn-primary, .btn-brand):hover:not(:disabled) {
@@ -313,8 +313,8 @@
   gap: 0.45rem;
   border: 0;
   border-radius: var(--r-lg);
-  background: var(--counter-saffron);
-  color: #fff;
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
   font-weight: 800;
   transition: transform var(--counter-motion), background-color var(--counter-motion), opacity var(--counter-motion);
 }
@@ -641,8 +641,8 @@
   border-radius: var(--r-lg);
   display: grid;
   place-items: center;
-  background: var(--counter-saffron);
-  color: #fff;
+  background: var(--counter-highlight);
+  color: var(--counter-on-highlight);
 }
 
 .bn-agent-composer > small {
@@ -1833,9 +1833,9 @@ main :is(h1, h2, h3, h4),
 }
 
 .counter-offer-page > section:first-child .btn-primary {
-  border-color: var(--counter-indigo) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  border-color: var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
 }
 
 .counter-coming-soon {
@@ -1856,9 +1856,9 @@ main :is(h1, h2, h3, h4),
   box-shadow: none !important;
 }
 .counter-coming-soon .btn-brand {
-  border-color: var(--counter-indigo) !important;
-  background: var(--counter-saffron) !important;
-  color: #fff !important;
+  border-color: var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
 }
 .counter-coming-soon .btn-secondary {
   border-color: rgba(255, 255, 255, 0.45) !important;
@@ -4353,7 +4353,9 @@ main :is(h1, h2, h3, h4),
    Green stays only for success/verified (--counter-success), red for errors.
 --------------------------------------------------------------------------- */
 
-/* CTA contract: one primary look and one size ladder everywhere. */
+/* CTA contract: one primary look and one size ladder everywhere. Primary = the single
+   warm highlight (amber, dark label): it pops on white and on blue alike, so it never
+   needs an inverted variant. Selected/active states elsewhere stay blue. */
 :is(.btn-primary, .btn-brand, .btn-green, .btn-gradient, .directory-primary, .le-button.is-primary, .bn-sign-in, .lcard-cta, .cp-button:not(.is-quiet), .lp-open, .ld-mobile-cta, .flt-price button, .counter-support-actions > a:first-child) {
   min-height: 2.75rem;
   display: inline-flex;
@@ -4361,17 +4363,18 @@ main :is(h1, h2, h3, h4),
   justify-content: center;
   gap: 0.5rem;
   padding: 0 1.4rem;
-  border: 1px solid var(--counter-indigo) !important;
+  border: 1px solid var(--counter-highlight-edge) !important;
   border-radius: var(--r-pill) !important;
-  background: var(--counter-indigo) !important;
+  background: var(--counter-highlight) !important;
   background-image: none !important;
-  color: #fff !important;
+  color: var(--counter-on-highlight) !important;
   font: 700 var(--fs-md)/1 var(--font-work-sans), sans-serif;
-  box-shadow: none !important;
+  box-shadow: 0 1px 0 rgb(18 20 27 / 0.12) !important;
   text-decoration: none;
   cursor: pointer;
 }
-:is(.btn-primary, .btn-brand, .btn-green, .btn-gradient, .directory-primary, .le-button.is-primary, .bn-sign-in, .lcard-cta, .cp-button:not(.is-quiet), .lp-open, .ld-mobile-cta, .flt-price button, .counter-support-actions > a:first-child):is(:hover, :focus-visible) { background: var(--counter-indigo-hover) !important; border-color: var(--counter-indigo-hover) !important; }
+:is(.btn-primary, .btn-brand, .btn-green, .btn-gradient, .directory-primary, .le-button.is-primary, .bn-sign-in, .lcard-cta, .cp-button:not(.is-quiet), .lp-open, .ld-mobile-cta, .flt-price button, .counter-support-actions > a:first-child):is(:hover, :focus-visible) { background: var(--counter-highlight-hover) !important; border-color: var(--counter-highlight-hover) !important; }
+:is(.btn-primary, .btn-brand, .btn-green, .btn-gradient, .directory-primary, .le-button.is-primary, .bn-sign-in, .lcard-cta, .cp-button:not(.is-quiet), .lp-open, .ld-mobile-cta, .flt-price button, .counter-support-actions > a:first-child) :is(svg, path) { color: inherit; stroke: currentColor; }
 :is(.btn-sm, .lcard-cta, .flt-price button) { min-height: 2.25rem; padding: 0 1rem; font-size: var(--fs-sm); }
 :is(.btn-secondary, .le-button:not(.is-primary), .company-secondary, .cp-button.is-quiet, .btn-ghost) {
   min-height: 2.75rem;
@@ -4390,14 +4393,9 @@ main :is(h1, h2, h3, h4),
 :is(.btn-secondary, .le-button:not(.is-primary), .company-secondary, .cp-button.is-quiet):is(:hover, :focus-visible) { border-color: var(--counter-indigo) !important; background: color-mix(in srgb, var(--counter-indigo) 6%, white) !important; }
 :is(.btn-secondary, .btn-ghost).btn-sm { min-height: 2.25rem; padding: 0 1rem; font-size: var(--fs-sm); }
 
-/* On blue surfaces the primary inverts (white fill, blue label) so it never disappears. */
-:is(.le-closing, .counter-support-hero, .counter-category-hero, .counter-catalog-hero, .counter-feature-page > div:first-child, .bn-home-hero, .bn-rhero, .bn-landing-hero > .bn-landing-copy, .counter-price-plan.is-highlighted, .counter-about-close, .counter-support-section.is-blue) :is(.btn-primary, .btn-brand, .directory-primary, .le-button.is-primary, .le-button, .cp-button, .counter-support-actions > a) {
-  border-color: #fff !important;
-  background: #fff !important;
-  color: var(--counter-indigo) !important;
-}
-:is(.le-closing, .counter-support-hero, .counter-category-hero, .counter-catalog-hero, .counter-feature-page > div:first-child, .bn-home-hero, .bn-rhero, .counter-about-close) :is(.le-button:not(.is-primary), .counter-support-actions > a:not(:first-child)) {
-  border-color: rgb(255 255 255 / 0.7) !important;
+/* Secondary buttons on blue surfaces are outlined in white so they stay readable. */
+:is(.le-closing, .counter-support-hero, .counter-category-hero, .counter-catalog-hero, .counter-feature-page > div:first-child, .bn-home-hero, .bn-rhero, .counter-about-close, .counter-pricing-close, .counter-offer-page > section:first-child) :is(.btn-secondary, .le-button:not(.is-primary), .counter-support-actions > a:not(:first-child), .cp-button.is-quiet) {
+  border-color: rgb(255 255 255 / 0.75) !important;
   background: transparent !important;
   color: #fff !important;
 }
@@ -4480,11 +4478,27 @@ main :is(h1, h2, h3, h4),
 .counter-editorial.counter-public-page :is(.blog-card, .rb-card) { border: 1px solid var(--counter-line); border-radius: var(--r-lg); overflow: hidden; background: white; }
 .counter-editorial :is(.blog-card, .rb-card):first-child :is(.blog-cover, .rb-cover) { border-right: 0; }
 
-/* Offer hero (blue): its own blanket link/span colour rule would blank the buttons and stat chips. */
-.counter-offer-page > section:first-child a.btn-primary { border-color: #fff !important; background: #fff !important; color: var(--counter-indigo) !important; }
-.counter-offer-page > section:first-child a.btn-secondary { border-color: rgb(255 255 255 / 0.7) !important; background: transparent !important; color: #fff !important; }
+/* Offer hero (blue): its own blanket link/span colour rule would blank the stat chips. */
+.counter-offer-page > section:first-child a.btn-primary { color: var(--counter-on-highlight) !important; }
 .counter-offer-page > section:first-child .chip strong { color: var(--counter-ink) !important; }
 .counter-offer-page > section:first-child .chip span { color: var(--counter-muted) !important; }
+
+
+/* Search submit buttons are primary actions too. */
+:is(.bn-section-search-submit, .directory-search button[type="submit"], .bn-universal-compact button, .directory-results-head .directory-search button) {
+  border: 1px solid var(--counter-highlight-edge) !important;
+  background: var(--counter-highlight) !important;
+  color: var(--counter-on-highlight) !important;
+}
+:is(.bn-section-search-submit, .directory-search button[type="submit"], .bn-universal-compact button, .directory-results-head .directory-search button):is(:hover, :focus-visible) { background: var(--counter-highlight-hover) !important; }
+:is(.bn-section-search-submit, .directory-search button[type="submit"]) svg { stroke: currentColor; }
+
+/* Small-screen fixes from the mobile sweep. */
+@media (max-width: 720px) {
+  .cp-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.counter-results-page > :is(.directory-results-head, .recruitment-results-head) :is(nav, .breadcrumbs, [aria-label="Breadcrumb"]) :is(a, span, strong, li) { color: rgb(255 255 255 / 0.85) !important; }
+.le-ad-slot .le-button { width: fit-content; max-width: 100%; padding-inline: 1.1rem; font-size: var(--fs-sm); }
 
 .dlw-controls select {
   appearance: none;
@@ -4502,9 +4516,40 @@ main :is(h1, h2, h3, h4),
   font: 700 var(--fs-sm)/1 var(--font-work-sans), sans-serif;
 }
 
-/* Small-screen fixes from the mobile sweep. */
-@media (max-width: 720px) {
-  .cp-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-.counter-results-page > :is(.directory-results-head, .recruitment-results-head) :is(nav, .breadcrumbs, [aria-label="Breadcrumb"]) :is(a, span, strong, li) { color: rgb(255 255 255 / 0.85) !important; }
-.le-ad-slot .le-button { width: fit-content; max-width: 100%; padding-inline: 1.1rem; font-size: var(--fs-sm); }
+
+/* ---------------------------------------------------------------------------
+   Legibility pass (from the automated contrast audit): text on blue surfaces is
+   always light, secondary text never goes below 4.5:1, labels are never the same
+   colour as the surface behind them.
+--------------------------------------------------------------------------- */
+:root { --faint: #54627a; }
+.bn-home-contrast { background: var(--counter-indigo); }
+.bn-home-contrast :is(h2, h3, p) { color: #fff; }
+.bn-home-contrast-heading p { color: rgb(255 255 255 / 0.88); }
+.bn-home-contrast-board .is-thin :is(span, strong, p, b) { color: var(--counter-ink); }
+.bn-home-contrast-board .is-thin span { color: var(--counter-muted); }
+.bn-home-contrast-board .is-thin b { color: var(--counter-indigo); }
+.bn-home-contrast-board .is-navya { background: transparent; }
+.bn-home-contrast-board .is-navya :is(h3, strong, li) { color: #fff; }
+.bn-home-contrast-board .is-navya span { color: var(--counter-sky); }
+:is(.le-closing, .directory-closing, .recruitment-closing, .counter-about-close, .counter-pricing-close) { color: #fff; }
+:is(.le-closing, .directory-closing, .recruitment-closing, .counter-about-close, .counter-pricing-close) :is(h2, h3) { color: #fff; }
+:is(.le-closing, .directory-closing, .recruitment-closing, .counter-about-close, .counter-pricing-close) p { color: rgb(255 255 255 / 0.88); }
+:is(.le-closing, .directory-closing, .recruitment-closing) :is(span, small, em):not(.le-button *) { color: var(--counter-sky); }
+.counter-price-plan.is-highlighted :is(p, small, span, li, dd, header p) { color: rgb(255 255 255 / 0.9); }
+.counter-price-plan.is-highlighted :is(h2, h3, strong, b) { color: #fff; }
+.counter-catalog-hero label, .counter-catalog-hero .field-label { color: rgb(255 255 255 / 0.9) !important; }
+.counter-offer-page > section:first-child a.btn-primary { border-color: var(--counter-highlight-edge) !important; background: var(--counter-highlight) !important; color: var(--counter-on-highlight) !important; }
+
+/* Home hero stage: four clearly different cards on the blue hero (white, bright blue, navy, pale). */
+.bn-hstage-card { border: 1px solid rgb(255 255 255 / 0.28); }
+.bn-hstage-card.is-ask { background: #fff; color: var(--counter-ink); }
+.bn-hstage-card.is-directory { --route: var(--counter-focus); background: var(--counter-focus); color: #fff; }
+.bn-hstage-card.is-recruitment { --route: var(--counter-indigo-hover); background: var(--counter-indigo-hover); color: #fff; }
+.bn-hstage-card.is-growth { background: var(--counter-indigo-soft); color: var(--counter-ink); }
+.bn-hstage-card.is-growth .bn-hstage-copy em { color: var(--counter-indigo); }
+.bn-hstage-card.is-growth .bn-hstage-icon { color: var(--counter-indigo); }
+.le-proof-options button[aria-pressed="true"] :is(span, strong, b),
+.le-update-feature-list button[aria-pressed="true"] :is(span, strong, b) { color: #fff; }
+.le-proof-options button[aria-pressed="true"] small,
+.le-update-feature-list button[aria-pressed="true"] small { color: rgb(255 255 255 / 0.85); }

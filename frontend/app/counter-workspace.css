@@ -229,7 +229,7 @@
 }
 
 .counter-auth-page :is(.btn-brand, .btn-primary),
-.counter-admin-login .btn-brand { background: var(--counter-saffron); color: #fff; }
+.counter-admin-login .btn-brand { background: var(--counter-highlight); color: var(--counter-on-highlight); }
 
 /* Creation and profile pages use a full-width paper field behind the form. */
 .counter-workspace-page {
@@ -313,7 +313,7 @@
 
 .counter-recruitment-workspace .pj-eyebrow { display: none; }
 .counter-recruitment-workspace .pj-h1 { font-size: var(--fs-3xl); line-height: 0.94; }
-.counter-recruitment-workspace .btn-green { border-color: var(--counter-indigo); background: var(--counter-saffron); color: #fff; }
+.counter-recruitment-workspace .btn-green { border-color: var(--counter-highlight-edge); background: var(--counter-highlight); color: var(--counter-on-highlight); }
 .counter-recruitment-workspace .pj-checkbox input { width: 1.15rem; height: 1.15rem; accent-color: var(--counter-indigo); }
 .counter-recruitment-workspace .rd-h1 { margin-top: 0.65rem; font-size: var(--fs-3xl); line-height: 0.94; }
 .counter-recruitment-workspace .rd-sub { max-width: 56ch; font-size: var(--fs-md); line-height: 1.55; }
