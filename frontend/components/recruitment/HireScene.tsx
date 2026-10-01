@@ -2,7 +2,7 @@
 
 // Recruitment, employer side: "Post a role. Meet the matches." A role post types
 // itself out, its skills appear, sample candidates arrive with match scores, re-rank
-// by score and the best match is shortlisted. Scrubbed to scroll. The role is the
+// by score and the best match is shortlisted. Plays once when it scrolls into view. The role is the
 // newest live job; the candidates are sample data and are labelled as such. Styles: .hire-*.
 
 import { useEffect, useRef, useState } from "react";
@@ -42,17 +42,19 @@ export default function HireScene() {
     gsap.set(q(".hire-bar i"), { scaleX: 0 });
     gsap.set(q(".hire-best"), { scale: 0 });
     gsap.set(q(".hire-done"), { opacity: 0 });
-    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".hire-board")[0], start: "top 80%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true, onUpdate: sync, onRefresh: sync } })
-      .to(proxy, { t: 1, duration: 1 }, 0)
-      .fromTo(q(".hire-skills li"), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, stagger: 0.12, ease: "power2.out" }, 1)
-      .fromTo(rows, { opacity: 0, y: (i: number) => (START[i] - i) * step() + 14 }, { opacity: 1, y: (i: number) => (START[i] - i) * step(), duration: 0.5, stagger: 0.15 }, 1.6)
-      .fromTo(q(".hire-bar i"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, stagger: 0.1 }, 1.8)
-      .to(proxy, { s: 1, duration: 0.8 }, 1.8)
-      .to(rows, { y: 0, duration: 0.8 }, 3)
-      .fromTo(q(".hire-best"), { scale: 0 }, { scale: 1, duration: 0.3, ease: "power2.out" }, 3.8)
-      .to(q(".hire-shortlist"), { scale: 0.94, duration: 0.1 }, 4.3)
-      .to(q(".hire-shortlist"), { scale: 1, duration: 0.1 }, 4.4)
-      .fromTo(q(".hire-done"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3 }, 4.5);
+    sync(); // start with the title and scores empty
+    // Plays once, on its own, when the board comes into view (a scrubbed range can finish before, or after, it is on screen).
+    gsap.timeline({ defaults: { ease: "power2.out" }, onUpdate: sync, scrollTrigger: { trigger: q(".hire-board")[0], start: "top 68%", once: true } })
+      .to(proxy, { t: 1, duration: 1.1, ease: "none" }, 0)
+      .fromTo(q(".hire-skills li"), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, stagger: 0.12 }, 1.2)
+      .fromTo(rows, { opacity: 0, y: (i: number) => (START[i] - i) * step() + 14 }, { opacity: 1, y: (i: number) => (START[i] - i) * step(), duration: 0.5, stagger: 0.15 }, 1.8)
+      .fromTo(q(".hire-bar i"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, stagger: 0.1, ease: "none" }, 2)
+      .to(proxy, { s: 1, duration: 0.8, ease: "none" }, 2)
+      .to(rows, { y: 0, duration: 0.8, ease: "power2.inOut" }, 3.2)
+      .fromTo(q(".hire-best"), { scale: 0 }, { scale: 1, duration: 0.3 }, 4)
+      .to(q(".hire-shortlist"), { scale: 0.94, duration: 0.1 }, 4.5)
+      .to(q(".hire-shortlist"), { scale: 1, duration: 0.1 }, 4.6)
+      .fromTo(q(".hire-done"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3 }, 4.7);
     return () => { title.textContent = fullTitle; scores.forEach((el, i) => { el.textContent = String(CANDIDATES[i].score); }); };
   });
 

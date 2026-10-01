@@ -39,13 +39,15 @@ export default function RfqScene() {
     gsap.set(q(".rfq-wire"), { svgOrigin: "0 150", scaleX: 0, opacity: 0 });
     gsap.set(q(".rfq-quote"), { x: 36, opacity: 0 });
     gsap.set(q(".rfq-badge"), { scale: 0 });
-    gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: q(".rfq-board")[0], start: "top 80%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true, onUpdate: write, onRefresh: write } })
-      .to(proxy, { p: 1, duration: 3, onUpdate: write }, 0)
-      .to(q(".rfq-post"), { scale: 0.94, duration: 0.12 }, 3.1)
-      .to(q(".rfq-post"), { scale: 1, duration: 0.12 }, 3.22)
-      .fromTo(q(".rfq-wire"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1, stagger: 0.15 }, 3.3)
-      .fromTo(q(".rfq-quote"), { x: 36, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, stagger: 0.25 }, 3.9)
-      .fromTo(q(".rfq-badge"), { scale: 0 }, { scale: 1, duration: 0.4, stagger: 0.2, ease: "power2.out" }, 5);
+    write(); // start with the fields empty
+    // Plays once, on its own, as soon as the board comes into view (a scrubbed range can finish before, or after, it is on screen).
+    gsap.timeline({ defaults: { ease: "power2.out" }, onUpdate: write, scrollTrigger: { trigger: q(".rfq-board")[0], start: "top 68%", once: true } })
+      .to(proxy, { p: 1, duration: 2.4, ease: "none" }, 0)
+      .to(q(".rfq-post"), { scale: 0.94, duration: 0.12 }, 2.6)
+      .to(q(".rfq-post"), { scale: 1, duration: 0.12 }, 2.72)
+      .fromTo(q(".rfq-wire"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.7, stagger: 0.12 }, 2.9)
+      .fromTo(q(".rfq-quote"), { x: 36, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, stagger: 0.22 }, 3.4)
+      .fromTo(q(".rfq-badge"), { scale: 0 }, { scale: 1, duration: 0.35, stagger: 0.2 }, 4.3);
     return () => spans.forEach((span, i) => { span.textContent = full[i]; });
   });
 
