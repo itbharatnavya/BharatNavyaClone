@@ -48,7 +48,7 @@ const tileStyle: React.CSSProperties = {
   textAlign: "center",
   minWidth: 0,
   padding: "18px 10px",
-  borderRadius: 16,
+  borderRadius: "var(--r-md)",
 };
 
 export default function CategoryIconGrid({ categories }: CategoryIconGridProps) {
@@ -60,7 +60,7 @@ export default function CategoryIconGrid({ categories }: CategoryIconGridProps) 
       {tiles.map((c) => (
         <Link key={c.id || c.slug} href={`/${c.slug}`} className="card" style={tileStyle}>
           <CategoryBadge slug={c.slug} name={c.name} size={BADGE_SIZE} />
-          <span className="line-clamp-2" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", lineHeight: 1.3 }}>
+          <span className="line-clamp-2" style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)", lineHeight: 1.3 }}>
             {c.name}
           </span>
         </Link>
@@ -81,7 +81,7 @@ export default function CategoryIconGrid({ categories }: CategoryIconGridProps) 
         >
           <MoreIcon />
         </span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--brand)", lineHeight: 1.3 }}>
+        <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--brand)", lineHeight: 1.3 }}>
           More categories
         </span>
       </Link>

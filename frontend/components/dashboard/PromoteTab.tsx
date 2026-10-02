@@ -60,7 +60,7 @@ function statusStyle(status: string): { bg: string; color: string; label: string
       return { bg: "#F1F5F9", color: "#475569", label: "Rejected" };
     case "pending":
     default:
-      return { bg: "#FEF3C7", color: "#92400E", label: "Pending review" };
+      return { bg: "#E3EBFF", color: "#1B3FA0", label: "Pending review" };
   }
 }
 
@@ -164,7 +164,7 @@ export default function PromoteTab({ user }: Props) {
       <div className="card" style={{ padding: 20, marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
           <Icon name="plus" size={18} style={{ color: "var(--brand)" }} />
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {tr("dashboard.promote.create", "Boost a listing")}
           </h2>
         </div>
@@ -195,7 +195,7 @@ export default function PromoteTab({ user }: Props) {
                 label: o.label,
               }))}
             />
-            <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 6 }}>
               {activeBoostDesc}
             </p>
           </div>
@@ -226,7 +226,7 @@ export default function PromoteTab({ user }: Props) {
                 ? tr("common.submitting", "Submitting…")
                 : tr("dashboard.promote.submit", "Submit request")}
             </Button>
-            <span style={{ fontSize: 12, color: "var(--faint)", minWidth: 0 }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", minWidth: 0 }}>
               {tr(
                 "dashboard.promote.reviewNote",
                 "An admin reviews and approves every boost before it applies."
@@ -239,7 +239,7 @@ export default function PromoteTab({ user }: Props) {
       {/* My boost requests */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <Icon name="listings" size={18} style={{ color: "var(--brand)" }} />
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
           {tr("dashboard.promote.myRequests", "My boost requests")}
         </h2>
       </div>
@@ -272,12 +272,12 @@ export default function PromoteTab({ user }: Props) {
                 }}
               >
                 <div style={{ flex: 1, minWidth: 180 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>
+                  <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                     {title}
                   </div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: "var(--fs-xs)",
                       color: "var(--muted)",
                       marginTop: 2,
                       display: "flex",

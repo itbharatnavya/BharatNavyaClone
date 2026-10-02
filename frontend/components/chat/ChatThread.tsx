@@ -167,7 +167,7 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
         {loadingThread ? (
           <Loading label={tr("dashboard.inbox.loadingThread", "Loading messages…")} />
         ) : messages.length === 0 ? (
-          <div style={{ margin: "auto", color: "var(--faint)", fontSize: 13 }}>
+          <div style={{ margin: "auto", color: "var(--faint)", fontSize: "var(--fs-xs)" }}>
             {tr("dashboard.inbox.sayHi", "No messages yet — say hello")}
           </div>
         ) : (
@@ -182,9 +182,9 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
                   background: mine ? "var(--brand)" : "#fff",
                   color: mine ? "#fff" : "var(--ink)",
                   border: mine ? "none" : "1px solid var(--border)",
-                  borderRadius: 12,
+                  borderRadius: "var(--r-sm)",
                   padding: "8px 12px",
-                  fontSize: 14,
+                  fontSize: "var(--fs-sm)",
                   lineHeight: 1.5,
                   opacity: m.pending ? 0.7 : 1,
                   wordBreak: "break-word",
@@ -194,7 +194,7 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
                 <div>{m.body}</div>
                 <div
                   style={{
-                    fontSize: 10,
+                    fontSize: "var(--fs-xs)",
                     marginTop: 3,
                     textAlign: "right",
                     color: mine ? "rgba(255,255,255,.75)" : "var(--faint)",

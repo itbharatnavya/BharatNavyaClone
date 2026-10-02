@@ -30,13 +30,13 @@ export default function CategoryGrid({ categories, className = "" }: CategoryGri
               width: 46,
               height: 46,
               flexShrink: 0,
-              borderRadius: 12,
+              borderRadius: "var(--r-sm)",
               background: "var(--brand-tint)",
               color: "var(--brand-hover)",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: c.icon ? 22 : 18,
+              fontSize: c.icon ? "var(--fs-xl)" : "var(--fs-lg)",
               fontWeight: 700,
             }}
           >
@@ -45,12 +45,12 @@ export default function CategoryGrid({ categories, className = "" }: CategoryGri
           <span style={{ minWidth: 0 }}>
             <span
               className="line-clamp-1"
-              style={{ display: "block", fontSize: 15, fontWeight: 600, color: "var(--ink)" }}
+              style={{ display: "block", fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}
             >
               {c.name}
             </span>
             {typeof c.listingCount === "number" && (
-              <span style={{ fontSize: 13, color: "var(--faint)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                 {c.listingCount} {c.listingCount === 1 ? "listing" : "listings"}
               </span>
             )}

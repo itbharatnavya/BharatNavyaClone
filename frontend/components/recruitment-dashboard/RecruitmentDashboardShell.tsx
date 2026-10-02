@@ -129,11 +129,11 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
               display: "flex",
               alignItems: "center",
               padding: narrow ? "9px 14px" : "10px 12px",
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               border: "none",
               cursor: "pointer",
               whiteSpace: "nowrap",
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               fontWeight: isActive ? 600 : 500,
               color: isActive ? "var(--tricolor-green-hover)" : "var(--muted)",
               background: isActive ? "var(--tricolor-green-tint)" : "transparent",
@@ -151,8 +151,8 @@ export default function RecruitmentDashboardShell({ user }: { user: User }) {
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
         <Avatar name={user.name} src={user.avatarUrl} size={44} />
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{user.name}</div>
-          <div style={{ fontSize: 13, color: "var(--muted)" }}>
+          <div style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>{user.name}</div>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {user.employerProfile?.companyName || [user.city, user.state].filter(Boolean).join(", ") || user.mobile}
           </div>
         </div>

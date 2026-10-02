@@ -173,7 +173,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                   <span
                     style={{
-                      fontSize: 14,
+                      fontSize: "var(--fs-sm)",
                       fontWeight: 600,
                       color: "var(--ink)",
                       whiteSpace: "nowrap",
@@ -184,7 +184,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                     {otherName(c)}
                   </span>
                   {c.lastMsgAt && (
-                    <span style={{ fontSize: 11, color: "var(--faint)", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", whiteSpace: "nowrap" }}>
                       {timeAgo(c.lastMsgAt)}
                     </span>
                   )}
@@ -192,7 +192,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                 {c.listingTitle && (
                   <span
                     className="line-clamp-1"
-                    style={{ fontSize: 11, color: "var(--brand)", display: "block", marginTop: 1 }}
+                    style={{ fontSize: "var(--fs-xs)", color: "var(--brand)", display: "block", marginTop: 1 }}
                   >
                     {c.listingTitle}
                   </span>
@@ -200,7 +200,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginTop: 2 }}>
                   <span
                     className="line-clamp-1"
-                    style={{ fontSize: 13, color: "var(--muted)", flex: 1 }}
+                    style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", flex: 1 }}
                   >
                     {c.preview || "…"}
                   </span>
@@ -209,11 +209,11 @@ export default function InboxTab({ user, initialConversationId }: Props) {
                       style={{
                         background: "var(--action)",
                         color: "#fff",
-                        fontSize: 11,
+                        fontSize: "var(--fs-xs)",
                         fontWeight: 700,
                         minWidth: 18,
                         height: 18,
-                        borderRadius: 999,
+                        borderRadius: "var(--r-pill)",
                         display: "inline-flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -238,7 +238,7 @@ export default function InboxTab({ user, initialConversationId }: Props) {
         <div style={{ display: "grid", placeItems: "center", flex: 1, color: "var(--faint)", padding: 40 }}>
           <div style={{ textAlign: "center" }}>
             <Icon name="inbox" size={30} />
-            <div style={{ marginTop: 8, fontSize: 14 }}>
+            <div style={{ marginTop: 8, fontSize: "var(--fs-sm)" }}>
               {tr("dashboard.inbox.pick", "Select a conversation to start chatting")}
             </div>
           </div>
@@ -266,11 +266,11 @@ export default function InboxTab({ user, initialConversationId }: Props) {
             )}
             <Avatar name={otherName(activeConv)} size={36} />
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>
+              <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                 {otherName(activeConv)}
               </div>
               {activeConv.listingTitle && (
-                <div className="line-clamp-1" style={{ fontSize: 12, color: "var(--faint)" }}>
+                <div className="line-clamp-1" style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                   {activeConv.listingTitle}
                 </div>
               )}

@@ -21,6 +21,8 @@ import Footer from "@/components/Footer";
 import ChatAssistant from "@/components/ChatAssistant";
 import RouteProgress from "@/components/RouteProgress";
 import BackToTop from "@/components/BackToTop";
+import DropdownEnhancer from "@/components/DropdownEnhancer";
+import FloatingRfqButton from "@/components/rfq/FloatingRfqButton";
 import GuestAccountNudge from "@/components/auth/GuestAccountNudge";
 
 const inter = Inter({
@@ -76,7 +78,9 @@ export default function RootLayout({
                         <Footer />
                       </div>
                       <ChatAssistant />
+                      <FloatingRfqButton />
                       <BackToTop />
+                      <DropdownEnhancer />
                       <GuestAccountNudge />
                     </SearchDockProvider>
                   </ShortlistProvider>

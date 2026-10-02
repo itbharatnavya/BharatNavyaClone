@@ -20,10 +20,10 @@ export default function ShortlistPage() {
   return (
     <div className="container-bs counter-workspace-page counter-shortlist-page" style={{ paddingTop: 24, paddingBottom: 96 }}>
       <Breadcrumbs items={crumbs} />
-      <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--ink)", margin: "12px 0 6px" }}>
+      <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)", margin: "12px 0 6px" }}>
         Your shortlist
       </h1>
-      <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>
+      <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginBottom: 24 }}>
         {user
           ? "Services and products you've saved — synced to your account."
           : "Services and products saved on this device. Sign in to keep them across devices."}

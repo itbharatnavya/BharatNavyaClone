@@ -17,7 +17,7 @@ export default function BharatAgentPanel() {
       style={{
         position: "relative",
         overflow: "hidden",
-        borderRadius: 20,
+        borderRadius: "var(--r-lg)",
         borderColor: "#e8ecf3",
         padding: "clamp(24px, 4vw, 40px)",
         background:
@@ -34,7 +34,7 @@ export default function BharatAgentPanel() {
               style={{
                 width: 44,
                 height: 44,
-                borderRadius: 12,
+                borderRadius: "var(--r-sm)",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -49,7 +49,7 @@ export default function BharatAgentPanel() {
             </span>
             <span
               className="badge"
-              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#fed7aa" }}
+              style={{ background: "var(--action-tint)", color: "var(--action-hover)", borderColor: "#C4D3F7" }}
             >
               In development
             </span>
@@ -66,10 +66,10 @@ export default function BharatAgentPanel() {
           >
             Bharat Agent
           </h2>
-          <p style={{ fontSize: 15.5, color: "var(--muted)", marginTop: 12, lineHeight: 1.65, maxWidth: 440 }}>
+          <p style={{ fontSize: "var(--fs-md)", color: "var(--muted)", marginTop: 12, lineHeight: 1.65, maxWidth: 440 }}>
             One assistant for the whole suite. Tell it what you&apos;re trying to get done and it works out whether that&apos;s a supplier to source, a role to fill, or an expert to hire — then takes you straight there.
           </p>
-          <p style={{ fontSize: 13, color: "var(--faint)", marginTop: 16 }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 16 }}>
             Launching in stages across Bharat Navya.
           </p>
         </div>
@@ -93,7 +93,7 @@ function ChatMock() {
             border: "1px solid var(--border)",
             borderRadius: "14px 14px 4px 14px",
             padding: "10px 14px",
-            fontSize: 13.5,
+            fontSize: "var(--fs-sm)",
             color: "var(--ink)",
             boxShadow: "var(--shadow-card)",
           }}
@@ -110,7 +110,7 @@ function ChatMock() {
             border: "1px solid #d3e2f7",
             borderRadius: "14px 14px 14px 4px",
             padding: "10px 14px",
-            fontSize: 13.5,
+            fontSize: "var(--fs-sm)",
             color: "var(--brand-hover)",
           }}
         >

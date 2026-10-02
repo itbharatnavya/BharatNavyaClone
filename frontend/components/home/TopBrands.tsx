@@ -41,11 +41,11 @@ export default function TopBrands({ max = 12 }: TopBrandsProps) {
             <span style={{ minWidth: 0 }}>
               <span
                 className="line-clamp-1"
-                style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--ink)" }}
+                style={{ display: "block", fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}
               >
                 {b.name}
               </span>
-              <span style={{ fontSize: 12.5, color: "var(--faint)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                 {b.count} {b.count === 1 ? "product" : "products"}
               </span>
             </span>

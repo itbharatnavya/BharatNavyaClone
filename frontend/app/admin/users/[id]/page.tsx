@@ -133,7 +133,7 @@ export default function AdminUserDetailPage() {
       <button
         type="button"
         onClick={goBack}
-        className="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-muted"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -222,7 +222,7 @@ export default function AdminUserDetailPage() {
                 </Button>
               )}
               {(isSelf || isAdminAccount) && !suspended && (
-                <span className="text-[11px] text-faint">
+                <span className="text-xs text-faint">
                   {isSelf ? "Can't suspend yourself" : "Admin — can't suspend"}
                 </span>
               )}

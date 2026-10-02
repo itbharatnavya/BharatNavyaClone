@@ -1,7 +1,7 @@
 "use client";
 
 // FloatingRfqButton — a persistent "Post a requirement" trigger for Directory
-// pages, sitting immediately left of ChatAssistant's floating bubble
+// pages, stacked directly above ChatAssistant's floating bubble
 // (components/ChatAssistant.tsx) at the same size/position rhythm so the two
 // read as a matched pair. Modelled on ofbusiness.com's sticky "Tell us your
 // Requirement" corner widget: NOT a centered page-blocking modal — clicking
@@ -184,8 +184,8 @@ export default function FloatingRfqButton() {
   // Placed after every hook so hook order stays stable across the pathname
   // changes that flip this — same pattern ChatAssistant's own feature flag
   // check uses.
-  const companyFirstRoute = pathname === "/directory" || pathname === "/search" || pathname.startsWith("/seller/") || pathname === "/sell" || pathname === "/dashboard" || pathname === "/profile" || pathname === "/shortlist";
-  if (!isDirectoryPage(pathname) || pathname === "/rfq" || companyFirstRoute) {
+  const workspaceRoute = pathname === "/sell" || pathname === "/shortlist" || pathname === "/post-job";
+  if (!isDirectoryPage(pathname) || pathname === "/rfq" || workspaceRoute) {
     return null;
   }
 
@@ -203,11 +203,10 @@ export default function FloatingRfqButton() {
           aria-label="Post a requirement — tell us what you need"
           title="Post a requirement"
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-[5.25rem] z-[119] inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full shadow-pop transition-transform hover:scale-105 active:scale-95 sm:w-auto sm:px-5"
-          style={{ background: "var(--counter-saffron, var(--action))", color: "var(--counter-ink, var(--ink))" }}
+          className="rfq-tab"
         >
           <RequirementIcon />
-          <span className="hidden text-sm font-semibold sm:inline">Post Requirement</span>
+          <span className="rfq-tab-label">Post Requirement</span>
         </button>
       )}
 
@@ -220,7 +219,7 @@ export default function FloatingRfqButton() {
           aria-label="Post a requirement"
           className="fixed z-[120] flex flex-col overflow-hidden border border-border bg-surface shadow-pop
                      inset-x-3 bottom-3 max-h-[78vh] rounded-2xl
-                     sm:inset-x-auto sm:bottom-5 sm:right-[5.25rem] sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:max-h-[calc(100vh-2.5rem)]"
+                     sm:inset-x-auto sm:bottom-[6.25rem] sm:right-6 sm:w-[380px] sm:max-w-[calc(100vw-2.5rem)] sm:max-h-[calc(100vh-2.5rem)]"
         >
           {/* Header */}
           <div className="flex flex-shrink-0 items-center gap-2.5 px-4 py-3 text-white" style={{ background: "var(--counter-green, var(--brand))" }}>
@@ -229,7 +228,7 @@ export default function FloatingRfqButton() {
             </span>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold leading-tight">Tell us what you need</div>
-              <div className="text-[11px] leading-tight text-white/80">
+              <div className="text-xs leading-tight text-white/80">
                 We&apos;ll match you with verified suppliers
               </div>
             </div>
@@ -237,7 +236,7 @@ export default function FloatingRfqButton() {
               type="button"
               aria-label="Close"
               onClick={resetAndClose}
-              className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-white/90 hover:bg-white/15"
+              className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white text-ink"
             >
               <CloseIcon />
             </button>
@@ -276,8 +275,8 @@ export default function FloatingRfqButton() {
               {showForm && (
                 <div className="card card-flat" style={{ padding: 14 }}>
                   <div className="mb-3 flex items-baseline justify-between gap-3">
-                    <h3 className="text-[13.5px] font-semibold text-ink">Your requirement</h3>
-                    {isFallback && <span className="text-[11px] text-faint">AI draft</span>}
+                    <h3 className="text-sm font-semibold text-ink">Your requirement</h3>
+                    {isFallback && <span className="text-xs text-faint">AI draft</span>}
                   </div>
                   <RfqForm
                     value={form}
@@ -291,7 +290,7 @@ export default function FloatingRfqButton() {
                     </p>
                   )}
                   {!user && (
-                    <p className="mt-3.5 text-[12px] text-muted">
+                    <p className="mt-3.5 text-xs text-muted">
                       You&apos;ll be asked to log in to send this requirement.
                     </p>
                   )}

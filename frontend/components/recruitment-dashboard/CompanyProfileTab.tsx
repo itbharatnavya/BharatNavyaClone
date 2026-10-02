@@ -22,7 +22,7 @@ const URL_RE = /^https?:\/\/.+/i;
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 12, alignItems: "center" }}>
-      <span style={{ fontSize: 12.5, color: "var(--muted)", fontWeight: 600 }}>{label}</span>
+      <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 600 }}>{label}</span>
       <div style={{ minWidth: 0 }}>{children}</div>
     </div>
   );
@@ -107,7 +107,7 @@ export default function CompanyProfileTab() {
     >
       <div style={{ display: "grid", gap: 20 }}>
         {ep && (
-          <p style={{ fontSize: 13, color: "var(--muted)", background: "var(--bg-subtle)", borderRadius: 8, padding: "8px 12px" }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", background: "var(--bg-subtle)", borderRadius: "var(--r-xs)", padding: "8px 12px" }}>
             Status: <strong>{ep.status === "approved" ? "Approved — jobs are visible publicly" : ep.status === "suspended" ? "Suspended" : "Pending review"}</strong>
           </p>
         )}
@@ -117,9 +117,9 @@ export default function CompanyProfileTab() {
             style={{
               border: "1px solid var(--border)",
               background: "var(--bg-subtle)",
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               padding: "12px 14px",
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               color: "var(--ink)",
             }}
           >
@@ -149,7 +149,7 @@ export default function CompanyProfileTab() {
 
         {/* Company details, tabular */}
         <div style={{ display: "grid", gap: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>Company details</span>
+          <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)" }}>Company details</span>
           <div className="card card-flat" style={{ padding: 14, display: "grid", gap: 12 }}>
             <DetailRow label="Industry">
               <input className={`input${errors.industry ? " input-error" : ""}`} value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="e.g. Information Technology" />

@@ -101,7 +101,7 @@ export default function OverviewTab({ user, onNavigate }: Props) {
 
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <Icon name="bell" size={18} style={{ color: "var(--brand)" }} />
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
           {tr("dashboard.recentActivity", "Recent notifications")}
         </h2>
       </div>
@@ -137,21 +137,21 @@ export default function OverviewTab({ user, onNavigate }: Props) {
                     marginTop: 6,
                     width: 8,
                     height: 8,
-                    borderRadius: 999,
+                    borderRadius: "var(--r-pill)",
                     flexShrink: 0,
                     background: read ? "var(--border-strong)" : "var(--brand)",
                   }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, color: "var(--ink)", fontWeight: read ? 500 : 600 }}>
+                  <div style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", fontWeight: read ? "var(--fs-3xl)" : "var(--fs-3xl)" }}>
                     {text}
                   </div>
                   {n.body && n.body !== text && (
-                    <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{n.body}</div>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>{n.body}</div>
                   )}
                 </div>
                 {n.createdAt && (
-                  <span style={{ fontSize: 12, color: "var(--faint)", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", whiteSpace: "nowrap" }}>
                     {timeAgo(n.createdAt)}
                   </span>
                 )}

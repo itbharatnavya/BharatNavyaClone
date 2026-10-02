@@ -29,6 +29,14 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { usePathname } from "next/navigation";
 import { PAN_INDIA_LABEL } from "./indiaGeo";
 
+// The hero search docks into the header once its bottom passes this line (px from
+// the top of the viewport). Wide screens dock early so the bar is seen travelling
+// up into the header (see useDockFlight in SectionSearchDock); small screens swap
+// to the header summary only after the hero bar has left.
+export function dockEdge() {
+  return typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches ? 220 : 72;
+}
+
 export interface SelectedCategory {
   slug: string;
   name: string;

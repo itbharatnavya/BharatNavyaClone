@@ -79,14 +79,14 @@ export default function ApplicationsTab({ jobId }: { jobId?: string | null }) {
 
   return (
     <div className="card card-flat card-pad">
-      <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", marginBottom: 16 }}>
+      <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", marginBottom: 16 }}>
         Applications{jobId && applications[0]?.job?.title ? ` — ${applications[0].job.title}` : ""}
       </h3>
 
       {loading ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>Loading…</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>Loading…</p>
       ) : applications.length === 0 ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>No applications yet.</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>No applications yet.</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {applications.map((app) => {
@@ -101,19 +101,19 @@ export default function ApplicationsTab({ jobId }: { jobId?: string | null }) {
                 >
                   <Avatar name={c?.name || "Candidate"} src={c?.avatarUrl} size={40} />
                   <div style={{ flex: 1, minWidth: 160 }}>
-                    <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }}>{c?.name || "Candidate"}</div>
-                    <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                    <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>{c?.name || "Candidate"}</div>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                       {c?.currentRole || c?.headline || "—"}{!jobId && app.job?.title ? ` · Applied to ${app.job.title}` : ""}
                     </div>
                   </div>
-                  <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{formatDate(app.appliedAt)}</span>
+                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{formatDate(app.appliedAt)}</span>
                   <span className="badge" style={{ background: sc.bg, color: sc.color }}>
                     {STATUS_OPTIONS.find((s) => s.value === app.status)?.label || app.status}
                   </span>
                 </div>
 
                 {expanded && (
-                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)", display: "grid", gap: 10, fontSize: 13.5 }}>
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)", display: "grid", gap: 10, fontSize: "var(--fs-sm)" }}>
                     {c?.skills && c.skills.length > 0 && (
                       <div><strong>Skills:</strong> {c.skills.join(", ")}</div>
                     )}

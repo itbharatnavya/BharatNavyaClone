@@ -31,7 +31,7 @@ const BRAND_COLORS: Record<string, string> = {
   supreme: "#0067B1", iffco: "#2E7D32", jindal: "#12356B", agripure: "#2E9E4F",
   packright: "#EA580C",
 };
-const FALLBACK_PALETTE = ["#2563EB", "#0F766E", "#7C3AED", "#B45309", "#BE185D", "#0891B2", "#4D7C0F"];
+const FALLBACK_PALETTE = ["#2563EB", "#0F766E", "#1B3FA0", "#1B3FA0", "#BE185D", "#0891B2", "#4D7C0F"];
 export function brandColor(name: string): string {
   const key = (name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   for (const k of Object.keys(BRAND_COLORS)) if (key.startsWith(k)) return BRAND_COLORS[k];
@@ -85,10 +85,10 @@ export default function BrandCard({ brand }: { brand: BrandCardBrand }) {
       <Monogram name={brand.name} />
       <span style={{ minWidth: 0 }}>
         <span
-          className="line-clamp-1 group-hover:text-brand"
+          className="line-clamp-1"
           style={{
             display: "block",
-            fontSize: 16,
+            fontSize: "var(--fs-md)",
             fontWeight: 700,
             color: "var(--ink)",
             transition: "color 120ms ease",
@@ -96,7 +96,7 @@ export default function BrandCard({ brand }: { brand: BrandCardBrand }) {
         >
           {brand.name}
         </span>
-        <span style={{ fontSize: 13, color: "var(--muted)" }}>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
           {brand.count} {brand.count === 1 ? "product" : "products"}
         </span>
       </span>

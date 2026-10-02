@@ -372,7 +372,7 @@ export default function CollectionsTab() {
                         style={{
                           width: 36,
                           height: 36,
-                          borderRadius: 8,
+                          borderRadius: "var(--r-xs)",
                           flexShrink: 0,
                           border: "1px solid var(--border)",
                           background: img ? `center/cover no-repeat url(${img})` : "var(--bg-subtle)",

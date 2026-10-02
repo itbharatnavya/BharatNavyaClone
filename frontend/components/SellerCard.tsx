@@ -44,11 +44,11 @@ export default function SellerCard({ seller, href, className = "" }: SellerCardP
         <Avatar src={seller.logo} name={seller.name} size={44} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <Link href={profileHref}>
-            <h3 className="line-clamp-1" style={{ fontSize: 14.5, fontWeight: 700, color: "var(--ink)" }}>
+            <h3 className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
               {seller.name}
             </h3>
           </Link>
-          <div className="line-clamp-1" style={{ marginTop: 2, fontSize: 12.5, color: "var(--muted)" }}>
+          <div className="line-clamp-1" style={{ marginTop: 2, fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {[seller.category, seller.city].filter(Boolean).join(" · ")}
           </div>
           {typeof seller.rating === "number" && seller.rating > 0 && (
@@ -82,7 +82,7 @@ export default function SellerCard({ seller, href, className = "" }: SellerCardP
         }}
       >
         {typeof seller.listingCount === "number" && (
-          <span style={{ fontSize: 12.5, color: "var(--muted)" }}>
+          <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {seller.listingCount} {seller.listingCount === 1 ? "listing" : "listings"}
           </span>
         )}

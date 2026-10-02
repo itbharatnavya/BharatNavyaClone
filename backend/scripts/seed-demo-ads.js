@@ -5,7 +5,8 @@
  *     (components/home/PromoBanner.tsx), which used to hardcode a "Post a
  *     requirement" RFQ banner in that spot instead of real sponsored content.
  *   • 2 more "category_top" ads — rotate in AdSlider on specific category
- *     pages (components/discovery/CategoryLanding.tsx already wires this up).
+ *     pages (components/discovery/CategoryLanding.tsx already wires this up),
+ *     plus 2 untargeted ones so the Directory home's slot rotates 5 ads.
  *   • 4 "search_top" ads — the search/brand pages' sponsored rail (desktop
  *     sidebar, up to 3 stacked) + in-feed native slots (mobile/tablet list &
  *     grid, DiscoveryResults.tsx / brand page). 4 so the rail's 3-card cap is
@@ -71,6 +72,26 @@ const CATEGORY_TOP_ADS = [
     categoryIds: ["automotive-parts-accessories"],
     priority: 10,
     amount: 4000,
+  },
+  // Untargeted (no categoryIds) so they also rotate in the Directory home's
+  // promotion slot, which asks for category_top without a category.
+  {
+    id: "adb_demo_ct3",
+    sellerId: "usr_s005",
+    headline: "Delhi Electronics Hub — LEDs, cables & switchgear, authorized distributor pricing",
+    creativeImageUrl: "/demo/electronics-3.jpg",
+    targetUrl: "/seller/delhi-electronics-hub",
+    priority: 6,
+    amount: 3000,
+  },
+  {
+    id: "adb_demo_ct4",
+    sellerId: "usr_s009",
+    headline: "Hyderabad Industrial Machines — CNC and packaging lines with PAN-India delivery",
+    creativeImageUrl: "/demo/machinery-2.jpg",
+    targetUrl: "/seller/hyderabad-industrial-machines",
+    priority: 5,
+    amount: 3000,
   },
 ];
 

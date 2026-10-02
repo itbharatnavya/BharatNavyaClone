@@ -53,7 +53,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
             onClick={() => onChange(n)}
             style={{ background: "transparent", border: "none", cursor: "pointer", padding: 2, lineHeight: 0 }}
           >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#F59E0B" : "#E5E7EB"}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#3B6CF5" : "#E5E7EB"}>
               <path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" />
             </svg>
           </button>
@@ -191,7 +191,7 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
       {user ? (
         <form onSubmit={submit} className="card card-flat card-pad" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {myReview && (
-            <p style={{ fontSize: 13, color: "var(--muted)" }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
               {t("reviews.editingYours", "You've already reviewed this seller — edit it below.")}
             </p>
           )}
@@ -217,7 +217,7 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
         </form>
       ) : (
         <div className="card card-flat card-pad" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 14, color: "var(--muted)" }}>{t("reviews.loginPrompt", "Log in to leave a review.")}</span>
+          <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>{t("reviews.loginPrompt", "Log in to leave a review.")}</span>
           <a href="/login" className="btn btn-secondary btn-sm">
             {t("auth.login", "Log in")}
           </a>
@@ -268,7 +268,7 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
               <option value="newest">{t("reviews.newestFirst", "Newest first")}</option>
               <option value="oldest">{t("reviews.oldestFirst", "Oldest first")}</option>
             </select>
-            <span style={{ fontSize: 13, color: "var(--faint)", marginLeft: "auto" }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginLeft: "auto" }}>
               {sorted.length} {sorted.length === 1 ? t("reviews.review", "review") : t("reviews.reviewsPlural", "reviews")}
             </span>
           </div>
@@ -293,10 +293,10 @@ export default function ReviewsPanel({ sellerId, initialReviews }: ReviewsPanelP
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <Rating value={r.rating} size={14} showValue={false} />
                       </div>
-                      <span style={{ fontSize: 12, color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
+                      <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{formatDate(r.createdAt)}</span>
                     </div>
-                    <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6, margin: "8px 0 0" }}>{r.reviewText}</p>
-                    <div style={{ fontSize: 13, color: "var(--faint)", marginTop: 10 }}>— {r.buyerName || "Buyer"}</div>
+                    <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.6, margin: "8px 0 0" }}>{r.reviewText}</p>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 10 }}>— {r.buyerName || "Buyer"}</div>
                   </div>
                 ))}
               </div>

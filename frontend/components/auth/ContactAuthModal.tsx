@@ -24,7 +24,7 @@ export interface ContactAuthModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  purpose?: "contact" | "apply";
+  purpose?: "contact" | "apply" | "account";
 }
 
 type Mode = "login" | "register";
@@ -270,14 +270,18 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
         mode === "login"
           ? purpose === "apply"
             ? "Sign in to apply"
-            : t("auth.contactGate.loginTitle", "Log in to contact this seller")
+            : purpose === "account"
+              ? "Sign in to Bharat Navya"
+              : t("auth.contactGate.loginTitle", "Log in to contact this seller")
           : t("auth.contactGate.registerTitle", "Create your account")
       }
     >
-      <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -8, marginBottom: 18 }}>
+      <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: -8, marginBottom: 18 }}>
         {purpose === "apply"
           ? "Sign in or create an account to continue. Your application is not submitted until you complete the review step."
-          : t(
+          : purpose === "account"
+            ? "Sign in or create an account to return to shortlisted companies and roles without starting over."
+            : t(
               "auth.contactGate.subtitle",
               "Phone and WhatsApp details are shown to logged-in members only."
             )}
@@ -310,7 +314,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
                     border: "none",
                     cursor: "pointer",
                     padding: "0 0 10px",
-                    fontSize: 13.5,
+                    fontSize: "var(--fs-sm)",
                     fontWeight: 600,
                     color: active ? "var(--ink)" : "var(--muted)",
                     borderBottom: active ? "2px solid var(--brand)" : "2px solid transparent",
@@ -372,7 +376,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
                       }}
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
                       aria-label={`OTP digit ${index + 1}`}
-                      style={{ textAlign: "center", padding: "10px 0", fontSize: 17 }}
+                      style={{ textAlign: "center", padding: "10px 0", fontSize: "var(--fs-md)" }}
                     />
                   ))}
                 </div>
@@ -439,7 +443,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
           )}
 
           <div className="divider" style={{ margin: "20px 0" }} />
-          <div style={{ textAlign: "center", fontSize: 13.5, color: "var(--muted)" }}>
+          <div style={{ textAlign: "center", fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {t("auth.newHere", "New here?")}{" "}
             <button
               type="button"
@@ -539,7 +543,7 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
             </Button>
           </div>
           <div className="divider" style={{ margin: "20px 0" }} />
-          <div style={{ textAlign: "center", fontSize: 13.5, color: "var(--muted)" }}>
+          <div style={{ textAlign: "center", fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {t("auth.haveAccount", "Already have an account?")}{" "}
             <button
               type="button"

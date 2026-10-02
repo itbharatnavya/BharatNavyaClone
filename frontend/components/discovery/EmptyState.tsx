@@ -58,9 +58,9 @@ export default function EmptyState({
       >
         {icon || <DefaultIcon />}
       </div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{title}</h3>
+      <h3 style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>{title}</h3>
       {message && (
-        <p style={{ fontSize: 14, color: "var(--muted)", maxWidth: 420 }}>{message}</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", maxWidth: 420 }}>{message}</p>
       )}
       {actionLabel && (actionHref || onAction) && (
         <div style={{ marginTop: 14 }}>

@@ -11,8 +11,8 @@ import type { Job, Application } from "@/lib/types";
 function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="card card-flat" style={{ padding: 18 }}>
-      <div style={{ fontSize: 26, fontWeight: 800, color: "var(--ink)" }}>{value}</div>
-      <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{label}</div>
+      <div style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)" }}>{value}</div>
+      <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4 }}>{label}</div>
     </div>
   );
 }

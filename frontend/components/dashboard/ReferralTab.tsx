@@ -112,19 +112,19 @@ export default function ReferralTab({ user }: Props) {
           </div>
 
           <div className="card card-flat" style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, color: "var(--muted)", fontWeight: 600 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 600 }}>
               {tr("dashboard.referral.yourCode", "Your referral code")}
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 10 }}>
               <code
                 style={{
-                  fontSize: 22,
+                  fontSize: "var(--fs-xl)",
                   fontWeight: 700,
                   letterSpacing: "0.12em",
                   color: "var(--brand)",
                   background: "var(--brand-tint)",
                   border: "1px dashed #bfdbfe",
-                  borderRadius: 10,
+                  borderRadius: "var(--r-sm)",
                   padding: "10px 18px",
                   fontFamily: "var(--font-mono, monospace)",
                 }}
@@ -141,7 +141,7 @@ export default function ReferralTab({ user }: Props) {
           </div>
 
           <div className="card card-flat" style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, color: "var(--muted)", fontWeight: 600, marginBottom: 10 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 600, marginBottom: 10 }}>
               {tr("dashboard.referral.haveCode", "Have a referral code?")}
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>

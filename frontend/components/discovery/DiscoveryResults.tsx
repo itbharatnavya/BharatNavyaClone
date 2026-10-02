@@ -177,7 +177,7 @@ function AsideRfqCard({ t }: { t: (key: string, fallback: string) => string }) {
     <Link href="/rfq" className="card card-pad" style={{ display: "block", textDecoration: "none" }}>
       <div
         style={{
-          fontSize: 11,
+          fontSize: "var(--fs-xs)",
           fontWeight: 700,
           letterSpacing: "0.05em",
           textTransform: "uppercase",
@@ -186,7 +186,7 @@ function AsideRfqCard({ t }: { t: (key: string, fallback: string) => string }) {
       >
         {t("results.asideEyebrow", "Can't find it?")}
       </div>
-      <p style={{ margin: "6px 0 14px", fontSize: 14.5, fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>
+      <p style={{ margin: "6px 0 14px", fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", lineHeight: 1.35 }}>
         {t("results.asideTitle", "Post a requirement and let sellers quote you")}
       </p>
       <span className="btn btn-primary btn-sm btn-block" style={{ pointerEvents: "none" }}>
@@ -613,7 +613,7 @@ export default function DiscoveryResults({
       <div className={adRail ? "dr-main" : undefined}>
         {/* Toolbar */}
         <div className="dr-toolbar">
-          <div style={{ fontSize: 14, color: "var(--muted)" }}>
+          <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             {loading ? (
               <span className="skeleton" style={{ display: "inline-block", width: 90, height: 14 }} />
             ) : (
@@ -646,7 +646,7 @@ export default function DiscoveryResults({
             </div>
 
             <label className="dr-sort">
-              <span style={{ fontSize: 13, color: "var(--faint)" }}>{t("sort.label", "Sort")}</span>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{t("sort.label", "Sort")}</span>
               <select
                 className="select"
                 value={sort}
@@ -664,7 +664,7 @@ export default function DiscoveryResults({
 
         {/* "Showing results for …" */}
         {q && (
-          <div style={{ fontSize: 14, color: "var(--muted)", marginBottom: 12 }}>
+          <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginBottom: 12 }}>
             {t("results.showingFor", "Showing results for")}{" "}
             <strong style={{ color: "var(--ink)", fontWeight: 700 }}>“{q}”</strong>
           </div>
@@ -726,7 +726,7 @@ export default function DiscoveryResults({
             <div className="dr-list">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="card" style={{ display: "flex", gap: 16, padding: 16 }}>
-                  <div className="skeleton" style={{ width: 148, height: 148, borderRadius: 10, flexShrink: 0 }} />
+                  <div className="skeleton" style={{ width: 148, height: 148, borderRadius: "var(--r-sm)", flexShrink: 0 }} />
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
                     <span className="skeleton" style={{ height: 16, width: "70%" }} />
                     <span className="skeleton" style={{ height: 13, width: "45%" }} />
@@ -823,7 +823,7 @@ export default function DiscoveryResults({
         aria-label={t("filters.title", "Filters")}
       >
         <div className="dr-drawer-head">
-          <span style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <span style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {t("filters.title", "Filters")}
           </span>
           <button
@@ -863,7 +863,7 @@ export default function DiscoveryResults({
            "more than just white and orange." */
         .dr-pillbar {
           position: relative;
-          border-radius: 14px;
+          border-radius: var(--r-md);
           border: 1px solid var(--border);
           background: radial-gradient(120% 180% at 0% 0%, rgba(26, 79, 174, 0.07), transparent 55%),
             radial-gradient(120% 180% at 100% 100%, rgba(245, 130, 31, 0.08), transparent 55%),
@@ -882,9 +882,9 @@ export default function DiscoveryResults({
           width: auto;
           min-width: 124px;
           flex-shrink: 0;
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           padding: 8px 34px 8px 14px;
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 500;
         }
         .dr-pillbar-scroll :global(.dr-pill-active) {
@@ -928,7 +928,7 @@ export default function DiscoveryResults({
           display: inline-flex;
           background: var(--bg-subtle);
           border: 1px solid var(--border);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           padding: 3px;
         }
         .dr-view-indicator {
@@ -937,7 +937,7 @@ export default function DiscoveryResults({
           bottom: 3px;
           left: 3px;
           width: calc(100% / var(--seg-count, 2) - 3px);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           background: var(--brand);
           box-shadow: 0 1px 4px rgba(26, 79, 174, 0.35);
           transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -952,10 +952,10 @@ export default function DiscoveryResults({
           background: none;
           cursor: pointer;
           padding: 7px 14px;
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 600;
           color: var(--muted);
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           transition: color 200ms ease;
           white-space: nowrap;
           font-family: inherit;
@@ -1020,13 +1020,13 @@ export default function DiscoveryResults({
           flex-wrap: wrap;
           padding: 14px 16px;
           margin-bottom: 16px;
-          border-radius: 12px;
+          border-radius: var(--r-sm);
           border: 1px solid var(--border);
           background: var(--brand-tint);
           text-decoration: none;
         }
         :global(.dr-rfq-inline-text) {
-          font-size: 14px;
+          font-size: var(--fs-sm);
           color: var(--ink);
           flex: 1;
           min-width: 200px;
@@ -1082,10 +1082,10 @@ export default function DiscoveryResults({
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 500;
           padding: 6px 6px 6px 12px;
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           background: var(--brand-tint);
           color: var(--brand-hover);
           border: 1px solid #bfdbfe;
@@ -1096,12 +1096,12 @@ export default function DiscoveryResults({
           justify-content: center;
           width: 18px;
           height: 18px;
-          border-radius: 999px;
+          border-radius: var(--r-pill);
           border: none;
           background: transparent;
           color: var(--brand-hover);
           cursor: pointer;
-          font-size: 10px;
+          font-size: var(--fs-xs);
           line-height: 1;
           padding: 0;
         }
@@ -1112,7 +1112,7 @@ export default function DiscoveryResults({
           background: none;
           border: none;
           color: var(--muted);
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 500;
           cursor: pointer;
           padding: 6px 8px;

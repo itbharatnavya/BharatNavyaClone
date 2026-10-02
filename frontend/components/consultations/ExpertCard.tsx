@@ -43,14 +43,14 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
             <span
               className="line-clamp-1"
-              style={{ fontSize: 15.5, fontWeight: 700, color: "var(--ink)", minWidth: 0 }}
+              style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", minWidth: 0 }}
             >
               {expert.name}
             </span>
           </div>
           <span
             className="line-clamp-1"
-            style={{ display: "block", fontSize: 13, color: "var(--muted)", marginTop: 2 }}
+            style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}
           >
             {expert.profession}
           </span>
@@ -69,7 +69,7 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
           alignItems: "center",
           flexWrap: "wrap",
           gap: "6px 12px",
-          fontSize: 13,
+          fontSize: "var(--fs-xs)",
           color: "var(--muted)",
         }}
       >
@@ -92,7 +92,7 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
       {/* ---- Headline ---- */}
       <p
         className="line-clamp-2"
-        style={{ fontSize: 13.5, color: "var(--muted)", margin: 0, lineHeight: 1.5 }}
+        style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: 0, lineHeight: 1.5 }}
       >
         {expert.headline}
       </p>
@@ -137,13 +137,13 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
         <div style={{ minWidth: 0 }}>
           {expert.priceFrom != null ? (
             <>
-              <span style={{ fontSize: 12, color: "var(--faint)" }}>From </span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>From </span>
+              <span style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
                 {formatPrice(expert.priceFrom)}
               </span>
             </>
           ) : (
-            <span style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
+            <span style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
               Custom quote
             </span>
           )}
@@ -176,7 +176,7 @@ export default function ExpertCard({ expert }: { expert: ConsultationExpert }) {
           display: "inline-flex",
           alignItems: "center",
           gap: 6,
-          fontSize: 13.5,
+          fontSize: "var(--fs-sm)",
           fontWeight: 600,
           color: "var(--brand)",
         }}

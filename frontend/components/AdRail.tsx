@@ -115,7 +115,7 @@ export function AdCard({ ad }: { ad: AdCreative }) {
       {ad.headline && (
         <div
           className="line-clamp-2"
-          style={{ padding: "10px 12px", fontSize: 12.5, fontWeight: 600, color: "var(--ink)", lineHeight: 1.35 }}
+          style={{ padding: "10px 12px", fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)", lineHeight: 1.35 }}
         >
           {ad.headline}
         </div>
@@ -145,7 +145,7 @@ export function InFeedAd({ ad }: { ad: AdCreative }) {
         style={{
           width: 88,
           height: 68,
-          borderRadius: 8,
+          borderRadius: "var(--r-xs)",
           flexShrink: 0,
           backgroundImage: `url(${ad.creativeImageUrl})`,
           backgroundSize: "cover",
@@ -153,10 +153,10 @@ export function InFeedAd({ ad }: { ad: AdCreative }) {
         }}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--brand)" }}>
+        <span style={{ fontSize: "var(--fs-xs)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--brand)" }}>
           Ad
         </span>
-        <div className="line-clamp-2" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)", marginTop: 2, lineHeight: 1.35 }}>
+        <div className="line-clamp-2" style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", marginTop: 2, lineHeight: 1.35 }}>
           {ad.headline}
         </div>
       </div>

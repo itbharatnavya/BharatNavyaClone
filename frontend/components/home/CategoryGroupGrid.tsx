@@ -38,8 +38,8 @@ export default function CategoryGroupGrid({ categories, className = "" }: Catego
           <div className="card card-flat" style={{ padding: 18, minWidth: 0 }}>
             <Link
               href={`/${group.slug}`}
-              className="hover:text-brand"
-              style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease" }}
+              className=""
+              style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease" }}
             >
               {group.name}
             </Link>
@@ -54,7 +54,7 @@ export default function CategoryGroupGrid({ categories, className = "" }: Catego
                   <div
                     style={{
                       aspectRatio: "1 / 1",
-                      borderRadius: 10,
+                      borderRadius: "var(--r-sm)",
                       overflow: "hidden",
                       background: "var(--bg-subtle)",
                       border: "1px solid var(--border)",
@@ -68,8 +68,8 @@ export default function CategoryGroupGrid({ categories, className = "" }: Catego
                     />
                   </div>
                   <span
-                    className="line-clamp-1 hover:text-brand"
-                    style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink)", textAlign: "center", transition: "color 120ms ease" }}
+                    className="line-clamp-1"
+                    style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)", textAlign: "center", transition: "color 120ms ease" }}
                   >
                     {sub.name}
                   </span>

@@ -34,18 +34,18 @@ export default function SectionHeading({
     >
       <div style={{ maxWidth: 640 }}>
         {eyebrow && <div className="eyebrow" style={{ marginBottom: 8 }}>{eyebrow}</div>}
-        <h2 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+        <h2 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
           {title}
         </h2>
         {subtitle && (
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8 }}>{subtitle}</p>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8 }}>{subtitle}</p>
         )}
       </div>
       {actionLabel && actionHref && (
         <Link
           href={actionHref}
-          className="hover:text-brand"
-          style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap" }}
+          className=""
+          style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap" }}
         >
           {actionLabel} →
         </Link>

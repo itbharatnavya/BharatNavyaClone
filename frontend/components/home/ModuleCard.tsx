@@ -27,7 +27,7 @@ export interface ModuleCardProps {
 const ACCENT = {
   brand: { bg: "var(--brand-tint)", color: "var(--brand)", border: "#d3e2f7" },
   green: { bg: "var(--tricolor-green-tint)", color: "var(--tricolor-green)", border: "#cdebd7" },
-  orange: { bg: "var(--action-tint)", color: "var(--action)", border: "#f9d9b8" },
+  orange: { bg: "var(--action-tint)", color: "var(--action)", border: "#C4D3F7" },
 } as const;
 
 export default function ModuleCard({ icon, title, tagline, href, status, accent = "brand", badgeLabel }: ModuleCardProps) {
@@ -43,7 +43,7 @@ export default function ModuleCard({ icon, title, tagline, href, status, accent 
             width: 44,
             height: 44,
             flexShrink: 0,
-            borderRadius: 12,
+            borderRadius: "var(--r-sm)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -58,17 +58,17 @@ export default function ModuleCard({ icon, title, tagline, href, status, accent 
       </div>
 
       <div style={{ minWidth: 0 }}>
-        <h3 style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--ink)" }}>{title}</h3>
-        <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 6, lineHeight: 1.55 }}>{tagline}</p>
+        <h3 style={{ fontSize: "var(--fs-md)", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--ink)" }}>{title}</h3>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 6, lineHeight: 1.55 }}>{tagline}</p>
       </div>
 
       <div style={{ marginTop: "auto", paddingTop: 2 }}>
         {!href ? (
-          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--faint)" }}>Launching soon</span>
+          <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--faint)" }}>Launching soon</span>
         ) : soon ? (
-          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--faint)" }}>Notify me →</span>
+          <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--faint)" }}>Notify me →</span>
         ) : (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 700, color: a.color }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "var(--fs-sm)", fontWeight: 700, color: a.color }}>
             Explore
             <ArrowRightIcon size={14} />
           </span>

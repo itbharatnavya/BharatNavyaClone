@@ -34,11 +34,11 @@ function BriefcaseSearchIcon() {
 function SkeletonRow() {
   return (
     <div className="card card-flat" style={{ padding: 18, display: "flex", gap: 16 }}>
-      <div className="skeleton" style={{ width: 48, height: 48, borderRadius: 10, flexShrink: 0 }} />
+      <div className="skeleton" style={{ width: 48, height: 48, borderRadius: "var(--r-sm)", flexShrink: 0 }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-        <div className="skeleton" style={{ height: 16, width: "40%", borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 13, width: "25%", borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 13, width: "60%", borderRadius: 6 }} />
+        <div className="skeleton" style={{ height: 16, width: "40%", borderRadius: "var(--r-xs)" }} />
+        <div className="skeleton" style={{ height: 13, width: "25%", borderRadius: "var(--r-xs)" }} />
+        <div className="skeleton" style={{ height: 13, width: "60%", borderRadius: "var(--r-xs)" }} />
       </div>
     </div>
   );
@@ -112,7 +112,7 @@ export default function JobResults({ q, filters, page, onPageChange, limit = 10 
       )}
       <style jsx>{`
         .jr-count {
-          font-size: 13px;
+          font-size: var(--fs-xs);
           color: var(--muted);
           margin-bottom: 14px;
         }

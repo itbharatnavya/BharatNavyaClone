@@ -23,7 +23,7 @@ interface IconSpec {
 
 const ICONS: Record<string, IconSpec> = {
   "textiles-fabrics-yarn": {
-    color: "#7c3aed",
+    color: "#1B3FA0",
     render: (c) => (
       <>
         <rect x="4" y="3" width="16" height="4" rx="1.5" fill={c} />
@@ -37,7 +37,7 @@ const ICONS: Record<string, IconSpec> = {
     render: (c) => <path d="M9 3L5 6l2 3 2-1v10a1 1 0 001 1h4a1 1 0 001-1V8l2 1 2-3-4-3-2 1.2h-2L9 3z" fill={c} />,
   },
   "gifts-crafts-sports": {
-    color: "#f59e0b",
+    color: "#3B6CF5",
     render: (c) => (
       <>
         <rect x="4" y="9" width="16" height="11" rx="1.5" fill={c} />
@@ -136,7 +136,7 @@ const ICONS: Record<string, IconSpec> = {
     ),
   },
   "electronics-electrical": {
-    color: "#f5821f",
+    color: "#1B3FA0",
     render: (c) => <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill={c} />,
   },
   "agriculture-farming": {
@@ -149,7 +149,7 @@ const ICONS: Record<string, IconSpec> = {
     ),
   },
   food: {
-    color: "#ea580c",
+    color: "#1b3fa0",
     render: (c) => (
       <>
         <path d="M4 12h16a8 8 0 01-16 0z" fill={c} />

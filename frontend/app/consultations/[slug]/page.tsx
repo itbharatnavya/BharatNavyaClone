@@ -49,7 +49,7 @@ function Fact({
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
-        fontSize: 13.5,
+        fontSize: "var(--fs-sm)",
         color: "var(--muted)",
         minWidth: 0,
       }}
@@ -64,7 +64,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <h2
       style={{
-        fontSize: 20,
+        fontSize: "var(--fs-lg)",
         fontWeight: 800,
         letterSpacing: "-0.02em",
         color: "var(--ink)",
@@ -128,16 +128,16 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
           />
         </div>
         <div className="container-bs section-pad-sm">
-          <span className="skeleton" style={{ display: "block", height: 160, borderRadius: 14 }} />
+          <span className="skeleton" style={{ display: "block", height: 160, borderRadius: "var(--r-md)" }} />
           <section style={{ marginTop: 32 }}>
             <SectionTitle>About</SectionTitle>
-            <span className="skeleton" style={{ display: "block", height: 72, borderRadius: 10 }} />
+            <span className="skeleton" style={{ display: "block", height: 72, borderRadius: "var(--r-sm)" }} />
           </section>
           <section style={{ marginTop: 32 }}>
             <SectionTitle>Service packages</SectionTitle>
             <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
               {Array.from({ length: 3 }).map((_, i) => (
-                <span key={i} className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+                <span key={i} className="skeleton" style={{ height: 260, borderRadius: "var(--r-sm)" }} />
               ))}
             </div>
           </section>
@@ -158,8 +158,8 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
           ]}
         />
         <div className="card card-flat" style={{ padding: 40, textAlign: "center", maxWidth: 460, margin: "40px auto 0" }}>
-          <p style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)", margin: 0 }}>Expert not found</p>
-          <p style={{ fontSize: 14, color: "var(--muted)", margin: "10px 0 0", lineHeight: 1.55 }}>
+          <p style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)", margin: 0 }}>Expert not found</p>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "10px 0 0", lineHeight: 1.55 }}>
             We couldn&apos;t find this expert. They may have moved or the link may be
             incorrect.
           </p>
@@ -206,7 +206,7 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
 
               {/* Profession + registration body + credential */}
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}>
-                <span style={{ fontSize: 15, color: "var(--muted)", fontWeight: 600 }}>
+                <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", fontWeight: 600 }}>
                   {expert.profession}
                 </span>
                 {expert.registrationBody && (
@@ -265,7 +265,7 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
             {expert.about && (
               <section>
                 <SectionTitle>About</SectionTitle>
-                <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.7, margin: 0 }}>
                   {expert.about}
                 </p>
               </section>
@@ -340,10 +340,10 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
                 >
                   {expert.caseStudies.map((cs, i) => (
                     <div key={`${cs.title}-${i}`} className="card card-flat" style={{ padding: 18 }}>
-                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: 0, lineHeight: 1.4 }}>
+                      <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", margin: 0, lineHeight: 1.4 }}>
                         {cs.title}
                       </h3>
-                      <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "8px 0 0", lineHeight: 1.55 }}>
+                      <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "8px 0 0", lineHeight: 1.55 }}>
                         {cs.result}
                       </p>
                     </div>
@@ -363,16 +363,16 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
                     return (
                       <div key={r.id || `${author}-${i}`} className="card card-flat" style={{ padding: 18 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 14.5, fontWeight: 700, color: "var(--ink)" }}>{author}</span>
+                          <span style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>{author}</span>
                           {typeof r.rating === "number" && (
                             <Rating value={r.rating} size={14} showValue={false} />
                           )}
                         </div>
                         {r.title && (
-                          <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", margin: "8px 0 0" }}>{r.title}</p>
+                          <p style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", margin: "8px 0 0" }}>{r.title}</p>
                         )}
                         {body && (
-                          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "6px 0 0", lineHeight: 1.55 }}>{body}</p>
+                          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "6px 0 0", lineHeight: 1.55 }}>{body}</p>
                         )}
                       </div>
                     );
@@ -380,7 +380,7 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
                 </div>
               ) : (
                 <div className="card card-flat" style={{ padding: 20 }}>
-                  <p style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>
+                  <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: 0 }}>
                     No reviews yet — be the first to work with {expert.name}.
                   </p>
                 </div>
@@ -391,19 +391,19 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
           {/* -------- Sticky booking rail (desktop bonus; wraps below on mobile) -------- */}
           <aside style={{ flex: "1 1 280px", minWidth: 0, maxWidth: 340 }}>
             <div className="card" style={{ padding: 20, position: "sticky", top: 90 }}>
-              <div style={{ fontSize: 13, color: "var(--faint)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Book {expert.name.split(",")[0]}
               </div>
               <div style={{ marginTop: 10 }}>
                 {expert.priceFrom != null ? (
                   <>
-                    <span style={{ fontSize: 13, color: "var(--faint)" }}>Packages from </span>
-                    <div style={{ fontSize: 26, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.02em" }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>Packages from </span>
+                    <div style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.02em" }}>
                       {formatPrice(expert.priceFrom)}
                     </div>
                   </>
                 ) : (
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)" }}>Custom quote</div>
+                  <div style={{ fontSize: "var(--fs-lg)", fontWeight: 800, color: "var(--ink)" }}>Custom quote</div>
                 )}
               </div>
 
@@ -417,7 +417,7 @@ export default function ExpertProfilePage({ params }: { params: { slug: string }
               </button>
 
               {expert.freeIntroCall && (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 12, fontSize: 13, color: "var(--success)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 12, fontSize: "var(--fs-xs)", color: "var(--success)" }}>
                   <CheckIcon size={16} />
                   First intro call is free
                 </div>
@@ -464,8 +464,8 @@ function TrustRow({
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, minWidth: 0 }}>
       <span style={{ color: "var(--brand)", flexShrink: 0, marginTop: 1, display: "inline-flex" }}>{icon}</span>
       <div style={{ minWidth: 0, display: "flex", flexWrap: "wrap", gap: "2px 8px", alignItems: "baseline" }}>
-        <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>{label}</span>
-        <span className="line-clamp-1" style={{ fontSize: 13.5, color: "var(--muted)", minWidth: 0 }}>{value}</span>
+        <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>{label}</span>
+        <span className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", minWidth: 0 }}>{value}</span>
       </div>
     </div>
   );

@@ -56,7 +56,7 @@ const CARDS: PromoCard[] = [
     href: "/brands",
     image: "retail-2",
     overlay: "linear-gradient(160deg, rgba(245,130,31,0.88) 0%, rgba(196,94,10,0.95) 100%)",
-    dot: "#f5821f",
+    dot: "#1B3FA0",
   },
   {
     title: "Verified Suppliers",
@@ -106,9 +106,9 @@ export default function PromoBanner() {
         <div
           className={bigSlotClassName}
           aria-hidden
-          style={{ borderRadius: 16, minHeight: 152 }}
+          style={{ borderRadius: "var(--r-md)", minHeight: 152 }}
         >
-          <span className="skeleton" style={{ display: "block", width: "100%", height: "100%", minHeight: 152, borderRadius: 16 }} />
+          <span className="skeleton" style={{ display: "block", width: "100%", height: "100%", minHeight: 152, borderRadius: "var(--r-md)" }} />
         </div>
       ) : ads.length > 0 ? (
         <AdSlider
@@ -124,7 +124,7 @@ export default function PromoBanner() {
         style={{
           position: "relative",
           overflow: "hidden",
-          borderRadius: 16,
+          borderRadius: "var(--r-md)",
           border: "1px solid var(--border)",
           background: "linear-gradient(120deg, var(--brand-tint) 0%, #dce9fc 100%)",
           minHeight: 152,
@@ -135,7 +135,7 @@ export default function PromoBanner() {
         <div style={{ position: "relative", zIndex: 1, padding: "20px 22px", maxWidth: "62%" }}>
           <span
             style={{
-              fontSize: 11.5,
+              fontSize: "var(--fs-xs)",
               fontWeight: 700,
               letterSpacing: "0.05em",
               textTransform: "uppercase",
@@ -144,7 +144,7 @@ export default function PromoBanner() {
           >
             Post a requirement
           </span>
-          <p style={{ margin: "6px 0 14px", fontSize: 17, fontWeight: 800, color: "var(--ink)", lineHeight: 1.28 }}>
+          <p style={{ margin: "6px 0 14px", fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", lineHeight: 1.28 }}>
             Get quotes from verified suppliers — free
           </p>
           <span className="btn btn-primary btn-sm" style={{ pointerEvents: "none" }}>
@@ -178,7 +178,7 @@ export default function PromoBanner() {
           style={{
             position: "relative",
             overflow: "hidden",
-            borderRadius: 16,
+            borderRadius: "var(--r-md)",
             minHeight: 152,
             display: "flex",
             flexDirection: "column",
@@ -194,10 +194,10 @@ export default function PromoBanner() {
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
           <span aria-hidden style={{ position: "absolute", inset: 0, background: c.overlay }} />
-          <span className="line-clamp-1" style={{ position: "relative", zIndex: 1, color: "#fff", fontSize: 14.5, fontWeight: 700, lineHeight: 1.25 }}>
+          <span className="line-clamp-1" style={{ position: "relative", zIndex: 1, color: "#fff", fontSize: "var(--fs-sm)", fontWeight: 700, lineHeight: 1.25 }}>
             {c.title}
           </span>
-          <span className="line-clamp-2" style={{ position: "relative", zIndex: 1, color: "rgba(255,255,255,0.88)", fontSize: 12, marginTop: 4, lineHeight: 1.35 }}>
+          <span className="line-clamp-2" style={{ position: "relative", zIndex: 1, color: "rgba(255,255,255,0.88)", fontSize: "var(--fs-xs)", marginTop: 4, lineHeight: 1.35 }}>
             {c.subtitle}
           </span>
           <span

@@ -28,18 +28,18 @@ export default function Breadcrumbs({ items, className = "" }: BreadcrumbsProps)
               <Link
                 href={item.href}
                 style={{
-                  fontSize: 13,
+                  fontSize: "var(--fs-xs)",
                   color: "var(--muted)",
                   transition: "color 150ms ease",
                 }}
-                className="hover:text-brand"
+                className=""
               >
                 {item.label}
               </Link>
             ) : (
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: "var(--fs-xs)",
                   color: last ? "var(--ink)" : "var(--muted)",
                   fontWeight: last ? 600 : 400,
                 }}
@@ -49,7 +49,7 @@ export default function Breadcrumbs({ items, className = "" }: BreadcrumbsProps)
               </span>
             )}
             {!last && (
-              <span style={{ color: "var(--faint)", fontSize: 13 }} aria-hidden>
+              <span style={{ color: "var(--faint)", fontSize: "var(--fs-xs)" }} aria-hidden>
                 /
               </span>
             )}

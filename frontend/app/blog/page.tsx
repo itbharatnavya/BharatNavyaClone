@@ -53,14 +53,16 @@ export default function BlogIndexPage() {
         <div className="blog-grid">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i}>
-              <div className="skeleton" style={{ height: 170, borderRadius: 12 }} />
+              <div className="skeleton" style={{ height: 170, borderRadius: "var(--r-sm)" }} />
               <div className="skeleton" style={{ height: 18, width: "80%", marginTop: 12 }} />
               <div className="skeleton" style={{ height: 14, width: "50%", marginTop: 8 }} />
             </div>
           ))}
         </div>
       ) : error ? (
-        <p style={{ color: "var(--error)" }}>{error}</p>
+        <div className="counter-public-state" role="status">
+          Updates are temporarily unavailable. Please try again shortly.
+        </div>
       ) : blogs.length === 0 ? (
         <div
           className="card card-flat card-pad"
@@ -109,7 +111,7 @@ export default function BlogIndexPage() {
                     {b.excerpt && (
                       <p
                         className="line-clamp-2"
-                        style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 8 }}
+                        style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8 }}
                       >
                         {b.excerpt}
                       </p>
@@ -193,14 +195,14 @@ export default function BlogIndexPage() {
           background: linear-gradient(
             120deg,
             var(--brand-tint, #eff6ff),
-            var(--action-tint, #fff7ed)
+            var(--action-tint, #E3EBFF)
           );
         }
         .blog-body {
           padding: 18px;
         }
         .blog-card-title {
-          font-size: 17px;
+          font-size: var(--fs-md);
           font-weight: 600;
           line-height: 1.35;
           color: var(--ink);
@@ -224,7 +226,7 @@ export default function BlogIndexPage() {
           min-width: 0;
         }
         .blog-author-name {
-          font-size: 13px;
+          font-size: var(--fs-xs);
           font-weight: 600;
           color: var(--ink);
           white-space: nowrap;
@@ -238,7 +240,7 @@ export default function BlogIndexPage() {
           text-decoration: underline;
         }
         .blog-author-meta {
-          font-size: 12px;
+          font-size: var(--fs-xs);
           color: var(--faint);
           white-space: nowrap;
           overflow: hidden;

@@ -66,10 +66,9 @@ function SectionLabel({
   style?: React.CSSProperties;
   children: React.ReactNode;
 }) {
-  const palette =
-    tone === "green"
-      ? { bg: "var(--tricolor-green-tint)", fg: "var(--tricolor-green-hover)" }
-      : { bg: "var(--brand-tint)", fg: "var(--brand-hover)" };
+  // One blue for every section icon (tone is kept for call sites, not for colour).
+  void tone;
+  const palette = { bg: "var(--counter-indigo-soft)", fg: "var(--counter-indigo)" };
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, ...style }}>
       <span
@@ -77,7 +76,7 @@ function SectionLabel({
         style={{
           width: 30,
           height: 30,
-          borderRadius: 8,
+          borderRadius: "var(--r-xs)",
           background: palette.bg,
           color: palette.fg,
           display: "inline-flex",
@@ -88,7 +87,7 @@ function SectionLabel({
       >
         {icon}
       </span>
-      <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+      <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
         {children}
       </h2>
     </div>
@@ -356,7 +355,7 @@ export default function ListingDetailPage() {
       <div className="directory-design counter-public-page listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
           <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
+          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
             {t("listing.notFound.title", "This listing doesn't exist")}
           </h1>
           <p style={{ color: "var(--muted)", maxWidth: 440, margin: "0 auto 28px" }}>
@@ -424,7 +423,7 @@ export default function ListingDetailPage() {
               borderColor: listing.status === "rejected" ? "var(--error)" : "var(--action)",
               background: listing.status === "rejected" ? "#fef2f2" : "var(--action-tint)",
               color: listing.status === "rejected" ? "#b91c1c" : "var(--ink)",
-              fontSize: 13.5,
+              fontSize: "var(--fs-sm)",
             }}
           >
             {listing.status === "rejected" ? (
@@ -449,71 +448,40 @@ export default function ListingDetailPage() {
               <div className="ld-gallery-wrap"><Gallery media={listing.media} title={listing.title} /></div>
 
               <div className="ld-summary" style={{ minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
-                  {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
-                  {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
-                  {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
-                </div>
-
-                <h1 style={{ fontSize: 24, fontWeight: 800, color: "var(--ink)", lineHeight: 1.3, margin: "10px 0 16px" }}>
-                  {listing.title}
-                </h1>
-
-                <PriceBlock listing={listing} />
-
-                {/* Save (shortlist) toggle */}
-                <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <div className="ld-topline">
+                  <div className="ld-badges">
+                    <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
+                    {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
+                    {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
+                    {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
+                  </div>
                   <button
                     type="button"
-                    className="btn btn-secondary btn-sm"
+                    className={`ld-save${shortlist.has(listing.id) ? " is-saved" : ""}`}
                     aria-pressed={shortlist.has(listing.id)}
+                    aria-label={shortlist.has(listing.id) ? t("listing.saved", "Saved") : t("listing.save", "Save")}
+                    title={shortlist.has(listing.id) ? t("listing.saved", "Saved") : t("listing.save", "Save")}
                     onClick={() => shortlist.toggle(listing.id)}
-                    style={
-                      shortlist.has(listing.id)
-                        ? { color: "var(--action)", borderColor: "var(--action)" }
-                        : undefined
-                    }
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill={shortlist.has(listing.id) ? "var(--action)" : "none"}
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={shortlist.has(listing.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                       <path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" />
                     </svg>
-                    {shortlist.has(listing.id)
-                      ? t("listing.saved", "Saved")
-                      : t("listing.save", "Save")}
                   </button>
                 </div>
 
-                {condition && (
-                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      {t("listing.condition", "Condition")}
-                    </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
-                      {conditionLabel[condition] || condition}
-                    </span>
-                  </div>
-                )}
+                <h1 style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 800, color: "var(--ink)", lineHeight: 1.12, letterSpacing: "-0.02em", margin: "12px 0 10px" }}>
+                  {listing.title}
+                </h1>
 
                 {locationLabel && (
-                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: 14 }}>
+                  <div style={{ margin: "0 0 18px", display: "flex", alignItems: "center", gap: 6, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                       <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
                     <span>
                       {isPanIndia && (
-                        <span style={{ fontSize: 13, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
+                        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em", marginRight: 6 }}>
                           {t("listing.availableIn", "Available in")}
                         </span>
                       )}
@@ -521,6 +489,19 @@ export default function ListingDetailPage() {
                     </span>
                   </div>
                 )}
+                <PriceBlock listing={listing} />
+
+                {condition && (
+                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      {t("listing.condition", "Condition")}
+                    </span>
+                    <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
+                      {conditionLabel[condition] || condition}
+                    </span>
+                  </div>
+                )}
+
               </div>
             </div>
 
@@ -535,7 +516,7 @@ export default function ListingDetailPage() {
                   <SectionLabel icon={<DescriptionIcon />} tone="green">
                     {t("listing.description", "Description")}
                   </SectionLabel>
-                  <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
+                  <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.7, whiteSpace: "pre-line" }}>
                     {listing.description}
                   </p>
                 </section>
@@ -564,23 +545,15 @@ export default function ListingDetailPage() {
                 </section>
               )}
 
-              {listing.keywords && listing.keywords.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {listing.keywords.map((kw) => (
-                    <span key={kw} style={{ fontSize: 13, color: "var(--faint)" }}>
-                      #{kw}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
           {/* STICKY SELLER CARD */}
-          <aside className="ld-aside">
+          <aside className="ld-aside" id="seller-contact">
             <SellerContactCard listing={listing} seller={contact} onContactUnlocked={refreshContact} />
           </aside>
         </div>
+        <a className="ld-mobile-cta" href="#seller-contact">Contact seller</a>
 
         <ApiAdvertisingSlot compact placement={["listing_detail", "category_top"]} kind="native" context="Sponsored near listing details" summary="A related promoted service or product, kept separate from this listing’s seller evidence and terms." action="View promoted record" />
 
@@ -597,7 +570,7 @@ export default function ListingDetailPage() {
               {contact.slug && (
                 <Link
                   href={`/seller/${contact.slug}`}
-                  style={{ fontSize: 14, fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
+                  style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--brand)", whiteSpace: "nowrap", flexShrink: 0 }}
                 >
                   {t("listing.viewAllSeller", "View all")} →
                 </Link>
@@ -605,7 +578,7 @@ export default function ListingDetailPage() {
             </div>
             <div className="ld-grid">
               {sellerListingCards.map((l) => (
-                <ListingCard key={l.id} listing={l} />
+                <ListingCard key={l.id} listing={l} hideSeller />
               ))}
             </div>
           </section>
@@ -661,7 +634,7 @@ export default function ListingDetailPage() {
           max-width: 62ch;
           margin: -6px 0 18px;
           color: var(--muted);
-          font-size: 14px;
+          font-size: var(--fs-sm);
           line-height: 1.6;
         }
         .listing-terms-grid {
@@ -670,7 +643,7 @@ export default function ListingDetailPage() {
           gap: 1px;
           overflow: hidden;
           border: 1px solid var(--border);
-          border-radius: 14px;
+          border-radius: var(--r-md);
           background: var(--border);
         }
         .listing-terms-grid > div {
@@ -680,7 +653,7 @@ export default function ListingDetailPage() {
         }
         .listing-terms-grid dt {
           color: var(--faint);
-          font-size: 11px;
+          font-size: var(--fs-xs);
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;
@@ -688,7 +661,7 @@ export default function ListingDetailPage() {
         .listing-terms-grid dd {
           margin-top: 5px;
           color: var(--ink);
-          font-size: 14px;
+          font-size: var(--fs-sm);
           font-weight: 650;
           line-height: 1.45;
         }
@@ -709,9 +682,6 @@ export default function ListingDetailPage() {
         @media (max-width: 720px) {
           .ld-top {
             grid-template-columns: minmax(0, 1fr);
-          }
-          .ld-summary {
-            order: -1;
           }
           .listing-terms-grid {
             grid-template-columns: minmax(0, 1fr);

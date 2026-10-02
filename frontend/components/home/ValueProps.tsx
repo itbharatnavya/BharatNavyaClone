@@ -17,7 +17,7 @@ function Check({ color }: { color: string }) {
         width: 22,
         height: 22,
         flexShrink: 0,
-        borderRadius: 999,
+        borderRadius: "var(--r-pill)",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -119,7 +119,7 @@ export default function ValueProps() {
                 width: 46,
                 height: 46,
                 flexShrink: 0,
-                borderRadius: 12,
+                borderRadius: "var(--r-sm)",
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -140,13 +140,13 @@ export default function ValueProps() {
           <h3 style={{ fontSize: "clamp(20px, 2.6vw, 24px)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--ink)" }}>
             {col.title}
           </h3>
-          <p style={{ fontSize: 15, color: "var(--muted)", marginTop: 8, lineHeight: 1.6 }}>{col.subtitle}</p>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8, lineHeight: 1.6 }}>{col.subtitle}</p>
 
           <ul style={{ listStyle: "none", margin: "20px 0 0", padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
             {col.points.map((p) => (
               <li key={p} style={{ display: "flex", gap: 12, alignItems: "flex-start", minWidth: 0 }}>
                 <Check color={col.accent} />
-                <span style={{ fontSize: 14.5, color: "var(--ink)", lineHeight: 1.5 }}>{p}</span>
+                <span style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", lineHeight: 1.5 }}>{p}</span>
               </li>
             ))}
           </ul>

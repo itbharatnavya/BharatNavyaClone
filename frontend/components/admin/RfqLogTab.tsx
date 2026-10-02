@@ -246,7 +246,7 @@ export default function RfqLogTab({ queueMode = false }: Props) {
                   setFrom("");
                   setTo("");
                 }}
-                className="text-xs font-medium text-muted hover:text-ink"
+                className="text-xs font-medium text-muted"
               >
                 Clear
               </button>

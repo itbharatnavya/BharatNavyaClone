@@ -73,7 +73,7 @@ export default function HowItWorks() {
               style={{
                 width: 48,
                 height: 48,
-                borderRadius: 12,
+                borderRadius: "var(--r-sm)",
                 background: "var(--brand-tint)",
                 color: "var(--brand)",
                 display: "inline-flex",
@@ -85,7 +85,7 @@ export default function HowItWorks() {
             </span>
             <span
               style={{
-                fontSize: 32,
+                fontSize: "var(--fs-2xl)",
                 fontWeight: 800,
                 color: "var(--border-strong)",
                 lineHeight: 1,
@@ -94,10 +94,10 @@ export default function HowItWorks() {
               {i + 1}
             </span>
           </div>
-          <h3 style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)", marginBottom: 6 }}>
+          <h3 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", marginBottom: 6 }}>
             {s.title}
           </h3>
-          <p style={{ fontSize: 14, color: "var(--muted)" }}>{s.body}</p>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>{s.body}</p>
         </div>
         </Reveal>
       ))}

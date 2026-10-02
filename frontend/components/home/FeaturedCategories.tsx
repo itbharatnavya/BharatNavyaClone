@@ -17,7 +17,7 @@ export interface FeaturedCategoriesProps {
 }
 
 // Family → small inline SVG icon (viewBox 0 0 24 24, currentColor).
-function iconFor(cat: Category): React.ReactNode {
+export function iconFor(cat: Pick<Category, "slug" | "name">): React.ReactNode {
   const hay = `${(cat.slug || "").toLowerCase()} ${(cat.name || "").toLowerCase()}`;
   const p = (d: string) => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -82,7 +82,7 @@ export default function FeaturedCategories({ categories, className = "" }: Featu
                 left: 10,
                 width: 32,
                 height: 32,
-                borderRadius: 9,
+                borderRadius: "var(--r-xs)",
                 background: "rgba(255,255,255,0.92)",
                 color: "var(--brand)",
                 display: "inline-flex",
@@ -101,7 +101,7 @@ export default function FeaturedCategories({ categories, className = "" }: Featu
                 right: 12,
                 bottom: 10,
                 color: "#fff",
-                fontSize: 15,
+                fontSize: "var(--fs-sm)",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
                 lineHeight: 1.25,
@@ -120,7 +120,7 @@ export default function FeaturedCategories({ categories, className = "" }: Featu
               padding: "10px 12px",
             }}
           >
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
               {typeof c.listingCount === "number" && c.listingCount > 0
                 ? `${c.listingCount} ${c.listingCount === 1 ? "listing" : "listings"}`
                 : "Explore"}

@@ -85,7 +85,7 @@ const MODE_LABEL: Record<string, string> = {
 // A single labelled meta chip (icon + text). Muted, wraps cleanly on mobile.
 function Meta({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--muted)", minWidth: 0 }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "var(--fs-xs)", color: "var(--muted)", minWidth: 0 }}>
       <span style={{ color: "var(--faint)", display: "inline-flex", flexShrink: 0 }}>{icon}</span>
       <span style={{ minWidth: 0 }}>{children}</span>
     </span>
@@ -182,25 +182,25 @@ export default function ConsultationsTab({ user }: Props) {
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{b.name}</span>
+                        <span style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>{b.name}</span>
                         {(b.status || "new") === "new" && <Badge variant="new">New</Badge>}
                       </div>
                       {b.packageTitle ? (
-                        <div style={{ fontSize: 13.5, color: "var(--brand)", fontWeight: 600, marginTop: 3 }}>
+                        <div style={{ fontSize: "var(--fs-sm)", color: "var(--brand)", fontWeight: 600, marginTop: 3 }}>
                           {b.packageTitle}
                         </div>
                       ) : (
-                        <div style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 3 }}>General consultation</div>
+                        <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 3 }}>General consultation</div>
                       )}
                     </div>
-                    <span style={{ fontSize: 12.5, color: "var(--faint)", whiteSpace: "nowrap", flexShrink: 0 }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", whiteSpace: "nowrap", flexShrink: 0 }}>
                       {timeAgo(b.createdAt)}
                     </span>
                   </div>
 
                   {/* Message */}
                   {b.message && (
-                    <p style={{ fontSize: 14, color: "var(--ink)", margin: "12px 0 0", lineHeight: 1.55 }}>
+                    <p style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", margin: "12px 0 0", lineHeight: 1.55 }}>
                       “{b.message}”
                     </p>
                   )}

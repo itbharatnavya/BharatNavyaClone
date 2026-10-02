@@ -23,14 +23,14 @@ function ContactStatus({ seller }: { seller: SellerDelivery }) {
   const tr = useTr();
   if (!seller.contactedAt) {
     return (
-      <span style={{ fontSize: 13, color: "var(--muted)" }}>
+      <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
         {tr("dashboard.myrfqs.notContacted", "Not contacted yet")}
       </span>
     );
   }
   const via = seller.contactedVia === "whatsapp" ? "WhatsApp" : "Call";
   return (
-    <span style={{ fontSize: 13, color: "var(--success)" }}>
+    <span style={{ fontSize: "var(--fs-xs)", color: "var(--success)" }}>
       {tr("dashboard.myrfqs.contactedVia", "Contacted via")} {via} — {timeAgo(seller.contactedAt)}
     </span>
   );
@@ -124,7 +124,7 @@ export default function MyRfqsTab({ user }: Props) {
                       </span>
                       {r.categoryId && <span className="chip">{r.categoryId}</span>}
                     </div>
-                    <div style={{ fontSize: 13, color: "var(--faint)", marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
                       {r.quantity && <span>{tr("dashboard.myrfqs.qty", "Qty")}: {r.quantity}</span>}
                       <span>{formatDate(r.createdAt)}</span>
                     </div>
@@ -165,16 +165,16 @@ export default function MyRfqsTab({ user }: Props) {
                             }}
                           >
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>
+                              <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: "var(--fs-sm)" }}>
                                 {s.companyName || "Seller"}
                                 {s.isVerified && (
-                                  <span style={{ marginLeft: 6, fontSize: 11, color: "var(--brand)" }}>
+                                  <span style={{ marginLeft: 6, fontSize: "var(--fs-xs)", color: "var(--brand)" }}>
                                     {tr("dashboard.myrfqs.verified", "Verified")}
                                   </span>
                                 )}
                               </div>
                               {s.city && (
-                                <div style={{ fontSize: 12, color: "var(--faint)" }}>{s.city}</div>
+                                <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{s.city}</div>
                               )}
                             </div>
                             <ContactStatus seller={s} />
@@ -187,7 +187,7 @@ export default function MyRfqsTab({ user }: Props) {
                           padding: "24px 16px",
                           textAlign: "center",
                           color: "var(--muted)",
-                          fontSize: 14,
+                          fontSize: "var(--fs-sm)",
                         }}
                       >
                         {r.unmatched

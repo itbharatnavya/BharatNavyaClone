@@ -33,11 +33,11 @@ export default function ChatModal({
       size="md"
       title={
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+          <div style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
             {otherUserName || "Chat"}
           </div>
           {listingTitle && (
-            <div className="line-clamp-1" style={{ fontSize: 12, fontWeight: 400, color: "var(--faint)" }}>
+            <div className="line-clamp-1" style={{ fontSize: "var(--fs-xs)", fontWeight: 400, color: "var(--faint)" }}>
               {listingTitle}
             </div>
           )}

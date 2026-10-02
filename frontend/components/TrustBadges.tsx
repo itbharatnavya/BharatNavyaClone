@@ -22,8 +22,8 @@ function Pill({
   size?: "sm" | "md";
 }) {
   const tones: Record<string, React.CSSProperties> = {
-    brand: { background: "var(--brand-tint)", color: "var(--brand-hover)", borderColor: "#BFDBFE" },
-    success: { background: "#ECFDF5", color: "#15803D", borderColor: "#BBF7D0" },
+    brand: { background: "#dbe4fb", color: "#1b3fa0", borderColor: "#b9c9f2" },
+    success: { background: "#e3ebff", color: "#2556c8", borderColor: "#c4d3f7" },
     neutral: { background: "var(--bg-subtle)", color: "var(--muted)", borderColor: "var(--border)" },
   };
   return (
@@ -32,10 +32,10 @@ function Pill({
         display: "inline-flex",
         alignItems: "center",
         gap: 4,
-        fontSize: size === "sm" ? 11 : 12,
+        fontSize: size === "sm" ? "var(--fs-xs)" : "var(--fs-xs)",
         fontWeight: 600,
         padding: size === "sm" ? "3px 8px" : "4px 10px",
-        borderRadius: 999,
+        borderRadius: "var(--r-pill)",
         border: "1px solid transparent",
         whiteSpace: "nowrap",
         ...tones[tone],

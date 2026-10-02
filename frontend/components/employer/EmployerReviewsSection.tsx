@@ -58,7 +58,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
             onClick={() => onChange(n)}
             style={{ background: "transparent", border: "none", cursor: "pointer", padding: 2, lineHeight: 0 }}
           >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#F59E0B" : "#E5E7EB"}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill={active ? "#3B6CF5" : "#E5E7EB"}>
               <path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" />
             </svg>
           </button>
@@ -173,7 +173,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
       {user ? (
         <form onSubmit={submit} className="card card-flat er-form">
           {myReview && (
-            <p style={{ fontSize: 13, color: "var(--muted)" }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
               You&apos;ve already reviewed {companyName} — edit it below.
             </p>
           )}
@@ -196,7 +196,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
         </form>
       ) : (
         <div className="card card-flat er-login">
-          <span style={{ fontSize: 14, color: "var(--muted)" }}>Log in to review this company.</span>
+          <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>Log in to review this company.</span>
           <Button href="/login" variant="secondary" size="sm">Log in</Button>
         </div>
       )}
@@ -204,7 +204,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[0, 1].map((i) => (
-            <div key={i} className="skeleton" style={{ height: 92, width: "100%", borderRadius: 12 }} />
+            <div key={i} className="skeleton" style={{ height: 92, width: "100%", borderRadius: "var(--r-sm)" }} />
           ))}
         </div>
       ) : reviews.length === 0 ? (
@@ -260,14 +260,14 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
                     <div className="er-item-head">
                       <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
                         <Avatar name={r.buyerName} size={32} />
-                        <span className="line-clamp-1" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)" }}>
+                        <span className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                           {r.buyerName || "Reviewer"}
                         </span>
                       </div>
-                      <span style={{ fontSize: 12, color: "var(--faint)", flexShrink: 0 }}>{formatDate(r.createdAt)}</span>
+                      <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", flexShrink: 0 }}>{formatDate(r.createdAt)}</span>
                     </div>
                     <Rating value={r.rating} size={14} showValue={false} />
-                    <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6, margin: "8px 0 0" }}>{r.reviewText}</p>
+                    <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.6, margin: "8px 0 0" }}>{r.reviewText}</p>
                   </div>
                 ))}
               </div>
@@ -311,7 +311,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
           padding: 28px;
           text-align: center;
           color: var(--muted);
-          font-size: 13.5px;
+          font-size: var(--fs-sm);
         }
         .er-controls {
           display: flex;
@@ -323,7 +323,7 @@ export default function EmployerReviewsSection({ targetUserId, companyName, onAg
           max-width: 160px;
         }
         .er-count {
-          font-size: 13px;
+          font-size: var(--fs-xs);
           color: var(--faint);
           margin-left: auto;
         }

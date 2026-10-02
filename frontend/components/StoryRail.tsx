@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import ContactAuthModal from "@/components/auth/ContactAuthModal";
 import type { StoryGroup } from "@/lib/types";
 import { getStories } from "@/lib/api";
 import StoryViewer from "./StoryViewer";
@@ -16,6 +19,9 @@ export interface StoryRailProps {
   // Optional truthful fallback for surfaces that need to preserve their
   // layout even when there are currently no active 24-hour statuses.
   emptyState?: React.ReactNode;
+  // When set, the first bubble is an "add your story" button: it opens the sign-in modal for guests
+  // and goes to `href` (the dashboard Stories tab) for signed-in users.
+  addStory?: { href: string };
 }
 
 // The backend groups stories under a nested `seller` object
@@ -64,7 +70,10 @@ function initials(name?: string | null): string {
   return parts || (name || "?").trim().charAt(0).toUpperCase() || "?";
 }
 
-export default function StoryRail({ groups: provided, className = "", heading, emptyState }: StoryRailProps) {
+export default function StoryRail({ groups: provided, className = "", heading, emptyState, addStory }: StoryRailProps) {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
   const [groups, setGroups] = useState<StoryGroup[]>(
     provided ? normalizeGroups(provided) : []
   );
@@ -86,7 +95,7 @@ export default function StoryRail({ groups: provided, className = "", heading, e
     };
   }, [provided]);
 
-  if (!loading && groups.length === 0) {
+  if (!loading && groups.length === 0 && !addStory) {
     if (!emptyState) return null;
     return (
       <div className={className}>
@@ -105,6 +114,17 @@ export default function StoryRail({ groups: provided, className = "", heading, e
       <div
         className="counter-story-list no-scrollbar"
       >
+        {addStory && (
+          <button
+            type="button"
+            className="story-card is-add"
+            aria-label="Add your story"
+            title="Add your story"
+            onClick={() => (user ? router.push(addStory.href) : setAuthOpen(true))}
+          >
+            <span className="story-card-avatar"><svg aria-hidden viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></span>
+          </button>
+        )}
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <span
@@ -124,6 +144,8 @@ export default function StoryRail({ groups: provided, className = "", heading, e
                   type="button"
                   onClick={() => setOpenAt(i)}
                   className={`story-card${unseen ? " is-unseen" : ""}`}
+                  aria-label={`${g.sellerName} status`}
+                  title={g.sellerName}
                 >
                   <span
                     className="story-card-avatar"
@@ -134,13 +156,13 @@ export default function StoryRail({ groups: provided, className = "", heading, e
                         {initials(g.sellerName)}
                       </span>
                     )}
-                    {unseen && <span className="story-card-unseen" />}
                   </span>
-                  <span className="story-card-name line-clamp-2">{g.sellerName}</span>
                 </button>
               );
             })}
       </div>
+
+      {addStory && <ContactAuthModal open={authOpen} onClose={() => setAuthOpen(false)} onSuccess={() => { setAuthOpen(false); router.push(addStory.href); }} purpose="account" />}
 
       {openAt !== null && (
         <StoryViewer

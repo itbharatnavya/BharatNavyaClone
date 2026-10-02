@@ -321,7 +321,7 @@ export default function SellPage() {
       <div style={{ marginBottom: 8 }}>
         <span className="counter-workspace-label">Directory workspace</span>
       </div>
-      <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em" }}>
+      <h1 style={{ fontSize: "var(--fs-2xl)", fontWeight: 700, letterSpacing: "-0.02em" }}>
         Create a service or product listing
       </h1>
       <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 24 }}>
@@ -414,7 +414,7 @@ export default function SellPage() {
                 <div style={{ color: "var(--brand)", lineHeight: 0 }}>{opt.icon}</div>
                 <div
                   style={{
-                    fontSize: 18,
+                    fontSize: "var(--fs-lg)",
                     fontWeight: 600,
                     marginTop: 10,
                     color: "var(--ink)",
@@ -422,7 +422,7 @@ export default function SellPage() {
                 >
                   {opt.title}
                 </div>
-                <div style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 4 }}>
+                <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
                   {opt.desc}
                 </div>
               </button>

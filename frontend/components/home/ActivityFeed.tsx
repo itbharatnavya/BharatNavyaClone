@@ -35,15 +35,15 @@ export default function ActivityFeed() {
     <Reveal delay={160} className="home-activity-sidebar">
       <aside className="card card-flat" style={{ padding: "clamp(18px, 2.6vw, 22px)", minWidth: 0 }} aria-label="Recent activity across Bharat Navya">
         <div className="eyebrow" style={{ marginBottom: 4 }}>Activity</div>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>Across Bharat Navya</h3>
+        <h3 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>Across Bharat Navya</h3>
 
         <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "flex", flexDirection: "column", gap: 14 }}>
           {ACTIVITY.map((item) => (
             <li key={item.id} style={{ display: "flex", gap: 10, minWidth: 0 }}>
               <span aria-hidden style={{ width: 7, height: 7, borderRadius: "50%", background: DOT_COLOR[item.dot], marginTop: 6, flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 13.5, color: "var(--ink)", lineHeight: 1.5 }}>{item.text}</p>
-                <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{item.time}</span>
+                <p style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", lineHeight: 1.5 }}>{item.text}</p>
+                <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{item.time}</span>
               </div>
             </li>
           ))}
@@ -52,10 +52,10 @@ export default function ActivityFeed() {
         <hr className="divider" style={{ margin: "18px 0" }} />
 
         <blockquote style={{ margin: 0 }}>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, fontStyle: "italic" }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", lineHeight: 1.6, fontStyle: "italic" }}>
             &ldquo;Finding the right supplier used to take days of calling around. Now it takes an afternoon.&rdquo;
           </p>
-          <footer style={{ fontSize: 12, color: "var(--faint)", marginTop: 8 }}>— Manufacturing SME, Pune</footer>
+          <footer style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 8 }}>— Manufacturing SME, Pune</footer>
         </blockquote>
       </aside>
     </Reveal>

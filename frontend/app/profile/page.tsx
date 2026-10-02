@@ -88,8 +88,8 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
   return (
     <div className="card card-flat" style={{ padding: 22 }}>
       <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{title}</h2>
-        {subtitle && <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 3 }}>{subtitle}</p>}
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>{title}</h2>
+        {subtitle && <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -204,11 +204,11 @@ export default function ProfilePage() {
 
           <div style={{ marginTop: 18 }}>
             <label className="field-label">{tr("profile.interests", "Interests")}</label>
-            <p style={{ fontSize: 12, color: "var(--faint)", marginTop: -2, marginBottom: 10 }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: -2, marginBottom: 10 }}>
               {tr("profile.interestsHint", "Pick a few broad areas you're interested in — we'll tailor your feed.")}
             </p>
             {topLevelCategories.length === 0 ? (
-              <span style={{ fontSize: 13, color: "var(--faint)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                 {tr("profile.loadingCats", "Loading categories…")}
               </span>
             ) : (

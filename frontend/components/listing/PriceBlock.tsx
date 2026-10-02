@@ -20,7 +20,7 @@ function Fact({ label, value }: { label: string; value: React.ReactNode }) {
     <div>
       <div
         style={{
-          fontSize: 11,
+          fontSize: "var(--fs-xs)",
           color: "var(--faint)",
           textTransform: "uppercase",
           letterSpacing: "0.04em",
@@ -28,7 +28,7 @@ function Fact({ label, value }: { label: string; value: React.ReactNode }) {
       >
         {label}
       </div>
-      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginTop: 2 }}>
+      <div style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", marginTop: 2 }}>
         {value}
       </div>
     </div>
@@ -58,7 +58,7 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
     const rows = (svc?.rateCard || []).filter((row) => row.price > 0);
     return (
       <div className="card card-flat card-pad">
-        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <div style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           Rate card
         </div>
 
@@ -76,16 +76,16 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
                   borderBottom: i < rows.length - 1 ? "1px solid var(--border)" : "none",
                 }}
               >
-                <span style={{ fontSize: 14, color: "var(--muted)" }}>{r.label}</span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
+                <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>{r.label}</span>
+                <span style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
                   ₹{formatINR(r.price)}
-                  {r.unit ? <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 500 }}> / {r.unit.replace(/^\s*\/?\s*/, "")}</span> : null}
+                  {r.unit ? <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", fontWeight: 500 }}> / {r.unit.replace(/^\s*\/?\s*/, "")}</span> : null}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <div style={{ marginTop: 10, fontSize: 20, fontWeight: 700, color: "var(--ink)" }}>
+          <div style={{ marginTop: 10, fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>
             {svc?.pricingModel === "quote" ? "Price on request" : "Ask for rate"}
           </div>
         )}
@@ -122,26 +122,26 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
       <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
         {basePrice != null ? (
           <>
-            <span style={{ fontSize: 30, fontWeight: 800, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
+            <span style={{ fontSize: "var(--fs-2xl)", fontWeight: 800, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
               ₹{formatINR(basePrice)}
             </span>
-            <span style={{ fontSize: 14, color: "var(--faint)" }}>/ {unit}</span>
+            <span style={{ fontSize: "var(--fs-sm)", color: "var(--faint)" }}>/ {unit}</span>
             {product?.price == null && tiers.length > 0 && (
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>onwards</span>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>onwards</span>
             )}
           </>
         ) : (
-          <span style={{ fontSize: 24, fontWeight: 800, color: "var(--ink)" }}>Ask Price</span>
+          <span style={{ fontSize: "var(--fs-xl)", fontWeight: 800, color: "var(--ink)" }}>Ask Price</span>
         )}
       </div>
 
       {/* Quantity price ladder */}
       {tiers.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+          <div style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--faint)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
             Quantity pricing
           </div>
-          <div style={{ border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ border: "1px solid var(--border)", borderRadius: "var(--r-sm)", overflow: "hidden" }}>
             {tiers.map((tier, i) => {
               const qty =
                 tier.maxQty != null
@@ -160,10 +160,10 @@ export default function PriceBlock({ listing }: PriceBlockProps) {
                     borderBottom: i < tiers.length - 1 ? "1px solid var(--border)" : "none",
                   }}
                 >
-                  <span style={{ fontSize: 13, color: "var(--muted)", fontVariantNumeric: "tabular-nums" }}>
+                  <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontVariantNumeric: "tabular-nums" }}>
                     {qty} {tier.unit || unit}
                   </span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
+                  <span style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
                     ₹{formatINR(tier.price)}
                   </span>
                 </div>

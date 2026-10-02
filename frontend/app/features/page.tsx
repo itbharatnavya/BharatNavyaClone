@@ -52,7 +52,7 @@ export default function FeaturesPage() {
         <span className="eyebrow">{t("features.eyebrow", "Platform")}</span>
         <h1
           style={{
-            fontSize: 34,
+            fontSize: "var(--fs-2xl)",
             fontWeight: 700,
             letterSpacing: "-0.02em",
             marginTop: 10,
@@ -60,14 +60,14 @@ export default function FeaturesPage() {
         >
           {t("features.title", "Everything you need to discover, represent and grow across India")}
         </h1>
-        <p style={{ color: "var(--muted)", marginTop: 10, fontSize: 16 }}>
+        <p style={{ color: "var(--muted)", marginTop: 10, fontSize: "var(--fs-md)" }}>
           {t(
             "features.subtitle",
             "One catalog for products and services, AI-powered vendor search, secure chat, seller reach tools, and honest, transparent placement."
           )}
         </p>
         <div style={{ marginTop: 20, display: "inline-flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-          <Button href="/login?next=/features" variant="primary">
+          <Button href="/login?next=/features" variant="primary" className="is-on-blue">
             {t("features.getStartedFree", "Get started free")}
           </Button>
           <Button href="/pricing" variant="secondary">
@@ -101,7 +101,7 @@ export default function FeaturesPage() {
             <section key={group} style={{ marginBottom: 40 }}>
               <h2
                 style={{
-                  fontSize: 20,
+                  fontSize: "var(--fs-lg)",
                   fontWeight: 700,
                   marginBottom: 4,
                   letterSpacing: "-0.01em",
@@ -129,7 +129,7 @@ export default function FeaturesPage() {
                           gap: 8,
                         }}
                       >
-                        <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>
+                        <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
                           {f.name}
                         </h3>
                         {sb && <Badge variant={sb.variant}>{sb.label}</Badge>}
@@ -137,7 +137,7 @@ export default function FeaturesPage() {
                       {f.description && (
                         <p
                           style={{
-                            fontSize: 13.5,
+                            fontSize: "var(--fs-sm)",
                             color: "var(--muted)",
                             marginTop: 8,
                             lineHeight: 1.55,
@@ -172,12 +172,12 @@ export default function FeaturesPage() {
           background: "linear-gradient(180deg, var(--brand-tint), #fff)",
         }}
       >
-        <h3 style={{ fontSize: 22, fontWeight: 700 }}>{t("features.putToWork", "Put it to work")}</h3>
+        <h3 style={{ fontSize: "var(--fs-xl)", fontWeight: 700 }}>{t("features.putToWork", "Put it to work")}</h3>
         <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 18 }}>
           {t("features.putSubtitle", "Create your free account and list in minutes.")}
         </p>
         <div style={{ display: "inline-flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-          <Button href="/sell" variant="primary" size="lg">
+          <Button href="/sell" variant="primary" size="lg" className="is-on-blue">
             {t("cta.startSelling", "Start selling")}
           </Button>
           <Button href="/login?next=/features" variant="secondary" size="lg">

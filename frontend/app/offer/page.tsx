@@ -79,7 +79,7 @@ function SectionHeading({
       <span className="eyebrow">{eyebrow}</span>
       <h2
         style={{
-          fontSize: 26,
+          fontSize: "var(--fs-xl)",
           fontWeight: 700,
           letterSpacing: "-0.02em",
           marginTop: 8,
@@ -93,7 +93,7 @@ function SectionHeading({
           style={{
             color: "var(--muted)",
             marginTop: 8,
-            fontSize: 15.5,
+            fontSize: "var(--fs-md)",
             lineHeight: 1.6,
           }}
         >
@@ -129,11 +129,11 @@ function TierPills({
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
-              fontSize: 11,
+              fontSize: "var(--fs-xs)",
               fontWeight: 600,
               lineHeight: 1,
               padding: "4px 8px",
-              borderRadius: 999,
+              borderRadius: "var(--r-pill)",
               border: "1px solid",
               borderColor: included ? "#bfdbfe" : "var(--border)",
               background: included ? "var(--brand-tint)" : "var(--bg-subtle)",
@@ -176,13 +176,13 @@ function LimitRow({
         minWidth: 0,
       }}
     >
-      <span style={{ fontSize: 13.5, color: "var(--muted)", minWidth: 0 }}>
+      <span style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", minWidth: 0 }}>
         {label}
       </span>
       {value !== undefined ? (
         <span
           style={{
-            fontSize: 13.5,
+            fontSize: "var(--fs-sm)",
             fontWeight: 600,
             color: "var(--ink)",
             textAlign: "right",
@@ -195,7 +195,7 @@ function LimitRow({
           <CheckIcon size={16} />
         </span>
       ) : (
-        <span style={{ color: "var(--faint)", fontSize: 14 }} aria-label="Not included">
+        <span style={{ color: "var(--faint)", fontSize: "var(--fs-sm)" }} aria-label="Not included">
           –
         </span>
       )}
@@ -335,7 +335,7 @@ export default function OfferPage() {
             <span className="eyebrow">What we offer</span>
             <h1
               style={{
-                fontSize: 38,
+                fontSize: "var(--fs-2xl)",
                 lineHeight: 1.12,
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
@@ -349,7 +349,7 @@ export default function OfferPage() {
               style={{
                 color: "var(--muted)",
                 marginTop: 14,
-                fontSize: 17,
+                fontSize: "var(--fs-md)",
                 lineHeight: 1.6,
               }}
             >
@@ -367,7 +367,7 @@ export default function OfferPage() {
                 flexWrap: "wrap",
               }}
             >
-              <Link href="/login?next=/offer" className="btn btn-primary btn-lg">
+              <Link href="/login?next=/offer" className="btn btn-primary btn-lg is-on-blue">
                 Start selling free
               </Link>
               <a href={`mailto:${SALES_EMAIL}`} className="btn btn-secondary btn-lg">
@@ -407,7 +407,7 @@ export default function OfferPage() {
 
       {error && (
         <div className="container-bs" style={{ paddingTop: 20 }}>
-          <p style={{ color: "var(--error)", fontSize: 14 }}>{error}</p>
+          <p style={{ color: "var(--error)", fontSize: "var(--fs-sm)" }}>{error}</p>
         </div>
       )}
 
@@ -491,7 +491,7 @@ export default function OfferPage() {
                       justifyContent: "center",
                       width: 38,
                       height: 38,
-                      borderRadius: 10,
+                      borderRadius: "var(--r-sm)",
                       background: "var(--brand-tint)",
                       color: "var(--brand)",
                       flexShrink: 0,
@@ -502,7 +502,7 @@ export default function OfferPage() {
                   <div style={{ minWidth: 0 }}>
                     <h3
                       style={{
-                        fontSize: 17,
+                        fontSize: "var(--fs-md)",
                         fontWeight: 700,
                         color: "var(--ink)",
                         letterSpacing: "-0.01em",
@@ -510,7 +510,7 @@ export default function OfferPage() {
                     >
                       {group}
                     </h3>
-                    <span style={{ fontSize: 12.5, color: "var(--faint)" }}>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                       {items.length}{" "}
                       {items.length === 1 ? "capability" : "capabilities"}
                     </span>
@@ -548,7 +548,7 @@ export default function OfferPage() {
                         >
                           <h4
                             style={{
-                              fontSize: 15,
+                              fontSize: "var(--fs-sm)",
                               fontWeight: 600,
                               color: "var(--ink)",
                               minWidth: 0,
@@ -566,7 +566,7 @@ export default function OfferPage() {
                         {f.description && (
                           <p
                             style={{
-                              fontSize: 13.5,
+                              fontSize: "var(--fs-sm)",
                               color: "var(--muted)",
                               lineHeight: 1.55,
                               margin: 0,
@@ -663,13 +663,13 @@ export default function OfferPage() {
                       </span>
                     )}
                     <div
-                      style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}
+                      style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}
                     >
                       {t.name}
                     </div>
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: "var(--fs-xs)",
                         color: "var(--muted)",
                         marginTop: 4,
                         minHeight: 36,
@@ -681,7 +681,7 @@ export default function OfferPage() {
                     <div
                       style={{
                         marginTop: 12,
-                        fontSize: 26,
+                        fontSize: "var(--fs-xl)",
                         fontWeight: 800,
                         letterSpacing: "-0.02em",
                         color: "var(--ink)",
@@ -763,7 +763,7 @@ export default function OfferPage() {
             style={{
               textAlign: "center",
               marginTop: 18,
-              fontSize: 13.5,
+              fontSize: "var(--fs-sm)",
               color: "var(--muted)",
             }}
           >
@@ -814,7 +814,7 @@ export default function OfferPage() {
                     justifyContent: "center",
                     width: 44,
                     height: 44,
-                    borderRadius: 12,
+                    borderRadius: "var(--r-sm)",
                     background: "var(--action-tint)",
                     color: "var(--action)",
                     flexShrink: 0,
@@ -825,7 +825,7 @@ export default function OfferPage() {
 
                 <h3
                   style={{
-                    fontSize: 16,
+                    fontSize: "var(--fs-md)",
                     fontWeight: 700,
                     color: "var(--ink)",
                     letterSpacing: "-0.01em",
@@ -836,7 +836,7 @@ export default function OfferPage() {
 
                 <p
                   style={{
-                    fontSize: 13.5,
+                    fontSize: "var(--fs-sm)",
                     color: "var(--muted)",
                     lineHeight: 1.55,
                     margin: 0,
@@ -847,7 +847,7 @@ export default function OfferPage() {
 
                 <div
                   style={{
-                    fontSize: 12.5,
+                    fontSize: "var(--fs-xs)",
                     color: "var(--muted)",
                     display: "flex",
                     alignItems: "flex-start",
@@ -875,7 +875,7 @@ export default function OfferPage() {
                 >
                   <div
                     style={{
-                      fontSize: 12.5,
+                      fontSize: "var(--fs-xs)",
                       fontWeight: 600,
                       color: "var(--ink)",
                       marginBottom: 12,
@@ -933,7 +933,7 @@ export default function OfferPage() {
               justifyContent: "center",
               width: 48,
               height: 48,
-              borderRadius: 14,
+              borderRadius: "var(--r-md)",
               background: "#fff",
               border: "1px solid var(--border)",
               color: "var(--brand)",
@@ -944,7 +944,7 @@ export default function OfferPage() {
           </span>
           <h2
             style={{
-              fontSize: 28,
+              fontSize: "var(--fs-xl)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
               color: "var(--ink)",
@@ -956,7 +956,7 @@ export default function OfferPage() {
             style={{
               color: "var(--muted)",
               marginTop: 10,
-              fontSize: 16,
+              fontSize: "var(--fs-md)",
               maxWidth: 560,
               margin: "10px auto 0",
               lineHeight: 1.6,
@@ -974,7 +974,7 @@ export default function OfferPage() {
               justifyContent: "center",
             }}
           >
-            <Link href="/login?next=/offer" className="btn btn-primary btn-lg">
+            <Link href="/login?next=/offer" className="btn btn-primary btn-lg is-on-blue">
               Start selling free
             </Link>
             <a

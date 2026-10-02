@@ -41,11 +41,11 @@ export function Section({
   return (
     <section className="card card-flat card-pad" style={{ marginBottom: 16 }}>
       <div style={{ marginBottom: 16 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>
+        <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
           {title}
         </h3>
         {desc && (
-          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4 }}>
             {desc}
           </p>
         )}
@@ -157,7 +157,7 @@ export function TagInput({
             minWidth: 120,
             border: "none",
             outline: "none",
-            fontSize: 14,
+            fontSize: "var(--fs-sm)",
             background: "transparent",
             color: "var(--ink)",
           }}
@@ -275,7 +275,7 @@ export function TierEditor({
             gridTemplateColumns: "1fr 1fr 1fr 1fr auto",
             gap: 8,
             marginBottom: 6,
-            fontSize: 12,
+            fontSize: "var(--fs-xs)",
             color: "var(--muted)",
             fontWeight: 600,
           }}
@@ -440,7 +440,7 @@ export function QuestionsEditor({
             maxLength={300}
             style={{ flex: 1 }}
           />
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--muted)", flexShrink: 0, whiteSpace: "nowrap" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "var(--fs-xs)", color: "var(--muted)", flexShrink: 0, whiteSpace: "nowrap" }}>
             <input type="checkbox" checked={row.required} onChange={(e) => update(i, { required: e.target.checked })} />
             Required
           </label>
@@ -596,7 +596,7 @@ export function MediaEditor({
             style={{
               width: 44,
               height: 44,
-              borderRadius: 8,
+              borderRadius: "var(--r-xs)",
               flexShrink: 0,
               border: "1px solid var(--border)",
               background: "var(--bg-subtle)",

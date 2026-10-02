@@ -225,12 +225,12 @@ export default function NotificationBell() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={t("common.notifications")}
-        className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle hover:text-ink transition-colors"
+        className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-bg-subtle transition-colors"
       >
         <BellIcon />
         {unread > 0 && (
           <span
-            className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+            className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-xs font-bold text-white"
             style={{ background: "#DC2626" }}
           >
             {unread > 9 ? "9+" : unread}
@@ -291,7 +291,7 @@ export default function NotificationBell() {
           <div className="border-t border-border px-4 py-2.5 text-center">
             <Link
               href="/dashboard"
-              className="text-xs font-medium text-muted hover:text-ink"
+              className="text-xs font-medium text-muted"
             >
               {t("nav.dashboard")}
             </Link>

@@ -1172,6 +1172,182 @@ back-to-top fix or the new guest phone/nudge UI.
 
 ---
 
+### Spec re-audit — `MAHIR_FEEDBACK_RECONCILIATION_SPEC.md` vs `edf899d` — 2026-10-01
+
+Re-checked the spec against the branch tip after the two newer pulls above (`b909c44..9c40584`,
+merged as `edf899d`). Both dev servers were already running locally (owner's own session,
+`:4000`/`:3000`) — left them running rather than restarting, since the backend has no hot reload
+and killing someone else's in-progress session is riskier than trusting Next's file-watcher kept
+the frontend current. Spec file itself (`frontend/docs/MAHIR_FEEDBACK_RECONCILIATION_SPEC.md`)
+is unchanged since `4e92ac7` — still 207 lines, FR-1..24/AC-1..19 as audited 2026-09-29. Re-verified
+every item from that prior pass still holds (no regressions since), plus specifically checked the
+5 open items — status below. Scratch Playwright script again, written fresh and deleted after use.
+
+**Changed status since the 2026-09-29 audit:**
+
+- **FR-11 — now a confirmed spec violation, not just unverified.** The "back-to-top
+  placement/visibility fix" pulled in this pass (`be9dfa9`/`9c40584`) moved the control
+  right→right-doubled-down, not right→left. Current CSS
+  (`counter-soft-system.css:1475`): `.back-to-top{position:fixed;right:1.5rem;bottom:1.5rem}`,
+  and `body:has(.navya-agent-trigger) .back-to-top{right:5.5rem}` — i.e. back-to-top sits in the
+  **same lower-right corner** as the Navya AI Agent trigger, just shifted left by 4rem to avoid
+  overlapping it. Live-verified at 1440px: back-to-top box `x:1300`, assistant box `x:1364`, both
+  `y:824` — adjacent, same corner. **Spec (FR-11) explicitly requires lower-LEFT** ("away from
+  the lower-right assistant and requirement controls" implies opposite corners, not the same one
+  with a gap). The collision/visibility bug this pass fixed is real and welcome, but the
+  **side is still wrong** — this needs a follow-up CSS change (`left` instead of `right`) before
+  FR-11/AC-7 can be marked done. (For reference, the dialog z-index check passed: `Modal.tsx` uses
+  `zIndex:2000` vs back-to-top's `110`, so "below the z-index of open dialogs" is already correct —
+  only the corner is wrong.)
+- **Pending #3 (`FloatingRfqButton.tsx`) — still orphaned, unchanged.** Re-grepped: only self-
+  references and one unrelated z-index comment in `DiscoveryResults.tsx`. Still needs the UI-dev
+  confirmation call from the 2026-09-29 entry.
+- **Pending #1/#5 (ad spacing, FR-16) — still untestable.** `/listing/1` and `/brand/supreme` both
+  render zero ad elements; no placement is currently booked in `/admin`. Unchanged blocker.
+- **Pending #2 (FR-19 recommendation imagery) — unchanged**, still only the honest-fallback path
+  was exercised, not the "prefer distinct image" path.
+- **Pending #4 (AC-9, 200% zoom) — still not covered.**
+- **NFR-R1 — still clean.** Re-checked `/`, `/directory`, `/recruitment`, `/login`, `/register`,
+  and the new `/brand/supreme` page at 390px — `scrollWidth === clientWidth` (390/390) on all six.
+
+**New since 2026-09-29, not in the original spec (informational, not a spec item):** this pass
+also added guest phone-number UI (`InternationalPhoneField`, gated off by default via
+`NEXT_PUBLIC_INTERNATIONAL_PHONE_ENABLED`) and `GuestAccountNudge.tsx` (mounted globally in
+`app/layout.tsx`). Neither rendered on `/login` during this check — the phone field is correctly
+gated off, and the nudge is presumably trigger-conditional (not tested further, out of scope for
+this spec's FR list; OS-1/OS-2 already cover "no new auth provider / no intl phone" as out-of-
+scope for the *Mahir* spec specifically, so this is a separate later increment, not a spec
+violation).
+
+### Task-list summary (for the next merge check)
+
+**Done (verified live on `edf899d`):** FR-1, FR-2, FR-3, FR-4, FR-6, FR-9, FR-10, FR-13, FR-14,
+FR-15, FR-17, FR-18, FR-20, FR-21, FR-22, FR-24, NFR-R1, NFR-V1, AC-2, AC-3, AC-11.
+
+**Pending:**
+1. **FR-11/AC-7 — back-to-top is in the wrong corner** (lower-right instead of lower-left).
+   Confirmed via live bounding-box check, not just "untested" — this is a concrete fix needed:
+   swap `right` for `left` in `.back-to-top` and its `body:has(.navya-agent-trigger)` override in
+   `counter-soft-system.css`.
+2. **FR-16 — ad-adjacent spacing unverifiable** until a test ad is booked on `listing_detail` /
+   `recruitment_home` / `recruitment_search_top` / a brand-page placement via `/admin`.
+3. **FR-19 — recommendation-imagery "prefer distinct image" path unverified** — need a seeded
+   listing whose company has 2+ listings sharing one image.
+4. **`FloatingRfqButton.tsx` orphan status** — confirm with the UI dev whether intentional removal
+   or a dropped feature; delete the dead file either way once confirmed.
+5. **AC-9 (200% zoom)** — not yet covered by any automated or manual pass.
+6. **Seller-profile sidebar CTA / stats-vs-ad overlap** (2026-09-28 punch-list) — blocked on #2.
+
+---
+
+### Pulled `origin/design` again (`9c40584..4d5e40e`) — merged 2026-10-02 (uncommitted — pending owner confirmation)
+
+**Not committed yet per owner instruction** — merged into the working tree/index only
+(`git merge --no-ff --no-commit`), both servers restarted on the merged code and smoke-tested
+below. Owner will confirm after their own check, then commit (no AI attribution line) and push.
+
+26 new commits, the largest pull yet: 203 files, +7757/-4154, one new dependency (`gsap ^3.15.0`,
+installed via `npm install` — `tsc` failed with "Cannot find module 'gsap'" until this ran, note
+for next time this branch pulls a new `package.json` dependency). `rm -rf frontend/.next` before
+restarting the dev server, per `HANDOFF.md`'s stale-Turbopack-cache warning — this pull touches
+`lib/categoryImages.ts`, `lib/routePresentation.ts`, `lib/searchDock.tsx`, `lib/i18n.tsx`.
+
+**One conflict, trivial — `app/brand/[slug]/page.tsx`.** Two import-order variants of the same
+two lines (`ApiAdvertisingSlot`/`Pagination`) plus a stray blank line — no functional difference
+either side. Took `origin/design`'s ordering per the "design perspective wins on conflicts"
+instruction; functionally identical regardless. `WEB-REDESIGN.md` itself auto-merged clean (no
+conflict markers) despite `origin/design`'s copy being 34 lines shorter — git kept our longer
+history, nothing lost.
+
+**Flag before committing — two changes that alter product behaviour, not just visuals:**
+
+1. **`RecruitmentGate` is now a bare pass-through.** `components/recruitment/RecruitmentGate.tsx`
+   (commit `06301ab`, "Make Recruitment live…", authored by `itbharatnavya` — not an unreviewed UI-
+   dev slip) now just renders `children` unconditionally. Every Recruitment route
+   (`/recruitment/*`, `/job/[id]`, `/post-job`, `/employer/[slug]`) renders live regardless of
+   `featureFlags.recruitmentLive`. This directly contradicts CLAUDE.md §1 ("default is off, gated
+   via env/admin Site Config") — the flag itself is now dead code, so turning it back off in
+   `/admin` would no longer re-gate anything. Looks like a deliberate go-live decision from the
+   owner's own account, but flagging explicitly since it changes what ships, not how it looks —
+   confirm this is intended before it's pushed live.
+2. **Listing cards: prices removed.** `ListingCard.tsx` (commit `4d5e40e`) drops the price display
+   entirely; Contact/info moved to the top row instead. A real product/UX decision (buyers can no
+   longer price-compare at a glance), not a styling tweak — confirm sign-off.
+
+**Everything else in this pull (verified live, no issues found):**
+- **Full Home/Directory/Recruitment rebuild, GSAP-driven.** New `HeroStage.tsx` (Home, animated
+  scripted scenes off real `getFeaturedSellers`/`getJobs` data), `LandingHero.tsx` +
+  `RecruitmentHero.tsx` (distinct per-product hero layouts), `WhyScene.tsx`/`RouteScene.tsx`
+  (animated India-outline sections), `StorefrontScene.tsx`/`RfqScene.tsx`/`TrackerScene.tsx`/
+  `HireScene.tsx` (page-specific "attraction" scenes replacing one shared template per
+  commit `2741679`), `useStory.ts` (shared GSAP/ScrollTrigger hook). All new components, confirmed
+  rendering (200 on `/`, `/directory`, `/recruitment`) with no console errors.
+- **Design-token migration (`06301ab`)** — every font-size/border-radius across the app now reads
+  off a `--fs-*`/`--r-*` scale (7 sizes, 5 radii + circle); new `DESIGN-SYSTEM.md` (108 lines)
+  documents it. `CLAUDE.md` got one new banner line pointing at it ("current visual rules live in
+  DESIGN-SYSTEM.md … follow it for any frontend work") — doesn't touch any of the non-negotiable
+  rules in §2, just adds a pointer.
+- **`FloatingRfqButton` ("Post requirement") is no longer orphaned — resolves pending item #4
+  below.** Now mounted in `app/layout.tsx`, rendered as a right-edge bookmark tab docked above the
+  Navya AI Agent bubble, icon-only at rest with a hover/focus label slide-out. Confirmed import +
+  JSX usage live in `layout.tsx`.
+- **Back-to-top repositioning (`4d5e40e`)** — "takes the corner, assistant bubble steps left when
+  it shows" (previously it was the reverse). Still **lower-right**, not lower-left — see pending
+  item #1 below, still open, just inverted which control moves.
+- **BN logo redraw** — header mark now cross-fades every 5s between 4 new colour-layer PNGs
+  (`public/brand/bn-{green,navy,orange,white}.png`).
+- **Footer simplified to white; Directory/Recruitment link block removed** — footer now links only
+  About/AI Guide/Blog/Pricing. Primary nav (`Navbar.tsx`) still carries Directory/Recruitment —
+  this only removes the secondary footer links, not the only way to reach those products.
+- **Status strip rework** — two rows, no seller names shown, a new "Add your story" bubble that
+  opens sign-in for guests; more demo stories seeded (`seed-demo-stories.js` +31 lines).
+- **Ad rotation continues from the prior pull** — `ApiAdvertisingSlot` cycles up to 5 ads/4s per
+  placement; this pull removes the Home ad slot entirely ("ad removed from Home").
+- New backend scripts, data-only, no route/schema changes: `backfill-job-workplace.js`,
+  `seed-blogs-demo.js` (132 lines). `seed-demo-ads.js`/`seed-recruitment-demo.js` also touched
+  (ad-count bumps, same pattern as the previous pull).
+
+**Verification done this pass:**
+- Backend restarted clean (seed-script-only backend changes, so strictly not required, but done
+  anyway since a large pull was in flight): `node index.js` → 200 on `/api/categories`.
+- Frontend: `rm -rf .next` + fresh `npm run dev --turbo`, clean compile, zero errors.
+- `npx tsc --noEmit` clean (after `npm install` pulled in `gsap`).
+- 10 routes spot-checked at 200: `/`, `/directory`, `/recruitment`, `/search`, `/listing/1`,
+  `/brand/supreme`, `/about`, `/login`, `/register`, `/post-job`.
+- 390px overflow + console-error sweep on the same 10 routes: `scrollWidth === clientWidth`
+  everywhere (zero horizontal overflow). Two console errors found, both pre-existing/unrelated to
+  this pull: a 404 on `/listing/1` (missing demo asset, not investigated) and a Google Identity
+  "origin not allowed for this client ID" 403 on `/login`/`/post-job` (local dev's
+  `GOOGLE_CLIENT_ID` is configured for a different origin than `localhost:3000` — a local-env
+  config gap, not a code regression).
+
+**Not yet done:** no visual/pixel pass on the new GSAP scenes (scroll-triggered animation isn't
+something a static Playwright snapshot catches well) — owner's own manual check, per their
+instruction, covers that before this gets committed.
+
+### Task-list summary, updated for `4d5e40e`
+
+**Newly done this pull:** pending item #4 (`FloatingRfqButton` orphan) — now resolved, mounted and
+live. Remove it from the pending list below.
+
+**Still pending (carried forward):**
+1. **FR-11/AC-7 — back-to-top still lower-right, not lower-left.** This pull changed *which*
+   control steps aside (assistant now moves, not back-to-top) but kept back-to-top in the same
+   corner the spec says it shouldn't be in. Fix is still: swap `right` for `left` on `.back-to-top`
+   in `counter-soft-system.css`.
+2. **FR-16 — ad-adjacent spacing still unverifiable**, no ad currently booked anywhere to check
+   against.
+3. **FR-19 — recommendation-imagery "prefer distinct image" path still unverified.**
+4. **AC-9 (200% zoom)** — still not covered by any pass.
+5. **Seller-profile sidebar CTA / stats-vs-ad overlap** — still blocked on #2.
+
+**New, from this pull — needs an explicit owner decision before commit/push:**
+6. **Confirm `RecruitmentGate` pass-through is an intended go-live**, not an oversight — if not
+   intended, revert to the flag-gated version before committing.
+7. **Confirm listing-card price removal is an intended product decision.**
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).

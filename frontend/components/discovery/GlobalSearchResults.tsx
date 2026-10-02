@@ -95,22 +95,22 @@ function CategoryTile({ slug, name, icon, listingCount }: {
         style={{
           width: 32,
           height: 32,
-          borderRadius: 9,
+          borderRadius: "var(--r-xs)",
           background: "var(--brand-tint)",
           color: "var(--brand-hover)",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 15,
+          fontSize: "var(--fs-sm)",
         }}
       >
         {icon ? <span>{icon}</span> : <TagIcon />}
       </span>
-      <span className="line-clamp-1" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--ink)" }}>
+      <span className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
         {name}
       </span>
       {typeof listingCount === "number" && listingCount > 0 && (
-        <span style={{ fontSize: 11.5, color: "var(--faint)" }}>{listingCount} listings</span>
+        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>{listingCount} listings</span>
       )}
     </Link>
   );
@@ -145,7 +145,7 @@ function SectionLabel({
         style={{
           width: 26,
           height: 26,
-          borderRadius: 7,
+          borderRadius: "var(--r-xs)",
           background: "var(--brand-tint)",
           color: "var(--brand-hover)",
           display: "inline-flex",
@@ -156,11 +156,11 @@ function SectionLabel({
       >
         {icon}
       </span>
-      <span style={{ fontSize: 15.5, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+      <span style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
         {children}
       </span>
       {typeof count === "number" && (
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--faint)" }}>{count}</span>
+        <span style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--faint)" }}>{count}</span>
       )}
     </div>
   );
@@ -255,7 +255,7 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
             <div className="gsr-cat-grid">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="card" style={{ padding: "12px 14px" }}>
-                  <span className="skeleton" style={{ display: "block", width: 32, height: 32, borderRadius: 9 }} />
+                  <span className="skeleton" style={{ display: "block", width: 32, height: 32, borderRadius: "var(--r-xs)" }} />
                   <span className="skeleton" style={{ display: "block", height: 12, width: "70%", marginTop: 10 }} />
                 </div>
               ))}
@@ -314,7 +314,7 @@ export default function GlobalSearchResults({ query }: GlobalSearchResultsProps)
             <div className="gsr-list">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="card" style={{ display: "flex", gap: 16, padding: 16 }}>
-                  <div className="skeleton" style={{ width: 148, height: 148, borderRadius: 10, flexShrink: 0 }} />
+                  <div className="skeleton" style={{ width: 148, height: 148, borderRadius: "var(--r-sm)", flexShrink: 0 }} />
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
                     <span className="skeleton" style={{ height: 16, width: "70%" }} />
                     <span className="skeleton" style={{ height: 13, width: "45%" }} />

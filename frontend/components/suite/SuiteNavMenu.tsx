@@ -67,7 +67,7 @@ function ModuleRow({ module, onNavigate }: { module: NavModule; onNavigate?: () 
     <Link
       href={module.href}
       onClick={onNavigate}
-      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 12px", borderRadius: 10, minWidth: 0 }}
+      style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 12px", borderRadius: "var(--r-sm)", minWidth: 0 }}
       className="hover:bg-bg-subtle"
     >
       <span
@@ -76,7 +76,7 @@ function ModuleRow({ module, onNavigate }: { module: NavModule; onNavigate?: () 
           width: 38,
           height: 38,
           flexShrink: 0,
-          borderRadius: 10,
+          borderRadius: "var(--r-sm)",
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
@@ -88,10 +88,10 @@ function ModuleRow({ module, onNavigate }: { module: NavModule; onNavigate?: () 
       </span>
       <span style={{ minWidth: 0 }}>
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{module.name}</span>
-          {soon && <span className="badge badge-neutral" style={{ fontSize: 10 }}>Soon</span>}
+          <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>{module.name}</span>
+          {soon && <span className="badge badge-neutral" style={{ fontSize: "var(--fs-xs)" }}>Soon</span>}
         </span>
-        <span className="line-clamp-2" style={{ display: "block", fontSize: 12.5, color: "var(--muted)", marginTop: 2, lineHeight: 1.45 }}>
+        <span className="line-clamp-2" style={{ display: "block", fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2, lineHeight: 1.45 }}>
           {module.tagline}
         </span>
       </span>
@@ -144,7 +144,7 @@ export default function SuiteProductsMenu() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-muted transition-colors"
       >
         Products
         <ChevronDown />

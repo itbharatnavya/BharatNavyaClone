@@ -54,10 +54,10 @@ function formatDate(iso: string): string {
 
 function PipelineTrack({ status }: { status: FullApplicationStatus }) {
   if (status === "rejected") {
-    return <div style={{ fontSize: 12.5, color: "#991B1B", fontWeight: 600 }}>Not moving forward</div>;
+    return <div style={{ fontSize: "var(--fs-xs)", color: "#991B1B", fontWeight: 600 }}>Not moving forward</div>;
   }
   if (status === "withdrawn") {
-    return <div style={{ fontSize: 12.5, color: "#991B1B", fontWeight: 600 }}>Withdrawn by you</div>;
+    return <div style={{ fontSize: "var(--fs-xs)", color: "#991B1B", fontWeight: 600 }}>Withdrawn by you</div>;
   }
   const idx = PIPELINE.indexOf(status);
   return (
@@ -69,7 +69,7 @@ function PipelineTrack({ status }: { status: FullApplicationStatus }) {
             style={{
               width: 8,
               height: 8,
-              borderRadius: 999,
+              borderRadius: "var(--r-pill)",
               background: i <= idx ? "var(--tricolor-green)" : "var(--border)",
               flexShrink: 0,
             }}
@@ -115,12 +115,12 @@ export default function MyApplicationsTab() {
 
   return (
     <div className="card card-flat card-pad">
-      <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", marginBottom: 16 }}>My applications</h3>
+      <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)", marginBottom: 16 }}>My applications</h3>
 
       {loading ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>Loading…</p>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>Loading…</p>
       ) : applications.length === 0 ? (
-        <p style={{ fontSize: 13.5, color: "var(--muted)" }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
           You haven't applied to any roles yet. <Link href="/recruitment/jobs" style={{ color: "var(--brand)" }}>Browse open roles</Link>.
         </p>
       ) : (
@@ -135,10 +135,10 @@ export default function MyApplicationsTab() {
                   onClick={() => setExpandedId(expanded ? null : app.id)}
                 >
                   <div style={{ flex: 1, minWidth: 160 }}>
-                    <Link href={`/job/${app.jobId}`} style={{ fontSize: 14.5, fontWeight: 600, color: "var(--ink)" }} onClick={(e) => e.stopPropagation()}>
+                    <Link href={`/job/${app.jobId}`} style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }} onClick={(e) => e.stopPropagation()}>
                       {app.job?.title || "Role"}
                     </Link>
-                    <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 3 }}>Applied {formatDate(app.appliedAt)}</div>
+                    <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 3 }}>Applied {formatDate(app.appliedAt)}</div>
                   </div>
                   <PipelineTrack status={app.status} />
                   <span className="badge" style={{ background: sc.bg, color: sc.color }}>{STATUS_LABEL[app.status]}</span>
@@ -148,22 +148,22 @@ export default function MyApplicationsTab() {
                   <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)", display: "grid", gap: 14 }}>
                     {app.coverNote && (
                       <div>
-                        <strong style={{ fontSize: 13 }}>Your cover note</strong>
-                        <p style={{ marginTop: 4, fontSize: 13, color: "var(--muted)", whiteSpace: "pre-wrap" }}>{app.coverNote}</p>
+                        <strong style={{ fontSize: "var(--fs-xs)" }}>Your cover note</strong>
+                        <p style={{ marginTop: 4, fontSize: "var(--fs-xs)", color: "var(--muted)", whiteSpace: "pre-wrap" }}>{app.coverNote}</p>
                       </div>
                     )}
 
                     {app.answers && app.answers.length > 0 && (
                       <div>
-                        <strong style={{ fontSize: 13 }}>Your answers</strong>
-                        <p style={{ fontSize: 12, color: "var(--faint)", marginTop: 2 }}>Submitted with your application — not editable.</p>
+                        <strong style={{ fontSize: "var(--fs-xs)" }}>Your answers</strong>
+                        <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 2 }}>Submitted with your application — not editable.</p>
                         <div style={{ marginTop: 6, display: "grid", gap: 8 }}>
                           {app.answers.map((a) => {
                             const questionText = app.job?.questions?.find((q) => q.id === a.questionId)?.text;
                             return (
                               <div key={a.questionId}>
-                                <div style={{ fontSize: 12.5, color: "var(--muted)", fontWeight: 600 }}>{questionText || "Question"}</div>
-                                <div style={{ fontSize: 13, color: "var(--ink)" }}>{a.text}</div>
+                                <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", fontWeight: 600 }}>{questionText || "Question"}</div>
+                                <div style={{ fontSize: "var(--fs-xs)", color: "var(--ink)" }}>{a.text}</div>
                               </div>
                             );
                           })}
@@ -173,8 +173,8 @@ export default function MyApplicationsTab() {
 
                     {app.statusHistory && app.statusHistory.length > 0 && (
                       <div>
-                        <strong style={{ fontSize: 13 }}>History</strong>
-                        <ul style={{ marginTop: 6, paddingLeft: 18, fontSize: 13, color: "var(--muted)" }}>
+                        <strong style={{ fontSize: "var(--fs-xs)" }}>History</strong>
+                        <ul style={{ marginTop: 6, paddingLeft: 18, fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                           {app.statusHistory.map((h, i) => (
                             <li key={i}>{STATUS_LABEL[h.status]} — {formatDate(h.changedAt)}</li>
                           ))}

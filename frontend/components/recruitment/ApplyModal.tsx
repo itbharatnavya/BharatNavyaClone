@@ -47,7 +47,7 @@ function DotIcon() {
 
 function ChecklistRow({ label, done }: { label: string; done: boolean }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: done ? "var(--ink)" : "var(--muted)" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--fs-sm)", color: done ? "var(--ink)" : "var(--muted)" }}>
       <span style={{ color: done ? "var(--tricolor-green-hover)" : "var(--faint)" }}>{done ? <CheckIcon /> : <DotIcon />}</span>
       {label}
     </div>
@@ -165,7 +165,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
       {!blocked && <ApplicationStepper steps={steps.map((item) => item === "questions" ? "Questions" : item === "note" ? "Cover note" : item === "profile" ? "Profile" : "Review")} activeIndex={stepIndex} />}
       {blocked && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <p style={{ fontSize: 13.5, color: "var(--muted)" }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
             Finish your candidate profile before applying. {companyName} sees these
             details with every application:
           </p>
@@ -174,7 +174,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
               <ChecklistRow key={g.key} label={g.label} done={false} />
             ))}
           </div>
-          <p style={{ fontSize: 12.5, color: "var(--faint)" }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
             You only need to do this once —{" "}
             <Link href="/recruitment/dashboard?tab=profile" style={{ color: "var(--brand)" }}>
               open your profile
@@ -186,7 +186,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
 
       {!blocked && step === "questions" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: -4 }}>
             {companyName} asks a few questions before reviewing applications.
           </p>
           {questions.map((q) => (
@@ -209,7 +209,7 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
 
       {!blocked && step === "note" && (
         <div>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4, marginBottom: 14 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: -4, marginBottom: 14 }}>
             Applying as {user.name}. Your profile details go to {companyName} — add a short note if you'd like.
           </p>
           <label className="field-label" htmlFor="jd-cover-note">Cover note (optional)</label>
@@ -227,10 +227,10 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
 
       {!blocked && step === "profile" && (
         <div style={{ display: "grid", gap: 14 }}>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: -4 }}>
             Confirm the profile and résumé that {companyName} will receive.
           </p>
-          <div style={{ padding: 16, border: "1px solid var(--bn-border)", borderRadius: "var(--bn-radius-control)", background: "var(--bn-neutral-100)", display: "grid", gap: 8 }}>
+          <div style={{ padding: 16, border: "1px solid var(--bn-border)", borderRadius: "var(--r-lg)", background: "var(--bn-neutral-100)", display: "grid", gap: 8 }}>
             <strong>{user.name}</strong>
             <span>{cp?.headline || cp?.currentRole || "Candidate profile"}</span>
             <small style={{ color: "var(--muted)" }}>{cp?.skills?.slice(0, 5).join(" · ") || "Skills are stored on your profile"}</small>
@@ -241,8 +241,8 @@ export default function ApplyModal({ open, job, onClose, onApplied }: Props) {
 
       {!blocked && step === "review" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: -4 }}>Review before you submit.</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: -4 }}>Review before you submit.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "var(--fs-sm)" }}>
             <div><strong>Name:</strong> {user.name}</div>
             <div><strong>Mobile:</strong> {user.mobile}</div>
             <div>

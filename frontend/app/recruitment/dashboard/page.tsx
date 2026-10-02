@@ -51,9 +51,9 @@ function RoleGate({ onPicked }: { onPicked: () => void }) {
           className={`card counter-role-option is-${opt.role}`}
           style={{ textAlign: "left", padding: 20, cursor: picking ? "default" : "pointer", opacity: picking && picking !== opt.role ? 0.6 : 1 }}
         >
-          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{opt.title}</div>
-          <div style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 6 }}>{opt.desc}</div>
-          <div style={{ marginTop: 14, fontSize: 13, fontWeight: 600, color: "var(--tricolor-green-hover)" }}>
+          <div style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>{opt.title}</div>
+          <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 6 }}>{opt.desc}</div>
+          <div style={{ marginTop: 14, fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--tricolor-green-hover)" }}>
             {picking === opt.role ? "Saving…" : "Continue →"}
           </div>
         </button>
@@ -81,7 +81,7 @@ function RecruitmentDashboardBody() {
       <div style={{ marginTop: 28 }}>
         {showRoleGate && <RoleGate onPicked={async () => { await refresh(); setShowRoleGate(false); }} />}
         {role && !showRoleGate && !locked && (
-          <p style={{ fontSize: 12.5, color: "var(--muted)", marginBottom: 20 }}>
+          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBottom: 20 }}>
             Not the right choice?{" "}
             <button type="button" onClick={() => setShowRoleGate(true)} className="rd-role-reset">
               Switch role
@@ -94,21 +94,21 @@ function RecruitmentDashboardBody() {
 
       <style jsx>{`
         .rd-eyebrow {
-          font-size: 12px;
+          font-size: var(--fs-xs);
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           color: var(--tricolor-green-hover);
         }
         .rd-h1 {
-          font-size: 28px;
+          font-size: var(--fs-xl);
           font-weight: 800;
           letter-spacing: -0.02em;
           color: var(--ink);
           margin-top: 6px;
         }
         .rd-sub {
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           color: var(--muted);
           margin-top: 6px;
         }

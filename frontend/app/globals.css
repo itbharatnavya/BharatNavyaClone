@@ -45,15 +45,15 @@
   --bn-space-12: 3rem;
   --bn-space-16: 4rem;
   --bn-space-24: 6rem;
-  --bn-radius-small: 0.5rem;
-  --bn-radius-control: 0.875rem;
+  --bn-radius-small: var(--r-xs);
+  --bn-radius-control: var(--r-sm);
   --bn-radius-card: 1.25rem;
   --bn-radius-panel: 1.25rem;
   /* Search is a distinct cross-product control: horizontal forms use the
      Browse Roles pill; genuinely stacked mobile forms use the card radius. */
-  --bn-radius-search: 999px;
-  --bn-radius-search-stacked: var(--bn-radius-card);
-  --bn-radius-search-action: 999px;
+  --bn-radius-search: var(--r-pill);
+  --bn-radius-search-stacked: var(--r-lg);
+  --bn-radius-search-action: var(--r-pill);
   --bn-shadow-card: 0 16px 40px rgba(25, 38, 65, 0.08);
   --bn-shadow-float: 0 20px 55px rgba(25, 38, 65, 0.14);
   --bn-control-height: 3.5rem;
@@ -77,7 +77,7 @@
   --bn-section-hero-end: #f1f5fc;
 
   /* canvas / surfaces */
-  --canvas: #ffffff;
+  --canvas: #dce9fb;
   --bg-subtle: #f7f8fa;
   --surface: #ffffff;
 
@@ -98,17 +98,17 @@
 
   /* action accent (saffron orange) — from the BharatNavya wordmark's arrow.
      Bharat Agent's signature color. */
-  --action: #f5821f;
-  --action-hover: #dd6d0f;
-  --action-tint: #fff2e2;
+  --action: #1b3fa0;
+  --action-hover: #12307e;
+  --action-tint: #dbe4fb;
 
   /* third module accent (green) — from the BharatNavya wordmark's swoosh.
      Recruitment's module color, plus the eyebrow flourish tick. This is a
      real, visible third accent now (module identity), not just decoration —
      see frontend-design-guide.md's color-to-module mapping. */
-  --tricolor-green: #1e9e52;
-  --tricolor-green-hover: #167d40;
-  --tricolor-green-tint: #e8f8ee;
+  --tricolor-green: #2556c8;
+  --tricolor-green-hover: #1b3fa0;
+  --tricolor-green-tint: #dbe4fb;
 
   /* deep navy — the BharatNavya wordmark's actual lettering color (v5.4,
      picked from the logo directly). Deliberately kept OUT of interactive
@@ -127,7 +127,7 @@
      frame, after the two blended together at matching darkness). Same
      "decorative surface only" rule as --navy: never for buttons, links or
      body text. See frontend-design-guide.md. */
-  --violet: #6d28d9;
+  --violet: #1B3FA0;
   --violet-deep: #3b0764;
   --violet-darker: #1e0442;
 
@@ -137,7 +137,7 @@
   --error: #dc2626;
 
   /* shape */
-  --radius: 10px;
+  --radius: var(--r-sm);
   --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
   --shadow-card-hover: 0 4px 12px rgba(16, 24, 40, 0.08), 0 2px 6px rgba(16, 24, 40, 0.06);
   --shadow-pop: 0 8px 24px rgba(16, 24, 40, 0.12);
@@ -174,7 +174,7 @@ body {
   top: 0.5rem;
   left: 0.5rem;
   transform: translateY(-160%);
-  border-radius: var(--bn-radius-control);
+  border-radius: var(--r-lg);
   background: var(--bn-text-primary);
   color: white;
   padding: 0.75rem 1rem;
@@ -190,7 +190,7 @@ body {
   background-color: var(--canvas);
   color: var(--ink);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -248,7 +248,7 @@ p {
 }
 ::-webkit-scrollbar-thumb {
   background: #dbe0e6;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -340,9 +340,6 @@ p {
   font-weight: 600;
   white-space: nowrap;
 }
-.category-strip-trigger:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
 
 /* CategoryMegaMenu's right panel — each sub-category (+ its own children)
    sits in its own bordered, tinted tile instead of a bare text list, so the
@@ -352,7 +349,7 @@ p {
   min-width: 0;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: var(--counter-button-radius, 1.25rem);
+  border-radius: var(--r-lg);
   background: var(--bg-subtle);
   transition: background-color 120ms ease, border-color 120ms ease;
 }
@@ -372,7 +369,7 @@ p {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  border-radius: 11px;
+  border-radius: var(--r-sm);
   background: var(--bg-subtle);
 }
 .search-city-select select {
@@ -458,7 +455,7 @@ p {
 
 /* Eyebrow — small uppercase label */
 .eyebrow {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -475,11 +472,11 @@ p {
   justify-content: center;
   gap: 8px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   line-height: 1;
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: var(--r-sm);
   border: 1px solid transparent;
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease,
@@ -555,7 +552,6 @@ p {
 }
 .btn-ghost:hover:not(:disabled) {
   background: var(--bg-subtle);
-  color: var(--ink);
 }
 
 /* danger */
@@ -572,25 +568,25 @@ p {
 .btn-sm {
   min-height: 44px;
   padding: 7px 12px;
-  font-size: 13px;
-  border-radius: var(--counter-button-radius, 1.25rem);
+  font-size: var(--fs-xs);
+  border-radius: var(--r-lg);
   gap: 6px;
 }
 
 .bn-toast {
-  border: 1px solid var(--counter-line, #d8d0be);
-  border-radius: var(--counter-radius-control, 1.25rem);
-  background: var(--counter-ivory, #fffdf7);
+  border: 1px solid var(--counter-line, #b9cce6);
+  border-radius: var(--r-lg);
+  background: var(--counter-ivory, #ffffff);
   color: var(--counter-ink, #12141b);
   box-shadow: var(--counter-shadow-lift, 0 16px 40px rgba(18, 20, 27, 0.16));
 }
 
-.bn-toast-success { border-color: color-mix(in srgb, #16a34a 40%, var(--counter-line, #d8d0be)); }
-.bn-toast-error { border-color: color-mix(in srgb, #dc2626 40%, var(--counter-line, #d8d0be)); }
-.bn-toast-info { border-color: color-mix(in srgb, var(--counter-indigo, #1b3fa0) 40%, var(--counter-line, #d8d0be)); }
+.bn-toast-success { border-color: color-mix(in srgb, #16a34a 40%, var(--counter-line, #b9cce6)); }
+.bn-toast-error { border-color: color-mix(in srgb, #dc2626 40%, var(--counter-line, #b9cce6)); }
+.bn-toast-info { border-color: color-mix(in srgb, var(--counter-indigo, #1b3fa0) 40%, var(--counter-line, #b9cce6)); }
 .btn-lg {
   padding: 13px 22px;
-  font-size: 15px;
+  font-size: var(--fs-sm);
 }
 .btn-block {
   width: 100%;
@@ -642,7 +638,7 @@ p {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--counter-card-radius, 1.25rem);
+  border-radius: var(--r-lg);
   box-shadow: var(--shadow-card);
   transition: box-shadow 160ms ease, transform 160ms ease,
     border-color 160ms ease;
@@ -698,21 +694,11 @@ p {
   box-shadow: inset 0 0 0 3px var(--surface);
 }
 .story-card.is-unseen .story-card-avatar { border-color: var(--action); }
-.story-card-initials { color: var(--brand); font-size: 1.15rem; font-weight: 800; }
-.story-card-unseen {
-  position: absolute;
-  right: 0.05rem;
-  bottom: 0.15rem;
-  width: 0.9rem;
-  height: 0.9rem;
-  border: 2px solid var(--surface);
-  border-radius: 50%;
-  background: var(--tricolor-green, var(--success));
-}
+.story-card-initials { color: var(--brand); font-size: var(--fs-lg); font-weight: 800; }
 .story-card-name {
   width: 100%;
   min-height: 2.2em;
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   line-height: 1.1;
 }
@@ -724,34 +710,34 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   line-height: 1;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid transparent;
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
 .badge-verified {
-  background: var(--brand-tint);
-  color: var(--brand-hover);
-  border-color: #bfdbfe;
+  background: #dbe4fb;
+  color: #1b3fa0;
+  border-color: #b9c9f2;
 }
 .badge-sponsored {
-  background: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  background: #12141b;
+  color: #ffffff;
+  border-color: #12141b;
 }
 .badge-premium {
-  background: #f5f3ff;
-  color: #6d28d9;
-  border-color: #ddd6fe;
+  background: #dbe4fb;
+  color: #1b3fa0;
+  border-color: #b9c9f2;
 }
 .badge-new {
-  background: #ecfdf5;
-  color: #15803d;
-  border-color: #bbf7d0;
+  background: #e3ebff;
+  color: #2556c8;
+  border-color: #c4d3f7;
 }
 .badge-neutral {
   background: var(--bg-subtle);
@@ -764,18 +750,18 @@ p {
    ============================================================ */
 .field-label {
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--ink);
   margin-bottom: 6px;
 }
 .field-hint {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--faint);
   margin-top: 6px;
 }
 .field-error {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--error);
   margin-top: 6px;
 }
@@ -785,10 +771,10 @@ p {
   width: 100%;
   background: #ffffff;
   border: 1px solid var(--border-strong);
-  border-radius: var(--counter-input-radius, 1.25rem);
+  border-radius: var(--r-lg);
   padding: 10px 14px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   color: var(--ink);
   transition: border-color 150ms ease, box-shadow 150ms ease;
   outline: none;
@@ -837,11 +823,11 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   line-height: 1;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--border-strong);
   background: #ffffff;
   color: var(--muted);
@@ -852,7 +838,6 @@ p {
 }
 .chip:hover {
   border-color: var(--faint);
-  color: var(--ink);
   background: var(--bg-subtle);
 }
 .chip-active,
@@ -865,7 +850,6 @@ p {
 .chip[aria-pressed="true"]:hover {
   background: var(--brand-hover);
   border-color: var(--brand-hover);
-  color: #ffffff;
 }
 
 /* ============================================================
@@ -896,7 +880,7 @@ p {
     #eef1f4 100%
   );
   background-size: 640px 100%;
-  border-radius: var(--counter-card-radius, 1.25rem);
+  border-radius: var(--r-lg);
   animation: shimmer 1.4s infinite linear;
 }
 
@@ -1083,7 +1067,7 @@ p {
   overflow: hidden;
   max-width: 900px;
   margin: 0 auto;
-  border-radius: 20px;
+  border-radius: var(--r-lg);
   border: 1px solid var(--border);
   background: radial-gradient(52% 52% at 100% 0%, rgba(245, 130, 31, 0.14) 0%, rgba(245, 130, 31, 0) 65%),
     radial-gradient(48% 48% at 0% 100%, rgba(30, 158, 82, 0.12) 0%, rgba(30, 158, 82, 0) 65%),
@@ -1123,7 +1107,7 @@ p {
 }
 .agent-hero-side-label {
   display: block;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1163,7 +1147,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1173,7 +1157,7 @@ p {
   content: "";
   width: 20px;
   height: 2px;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--action);
   flex-shrink: 0;
 }
@@ -1181,7 +1165,7 @@ p {
   content: "";
   width: 10px;
   height: 2px;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--tricolor-green);
   flex-shrink: 0;
 }

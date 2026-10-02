@@ -58,9 +58,9 @@ export default function OtherSellers({
   return (
     <section className="os-wrap" style={{ marginTop: 40 }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--ink)" }}>{title}</h2>
+        <h2 style={{ fontSize: "var(--fs-lg)", fontWeight: 800, color: "var(--ink)" }}>{title}</h2>
       </div>
-      <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 16 }}>
+      <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBottom: 16 }}>
         Compare sellers for this product and pick the best price, quantity or location.
       </p>
 
@@ -98,12 +98,12 @@ export default function OtherSellers({
                             <Link
                               href={`/seller/${o.seller.slug}`}
                               className="line-clamp-1"
-                              style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}
+                              style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}
                             >
                               {name}
                             </Link>
                           ) : (
-                            <span className="line-clamp-1" style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>
+                            <span className="line-clamp-1" style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
                               {name}
                             </span>
                           )}
@@ -117,7 +117,7 @@ export default function OtherSellers({
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: 3,
-                                fontSize: 13,
+                                fontSize: "var(--fs-xs)",
                                 color: "var(--faint)",
                               }}
                             >
@@ -132,18 +132,18 @@ export default function OtherSellers({
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
                       {o.price != null ? (
                         <span style={{ fontVariantNumeric: "tabular-nums" }}>
-                          <span style={{ fontSize: 16, fontWeight: 800, color: "var(--ink)" }}>
+                          <span style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)" }}>
                             ₹{formatINR(o.price)}
                           </span>
-                          <span style={{ fontSize: 12, color: "var(--faint)" }}> / {o.unitOfMeasure}</span>
+                          <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}> / {o.unitOfMeasure}</span>
                         </span>
                       ) : (
-                        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>Ask Price</span>
+                        <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--muted)" }}>Ask Price</span>
                       )}
                     </td>
 
                     {/* MOQ */}
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap", fontSize: 14, color: "var(--muted)" }}>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap", fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
                       {o.moq != null ? (
                         <span style={{ fontVariantNumeric: "tabular-nums" }}>
                           {o.moq} {o.unitOfMeasure}
@@ -154,7 +154,7 @@ export default function OtherSellers({
                     </td>
 
                     {/* Availability */}
-                    <td style={{ fontSize: 14, color: "var(--muted)", whiteSpace: "nowrap" }}>
+                    <td style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", whiteSpace: "nowrap" }}>
                       {availabilityLabel}
                     </td>
 
@@ -163,7 +163,7 @@ export default function OtherSellers({
                       <Link
                         href={`/listing/${o.listingId}`}
                         className="btn btn-secondary"
-                        style={{ padding: "7px 14px", fontSize: 13 }}
+                        style={{ padding: "7px 14px", fontSize: "var(--fs-xs)" }}
                       >
                         View
                       </Link>
@@ -183,7 +183,7 @@ export default function OtherSellers({
           min-width: 640px;
         }
         .os-table thead th {
-          font-size: 11px;
+          font-size: var(--fs-xs);
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.04em;

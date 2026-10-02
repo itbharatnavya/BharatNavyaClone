@@ -1,5 +1,8 @@
 # CLAUDE.md — read this first
 
+> **UI note (overrides everything below about colours/design):** the current visual rules live in `DESIGN-SYSTEM.md` (white surfaces on a light-blue page, one blue family, one CTA style). Follow it for any frontend work.
+
+
 You are picking up **BharatSource**, a production-bound web app, with no prior context. This file is your onboarding: architecture, the rules you must not break, how to run and verify, and the traps. Read it fully before editing. Companion docs: **HANDOVER.md** (human setup), **SECURITY.md** (pre-go-live), **DIRECTORY.md** (the flagship product's flows + roadmap), **RECRUITMENT.md** (the second suite product's spec + build roadmap — fully built, currently gated behind a go-live flag, see §5 there and §1 below), and the older `DESIGN.md` / `BUILD-SPEC.md` / `FRONTEND-PAGES-SPEC.md` (partly stale — trust the code over them).
 
 > Paths in this repo contain a space: `/Users/dev/Documents/Personal /Projects/IndiaMart/bharatsource`. **Always quote paths** in shell commands.

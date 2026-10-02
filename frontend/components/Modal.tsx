@@ -95,7 +95,7 @@ export default function Modal({
           display: "flex",
           flexDirection: "column",
           background: "var(--bn-surface, #fff)",
-          borderRadius: "var(--bn-radius-card, 20px)",
+          borderRadius: "var(--r-lg)",
           boxShadow: "0 24px 60px rgba(16,24,40,.24)",
           overflow: "hidden",
         }}
@@ -111,7 +111,7 @@ export default function Modal({
           }}
         >
           {title && (
-            <div id={titleId} style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
+            <div id={titleId} style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
               {title}
             </div>
           )}
@@ -120,17 +120,17 @@ export default function Modal({
             aria-label="Close"
             onClick={onClose}
             style={{
-              background: "transparent",
+              background: "color-mix(in srgb, var(--ink) 7%, white)",
               border: "none",
               cursor: "pointer",
-              color: "var(--muted)",
+              color: "var(--ink)",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               padding: 0,
-              borderRadius: "var(--bn-radius-small)",
+              borderRadius: "50%",
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">

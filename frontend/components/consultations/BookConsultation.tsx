@@ -144,7 +144,7 @@ export default function BookConsultation({
               width: 56,
               height: 56,
               margin: "0 auto 16px",
-              borderRadius: "999px",
+              borderRadius: "var(--r-pill)",
               background: "var(--brand-tint)",
               color: "var(--success)",
               display: "inline-flex",
@@ -154,10 +154,10 @@ export default function BookConsultation({
           >
             <CheckIcon size={28} />
           </div>
-          <p style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
+          <p style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", margin: 0 }}>
             Request sent — {expert.name} will reach out.
           </p>
-          <p style={{ fontSize: 14, color: "var(--muted)", margin: "8px auto 0", maxWidth: 380, lineHeight: 1.55 }}>
+          <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", margin: "8px auto 0", maxWidth: 380, lineHeight: 1.55 }}>
             We&apos;ve shared your contact details. Expect a response
             {pkg ? ` about “${pkg.title}”` : ""} shortly.
           </p>
@@ -182,10 +182,10 @@ export default function BookConsultation({
                 flexWrap: "wrap",
                 background: "var(--brand-tint)",
                 border: "1px solid #bfdbfe",
-                borderRadius: 10,
+                borderRadius: "var(--r-sm)",
                 padding: "10px 14px",
                 marginBottom: 18,
-                fontSize: 13.5,
+                fontSize: "var(--fs-sm)",
                 color: "var(--brand-hover)",
               }}
             >
@@ -315,11 +315,11 @@ export default function BookConsultation({
               <div
                 role="alert"
                 style={{
-                  fontSize: 13,
+                  fontSize: "var(--fs-xs)",
                   color: "var(--error)",
                   background: "#fef2f2",
                   border: "1px solid #fecaca",
-                  borderRadius: 10,
+                  borderRadius: "var(--r-sm)",
                   padding: "10px 12px",
                 }}
               >
@@ -336,7 +336,7 @@ export default function BookConsultation({
               </button>
             </div>
 
-            <p style={{ fontSize: 12, color: "var(--faint)", margin: 0, textAlign: "center" }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", margin: 0, textAlign: "center" }}>
               No payment now — this sends your request to the expert.
             </p>
           </div>

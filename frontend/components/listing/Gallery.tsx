@@ -56,7 +56,7 @@ export default function Gallery({ media, title }: GalleryProps) {
             />
           )
         ) : (
-          <span style={{ color: "var(--faint)", fontSize: 14 }}>No image available</span>
+          <span style={{ color: "var(--faint)", fontSize: "var(--fs-sm)" }}>No image available</span>
         )}
       </div>
 
@@ -82,7 +82,7 @@ export default function Gallery({ media, title }: GalleryProps) {
                   aspectRatio: "1 / 1",
                   background: "var(--bg-subtle)",
                   border: selected ? "2px solid var(--brand)" : "1px solid var(--border)",
-                  borderRadius: 10,
+                  borderRadius: "var(--r-sm)",
                   padding: 0,
                   overflow: "hidden",
                   cursor: img ? "pointer" : "default",
@@ -99,7 +99,7 @@ export default function Gallery({ media, title }: GalleryProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         color: "var(--faint)",
-                        fontSize: 18,
+                        fontSize: "var(--fs-lg)",
                       }}
                     >
                       ▶

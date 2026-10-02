@@ -127,7 +127,7 @@ const contactBtnStyle: React.CSSProperties = {
   padding: "8px 4px",
 };
 const contactBtnLabelStyle: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: "var(--fs-xs)",
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -292,17 +292,17 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
           <div style={{ flex: 1, minWidth: 0 }}>
             {profileHref ? (
               <Link href={profileHref} style={{ textDecoration: "none" }} title={t("contact.viewProfile", "View seller profile")}>
-                <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--brand)", cursor: "pointer" }}>
+                <h3 className="line-clamp-1" style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--brand)", cursor: "pointer" }}>
                   {seller.name}
                 </h3>
               </Link>
             ) : (
-              <h3 className="line-clamp-1" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+              <h3 className="line-clamp-1" style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
                 {seller.name}
               </h3>
             )}
             {(seller.city || seller.state) && (
-              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
+              <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 2 }}>
                 {[seller.city, seller.state].filter(Boolean).join(", ")}
               </div>
             )}
@@ -404,7 +404,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
           alignItems: "stretch",
           marginTop: 12,
           border: "1px solid var(--border)",
-          borderRadius: 10,
+          borderRadius: "var(--r-sm)",
           overflow: "hidden",
         }}
       >
@@ -420,7 +420,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
                 gap: 6,
                 minHeight: 44,
                 padding: "9px 10px",
-                fontSize: 13,
+                fontSize: "var(--fs-xs)",
                 fontWeight: 600,
                 color: "var(--muted)",
                 background: "none",
@@ -444,7 +444,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
               gap: 6,
               minHeight: 44,
               padding: "9px 10px",
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               fontWeight: 600,
               color: "var(--muted)",
               background: "none",
@@ -471,7 +471,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
             background: "var(--brand-tint)",
             color: "var(--brand-hover)",
             fontWeight: 700,
-            fontSize: 13.5,
+            fontSize: "var(--fs-sm)",
             borderTop: "1px solid var(--border)",
             textDecoration: "none",
           }}

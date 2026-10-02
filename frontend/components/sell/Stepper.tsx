@@ -53,11 +53,11 @@ export default function Stepper({
                   style={{
                     width: 26,
                     height: 26,
-                    borderRadius: 999,
+                    borderRadius: "var(--r-pill)",
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 13,
+                    fontSize: "var(--fs-xs)",
                     fontWeight: 600,
                     flexShrink: 0,
                     color: active || done ? "#fff" : "var(--muted)",
@@ -92,7 +92,7 @@ export default function Stepper({
                 </span>
                 <span
                   style={{
-                    fontSize: 14,
+                    fontSize: "var(--fs-sm)",
                     fontWeight: active ? 600 : 500,
                     color: active
                       ? "var(--ink)"

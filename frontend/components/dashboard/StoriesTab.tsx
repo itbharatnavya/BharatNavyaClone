@@ -126,10 +126,10 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
           }}
         >
           <EyeIcon size={22} />
-          <span style={{ color: "#fff", fontSize: 12, fontWeight: 600 }}>{tr("dashboard.stories.preview", "Preview")}</span>
+          <span style={{ color: "#fff", fontSize: "var(--fs-xs)", fontWeight: 600 }}>{tr("dashboard.stories.preview", "Preview")}</span>
         </span>
 
-        <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(15,23,42,.7)", color: "#fff", fontSize: 11, borderRadius: 999, padding: "2px 8px" }}>
+        <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(15,23,42,.7)", color: "#fff", fontSize: "var(--fs-xs)", borderRadius: "var(--r-pill)", padding: "2px 8px" }}>
           {s.views ?? 0} views
         </div>
         {s.isHighlight && (
@@ -143,9 +143,9 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
               gap: 4,
               background: "var(--brand)",
               color: "#fff",
-              fontSize: 11,
+              fontSize: "var(--fs-xs)",
               fontWeight: 600,
-              borderRadius: 999,
+              borderRadius: "var(--r-pill)",
               padding: "2px 8px",
             }}
           >
@@ -157,11 +157,11 @@ function StoryCard({ story: s, tr, onPreview, onToggleHighlight, onDelete }: Sto
 
       <div style={{ padding: 10 }}>
         {s.caption && (
-          <div className="line-clamp-2" style={{ fontSize: 13, color: "var(--ink)", minHeight: 34 }}>
+          <div className="line-clamp-2" style={{ fontSize: "var(--fs-xs)", color: "var(--ink)", minHeight: 34 }}>
             {s.caption}
           </div>
         )}
-        <div style={{ fontSize: 11, color: "var(--faint)", marginTop: 4 }}>{timeAgo(s.createdAt)}</div>
+        <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 4 }}>{timeAgo(s.createdAt)}</div>
         <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
           <Button size="sm" variant={s.isHighlight ? "ghost" : "secondary"} leftIcon={<Icon name="pin" size={14} />} onClick={onToggleHighlight} style={{ flex: 1, minWidth: 0 }}>
             {s.isHighlight ? tr("dashboard.stories.removeHighlight", "Remove") : tr("dashboard.stories.highlight", "Highlight")}
@@ -347,7 +347,7 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
         <>
           {stories.length > SEARCH_THRESHOLD && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
-              <div style={{ fontSize: 13, color: "var(--muted)" }}>
+              <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                 {tr("dashboard.stories.count", `${stories.length} stories · ${stories.filter((s) => s.isHighlight).length} highlighted`)}
               </div>
               <div style={{ marginLeft: "auto", width: "100%", maxWidth: 280 }}>
@@ -364,7 +364,7 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
           )}
 
           {highlighted.length === 0 && active.length === 0 ? (
-            <div className="card card-flat" style={{ textAlign: "center", padding: 28, color: "var(--muted)", fontSize: 14 }}>
+            <div className="card card-flat" style={{ textAlign: "center", padding: 28, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
               {tr("dashboard.stories.noMatches", "No stories match your search.")}{" "}
               <button
                 type="button"
@@ -379,8 +379,8 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
               {highlighted.length > 0 && (
                 <section style={{ marginBottom: 28 }}>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>{tr("dashboard.stories.highlightedSection", "Highlighted")}</h3>
-                    <span style={{ fontSize: 13, color: "var(--faint)" }}>({highlighted.length})</span>
+                    <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>{tr("dashboard.stories.highlightedSection", "Highlighted")}</h3>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>({highlighted.length})</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 14 }}>
                     {highlighted.slice(0, visibleHighlighted).map((s) => (
@@ -395,7 +395,7 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
                     ))}
                   </div>
                   {hasMoreHighlighted && (
-                    <div ref={highlightedSentinelRef} style={{ textAlign: "center", padding: "18px 0 4px", fontSize: 12, color: "var(--faint)" }}>
+                    <div ref={highlightedSentinelRef} style={{ textAlign: "center", padding: "18px 0 4px", fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                       {tr("dashboard.stories.scrollForMore", `Scroll for more (${highlighted.length - visibleHighlighted} left)`)}
                     </div>
                   )}
@@ -405,8 +405,8 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
               {active.length > 0 && (
                 <section>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>{tr("dashboard.stories.activeSection", "Active")}</h3>
-                    <span style={{ fontSize: 13, color: "var(--faint)" }}>({active.length})</span>
+                    <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>{tr("dashboard.stories.activeSection", "Active")}</h3>
+                    <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>({active.length})</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 14 }}>
                     {active.slice(0, visibleActive).map((s) => (
@@ -421,7 +421,7 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
                     ))}
                   </div>
                   {hasMoreActive && (
-                    <div ref={activeSentinelRef} style={{ textAlign: "center", padding: "18px 0 4px", fontSize: 12, color: "var(--faint)" }}>
+                    <div ref={activeSentinelRef} style={{ textAlign: "center", padding: "18px 0 4px", fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
                       {tr("dashboard.stories.scrollForMore", `Scroll for more (${active.length - visibleActive} left)`)}
                     </div>
                   )}
@@ -492,7 +492,7 @@ export default function StoriesTab({ user, product = "directory" }: Props) {
           </>
         }
       >
-        <p style={{ fontSize: 14, color: "var(--muted)" }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
           {tr("dashboard.stories.deleteConfirm", "This story will be permanently deleted and removed from your profile.")}
         </p>
       </Modal>

@@ -115,14 +115,14 @@ export default function CollectionCard({ collection }: { collection: Collection 
             <LayersIcon size={16} />
           </span>
           <h3
-            className="line-clamp-1 group-hover:text-brand"
-            style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease", minWidth: 0 }}
+            className="line-clamp-1"
+            style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)", transition: "color 120ms ease", minWidth: 0 }}
           >
             {collection.title}
           </h3>
         </div>
         {collection.subtitle && (
-          <p className="line-clamp-2" style={{ fontSize: 13, color: "var(--muted)" }}>
+          <p className="line-clamp-2" style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
             {collection.subtitle}
           </p>
         )}

@@ -37,7 +37,7 @@ export default function SpecTable({ specs, title = "Specifications" }: SpecTable
           style={{
             width: 30,
             height: 30,
-            borderRadius: 8,
+            borderRadius: "var(--r-xs)",
             background: "var(--brand-tint)",
             color: "var(--brand-hover)",
             display: "inline-flex",
@@ -48,11 +48,11 @@ export default function SpecTable({ specs, title = "Specifications" }: SpecTable
         >
           <SpecsIcon />
         </span>
-        <h2 style={{ fontSize: 17, fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
+        <h2 style={{ fontSize: "var(--fs-md)", fontWeight: 800, color: "var(--ink)", letterSpacing: "-0.01em" }}>
           {title}
         </h2>
       </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
+      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--r-sm)", overflow: "hidden" }}>
         {entries.map(([key, value], i) => (
           <div
             key={key}
@@ -65,10 +65,10 @@ export default function SpecTable({ specs, title = "Specifications" }: SpecTable
               borderBottom: i < entries.length - 1 ? "1px solid var(--border)" : "none",
             }}
           >
-            <span style={{ fontSize: 13, color: "var(--muted)", textTransform: "capitalize" }}>
+            <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", textTransform: "capitalize" }}>
               {key.replace(/[_-]+/g, " ")}
             </span>
-            <span style={{ fontSize: 14, color: "var(--ink)", fontWeight: 500 }}>{value}</span>
+            <span style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", fontWeight: 500 }}>{value}</span>
           </div>
         ))}
       </div>

@@ -21,7 +21,7 @@ export default function NotFound() {
       <span
         className="font-mono"
         style={{
-          fontSize: 120,
+          fontSize: "var(--fs-3xl)",
           lineHeight: 1,
           fontWeight: 700,
           color: "var(--border)",
@@ -38,7 +38,7 @@ export default function NotFound() {
       <p
         style={{
           marginTop: 12,
-          fontSize: 15,
+          fontSize: "var(--fs-sm)",
           color: "var(--text-secondary)",
           maxWidth: 420,
         }}

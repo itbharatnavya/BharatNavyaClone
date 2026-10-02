@@ -354,7 +354,7 @@ export default function BulkUploadTab({ user }: Props) {
   // ---- render helpers ----
   const cellStyle: React.CSSProperties = {
     padding: "8px 10px",
-    fontSize: 13,
+    fontSize: "var(--fs-xs)",
     color: "var(--ink)",
     borderBottom: "1px solid var(--border)",
     whiteSpace: "nowrap",
@@ -387,16 +387,16 @@ export default function BulkUploadTab({ user }: Props) {
       <div className="card card-flat" style={{ padding: 18, marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap", justifyContent: "space-between" }}>
           <div style={{ maxWidth: 640 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
+            <div style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
               {tr("bulk.step1", "1. Download the template")}
             </div>
-            <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 6, lineHeight: 1.6 }}>
+            <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 6, lineHeight: 1.6 }}>
               {tr(
                 "bulk.step1Hint",
                 "The template has one row per product. Fill in a title, a category slug, and a price for each — the rest is optional."
               )}
             </p>
-            <ul style={{ fontSize: 13, color: "var(--muted)", marginTop: 8, paddingLeft: 18, lineHeight: 1.7 }}>
+            <ul style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 8, paddingLeft: 18, lineHeight: 1.7 }}>
               <li>
                 <strong style={{ color: "var(--ink)" }}>title</strong>, <strong style={{ color: "var(--ink)" }}>category_slug</strong> and{" "}
                 <strong style={{ color: "var(--ink)" }}>price</strong> {tr("bulk.required", "are required")}.
@@ -421,11 +421,11 @@ export default function BulkUploadTab({ user }: Props) {
             display: "flex",
             gap: 8,
             alignItems: "center",
-            fontSize: 12.5,
+            fontSize: "var(--fs-xs)",
             color: "var(--muted)",
             background: "var(--brand-tint)",
             border: "1px solid var(--border)",
-            borderRadius: 10,
+            borderRadius: "var(--r-sm)",
             padding: "8px 12px",
           }}
         >
@@ -438,10 +438,10 @@ export default function BulkUploadTab({ user }: Props) {
 
       {/* Step 2 — file input */}
       <div className="card card-flat" style={{ padding: 18, marginBottom: 16 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
+        <div style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)", marginBottom: 4 }}>
           {tr("bulk.step2", "2. Upload your filled-in CSV")}
         </div>
-        <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>
+        <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBottom: 12 }}>
           {tr("bulk.step2Hint", `Up to ${MAX_ROWS} products per file. We'll preview and check every row before anything is created.`)}
         </p>
         <input
@@ -454,12 +454,12 @@ export default function BulkUploadTab({ user }: Props) {
           disabled={catsLoading}
         />
         {catsLoading && (
-          <div style={{ fontSize: 12.5, color: "var(--faint)", marginTop: 8 }}>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 8 }}>
             {tr("bulk.loadingCats", "Loading categories for validation…")}
           </div>
         )}
         {fileName && !parseError && (
-          <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 8 }}>
+          <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 8 }}>
             {tr("bulk.selected", "Selected file:")} <strong style={{ color: "var(--ink)" }}>{fileName}</strong>
           </div>
         )}
@@ -467,11 +467,11 @@ export default function BulkUploadTab({ user }: Props) {
           <div
             style={{
               marginTop: 10,
-              fontSize: 13,
+              fontSize: "var(--fs-xs)",
               color: "var(--error)",
               background: "#fef2f2",
               border: "1px solid #fecaca",
-              borderRadius: 10,
+              borderRadius: "var(--r-sm)",
               padding: "8px 12px",
             }}
           >
@@ -490,14 +490,14 @@ export default function BulkUploadTab({ user }: Props) {
                 placeItems: "center",
                 width: 34,
                 height: 34,
-                borderRadius: 10,
+                borderRadius: "var(--r-sm)",
                 background: result.created > 0 ? "#dcfce7" : "#fef2f2",
                 color: result.created > 0 ? "var(--success)" : "var(--error)",
               }}
             >
               <Icon name={result.created > 0 ? "check" : "trash"} size={18} />
             </span>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
+            <div style={{ fontSize: "var(--fs-md)", fontWeight: 700, color: "var(--ink)" }}>
               {tr("bulk.resultTitle", `Created ${result.created} product${result.created === 1 ? "" : "s"}`)}
               {result.errors.length > 0
                 ? tr("bulk.resultErrs", ` · ${result.errors.length} skipped`)
@@ -507,12 +507,12 @@ export default function BulkUploadTab({ user }: Props) {
 
           {result.errors.length > 0 && (
             <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 6 }}>
+              <div style={{ fontSize: "var(--fs-xs)", fontWeight: 600, color: "var(--ink)", marginBottom: 6 }}>
                 {tr("bulk.skippedRows", "Rows that were skipped")}
               </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 4 }}>
                 {result.errors.map((er, i) => (
-                  <li key={i} style={{ fontSize: 13, color: "var(--muted)" }}>
+                  <li key={i} style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                     <strong style={{ color: "var(--ink)" }}>
                       {tr("bulk.rowLabel", "Row")} {sentLines[er.row - 1] ?? er.row}
                     </strong>
@@ -541,10 +541,10 @@ export default function BulkUploadTab({ user }: Props) {
         <div className="card card-flat" style={{ padding: 18 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
+              <div style={{ fontSize: "var(--fs-sm)", fontWeight: 700, color: "var(--ink)" }}>
                 {tr("bulk.step3", "3. Preview & confirm")}
               </div>
-              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4, display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4, display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <span className="badge badge-new">{tr("bulk.readyN", `${validRows.length} ready`)}</span>
                 {invalidCount > 0 && (
                   <span className="badge badge-neutral" style={{ color: "var(--error)" }}>
@@ -572,17 +572,17 @@ export default function BulkUploadTab({ user }: Props) {
           </div>
 
           {overCap && (
-            <div style={{ fontSize: 12.5, color: "var(--action)", marginBottom: 10 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--action)", marginBottom: 10 }}>
               {tr("bulk.overCap", `Only the first ${MAX_ROWS} valid rows will be uploaded. Split the rest into another file.`)}
             </div>
           )}
           {invalidCount > 0 && (
-            <div style={{ fontSize: 12.5, color: "var(--muted)", marginBottom: 10 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginBottom: 10 }}>
               {tr("bulk.invalidHint", "Rows with issues are skipped automatically — fix them in your sheet and re-upload to add them.")}
             </div>
           )}
 
-          <div style={{ overflowX: "auto", border: "1px solid var(--border)", borderRadius: 10 }}>
+          <div style={{ overflowX: "auto", border: "1px solid var(--border)", borderRadius: "var(--r-sm)" }}>
             <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 860 }}>
               <thead>
                 <tr>
@@ -614,7 +614,7 @@ export default function BulkUploadTab({ user }: Props) {
                         ) : (
                           <span
                             title={r.errors.join("; ")}
-                            style={{ color: "var(--error)", fontSize: 12, fontWeight: 600, whiteSpace: "normal", display: "inline-block", maxWidth: 220 }}
+                            style={{ color: "var(--error)", fontSize: "var(--fs-xs)", fontWeight: 600, whiteSpace: "normal", display: "inline-block", maxWidth: 220 }}
                           >
                             {r.errors.join("; ")}
                           </span>
@@ -641,7 +641,7 @@ export default function BulkUploadTab({ user }: Props) {
             </table>
           </div>
           {rows.length > PREVIEW_LIMIT && (
-            <div style={{ fontSize: 12.5, color: "var(--faint)", marginTop: 10 }}>
+            <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 10 }}>
               {tr("bulk.moreRows", `+ ${rows.length - PREVIEW_LIMIT} more row${rows.length - PREVIEW_LIMIT === 1 ? "" : "s"} not shown (all will be processed).`)}
             </div>
           )}

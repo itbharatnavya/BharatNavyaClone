@@ -174,7 +174,7 @@ function RfqInner() {
       <div style={{ marginBottom: 8 }}>
         <span className="eyebrow">{t("cta.postRfq")}</span>
       </div>
-      <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.02em" }}>
+      <h1 style={{ fontSize: "var(--fs-2xl)", fontWeight: 700, letterSpacing: "-0.02em" }}>
         Tell us what you need
       </h1>
       <p style={{ color: "var(--muted)", marginTop: 8, marginBottom: 26, lineHeight: 1.55 }}>
@@ -243,9 +243,9 @@ function RfqInner() {
               marginBottom: 16,
             }}
           >
-            <h2 style={{ fontSize: 18, fontWeight: 600 }}>Your requirement</h2>
+            <h2 style={{ fontSize: "var(--fs-lg)", fontWeight: 600 }}>Your requirement</h2>
             {isFallback && (
-              <span style={{ fontSize: 12, color: "var(--muted)" }}>
+              <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>
                 AI draft (activates fully with ANTHROPIC_API_KEY)
               </span>
             )}
@@ -267,7 +267,7 @@ function RfqInner() {
           )}
 
           {!user && (
-            <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 16 }}>
+            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 16 }}>
               You&apos;ll be asked to log in to send this requirement.
             </p>
           )}

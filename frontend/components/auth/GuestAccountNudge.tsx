@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import ContactAuthModal from "@/components/auth/ContactAuthModal";
 
 const START_KEY = "bn_guest_nudge_started_at";
 const VIEWS_KEY = "bn_guest_nudge_views";
@@ -69,28 +69,10 @@ export default function GuestAccountNudge() {
 
   if (!visible || user || !eligible) return null;
 
-  const next = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname)}`;
   const dismiss = () => {
     localStorage.setItem(DISMISSED_KEY, String(Date.now()));
     setVisible(false);
   };
 
-  return (
-    <aside className="guest-account-nudge" aria-label="Create an account to keep your progress">
-      <button className="guest-account-nudge-close" type="button" onClick={dismiss} aria-label="Dismiss account reminder">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
-      </button>
-      <div className="guest-account-nudge-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M7 4.5h10a2 2 0 0 1 2 2v13l-7-3.5-7 3.5v-13a2 2 0 0 1 2-2Z" /></svg>
-      </div>
-      <div className="guest-account-nudge-copy">
-        <strong>Keep what you find.</strong>
-        <p>Create an account to return to shortlisted companies and roles without starting over.</p>
-        <div>
-          <Link className="btn btn-brand btn-sm" href={`/register${next}`}>Create account</Link>
-          <Link className="guest-account-nudge-login" href={`/login${next}`}>Sign in</Link>
-        </div>
-      </div>
-    </aside>
-  );
+  return <ContactAuthModal open purpose="account" onClose={dismiss} onSuccess={() => setVisible(false)} />;
 }

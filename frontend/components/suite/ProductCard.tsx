@@ -35,7 +35,7 @@ export default function ProductCard({ product }: { product: SuiteProduct }) {
             width: 52,
             height: 52,
             flexShrink: 0,
-            borderRadius: 14,
+            borderRadius: "var(--r-md)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -50,17 +50,17 @@ export default function ProductCard({ product }: { product: SuiteProduct }) {
       </div>
 
       <div style={{ minWidth: 0 }}>
-        <h3 style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--ink)" }}>
+        <h3 style={{ fontSize: "var(--fs-lg)", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--ink)" }}>
           {product.name}
         </h3>
-        <p style={{ fontSize: 14.5, color: "var(--muted)", marginTop: 8, lineHeight: 1.55 }}>
+        <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 8, lineHeight: 1.55 }}>
           {product.tagline}
         </p>
       </div>
 
       <div style={{ marginTop: "auto", paddingTop: 4 }}>
         {soon ? (
-          <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--faint)" }}>
+          <span style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--faint)" }}>
             Notify me →
           </span>
         ) : (
@@ -69,7 +69,7 @@ export default function ProductCard({ product }: { product: SuiteProduct }) {
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              fontSize: 14,
+              fontSize: "var(--fs-sm)",
               fontWeight: 700,
               color: "var(--brand)",
             }}
