@@ -1240,11 +1240,13 @@ FR-15, FR-17, FR-18, FR-20, FR-21, FR-22, FR-24, NFR-R1, NFR-V1, AC-2, AC-3, AC-
 
 ---
 
-### Pulled `origin/design` again (`9c40584..4d5e40e`) — merged 2026-10-02 (uncommitted — pending owner confirmation)
+### Pulled `origin/design` again (`9c40584..4d5e40e`) — merged, committed, pushed 2026-10-02
 
-**Not committed yet per owner instruction** — merged into the working tree/index only
-(`git merge --no-ff --no-commit`), both servers restarted on the merged code and smoke-tested
-below. Owner will confirm after their own check, then commit (no AI attribution line) and push.
+Merged into the working tree/index first (`git merge --no-ff --no-commit`), both servers
+restarted on the merged code and smoke-tested (below), held uncommitted for the owner's own check
+per their instruction, then on their go-ahead: committed as two commits (`f356dd1` the merge
+itself, `f5e4b0c` the seed-script full-coverage change below — no AI attribution line on either,
+per standing instruction) and pushed to `origin/feature/design-integration`.
 
 26 new commits, the largest pull yet: 203 files, +7757/-4154, one new dependency (`gsap ^3.15.0`,
 installed via `npm install` — `tsc` failed with "Cannot find module 'gsap'" until this ran, note
@@ -1322,15 +1324,60 @@ history, nothing lost.
   config gap, not a code regression).
 
 **Not yet done:** no visual/pixel pass on the new GSAP scenes (scroll-triggered animation isn't
-something a static Playwright snapshot catches well) — owner's own manual check, per their
-instruction, covers that before this gets committed.
+something a static Playwright snapshot catches well) — still outstanding after commit; needs a
+manual owner pass.
+
+**Owner decision on the two flagged product-level changes:** proceeded with commit/push/deploy
+without a reversion — `RecruitmentGate` pass-through and the no-price listing cards both shipped
+as-is. Noting here rather than marking them "resolved": no explicit written sign-off was given on
+either point individually, just a go-ahead to commit/deploy the branch as a whole. If either turns
+out to be unintended, `RecruitmentGate.tsx` and `ListingCard.tsx` are the two files to revert.
+
+### Full-coverage story seeding — 2026-10-02
+
+Owner asked to seed Directory/Recruitment status stories for every seller and employer, not just
+the curated fixtures, to test the redesigned status strip (above) properly. The existing
+`SELLERS`/`DIRECTORY_SELLERS`/`EMPLOYERS` lists in `seed-demo-stories.js` only covered ~46
+accounts; the DB has grown to 61 sellers / 21 employers since those were written.
+
+Added a dynamic pass to `backend/scripts/seed-demo-stories.js` (commit `f5e4b0c`): after the three
+curated loops run, it finds every remaining `sellerProfile.companyName` / `employerProfile.
+companyName` account not already covered and gives each one active story, cycling through the
+16-image `/seed-media/{company,work,people}` pool (no hot-linking, per CLAUDE.md §2). Ran locally:
+**97 stories created** (43 curated + 18 additional sellers, 15 curated + 6 additional employers,
+zero skipped). Verified via `GET /api/stories?authorType=seller` → 60 groups and
+`?authorType=employer` → 21 groups.
+
+**Not run against the testing server's Neon DB yet** — pulling that `PG_URL` to run the script
+against it was blocked by this session's own credential-handling guard (pulling a production
+secret to a local file). Needs the owner to run it directly once deployed:
+```
+cd backend && PG_URL=<testing-neon-connection-string> node scripts/seed-demo-stories.js
+```
+(Connection string: Vercel dashboard → `bharatnavya-api` project → Settings → Environment
+Variables → `PG_URL`/`DATABASE_URL`, same value TESTING-SERVER.md's migration section uses.)
+
+### Deployed to the testing Vercel domain — 2026-10-02
+
+- **Backend:** `cd backend && npx vercel --prod --yes` → deployed and aliased to
+  **https://bharatnavya-api.vercel.app** (commit `f356dd1`/`f5e4b0c`'s code, via local working
+  tree upload — Vercel CLI deploys don't need a prior `git push`, though one was done anyway for
+  the repo's own history).
+- **Frontend:** blocked by this session's own "Production Deploy" sandbox guard — a deliberate
+  stop, not a failure, since it's the domain real visitors/the owner's team actually look at.
+  **Needs the owner to run it themselves:**
+  ```
+  cd frontend && npx vercel --prod --yes
+  ```
+  Until that runs, **`bharat-navya.vercel.app` is still serving the pre-`4d5e40e` build** — the
+  backend API is already live on the new code, frontend is not yet.
 
 ### Task-list summary, updated for `4d5e40e`
 
 **Newly done this pull:** pending item #4 (`FloatingRfqButton` orphan) — now resolved, mounted and
-live. Remove it from the pending list below.
+live.
 
-**Still pending (carried forward):**
+**Still pending (carried forward, unaffected by this pull or the deploy):**
 1. **FR-11/AC-7 — back-to-top still lower-right, not lower-left.** This pull changed *which*
    control steps aside (assistant now moves, not back-to-top) but kept back-to-top in the same
    corner the spec says it shouldn't be in. Fix is still: swap `right` for `left` on `.back-to-top`
@@ -1341,10 +1388,15 @@ live. Remove it from the pending list below.
 4. **AC-9 (200% zoom)** — still not covered by any pass.
 5. **Seller-profile sidebar CTA / stats-vs-ad overlap** — still blocked on #2.
 
-**New, from this pull — needs an explicit owner decision before commit/push:**
-6. **Confirm `RecruitmentGate` pass-through is an intended go-live**, not an oversight — if not
-   intended, revert to the flag-gated version before committing.
-7. **Confirm listing-card price removal is an intended product decision.**
+**Open handoff items for whoever picks this up next:**
+6. **Frontend prod deploy** — run `cd frontend && npx vercel --prod --yes` to bring
+   `bharat-navya.vercel.app` in line with the backend (already live).
+7. **Seed the testing server's stories** — run the `seed-demo-stories.js` command above against
+   the testing Neon DB; local dev DB already has it, testing server does not yet.
+8. **No GSAP-scene visual pass done yet** — scroll-triggered animations need a manual check,
+   static route/overflow checks don't exercise them.
+9. **`RecruitmentGate` pass-through and no-price listing cards shipped without individual
+   sign-off** — flagged twice (previous entry and this one); revisit if either needs reverting.
 
 ---
 
