@@ -24,12 +24,6 @@ export interface ListingCardProps {
   hideSeller?: boolean;
 }
 
-function formatINR(value: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 function sellerName(listing: Listing): string {
   return (
     listing.seller?.companyName ||
@@ -156,19 +150,6 @@ export default function ListingCard({ listing, href, onContact, className = "", 
   const flag = flagOf(listing);
   const specs = buildSpecs(listing).slice(0, 2);
 
-  const priceLabel =
-    product?.price != null
-      ? `₹${formatINR(product.price)}`
-      : product?.priceTiers && product.priceTiers.length > 0
-      ? `₹${formatINR(product.priceTiers[0].price)}`
-      : "Ask price";
-  const priceUnit = product?.price != null && product?.unitOfMeasure ? `/ ${product.unitOfMeasure}` : "";
-  const rate = service?.rateCard?.find((item) => item.price > 0);
-  const rateLabel = rate ? `₹${formatINR(rate.price)}` : service?.pricingModel === "quote" ? "Quote based" : "On request";
-  const rateUnit = rate?.unit ? `/ ${rate.unit.replace(/^\s*\/?\s*/, "")}` : "";
-  const price = isService ? rateLabel : priceLabel;
-  const unit = isService ? rateUnit : priceUnit;
-
   return (
     <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", className].filter(Boolean).join(" ")}>
       <Link href={detailHref} className="lcard-media" aria-label={`View ${listing.title}`}>
@@ -183,13 +164,8 @@ export default function ListingCard({ listing, href, onContact, className = "", 
       <SaveToggle listing={listing} />
 
       <div className="lcard-body">
-        <span className="lcard-kind">{isService ? "Service" : "Product"}</span>
-        <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        {!hideSeller && <Identity listing={listing} />}
-        {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
-
-        <footer className="lcard-foot">
-          <p className="lcard-price"><strong>{price}</strong>{unit && <small>{unit}</small>}</p>
+        <div className="lcard-top">
+          <span className="lcard-kind">{isService ? "Service" : "Product"}</span>
           <div className="lcard-actions">
             {onContact
               ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
@@ -198,7 +174,10 @@ export default function ListingCard({ listing, href, onContact, className = "", 
               <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
             </Link>
           </div>
-        </footer>
+        </div>
+        <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
+        {!hideSeller && <Identity listing={listing} />}
+        {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
       </div>
     </article>
   );

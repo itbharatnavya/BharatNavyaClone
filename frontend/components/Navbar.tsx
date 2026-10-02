@@ -64,7 +64,7 @@ export default function Navbar() {
     <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
-          {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" /><span className="bn-mark" aria-hidden>{/* eslint-disable @next/next/no-img-element */}<img src="/brand/bn-navy.png" alt="" /><img className="is-white" src="/brand/bn-white.png" alt="" /><img className="is-green" src="/brand/bn-green.png" alt="" /><img className="is-orange" src="/brand/bn-orange.png" alt="" /></span>
         </Link>
         {!searchDocked && <nav className="bn-primary-nav" aria-label="Primary navigation">
           {links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}

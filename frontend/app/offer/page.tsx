@@ -367,7 +367,7 @@ export default function OfferPage() {
                 flexWrap: "wrap",
               }}
             >
-              <Link href="/login?next=/offer" className="btn btn-primary btn-lg">
+              <Link href="/login?next=/offer" className="btn btn-primary btn-lg is-on-blue">
                 Start selling free
               </Link>
               <a href={`mailto:${SALES_EMAIL}`} className="btn btn-secondary btn-lg">
@@ -974,7 +974,7 @@ export default function OfferPage() {
               justifyContent: "center",
             }}
           >
-            <Link href="/login?next=/offer" className="btn btn-primary btn-lg">
+            <Link href="/login?next=/offer" className="btn btn-primary btn-lg is-on-blue">
               Start selling free
             </Link>
             <a

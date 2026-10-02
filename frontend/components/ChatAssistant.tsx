@@ -166,7 +166,7 @@ export default function ChatAssistant() {
     <>
       {/* Floating bubble */}
       {!open && (
-        <div className="fixed bottom-6 right-6 z-[120] flex items-center gap-2">
+        <div className="navya-agent-dock fixed bottom-6 right-6 z-[120] flex items-center gap-2">
           <button
             ref={triggerRef}
             type="button"

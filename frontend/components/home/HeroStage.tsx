@@ -137,6 +137,7 @@ export default function HeroStage() {
   const [active, setActive] = useState(0);
   const [t, setT] = useState(-LEAD);
   const [held, setHeld] = useState(false);
+  const [hovered, setHovered] = useState<number | null>(null);
   const [reduced, setReduced] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [inView, setInView] = useState(true);
@@ -174,9 +175,20 @@ export default function HeroStage() {
   }, [running]);
   useEffect(() => {
     if (t < ENDS[active] + HOLD) return;
-    setActive((index) => (index + 1) % CARD_COUNT);
+    // A hovered card replays its own scene; otherwise the stage moves on to the next card.
+    if (hovered === null) setActive((index) => (index + 1) % CARD_COUNT);
     setT(-LEAD);
-  }, [t, active]);
+  }, [t, active, hovered]);
+
+  // Hovering a card starts that card's animation straight away.
+  const hoverCard = (event: React.MouseEvent<HTMLDivElement>) => {
+    const cards = Array.from(event.currentTarget.children);
+    const index = cards.indexOf((event.target as HTMLElement).closest(".bn-hstage-card") as Element);
+    if (index < 0 || index === hovered) return;
+    setHovered(index);
+    setActive(index);
+    setT(-LEAD);
+  };
 
   const scenes = [AskScene, DirectoryScene, RecruitmentScene, GrowthScene];
   const card = (index: number): { className: string; scene: ReactNode } => {
@@ -198,8 +210,8 @@ export default function HeroStage() {
     className="bn-hstage"
     role="group"
     aria-label="Explore Bharat Navya"
-    onMouseEnter={() => setHeld(true)}
-    onMouseLeave={() => setHeld(false)}
+    onMouseOver={hoverCard}
+    onMouseLeave={() => setHovered(null)}
     onFocus={() => setHeld(true)}
     onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeld(false); }}
   >

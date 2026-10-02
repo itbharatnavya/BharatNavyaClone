@@ -203,11 +203,10 @@ export default function FloatingRfqButton() {
           aria-label="Post a requirement — tell us what you need"
           title="Post a requirement"
           onClick={() => setOpen(true)}
-          className="fixed bottom-[6.25rem] right-6 z-[119] inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full shadow-pop transition-transform hover:scale-105 active:scale-95 sm:h-12 sm:w-auto sm:px-5"
-          style={{ background: "var(--counter-highlight)", color: "var(--counter-on-highlight)", border: "1px solid var(--counter-highlight-edge)" }}
+          className="rfq-tab"
         >
           <RequirementIcon />
-          <span className="hidden text-sm font-semibold sm:inline">Post Requirement</span>
+          <span className="rfq-tab-label">Post Requirement</span>
         </button>
       )}
 

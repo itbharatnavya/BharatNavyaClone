@@ -2,7 +2,6 @@
 
 import HeroStage from "@/components/home/HeroStage";
 import HomeSections from "@/components/home/HomeSections";
-import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 
 export default function BharatNavyaHome() {
   return <div className="le-page counter-home-page">
@@ -12,8 +11,6 @@ export default function BharatNavyaHome() {
       <HeroStage />
     </div></section>
 
-    <HomeSections>
-      <ApiAdvertisingSlot placement={["home_hero", "category_top"]} kind="native" context="Sponsored on Bharat Navya" fallbackTitle="Put your business in front of people looking for what you do." fallbackSummary="Feature your business where relevant users are exploring products, services, and suppliers—without changing organic ranking or verification." fallbackAction="Explore placements" summary="A clearly labelled promotion, kept separate from organic records and decision signals." action="View promotion" />
-    </HomeSections>
+    <HomeSections />
   </div>;
 }

@@ -84,6 +84,7 @@ export default function RecruitmentPage() {
       <StoryRail
         groups={stories}
         className="counter-story-rail"
+        addStory={{ href: "/recruitment/dashboard?tab=stories" }}
       />
       <div className="counter-status-promotion">
         <ApiAdvertisingSlot imageOnly placement="recruitment_home" kind="native" context="Boosted employer · Recruitment" summary="A clearly labelled employer or recruiter placement, kept separate from hiring context and organic role ranking." action="View employer" compact />

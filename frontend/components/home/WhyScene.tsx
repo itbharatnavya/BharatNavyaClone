@@ -37,7 +37,7 @@ function Icon({ d, x, y, size = 18 }: { d: string; x: number; y: number; size?: 
 }
 
 function Connected() {
-  return <svg className="wy" viewBox="0 0 240 150" aria-hidden focusable="false">
+  return <svg className="wy" viewBox="-12 -14 264 176" aria-hidden focusable="false">
     {NODES.map((node, i) => <g key={i}>
       <line x1="120" y1="78" x2={node.x} y2={node.y} className="wy-wire" />
       <line x1="120" y1="78" x2={node.x} y2={node.y} pathLength="100" className="wy-signal" style={{ animationDelay: `${i * 0.5}s` }} />

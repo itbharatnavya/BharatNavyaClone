@@ -28,6 +28,11 @@
   --counter-highlight: #ffbe2e; /* the one warm accent: primary CTAs and key highlights only (10% rule) */
   --counter-highlight-hover: #f5a800;
   --counter-highlight-edge: #e0a000;
+  /* Primary CTA: dark blue with a white label (replaces the amber CTA; amber stays only as a small accent). */
+  --counter-cta: #12307e;
+  --counter-cta-hover: #1b3fa0;
+  --counter-cta-edge: #0c2160;
+  --counter-on-cta: #ffffff;
   --counter-on-highlight: #12141b;
   --counter-sky: #9db8ff; /* accent text on blue surfaces */
   --counter-focus: #3b6cf5; /* focus rings, stars, chart lines */
@@ -303,7 +308,7 @@
 .counter-pricing-close p { max-width: 56ch; margin-top: 0.75rem; color: var(--counter-on-ink); }
 .counter-support-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .counter-support-actions > a { min-height: 3.5rem; display: inline-flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.85rem 1.1rem; border: 1px solid rgba(255, 255, 255, 0.38); border-radius: var(--r-lg) !important; background: transparent; color: white; font-weight: 800; }
-.counter-support-actions > a:first-child { background: var(--counter-highlight); border-color: var(--counter-highlight-edge); color: var(--counter-on-highlight); }
+.counter-support-actions > a:first-child { background: var(--counter-cta); border-color: var(--counter-cta-edge); color: var(--counter-on-cta); }
 
 .counter-pricing-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.6fr); gap: 4rem; align-items: end; }
 .counter-pricing-hero-copy { display: grid; justify-items: start; gap: 1.25rem; }
@@ -364,7 +369,7 @@
 .counter-article .vendor-card { margin-top: 3rem; padding: clamp(1.5rem, 4vw, 2.5rem); border-color: var(--counter-line); background: var(--counter-green); color: white; }
 .counter-article .vendor-card :is(p, div) { color: var(--counter-on-green) !important; }
 .counter-article .vendor-card a { color: white !important; }
-.counter-article .vendor-card .btn-primary { background: var(--counter-highlight); color: var(--counter-on-highlight) !important; }
+.counter-article .vendor-card .btn-primary { background: var(--counter-cta); color: var(--counter-on-cta) !important; }
 .counter-article .vendor-card .btn-secondary { background: var(--counter-ivory); color: var(--counter-ink) !important; }
 
 .recruitment-result-row.is-selected .recruitment-result-skills span,
@@ -453,8 +458,8 @@
 }
 
 .bn-header.is-counter-public .bn-sign-in {
-  background: var(--counter-highlight);
-  color: var(--counter-on-highlight);
+  background: var(--counter-cta);
+  color: var(--counter-on-cta);
 }
 
 .bn-header.is-counter-public .bn-menu-button {
@@ -482,8 +487,8 @@
 .bn-header.is-counter-public .bn-section-search-submit,
 .bn-header.is-counter-public .bn-universal-compact button {
   border-radius: var(--r-lg);
-  background: var(--counter-highlight);
-  color: var(--counter-on-highlight);
+  background: var(--counter-cta);
+  color: var(--counter-on-cta);
 }
 
 .bn-header.is-counter-public.is-search-docked .bn-header-search {
@@ -559,8 +564,8 @@
 
 .recruitment-core .rsb-submit {
   border-radius: var(--r-lg) !important;
-  background: var(--counter-highlight) !important;
-  color: var(--counter-on-highlight) !important;
+  background: var(--counter-cta) !important;
+  color: var(--counter-on-cta) !important;
 }
 
 .recruitment-core .rsb-submit:hover {
@@ -572,8 +577,8 @@
 .directory-results-head .directory-search button,
 .recruitment-results-search button {
   border-radius: var(--r-lg);
-  background: var(--counter-highlight);
-  color: var(--counter-on-highlight);
+  background: var(--counter-cta);
+  color: var(--counter-on-cta);
 }
 
 .le-examples {
@@ -1471,24 +1476,25 @@
 .recruitment-role-ledger > div { border-color: #2c3040; }
 .recruitment-role-ledger dt { color: #9aa0ac; }
 .recruitment-apply-panel { border: 1.5px solid var(--counter-ink); background: var(--counter-ivory); }
-.recruitment-apply-panel .btn-brand { background: var(--counter-highlight); color: var(--counter-on-highlight); }
+.recruitment-apply-panel .btn-brand { background: var(--counter-cta); color: var(--counter-on-cta); }
 .employer-careers-identity { border-radius: var(--r-lg); }
 
-/* Public footer closes the service frame instead of fading away. */
+/* Public footer closes the service frame: a white card with a hairline border and ink text. */
 .bn-footer.is-counter-public {
-  border-top: 0;
-  background: var(--counter-indigo);
-  color: white;
+  border: 1px solid var(--counter-line);
+  border-bottom: 0;
+  background: var(--counter-ivory);
+  color: var(--counter-ink);
   font-family: var(--font-work-sans), system-ui, sans-serif;
 }
 
 .bn-footer.is-counter-public .bn-wordmark,
-.bn-footer.is-counter-public strong { color: white; }
+.bn-footer.is-counter-public strong { color: var(--counter-ink); }
 .bn-footer.is-counter-public .bn-wordmark img { width: 3rem; height: 3rem; padding: 0; }
-.bn-footer.is-counter-public :is(small, h2, .bn-footer-links a, .bn-footer-bottom) { color: var(--counter-on-indigo); }
-.bn-footer.is-counter-public .bn-footer-bottom { border-color: rgba(255, 255, 255, 0.24); }
-.bn-footer.is-counter-public .bn-footer-grid > div:nth-child(2) li:first-child > a > span:first-child { background: var(--counter-green) !important; color: white !important; }
-.bn-footer.is-counter-public .bn-footer-grid > div:nth-child(2) li:nth-child(2) > a > span:first-child { background: var(--counter-saffron) !important; color: #fff !important; }
+.bn-footer.is-counter-public :is(small, .bn-footer-bottom) { color: var(--counter-muted); }
+.bn-footer.is-counter-public :is(h2, .bn-footer-links a) { color: var(--counter-indigo); }
+.bn-footer.is-counter-public .bn-footer-links a:is(:hover, :focus-visible) { text-decoration: underline; }
+.bn-footer.is-counter-public .bn-footer-bottom { border-color: var(--counter-line); }
 
 @media (max-width: 760px) {
   .bn-footer.is-counter-public { padding-bottom: 6rem; }

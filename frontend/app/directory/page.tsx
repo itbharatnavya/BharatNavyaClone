@@ -72,6 +72,7 @@ export default function DirectoryPage() {
       <StoryRail
         groups={stories}
         className="counter-story-rail"
+        addStory={{ href: "/dashboard?tab=stories" }}
       />
       <div className="counter-status-promotion">
         <ApiAdvertisingSlot imageOnly placement="category_top" kind="native" context="Boosted company · Directory" summary="A clearly labelled company placement, kept separate from verification and organic ranking." action="View company" compact />
