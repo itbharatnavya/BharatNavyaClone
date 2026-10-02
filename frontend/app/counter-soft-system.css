@@ -5463,3 +5463,9 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 .recruitment-detail-copy ul > li::before { content: ""; position: absolute; left: 0.85rem; top: 1.05rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--counter-indigo); }
 /* The detail hero is only a layout grid; its own cards carry the surface, so no shadow box behind them. */
 .recruitment-detail-hero { box-shadow: none; overflow: visible; background: transparent; }
+
+/* Page-level ad slots line up with the footer: same side gutter, and the same gap above and below
+   (the footer supplies the gap below, so the page above must not add its own bottom padding). */
+:is(.recruitment-core, .counter-public-page, .directory-design) > :is(aside.le-ad-slot, .bn-ad-rotator > aside.le-ad-slot),
+:is(.recruitment-core, .counter-public-page, .directory-design) > .bn-ad-rotator > aside.le-ad-slot { margin: var(--counter-section-gap) var(--counter-page-gutter) 0; }
+.recruitment-detail { padding-bottom: 0; }
