@@ -5411,3 +5411,31 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
    element's own box instead, which swings rings and badges off-centre; pin the box to the viewBox everywhere. */
 .bn-ill :is(.bn-ill-orbit, .bn-ill-pulse-ring, .bn-ill-check, .bn-ill-dot, .bn-ill-person),
 .wy :is(.wy-ping, .wy-ring, .wy-stamp, .wy-node, .wy-signal) { transform-box: view-box; }
+
+/* Recruitment hero art: centred on the whole hero (copy and path cards), not just the copy row. */
+@media (min-width: 1024px) {
+  .bn-rhero > .bn-rhero-grid { position: static; }
+  .bn-rhero > .bn-rhero-grid > .bn-rhero-art { position: absolute; top: 50%; right: 6%; width: min(24rem, 26%); transform: translateY(-50%); pointer-events: none; }
+}
+
+/* Listing card top row on phones: label shrinks, actions stay their own size and never cover it. */
+.lcard-top .lcard-kind { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lcard-top .lcard-actions { width: auto !important; flex: 0 0 auto; margin-left: auto; }
+.lcard-top .lcard-cta { width: auto; flex: 0 0 auto; }
+@media (max-width: 520px) {
+  .lcard-top { gap: 0.35rem; }
+  .lcard-top .lcard-cta { min-height: 2rem; padding: 0 0.75rem; }
+  .lcard-top .lcard-info { width: 2rem; height: 2rem; }
+  .ps-product-grid .lcard-kind, .bn-product-grid .lcard-kind { display: none; }
+  .ps-product-grid .lcard-top, .bn-product-grid .lcard-top { justify-content: flex-end; }
+}
+
+/* Phones and tablets: the filter rail is only a bottom sheet opened by the Filters button. A selected listing
+   used to un-hide it inline (a later rule won), covering the expanded listing. */
+@media (max-width: 1100px) {
+  .directory-listing-workbench > .directory-listing-filter-rail:not(.is-open),
+  .directory-listing-workbench.has-selection > .directory-listing-filter-rail:not(.is-open) { display: none !important; }
+  .directory-listing-workbench > .directory-listing-filter-rail.is-open,
+  .directory-listing-workbench.has-selection > .directory-listing-filter-rail.is-open { position: fixed !important; z-index: 400; inset: 0; grid-column: auto; max-height: none; display: flex !important; align-items: flex-end; background: rgb(18 20 27 / 0.45); overflow: hidden; }
+}
+@media (max-width: 640px) { .rfq-tab { height: 2.5rem; padding: 0 0.6rem; bottom: 5.75rem; } .rfq-tab svg { width: 1.1rem; height: 1.1rem; } }
