@@ -19,11 +19,16 @@ const NODES = [
 ];
 const CHECKS = ["Registered business", "Address confirmed", "Reviews from buyers"];
 
-// A rough outline of India (lon/lat projected into a 120 x 130 box) and the cities used.
-const OUTLINE = "M20 9L24 4 30 8 36 6 36 12 34 18 37 22 44 23 54 28 56 31 59 33 63 31 70 32 75 31 78 28 80 32 76 35 72 42 70 49 66 52 60 56 55 54 56 60 58 63 52 70 49 77 44 84 40 90 36 94 35 96 32 92 27 81 24 72 24 60 20 50 16 45 20 40 8 38 5 34 10 31 18 28 14 22 16 16Z";
+// An outline of India projected from longitude and latitude into a 120 x 130 box, and the cities used.
+const OUTLINE = "M44.0 11.2 L47.6 14.4 L48.9 18.6 L49.6 21.0 L47.6 22.8 L46.6 25.6 L47.3 27.4 L48.3 29.4 L51.6 29.4 L54.2 31.6 L51.9 34.4 L54.5 36.4 L57.8 38.2 L62.1 39.6 L65.4 41.0 L70.4 42.4 L75.3 43.1 L78.0 42.8 L77.6 39.9 L78.3 37.9 L80.6 37.5 L80.6 39.9 L82.9 41.7 L85.6 41.4 L90.2 41.0 L91.2 41.4 L90.8 38.2 L94.8 36.1 L99.1 32.9 L104.0 32.6 L106.4 36.1 L108.7 36.8 L107.3 39.9 L104.7 40.3 L101.4 44.5 L99.8 47.3 L98.1 51.5 L95.5 55.0 L94.8 57.4 L93.8 58.5 L92.2 55.4 L91.8 52.6 L89.5 51.1 L90.5 47.6 L87.5 47.3 L83.9 46.9 L83.6 44.5 L81.0 43.8 L80.6 47.3 L79.3 50.4 L78.0 49.4 L80.0 54.3 L81.0 57.1 L80.0 59.9 L76.0 59.9 L74.0 60.9 L72.7 64.4 L69.4 66.6 L67.1 68.6 L62.8 72.5 L59.5 76.0 L56.2 78.5 L53.2 80.5 L51.9 85.8 L51.9 89.3 L50.9 93.5 L50.6 97.4 L48.9 99.5 L48.6 103.0 L45.0 106.1 L43.0 107.1 L40.0 104.4 L38.7 100.9 L37.1 96.0 L34.4 90.7 L32.8 85.5 L30.8 81.2 L29.1 76.0 L27.8 69.0 L27.5 65.5 L27.2 62.0 L26.8 60.2 L25.5 61.6 L21.5 62.7 L19.2 61.3 L14.9 57.8 L18.2 55.7 L14.3 53.9 L12.3 52.6 L16.6 50.8 L19.9 50.1 L21.9 49.8 L19.6 45.6 L18.2 42.4 L19.2 38.2 L21.5 38.2 L24.5 36.8 L27.8 34.0 L31.1 30.9 L32.8 27.0 L33.8 23.5 L33.8 21.4 L32.8 18.6 L31.1 15.8 L32.4 14.0 L34.8 12.3 L39.7 10.2Z";
 const CITIES = [
-  { name: "Delhi", x: 38, y: 29 }, { name: "Mumbai", x: 22, y: 62 }, { name: "Kolkata", x: 66, y: 50 },
-  { name: "Bengaluru", x: 36, y: 86 }, { name: "Chennai", x: 48, y: 85 }, { name: "Ahmedabad", x: 20, y: 47 }, { name: "Hyderabad", x: 41, y: 70 },
+  { name: "Delhi", x: 42.0, y: 35.4 },
+  { name: "Mumbai", x: 27.8, y: 68.6 },
+  { name: "Kolkata", x: 79.0, y: 56.4 },
+  { name: "Bengaluru", x: 43.3, y: 90.0 },
+  { name: "Chennai", x: 52.2, y: 89.6 },
+  { name: "Ahmedabad", x: 26.8, y: 55.0 },
+  { name: "Hyderabad", x: 46.3, y: 74.6 },
 ];
 const ARCS = [[0, 1], [0, 2], [1, 3], [5, 4], [2, 6], [0, 6]];
 
@@ -68,7 +73,7 @@ function Trust() {
 }
 
 function India() {
-  return <svg className="wy" viewBox="0 0 120 130" aria-hidden focusable="false">
+  return <svg className="wy is-map" viewBox="0 0 120 130" aria-hidden focusable="false">
     <path d={OUTLINE} className="wy-land" />
     {ARCS.map(([a, b], i) => {
       const from = CITIES[a], to = CITIES[b];

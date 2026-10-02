@@ -5253,8 +5253,9 @@ a:hover > .ps-thumb img { transform: scale(1.06); }
 .wy-card:hover { box-shadow: 0 14px 30px rgba(18, 48, 126, 0.14); transform: translateY(-3px); }
 .wy-card h3 { margin: 0; color: var(--counter-indigo); font: 800 var(--fs-xl)/1.1 var(--font-anek-latin), sans-serif; }
 .wy-card p { margin: 0; color: var(--counter-muted); font-size: var(--fs-md); line-height: 1.55; }
-.wy-art { display: grid; place-items: end center; margin: 0 -1.4rem; padding: 1rem 1rem 0; background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--counter-indigo-soft) 50%, white)); }
-svg.wy { width: 100%; max-width: 19rem; height: auto; fill: none; stroke: none; }
+.wy-art { display: grid; place-items: center; margin: 0.5rem -1.4rem 0; padding: 1.5rem 1rem; background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--counter-indigo-soft) 50%, white)); }
+svg.wy { width: 100%; max-width: 23rem; height: auto; fill: none; stroke: none; }
+svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 .wy-wire { fill: none; stroke: var(--counter-line); stroke-width: 1.4; stroke-dasharray: 3 5; stroke-linecap: round; }
 .wy-signal { fill: none; stroke: var(--counter-highlight); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 94; stroke-dashoffset: 6; }
 .wy-ping { fill: none; stroke: var(--counter-sky); stroke-width: 2; transform-origin: 120px 78px; opacity: 0; }
