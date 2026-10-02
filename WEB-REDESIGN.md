@@ -1363,14 +1363,11 @@ Variables → `PG_URL`/`DATABASE_URL`, same value TESTING-SERVER.md's migration 
   **https://bharatnavya-api.vercel.app** (commit `f356dd1`/`f5e4b0c`'s code, via local working
   tree upload — Vercel CLI deploys don't need a prior `git push`, though one was done anyway for
   the repo's own history).
-- **Frontend:** blocked by this session's own "Production Deploy" sandbox guard — a deliberate
-  stop, not a failure, since it's the domain real visitors/the owner's team actually look at.
-  **Needs the owner to run it themselves:**
-  ```
-  cd frontend && npx vercel --prod --yes
-  ```
-  Until that runs, **`bharat-navya.vercel.app` is still serving the pre-`4d5e40e` build** — the
-  backend API is already live on the new code, frontend is not yet.
+- **Frontend:** first attempt blocked by the session's "Production Deploy" auto-mode guard
+  (separate from the `settings.json` Bash allowlist, which already had `vercel:*`); retried on the
+  owner's request and went through: `cd frontend && npx vercel --prod --yes` → deployed and
+  aliased to **https://bharatnavya.vercel.app** (note: no hyphen — an earlier draft of this doc
+  had the wrong domain). Live check: `/` 200, `/directory` 200, backend `/api/categories` 200.
 
 ### Task-list summary, updated for `4d5e40e`
 
@@ -1389,8 +1386,7 @@ live.
 5. **Seller-profile sidebar CTA / stats-vs-ad overlap** — still blocked on #2.
 
 **Open handoff items for whoever picks this up next:**
-6. **Frontend prod deploy** — run `cd frontend && npx vercel --prod --yes` to bring
-   `bharat-navya.vercel.app` in line with the backend (already live).
+6. ~~Frontend prod deploy~~ — done, both backend and frontend live on the merged code.
 7. **Seed the testing server's stories** — run the `seed-demo-stories.js` command above against
    the testing Neon DB; local dev DB already has it, testing server does not yet.
 8. **No GSAP-scene visual pass done yet** — scroll-triggered animations need a manual check,
