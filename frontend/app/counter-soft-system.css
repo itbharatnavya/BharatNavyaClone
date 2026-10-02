@@ -5457,9 +5457,9 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 .recruitment-detail-copy { gap: var(--counter-space-4); }
 .recruitment-detail-copy > section { max-width: none; padding: clamp(1.1rem, 3vw, 1.75rem); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); box-shadow: var(--counter-shadow-rest); }
 .recruitment-detail-copy h2 { margin: 0 0 var(--counter-space-3); font: 800 var(--fs-xl)/1.15 var(--font-anek-latin), sans-serif; color: var(--counter-indigo); }
-.recruitment-detail-copy p, .recruitment-detail-copy li { color: var(--counter-ink); font-size: var(--fs-md); line-height: 1.65; }
+.recruitment-detail-copy p, .recruitment-detail-copy ul > li { color: var(--counter-ink); font-size: var(--fs-md); line-height: 1.65; }
 .recruitment-detail-copy ul { margin: 0; padding: 0; list-style: none; gap: var(--counter-space-2); }
-.recruitment-detail-copy li { position: relative; padding: 0.55rem 0.8rem 0.55rem 2.2rem; border-radius: var(--r-sm); background: color-mix(in srgb, var(--counter-indigo-soft) 45%, white); }
-.recruitment-detail-copy li::before { content: ""; position: absolute; left: 0.85rem; top: 1.05rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--counter-indigo); }
+.recruitment-detail-copy ul > li { position: relative; padding: 0.55rem 0.8rem 0.55rem 2.2rem; border-radius: var(--r-sm); background: color-mix(in srgb, var(--counter-indigo-soft) 45%, white); }
+.recruitment-detail-copy ul > li::before { content: ""; position: absolute; left: 0.85rem; top: 1.05rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--counter-indigo); }
 /* The detail hero is only a layout grid; its own cards carry the surface, so no shadow box behind them. */
 .recruitment-detail-hero { box-shadow: none; overflow: visible; background: transparent; }
