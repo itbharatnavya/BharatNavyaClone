@@ -5439,3 +5439,16 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
   .directory-listing-workbench.has-selection > .directory-listing-filter-rail.is-open { position: fixed !important; z-index: 400; inset: 0; grid-column: auto; max-height: none; display: flex !important; align-items: flex-end; background: rgb(18 20 27 / 0.45); overflow: hidden; }
 }
 @media (max-width: 640px) { .rfq-tab { height: 2.5rem; padding: 0 0.6rem; bottom: 5.75rem; } .rfq-tab svg { width: 1.1rem; height: 1.1rem; } }
+
+/* Legibility on phones: footer copy never drops under 12px; breadcrumb links get a tappable height. */
+.bn-footer small { font-size: var(--fs-xs); }
+@media (max-width: 640px) {
+  nav[aria-label="Breadcrumb"] a, .breadcrumbs a { display: inline-flex; align-items: center; min-height: 2rem; }
+}
+
+/* Fact grids (job detail ledger): one hairline border around the card and 1px dividers inside, all the same colour.
+   The old rules mixed a light top/left, a grey right/bottom and dark cell borders, which also vanished at the rounded corners. */
+.recruitment-role-ledger { gap: 1px; border: 1px solid var(--counter-line); background: var(--counter-line); color: var(--counter-ink); }
+.recruitment-role-ledger > div { border: 0; background: var(--counter-ivory); }
+.recruitment-role-ledger dt { color: var(--counter-muted); }
+@media (max-width: 640px) { .hs-link { display: inline-flex; align-items: center; min-height: 2.5rem; } }

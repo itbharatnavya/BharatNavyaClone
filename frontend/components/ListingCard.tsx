@@ -125,7 +125,7 @@ function Identity({ listing }: { listing: Listing }) {
   return (
     <div className="lcard-identity">
       <span className="lcard-seller">
-        <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={20} />
+        <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
         <span>{sellerName(listing)}</span>
         {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
       </span>
