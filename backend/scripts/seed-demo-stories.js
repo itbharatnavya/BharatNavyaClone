@@ -2,7 +2,7 @@
  * seed-demo-stories.js — demo Stories (DESIGN §3.7) so the feature has something real
  * to show:
  *   • 1 "active" story per seller — shows in the Directory homepage StoryRail
- *     (components/StoryRail.tsx), expires 24h from when this script runs.
+ *     (components/StoryRail.tsx), kept permanently (SEEDED_STATUS_EXPIRES_AT).
  *   • 1 "highlight" (isHighlight:true) story per seller — pinned, shows on that
  *     seller's profile Highlights row (components/seller/HighlightsRow.tsx),
  *     never expires.
@@ -120,6 +120,16 @@ const EMPLOYERS = [
   { id: "usr_emp3", img: "/seed-media/work/work-4.jpg", caption: "Operations hiring day announced for this week." },
   { id: "usr_emp5", img: "/seed-media/company/company-5.jpg", caption: "Site and project teams are expanding across two locations." },
   { id: "usr_emp7", img: "/seed-media/people/person-2.jpg", caption: "Recruiter Q&A for support and diagnostics applicants." },
+  { id: "usr_emp4", img: "/seed-media/company/company-6.jpg", caption: "Weaving unit hiring supervisors and operators." },
+  { id: "usr_emp6", img: "/seed-media/work/work-2.jpg", caption: "Embedded engineers wanted for a new product line." },
+  { id: "usr_emp8", img: "/seed-media/work/work-1.jpg", caption: "Plant and quality roles open this month." },
+  { id: "usr_emp9", img: "/seed-media/company/company-1.jpg", caption: "Store and category roles open across cities." },
+  { id: "usr_emp10", img: "/seed-media/work/work-5.jpg", caption: "Production hiring drive at our steel unit." },
+  { id: "usr_emp11", img: "/seed-media/people/person-1.jpg", caption: "Teaching and content roles are now open." },
+  { id: "usr_emp12", img: "/seed-media/company/company-3.jpg", caption: "Analyst and advisory positions open." },
+  { id: "usr_emp13", img: "/seed-media/work/work-6.jpg", caption: "Field and agronomy roles across three states." },
+  { id: "usr_emp14", img: "/seed-media/company/company-4.jpg", caption: "Packaging line roles are open this week." },
+  { id: "usr_emp15", img: "/seed-media/people/person-4.jpg", caption: "Lab and process roles open in the chemicals unit." },
 ];
 
 // Current design-branch Directory fixtures. The older usr_cat_* rows above are
@@ -133,9 +143,35 @@ const DIRECTORY_SELLERS = [
   { id: "usr_s010", img: "/seed-media/company/company-5.jpg", caption: "Construction supply slots are open for upcoming projects." },
   { id: "usr_svc2", img: "/seed-media/work/work-5.jpg", caption: "Founder compliance clinic scheduled for this week." },
   { id: "usr_svc3", img: "/seed-media/company/company-2.jpg", caption: "Product discovery and delivery consultations are now open." },
+  { id: "usr_s004", img: "/seed-media/company/company-4.jpg", caption: "Solvent and dye stock refreshed, bulk slots open." },
+  { id: "usr_s006", img: "/seed-media/work/work-1.jpg", caption: "New irrigation equipment batch ready for demo." },
+  { id: "usr_s007", img: "/seed-media/company/company-6.jpg", caption: "Fresh medical consumables inventory just in." },
+  { id: "usr_s008", img: "/seed-media/work/work-6.jpg", caption: "Synthetic fabric rolls ready for sampling." },
+  { id: "usr_s009", img: "/seed-media/work/work-3.jpg", caption: "Industrial tooling range on display this week." },
+  { id: "usr_s011", img: "/seed-media/company/company-2.jpg", caption: "Polymer grades available for next-day dispatch." },
+  { id: "usr_s012", img: "/seed-media/people/person-3.jpg", caption: "Handloom festive collection is now live." },
+  { id: "usr_s013", img: "/seed-media/work/work-2.jpg", caption: "Pump assembly line open for factory visits." },
+  { id: "usr_svc1", img: "/seed-media/people/person-1.jpg", caption: "Free first consultation on tax filings this week." },
+  { id: "usr_svc4", img: "/seed-media/work/work-5.jpg", caption: "Same-day home repair slots opened up." },
+  { id: "usr_svc5", img: "/seed-media/company/company-5.jpg", caption: "Relocation bookings open for the coming month." },
+  { id: "usr_svc6", img: "/seed-media/people/person-4.jpg", caption: "Company registration packages updated." },
+  { id: "usr_svc7", img: "/seed-media/company/company-3.jpg", caption: "New architecture portfolio is up." },
+  { id: "usr_svc8", img: "/seed-media/work/work-4.jpg", caption: "Brand and web design slots open this quarter." },
+  { id: "usr_svc9", img: "/seed-media/company/company-1.jpg", caption: "Business advisory clinic scheduled this week." },
+  { id: "usr_pv1", img: "/seed-media/company/company-4.jpg", caption: "Bulk SS and MS stock at factory rates." },
+  { id: "usr_pv2", img: "/seed-media/work/work-1.jpg", caption: "Switchgear and lighting offer running now." },
+  { id: "usr_pv3", img: "/seed-media/company/company-5.jpg", caption: "Cement and aggregate delivery slots open." },
+  { id: "usr_pv4", img: "/seed-media/company/company-3.jpg", caption: "Food-safe packaging samples available." },
+  { id: "usr_pv5", img: "/seed-media/work/work-3.jpg", caption: "Genuine auto parts back in stock." },
+  { id: "usr_pv6", img: "/seed-media/work/work-6.jpg", caption: "Fresh produce lots arriving this week." },
 ];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+// ponytail: seeded active statuses are kept permanently (owner request) so the
+// Directory/Recruitment status rails are never empty pre-launch. Drop this and
+// re-seed to restore the 24h demo lifetime. Highlights keep 24h so they stay
+// out of the live feed (they are pinned in storage regardless).
+const SEEDED_STATUS_EXPIRES_AT = "2099-12-31T23:59:59.000Z";
 
 // store.insert() is a plain INSERT (no ON CONFLICT) — a fixed id on a re-run throws
 // 23505 duplicate-key and aborts the whole script, silently skipping every doc after
@@ -158,7 +194,7 @@ function storyDoc({ id, sellerId, authorType = "seller", img, caption, listingId
     caption,
     linkListingId: listingId || null,
     createdAt: createdAt.toISOString(),
-    expiresAt: new Date(createdAt.getTime() + DAY_MS).toISOString(),
+    expiresAt: isHighlight ? new Date(createdAt.getTime() + DAY_MS).toISOString() : SEEDED_STATUS_EXPIRES_AT,
     views: Math.floor(20 + Math.random() * 300),
     isHighlight,
     status: "published",
@@ -247,7 +283,63 @@ async function main() {
     console.log(`✓ ${employer.id} — 1 active employer story`);
   }
 
-  console.log(`\nDone. ${created} demo stories created across the available Directory and Recruitment fixtures.`);
+  // Owner asked to cover every seller/employer currently in the DB, not just the
+  // curated fixtures above (new test/demo accounts get added over time and
+  // otherwise never show a story). Fill in whoever the three loops above skipped.
+  const coveredIds = new Set([
+    ...SELLERS.map((s) => s.id),
+    ...DIRECTORY_SELLERS.map((s) => s.id),
+    ...EMPLOYERS.map((e) => e.id),
+  ]);
+  const IMAGE_POOL = [
+    "/seed-media/company/company-1.jpg", "/seed-media/company/company-2.jpg", "/seed-media/company/company-3.jpg",
+    "/seed-media/company/company-4.jpg", "/seed-media/company/company-5.jpg", "/seed-media/company/company-6.jpg",
+    "/seed-media/work/work-1.jpg", "/seed-media/work/work-2.jpg", "/seed-media/work/work-3.jpg",
+    "/seed-media/work/work-4.jpg", "/seed-media/work/work-5.jpg", "/seed-media/work/work-6.jpg",
+    "/seed-media/people/person-1.jpg", "/seed-media/people/person-2.jpg", "/seed-media/people/person-3.jpg", "/seed-media/people/person-4.jpg",
+  ];
+
+  const remainingSellers = users.filter((u) => u.sellerProfile?.companyName && !coveredIds.has(u.id));
+  let i = 0;
+  for (const seller of remainingSellers) {
+    const img = IMAGE_POOL[i % IMAGE_POOL.length];
+    i++;
+    await upsertStory(
+      storyDoc({
+        id: `story_demo_${seller.id}_active`,
+        sellerId: seller.id,
+        img,
+        caption: `${seller.sellerProfile.companyName} has new stock and updates this week.`,
+        listingId: null,
+        isHighlight: false,
+        createdAt: now,
+      })
+    );
+    created++;
+    console.log(`✓ ${seller.id} (${seller.sellerProfile.companyName}) — 1 active seller story [full-coverage]`);
+  }
+
+  const remainingEmployers = users.filter((u) => u.employerProfile?.companyName && !coveredIds.has(u.id));
+  for (const employer of remainingEmployers) {
+    const img = IMAGE_POOL[i % IMAGE_POOL.length];
+    i++;
+    await upsertStory(
+      storyDoc({
+        id: `story_demo_${employer.id}_active`,
+        sellerId: employer.id,
+        authorType: "employer",
+        img,
+        caption: `${employer.employerProfile.companyName} is actively hiring this week.`,
+        listingId: null,
+        isHighlight: false,
+        createdAt: now,
+      })
+    );
+    created++;
+    console.log(`✓ ${employer.id} (${employer.employerProfile.companyName}) — 1 active employer story [full-coverage]`);
+  }
+
+  console.log(`\nDone. ${created} demo stories created — ${SELLERS.length + DIRECTORY_SELLERS.length} curated sellers, ${remainingSellers.length} additional sellers, ${EMPLOYERS.length} curated employers, ${remainingEmployers.length} additional employers.`);
 }
 
 main().catch((e) => {
