@@ -5497,3 +5497,15 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 }
 .recruitment-result-row > * { min-width: 0; }
 .recruitment-result-row :is(strong, span, small, p) { overflow-wrap: anywhere; white-space: normal; }
+
+/* --- Audit fixes: ghost shadows, border consistency, button text, minimum small text --- */
+.employer-careers-hero { box-shadow: none; background: transparent; overflow: visible; }
+:is(.directory-result-row, .recruitment-result-row):not(#_) { border-width: 1px; }
+small { font-size: var(--fs-xs); }
+.le-button, .btn { max-width: 100%; }
+@media (max-width: 640px) {
+  .le-button, .hs-close-actions a { white-space: normal; text-align: center; justify-content: center; line-height: 1.2; padding-block: 0.6rem; height: auto; }
+  .hs-close-actions { width: 100%; }
+  .hs-close-actions a { flex: 1 1 100%; }
+}
+.directory-result-row + .directory-result-row:not(#_), .recruitment-result-row + .recruitment-result-row:not(#_) { border-top: 1px solid var(--counter-line); }
