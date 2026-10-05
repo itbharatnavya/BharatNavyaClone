@@ -5818,12 +5818,32 @@ small { font-size: var(--fs-xs); }
 @media (min-width: 981px) { .cp-aside .bn-side-ad, .ld-aside .bn-side-ad { display: block; } .bn-bottom-ad.is-980 { display: none; } }
 @media (max-width: 850px) { .bn-side-stack { position: static; } }
 
-/* Narrow cards (many-up grids): there is no room for the seller beside Contact, so the actions drop to the bottom right. */
+/* Narrow cards (many-up grids): no room for the seller beside Contact, so the card body becomes a grid:
+   seller, title and place span the width; the first spec pill sits bottom-left on the same row as Contact + info. */
 @container lcard (max-width: 18rem) {
-  .lcard-top { display: contents; }
-  .lcard-top .lcard-seller, .lcard-top .lcard-kind { order: 0; flex: 0 0 auto; }
+  .lcard-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: 0.45rem 0.5rem; }
+  .lcard-top, .lcard-meta { display: contents; }
+  .lcard-top .lcard-seller, .lcard-top .lcard-kind, .lcard-body > .lcard-title, .lcard-meta .lcard-place { grid-column: 1 / -1; }
+  .lcard-meta .lcard-specs { grid-column: 1; margin: 0; min-width: 0; flex-wrap: nowrap; overflow: hidden; justify-content: flex-start; }
+  .lcard-meta .lcard-specs li:nth-child(n+2) { display: none; }
+  .lcard-meta .lcard-specs li { overflow: hidden; text-overflow: ellipsis; }
+  .lcard-top .lcard-seller, .lcard-top .lcard-kind { order: 0; }
   .lcard-body > .lcard-title { order: 1; }
-  .lcard-body > .lcard-meta { order: 2; }
-  .lcard-top .lcard-actions { order: 3; align-self: flex-end; margin-top: auto; padding-top: 0.25rem; }
+  .lcard-meta .lcard-place { order: 2; }
+  .lcard-meta .lcard-specs { order: 3; }
+  .lcard-top .lcard-actions { order: 4; grid-column: 2; margin: 0; padding: 0; align-self: center; }
   .lcard-top .lcard-info { display: grid; }
 }
+
+/* Cards without a seller line (company pages): same bottom row, any width. */
+.lcard--noseller .lcard-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: 0.45rem 0.5rem; }
+.lcard--noseller .lcard-top, .lcard--noseller .lcard-meta { display: contents; }
+.lcard--noseller .lcard-top .lcard-seller, .lcard--noseller .lcard-top .lcard-kind, .lcard--noseller .lcard-body > .lcard-title, .lcard--noseller .lcard-meta .lcard-place { grid-column: 1 / -1; }
+.lcard--noseller .lcard-meta .lcard-specs { grid-column: 1; margin: 0; min-width: 0; flex-wrap: nowrap; overflow: hidden; justify-content: flex-start; }
+.lcard--noseller .lcard-meta .lcard-specs li { overflow: hidden; text-overflow: ellipsis; }
+.lcard--noseller .lcard-top .lcard-seller, .lcard--noseller .lcard-top .lcard-kind { order: 0; }
+.lcard--noseller .lcard-body > .lcard-title { order: 1; }
+.lcard--noseller .lcard-meta .lcard-place { order: 2; }
+.lcard--noseller .lcard-meta .lcard-specs { order: 3; }
+.lcard--noseller .lcard-top .lcard-actions { order: 4; grid-column: 2; margin: 0; padding: 0; align-self: center; }
+.lcard--noseller .lcard-top .lcard-info { display: grid; }

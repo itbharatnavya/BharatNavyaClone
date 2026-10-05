@@ -152,7 +152,7 @@ export default function ListingCard({ listing, href, onContact, className = "", 
   const specs = buildSpecs(listing).slice(0, 2);
 
   return (
-    <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", className].filter(Boolean).join(" ")}>
+    <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", hideSeller ? "lcard--noseller" : "", className].filter(Boolean).join(" ")}>
       <Link href={detailHref} className="lcard-media" aria-label={`View ${listing.title}`}>
         {image && !broken ? (
           // eslint-disable-next-line @next/next/no-img-element
