@@ -235,7 +235,7 @@ export default function RoleSearchBar({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Job title, skill or company"
+          placeholder="Role, skill or company"
           aria-label="Job title, skill or company"
           role="combobox"
           aria-expanded={showDropdown}
@@ -245,15 +245,14 @@ export default function RoleSearchBar({
           autoComplete="off"
         />
         <span className="rsb-divider" aria-hidden />
-        <span className="rsb-in">in</span>
-        <span className="rsb-city-wrap">
+                <span className="rsb-city-wrap">
           <select
             className="rsb-city"
             value={cityVal}
             onChange={(e) => setCityVal(e.target.value)}
             aria-label="City"
           >
-            <option value="">Anywhere in India</option>
+            <option value="">All locations</option>
             <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
             {ALL_CITIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -408,7 +407,7 @@ export default function RoleSearchBar({
           font-weight: 500;
           color: var(--ink);
           padding: 10px 22px 10px 8px;
-          max-width: 160px;
+          max-width: 11rem;
           cursor: pointer;
         }
         .rsb-compact .rsb-city {
@@ -444,13 +443,13 @@ export default function RoleSearchBar({
           background: var(--bn-action-hover);
         }
 
-        @media (min-width: 560px) {
+        @media (min-width: 641px) {
           .rsb-divider,
           .rsb-in {
             display: inline-flex;
           }
         }
-        @media (max-width: 480px) {
+        @media (max-width: 640px) {
           .rsb:not(.rsb-compact) {
             flex-wrap: wrap;
             border-radius: var(--r-lg);

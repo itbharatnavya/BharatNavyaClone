@@ -5758,3 +5758,20 @@ small { font-size: var(--fs-xs); }
   .recruitment-filter-sheet > div > header button { width: 2.5rem; height: 2.5rem; border-radius: 50%; }
   .recruitment-filter-sheet > div > :not(header) { border: 0 !important; box-shadow: none !important; padding-inline: 0 !important; }
 }
+
+/* Bordered, rounded fields never let their text touch the edge. */
+.flt-block > select { padding: 0 2.25rem 0 1rem; }
+
+/* Recruitment role search bar: one row on wide screens, a tidy stack on phones and small tablets. */
+.recruitment-core .rsb-wrap .rsb:not(.rsb-compact, #_) { padding: 0.4rem 0.4rem 0.4rem 1.1rem; gap: 0.35rem; }
+.recruitment-core .rsb-wrap .rsb-city:not(#_) { padding-left: 0.75rem; }
+@media (max-width: 640px) {
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact, #_) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.6rem; padding: 0.75rem; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-icon { display: none; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-input:not(#_),
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-city:not(#_) { width: 100%; max-width: none; min-width: 0; padding: 0 2.25rem 0 1rem; border: 1px solid var(--counter-line-strong); border-radius: var(--r-pill); background: white; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-input:not(#_) { padding-right: 1rem; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-city-wrap { width: 100%; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-chevron { right: 1rem; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-submit { width: 100%; justify-content: center; }
+}
