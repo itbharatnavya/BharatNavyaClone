@@ -41,6 +41,7 @@ import {
 } from "./ui";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import SearchLens from "@/components/SearchLens";
 import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import Modal from "@/components/Modal";
@@ -267,6 +268,7 @@ export default function ListingVerificationTab() {
 
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Input
+          leftIcon={<SearchLens />}
           placeholder="Search title or seller…"
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}

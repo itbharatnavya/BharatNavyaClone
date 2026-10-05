@@ -1,4 +1,6 @@
 "use client";
+import Input from "@/components/Input";
+import SearchLens from "@/components/SearchLens";
 
 // components/admin/SupplierPicker.tsx — the multi-select supplier chooser used by
 // the RFQ Log / Unmatched RFQs "Add sellers" action (components/admin/RfqLogTab.tsx).
@@ -168,8 +170,8 @@ export default function SupplierPicker({
     <div className="rounded-lg border border-border bg-bg-subtle p-3">
       {/* filters */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <input
-          className="input"
+        <Input
+          leftIcon={<SearchLens />}
           placeholder="Search name or city…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

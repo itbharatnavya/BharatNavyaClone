@@ -32,6 +32,7 @@ import {
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
+import SearchLens from "@/components/SearchLens";
 import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import ImageUpload from "@/components/ImageUpload";
@@ -340,6 +341,7 @@ export default function CollectionsTab() {
               <span className="text-faint">({form.listingIds.length} selected)</span>
             </label>
             <Input
+              leftIcon={<SearchLens />}
               placeholder="Search listings by title or seller…"
               value={listingSearch}
               onChange={(e) => setListingSearch(e.target.value)}

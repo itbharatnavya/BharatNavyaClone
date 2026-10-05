@@ -281,7 +281,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowReferral(true)}
                     className="btn btn-ghost btn-sm"
-                    style={{ justifySelf: "start", paddingLeft: 0 }}
+                    style={{ justifySelf: "start" }}
                   >
                     {t("auth.haveReferral", "+ Have a referral code?")}
                   </button>

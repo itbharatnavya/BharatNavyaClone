@@ -5783,3 +5783,23 @@ small { font-size: var(--fs-xs); }
   .counter-auth-page .counter-auth-aside::before { top: 1.25rem; left: 1.5rem; }
   .counter-auth-page .counter-auth-form-zone:not(#_) { padding: 0 0 var(--counter-space-5) !important; background: transparent; }
 }
+
+/* Role search bar icons: lens in the query field, pin in the location field. Phones: both fields share a row, Search below. */
+.recruitment-core .rsb-wrap .rsb-field .rsb-icon { margin-right: 0.35rem; }
+.recruitment-core .rsb-wrap .rsb-pin { margin-left: 0.15rem; }
+@media (max-width: 640px) {
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact, #_) { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0.5rem; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-submit { grid-column: 1 / -1; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-icon:not(#_),
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-pin { display: inline-flex; position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); margin: 0; z-index: 1; pointer-events: none; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-city-wrap { position: relative; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-input:not(#_) { padding-left: 2.5rem; padding-right: 0.5rem; text-overflow: ellipsis; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-city:not(#_) { padding-left: 2.3rem; padding-right: 1.7rem; text-overflow: ellipsis; }
+  .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-chevron { right: 0.7rem; }
+}
+
+/* The filter panel scrolls inside its own rounded border, never the rail around it. */
+@media (min-width: 1101px) {
+  .directory-listing-workbench > .directory-listing-filter-rail:not(:has(.dlw-rail-ad)) { display: flex; flex-direction: column; overflow: hidden; }
+  .directory-listing-filter-rail > .directory-listing-filter-panel { min-height: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--counter-line-strong) transparent; }
+}
