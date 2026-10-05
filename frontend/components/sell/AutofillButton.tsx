@@ -94,7 +94,7 @@ export default function AutofillButton({
               style={{ color: "var(--brand)", flexShrink: 0 }}
               aria-hidden
             >
-              <path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4L12 3z" />
+              <path d="M12 3l2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3z" />
             </svg>
             Auto-fill from photo
           </div>
@@ -152,7 +152,7 @@ export default function AutofillButton({
                     strokeLinejoin="round"
                     aria-hidden
                   >
-                    <path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4L12 3z" />
+                    <path d="M12 3l2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3z" />
                   </svg>
                   Generate draft
                 </span>

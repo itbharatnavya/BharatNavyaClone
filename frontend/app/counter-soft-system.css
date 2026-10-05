@@ -5833,3 +5833,5 @@ small { font-size: var(--fs-xs); }
 .bn-catalog-subs li:not(#_) { border-top: 0; min-width: 0; max-width: 100%; }
 .bn-catalog-subs a:not(#_) { display: inline-flex; align-items: center; max-width: 100%; padding: 0.4rem 0.85rem; border: 1px solid var(--counter-line-strong); border-radius: var(--r-pill); background: white; color: var(--counter-indigo); font-size: var(--fs-sm); font-weight: 600; transition: background-color var(--counter-motion), color var(--counter-motion), border-color var(--counter-motion); }
 .bn-catalog-subs a:is(:hover, :focus-visible):not(#_) { background: var(--counter-indigo); border-color: var(--counter-indigo); color: white; }
+/* Buttons with a leading icon: icon and label are centred as one group with an even gap. */
+.btn > span:has(> svg) { justify-content: center; }
