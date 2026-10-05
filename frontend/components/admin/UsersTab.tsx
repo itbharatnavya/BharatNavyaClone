@@ -39,6 +39,7 @@ import {
 } from "./ui";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import SearchLens from "@/components/SearchLens";
 import Select from "@/components/Select";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -246,6 +247,7 @@ export default function UsersTab({ scope = "global" }: { scope?: AdminUserScope 
 
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Input
+          leftIcon={<SearchLens />}
           placeholder="Search name, email, mobile or company…"
           value={qInput}
           onChange={(e) => setQInput(e.target.value)}

@@ -41,6 +41,14 @@ function SearchIcon() {
     </svg>
   );
 }
+function PinIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0113 0c0 5.4-6.5 11-6.5 11z" />
+      <circle cx="12" cy="10" r="2.3" />
+    </svg>
+  );
+}
 function ChevronIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -221,6 +229,7 @@ export default function RoleSearchBar({
   return (
     <div ref={rootRef} className={`rsb-wrap ${className}`} style={{ position: "relative", width: "100%" }}>
       <form onSubmit={submit} className={`rsb ${compact ? "rsb-compact" : ""}`} style={dockStyle}>
+        <span className="rsb-field">
         <span className="rsb-icon" aria-hidden>
           <SearchIcon />
         </span>
@@ -235,7 +244,7 @@ export default function RoleSearchBar({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Job title, skill or company"
+          placeholder="Role or skill"
           aria-label="Job title, skill or company"
           role="combobox"
           aria-expanded={showDropdown}
@@ -244,16 +253,17 @@ export default function RoleSearchBar({
           aria-activedescendant={active >= 0 ? optionId(active) : undefined}
           autoComplete="off"
         />
+        </span>
         <span className="rsb-divider" aria-hidden />
-        <span className="rsb-in">in</span>
-        <span className="rsb-city-wrap">
+                <span className="rsb-city-wrap">
+          <span className="rsb-pin" aria-hidden><PinIcon /></span>
           <select
             className="rsb-city"
             value={cityVal}
             onChange={(e) => setCityVal(e.target.value)}
             aria-label="City"
           >
-            <option value="">Anywhere in India</option>
+            <option value="">Anywhere</option>
             <option value={PAN_INDIA_LABEL}>{PAN_INDIA_LABEL}</option>
             {ALL_CITIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -355,6 +365,18 @@ export default function RoleSearchBar({
         .rsb-compact {
           padding: 3px 3px 3px 14px;
         }
+        .rsb-field {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          position: relative;
+        }
+        .rsb-pin {
+          color: var(--faint);
+          display: inline-flex;
+          flex-shrink: 0;
+        }
         .rsb-icon {
           color: var(--faint);
           display: inline-flex;
@@ -408,7 +430,7 @@ export default function RoleSearchBar({
           font-weight: 500;
           color: var(--ink);
           padding: 10px 22px 10px 8px;
-          max-width: 160px;
+          max-width: 11rem;
           cursor: pointer;
         }
         .rsb-compact .rsb-city {
@@ -444,13 +466,13 @@ export default function RoleSearchBar({
           background: var(--bn-action-hover);
         }
 
-        @media (min-width: 560px) {
+        @media (min-width: 641px) {
           .rsb-divider,
           .rsb-in {
             display: inline-flex;
           }
         }
-        @media (max-width: 480px) {
+        @media (max-width: 640px) {
           .rsb:not(.rsb-compact) {
             flex-wrap: wrap;
             border-radius: var(--r-lg);

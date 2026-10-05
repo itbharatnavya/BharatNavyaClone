@@ -42,7 +42,7 @@ function HiringArt() {
     </g>)}
     <circle cx="240" cy="200" r="46" className="bn-ill-pulse-ring" />
     <rect x="194" y="154" width="92" height="92" rx="24" fill="#fff" />
-    <g transform="translate(214 174) scale(1.75)" fill="none" stroke="#1b3fa0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h16v11H4z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /><path d="M4 13h16" /></g>
+    <g transform="translate(219 181) scale(1.75)" fill="none" stroke="#12307e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h16v11H4z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /><path d="M4 13h16" /></g>
     <g className="bn-ill-check"><circle cx="284" cy="158" r="16" fill="#ffbe2e" /><path d="m276 158 6 6 10-11" fill="none" stroke="#12141b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></g>
     <circle cx="150" cy="56" r="5" fill="#ffbe2e" className="bn-ill-dot" />
     <circle cx="334" cy="352" r="4" fill="#9db8ff" className="bn-ill-dot is-late" />

@@ -18,6 +18,7 @@ import SubcategoryTiles from "./SubcategoryTiles";
 import BrandRail from "./BrandRail";
 import EmptyState from "./EmptyState";
 import { useTr } from "./hooks";
+import { imgFor } from "@/lib/categoryImages";
 
 export interface CategoryLandingProps {
   slug: string;
@@ -27,9 +28,10 @@ export interface CategoryLandingProps {
   query?: string;
 }
 
-function HeaderBand({ children }: { children: React.ReactNode }) {
+function HeaderBand({ children, image }: { children: React.ReactNode; image?: string }) {
   return (
-    <section className="counter-category-hero">
+    <section className={`counter-category-hero${image ? " has-media" : ""}`}>
+      {image && <div className="counter-category-hero-media" aria-hidden>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt="" /></div>}
       <div className="container-bs counter-category-hero-inner">
         {children}
       </div>
@@ -139,7 +141,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
 
   return (
     <div className="counter-public-page counter-category-page">
-      <HeaderBand>
+      <HeaderBand image={`/demo/${imgFor(category)}.jpg`}>
         <Breadcrumbs items={crumbs} />
         <div className="counter-category-title-row">
           <span className="counter-category-icon"><CategoryIcon slug={category.slug} name={category.name} size={52} /></span>

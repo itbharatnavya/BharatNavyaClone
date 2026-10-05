@@ -40,7 +40,7 @@ function sellerCity(listing: Listing): string | undefined {
 // Product: MOQ + up to 2 specifications. Service: experience + service area.
 // Shared by both layouts so a product/service reads identically whichever
 // view (row or grid) is showing it.
-function buildSpecs(listing: Listing): { label: string; value: string }[] {
+export function buildSpecs(listing: Listing): { label: string; value: string }[] {
   const isService = listing.type === "service";
   const product = listing.product;
   const service = listing.service;
@@ -118,25 +118,27 @@ function SaveToggle({ listing }: { listing: Listing }) {
   );
 }
 
-function Identity({ listing }: { listing: Listing }) {
+function SellerLine({ listing }: { listing: Listing }) {
   const verified = listing.isVerifiedSeller || !!listing.seller?.isVerified;
+  return (
+    <span className="lcard-seller">
+      <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
+      <span>{sellerName(listing)}</span>
+      {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
+    </span>
+  );
+}
+
+function PlaceLine({ listing }: { listing: Listing }) {
   const rating = listing.seller?.rating ?? 0;
   const city = sellerCity(listing);
+  if (!city && !(rating > 0)) return null;
   return (
-    <div className="lcard-identity">
-      <span className="lcard-seller">
-        <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
-        <span>{sellerName(listing)}</span>
-        {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
-      </span>
-      {(city || rating > 0) && (
-        <span className="lcard-place">
-          {city}
-          {city && rating > 0 && <i aria-hidden>·</i>}
-          {rating > 0 && <b>{rating.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg></b>}
-        </span>
-      )}
-    </div>
+    <span className="lcard-place">
+      {city}
+      {city && rating > 0 && <i aria-hidden>·</i>}
+      {rating > 0 && <b>{rating.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg></b>}
+    </span>
   );
 }
 
@@ -144,11 +146,10 @@ export default function ListingCard({ listing, href, onContact, className = "", 
   const [broken, setBroken] = React.useState(false);
   const detailHref = href || `/listing/${listing.id}`;
   const image = listing.media?.find((m) => m.type !== "video")?.url || listing.media?.[0]?.url;
-  const isService = listing.type === "service";
   const product = listing.product;
   const service = listing.service;
   const flag = flagOf(listing);
-  const specs = buildSpecs(listing).slice(0, 2);
+  const facts = buildSpecs(listing).slice(0, 2);
 
   return (
     <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", className].filter(Boolean).join(" ")}>
@@ -164,20 +165,17 @@ export default function ListingCard({ listing, href, onContact, className = "", 
       <SaveToggle listing={listing} />
 
       <div className="lcard-body">
-        <div className="lcard-top">
-          <span className="lcard-kind">{isService ? "Service" : "Product"}</span>
-          <div className="lcard-actions">
-            {onContact
-              ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
-              : <Link href={detailHref} className="lcard-cta">Contact</Link>}
-            <Link href={detailHref} className="lcard-info" aria-label="View details" title="View details">
-              <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
-            </Link>
-          </div>
-        </div>
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        {!hideSeller && <Identity listing={listing} />}
-        {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
+        {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
+        {!hideSeller && <div className="lcard-by"><SellerLine listing={listing} /><PlaceLine listing={listing} /></div>}
+        <div className="lcard-actions">
+          {onContact
+            ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
+            : <Link href={detailHref} className="lcard-cta">Contact</Link>}
+          <Link href={detailHref} className="lcard-info" aria-label="View details" title="View details">
+            <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
+          </Link>
+        </div>
       </div>
     </article>
   );
