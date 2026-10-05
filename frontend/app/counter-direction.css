@@ -22,7 +22,7 @@
   --counter-line-strong: color-mix(in srgb, var(--counter-ink) 58%, var(--counter-line));
   --counter-indigo: #12307e;
   --counter-indigo-soft: #dbe4fb;
-  --counter-green: #2556c8; /* Directory blue */
+  --counter-green: #12307e; /* Directory surfaces: same navy as the CTA and Recruitment */
   --counter-green-soft: #dbe4fb;
   --counter-saffron: #1b3fa0; /* legacy name, now the primary action blue */
   --counter-highlight: #ffbe2e; /* the one warm accent: primary CTAs and key highlights only (10% rule) */
