@@ -66,15 +66,16 @@ This is the single continuation source of truth for current Bharat Navya product
 
 ### 2 to 5 October 2026: what changed since the section above
 
-Everything below is pushed to `origin/design` (tip `ac8b0e3` at the time of writing). The Home India map (Natural Earth outline) is committed.
+Everything below is pushed to `origin/design` (tip `cbaca5b` at the time of writing). The Home India map (Natural Earth outline) is committed.
 
 **Platform-wide**
 - **CTA colour:** primary buttons are now dark blue (`--counter-cta` `#12307e`, hover `--counter-cta-hover`, edge `--counter-cta-edge`, label `--counter-on-cta` white). On blue surfaces they invert to white with a dark-blue label (rule at the end of `counter-soft-system.css`; add `is-on-blue` or the container to that list). Amber (`--counter-highlight`) is kept only for small accents (title highlight, badges, stars). This supersedes the "one amber CTA" wording in `DESIGN-SYSTEM.md`.
 - **Floating chrome:** "Post requirement" is a bookmark tab on the right edge (`.rfq-tab`, icon only, label slides out on hover/focus) just above the assistant bubble. Back-to-top takes the corner when it appears and the bubble steps left (`.navya-agent-dock`).
 - **Footer:** white card, no Directory/Recruitment block.
-- **Header BN mark:** redraws every 5s from colour layers in `public/brand/bn-*.png` (original PNG shows at rest). Off for reduced motion.
+- **Header BN mark:** always drawn from colour layers in `public/brand/bn-*.png` (the plain PNG only reserves the space and is invisible); every 5s the swoosh layers wipe in again. Nothing is swapped, so it can never vanish. Off for reduced motion.
 - **Home:** the four hero cards start their animation on hover and replay while hovered; the sponsored ad was removed from Home; connected-hub icons are no longer clipped.
-- **Listing cards:** no prices on cards (preview pane and listing page still show them); Contact and info buttons sit in the top row (`.lcard-top`).
+- **Listing cards:** no prices on cards (preview pane and listing page still show them); Contact and info buttons sit in the top row (`.lcard-top`); the kind label hides by card width via a container query (`.lcard` is a `lcard` container), so it never sits under the buttons in narrow grids.
+- **Ads on category and brand pages:** the big banner is gone. Category pages show a small tile under the filters (`railAd` prop of `UnifiedListingWorkbench`, `.dlw-rail-ad`); brand pages show one in the sidebar under the "Can't find it?" card (`.brand-aside-ad`). Both hide when there is no ad, and phones get a tile after the results.
 - **Status strip (Directory/Recruitment):** two rows, no names, first bubble is "Add your story" (guests get the sign-in modal; signed-in users go to the dashboard Stories tab). Demo stories: 28 companies and 15 employers (`node backend/scripts/seed-demo-stories.js`).
 - **Results toolbars and job pages:** flat toolbar header, equal-height controls, round list/grid switch; job detail sections are cards; hiring timeline fixed; page-level ads align with the footer.
 - **Audit fixes:** ghost shadow boxes behind scene sections and the employer hero removed, list rows keep four borders, minimum 12px small text, wrapping CTA text on phones. Mobile fixes for card actions and for the search page where selecting a listing used to reveal the filter rail.
