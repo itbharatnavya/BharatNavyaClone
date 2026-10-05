@@ -1,34 +1,44 @@
 "use client";
 
-// Category picker for /sell. Accepts the flat category list from getCategories()
-// (each row has parentId + path), builds a tree, and offers BOTH:
-//   • a cascading nested-select drilldown (level by level), and
-//   • a searchable list (type to filter across every category).
-// Categories are filtered by the chosen listing type (product|service|both).
+// Category picker for /sell. The seller describes what they sell in their own words and we
+// suggest the closest categories (lib/categorySuggest.ts); browsing the full tree level by level
+// is still there for anyone who prefers it. Choosing a category commits it straight away.
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { Category, ListingType } from "@/lib/types";
 import { suggestCategory } from "@/lib/api";
+import { suggestCategories } from "@/lib/categorySuggest";
 import { useToast } from "@/components/Toast";
 
 interface Props {
   categories: Category[];
   type: ListingType;
   value?: string; // selected categoryId
+  hint?: string; // what the seller typed on the first step
   onSelect: (category: Category) => void;
 }
 
-export default function CategoryPicker({
-  categories,
-  type,
-  value,
-  onSelect,
-}: Props) {
-  const { addToast } = useToast();
-  const [query, setQuery] = useState("");
+function Check() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
 
-  // "Other (not listed)" — seller proposes a category we don't have yet. This is a
-  // separate admin signal; it does not change the listing's own category selection.
+export default function CategoryPicker({ categories, type, value, hint = "", onSelect }: Props) {
+  const { addToast } = useToast();
+  const [query, setQuery] = useState(hint);
+  const [browseOpen, setBrowseOpen] = useState(false);
+
+  // Seed the search with what the seller already told us, once, if they come back to this step.
+  useEffect(() => {
+    if (hint && !query) setQuery(hint);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hint]);
+
+  // "Other (not listed)": the seller proposes a category we do not have yet. It is an admin signal
+  // only and never blocks the listing, which still needs the closest existing category.
   const [otherOpen, setOtherOpen] = useState(false);
   const [otherName, setOtherName] = useState("");
   const [suggesting, setSuggesting] = useState(false);
@@ -42,31 +52,19 @@ export default function CategoryPicker({
       await suggestCategory({ name, context: type });
       setSuggestedName(name);
       setOtherName("");
-      addToast(
-        `Thanks! "${name}" was sent to our team to review.`,
-        "success"
-      );
+      addToast(`Thanks! "${name}" was sent to our team to review.`, "success");
     } catch (e) {
-      addToast(
-        e instanceof Error ? e.message : "Couldn't send your suggestion.",
-        "error"
-      );
+      addToast(e instanceof Error ? e.message : "Couldn't send your suggestion.", "error");
     } finally {
       setSuggesting(false);
     }
   };
 
-  // Only categories usable for this listing type.
   const usable = useMemo(
     () => categories.filter((c) => c.type === type || c.type === "both"),
     [categories, type]
   );
-
-  const byId = useMemo(() => {
-    const map = new Map<string, Category>();
-    categories.forEach((c) => map.set(c.id, c));
-    return map;
-  }, [categories]);
+  const byId = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
 
   const childrenOf = useMemo(() => {
     const map = new Map<string | null, Category[]>();
@@ -82,237 +80,158 @@ export default function CategoryPicker({
 
   const selected = value ? byId.get(value) : undefined;
 
-  // Cascading selection: track the chosen id at each level.
   const [drill, setDrill] = useState<string[]>([]);
-
-  const levels: Category[][] = [];
-  levels.push(childrenOf.get(null) || []);
+  const levels: Category[][] = [childrenOf.get(null) || []];
   for (let i = 0; i < drill.length; i++) {
     const kids = childrenOf.get(drill[i]) || [];
     if (kids.length) levels.push(kids);
     else break;
   }
-
   const chooseAtLevel = (levelIdx: number, catId: string) => {
     const next = drill.slice(0, levelIdx);
     if (catId) next[levelIdx] = catId;
     setDrill(next);
     const cat = byId.get(catId);
     if (!cat) return;
-    const kids = childrenOf.get(catId) || [];
-    // Leaf → commit the selection.
-    if (kids.length === 0) onSelect(cat);
+    if ((childrenOf.get(catId) || []).length === 0) onSelect(cat);
   };
 
-  // Search results (flat, across all usable categories).
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return usable
-      .filter((c) => c.name.toLowerCase().includes(q))
-      .slice(0, 40);
-  }, [query, usable]);
+  const matches = useMemo(() => suggestCategories(query, usable, { limit: 6 }), [query, usable]);
 
   const pathLabel = (c: Category) =>
-    c.path
+    (c.path || [])
+      .slice(0, -1)
       .map((slug) => categories.find((x) => x.slug === slug)?.name || slug)
       .join(" › ");
 
+  const trimmed = query.trim();
+
   return (
-    <div>
-      {/* Selected summary */}
+    <div className="sl-cat">
       {selected && (
-        <div
-          className="card card-flat"
-          style={{
-            padding: "12px 14px",
-            marginBottom: 16,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            borderColor: "var(--brand)",
-            background: "var(--brand-tint)",
-          }}
-        >
-          <div>
-            <div style={{ fontSize: "var(--fs-xs)", color: "var(--brand-hover)", fontWeight: 600 }}>
-              Selected category
-            </div>
-            <div style={{ fontSize: "var(--fs-sm)", color: "var(--ink)", fontWeight: 600 }}>
-              {pathLabel(selected)}
-            </div>
-          </div>
-          <span
-            className="badge badge-verified"
-            style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M5 13l4 4L19 7" />
-            </svg>
-            Chosen
+        <div className="sl-chosen" role="status">
+          <span className="sl-chosen-mark"><Check /></span>
+          <span className="sl-chosen-copy">
+            <small>Your category</small>
+            <strong>{selected.name}</strong>
+            {pathLabel(selected) && <em>{pathLabel(selected)}</em>}
           </span>
         </div>
       )}
 
-      {/* Search */}
-      <label className="field-label">Search categories</label>
-      <input
-        className="input"
-        placeholder="Type to search — e.g. steel, chartered accountant, flour…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      {results.length > 0 && (
-        <div
-          className="card card-flat"
-          style={{
-            marginTop: 8,
-            maxHeight: 260,
-            overflowY: "auto",
-            padding: 6,
-          }}
-        >
-          {results.map((c) => (
+      <label className="sl-label" htmlFor="sl-cat-search">
+        {selected ? "Not right? Search again" : "What are you selling? We will suggest where it belongs"}
+      </label>
+      <div className="sl-search">
+        <svg aria-hidden viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <input
+          id="sl-cat-search"
+          className="sl-input"
+          placeholder="e.g. coconut water, steel pipes, GST filing"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          autoComplete="off"
+        />
+      </div>
+
+      {trimmed && matches.length > 0 && (
+        <div className="sl-matches" role="list" aria-label="Suggested categories">
+          <p className="sl-matches-title">Best matches</p>
+          {matches.map(({ category: c }, i) => (
             <button
               key={c.id}
               type="button"
-              onClick={() => {
-                onSelect(c);
-                setQuery("");
-              }}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "9px 12px",
-                borderRadius: "var(--r-xs)",
-                border: "none",
-                background:
-                  value === c.id ? "var(--brand-tint)" : "transparent",
-                cursor: "pointer",
-                fontSize: "var(--fs-sm)",
-                color: "var(--ink)",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "var(--bg-subtle)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background =
-                  value === c.id ? "var(--brand-tint)" : "transparent")
-              }
+              role="listitem"
+              className={`sl-match${value === c.id ? " is-selected" : ""}`}
+              onClick={() => onSelect(c)}
             >
-              <span style={{ fontWeight: 500 }}>{c.name}</span>
-              <span style={{ color: "var(--faint)", fontSize: "var(--fs-xs)", marginLeft: 8 }}>
-                {pathLabel(c)}
+              <span className="sl-match-copy">
+                <strong>{c.name}</strong>
+                {pathLabel(c) && <small>{pathLabel(c)}</small>}
               </span>
+              {value === c.id ? <span className="sl-match-state"><Check /> Chosen</span> : i === 0 ? <span className="sl-match-tag">Closest</span> : null}
             </button>
           ))}
         </div>
       )}
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          margin: "20px 0 12px",
-        }}
-      >
-        <span className="divider" style={{ flex: 1 }} />
-        <span style={{ fontSize: "var(--fs-xs)", color: "var(--faint)" }}>
-          or browse by category
-        </span>
-        <span className="divider" style={{ flex: 1 }} />
-      </div>
-
-      {/* Cascading drilldown */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 12,
-        }}
-      >
-        {levels.map((opts, levelIdx) => (
-          <div key={levelIdx}>
-            <label className="field-label">
-              {levelIdx === 0 ? "Category" : `Sub-category`}
-            </label>
-            <select
-              className="select"
-              value={drill[levelIdx] || ""}
-              onChange={(e) => chooseAtLevel(levelIdx, e.target.value)}
-            >
-              <option value="">Select…</option>
-              {opts.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                  {(childrenOf.get(c.id)?.length || 0) > 0 ? " ›" : ""}
-                </option>
-              ))}
-            </select>
+      {!trimmed && !selected && (childrenOf.get(null) || []).length > 0 && (
+        <div className="sl-quick">
+          <p className="sl-matches-title">Or start from a popular group</p>
+          <div className="sl-quick-chips">
+            {(childrenOf.get(null) || []).slice(0, 10).map((c) => (
+              <button key={c.id} type="button" className="chip" onClick={() => setQuery(c.name.split(/[,&]/)[0].trim())}>
+                {c.name}
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
-      {usable.length === 0 && (
-        <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 12 }}>
-          No categories available yet for {type}s.
+        </div>
+      )}
+
+      {trimmed && matches.length === 0 && (
+        <p className="sl-empty">
+          Nothing close to “{trimmed}”. Try one simpler word (like “tea”, “steel” or “repair”), or open
+          the full list below.
         </p>
       )}
 
-      {/* Other (not listed) — suggest a missing category */}
-      <div
-        className="card card-flat"
-        style={{
-          marginTop: 20,
-          padding: 16,
-          borderStyle: "dashed",
-        }}
+      <button
+        type="button"
+        className="sl-browse-toggle"
+        aria-expanded={browseOpen}
+        onClick={() => setBrowseOpen((o) => !o)}
       >
-        {!otherOpen ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)" }}>
-              Can’t find your category?
+        {browseOpen ? "Hide the full list" : "Browse all categories instead"}
+        <svg aria-hidden viewBox="0 0 24 24"><path d={browseOpen ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6"} /></svg>
+      </button>
+
+      {browseOpen && (
+        <div className="sl-browse">
+          {levels.map((opts, levelIdx) => (
+            <div key={levelIdx}>
+              <label className="sl-label" htmlFor={`sl-level-${levelIdx}`}>
+                {levelIdx === 0 ? "Category" : "Sub-category"}
+              </label>
+              <select
+                id={`sl-level-${levelIdx}`}
+                className="select"
+                value={drill[levelIdx] || ""}
+                onChange={(e) => chooseAtLevel(levelIdx, e.target.value)}
+              >
+                <option value="">Select…</option>
+                {opts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                    {(childrenOf.get(c.id)?.length || 0) > 0 ? " ›" : ""}
+                  </option>
+                ))}
+              </select>
             </div>
-            <button
-              type="button"
-              className="chip"
-              onClick={() => setOtherOpen(true)}
-            >
-              + Other (not listed)
+          ))}
+          {usable.length === 0 && <p className="sl-empty">No categories available yet for {type}s.</p>}
+        </div>
+      )}
+
+      <div className="sl-other">
+        {!otherOpen ? (
+          <>
+            <span>Cannot find a good match?</span>
+            <button type="button" className="sl-link" onClick={() => setOtherOpen(true)}>
+              Tell us what to add
             </button>
-          </div>
+          </>
         ) : (
-          <div>
-            <label className="field-label">Suggest a new category</label>
-            <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", margin: "0 0 8px" }}>
-              Tell us what to call it. Our team reviews suggestions and adds new
-              categories — this doesn’t block your listing.
+          <div className="sl-other-form">
+            <label className="sl-label" htmlFor="sl-other-name">Suggest a new category</label>
+            <p className="sl-note">
+              Our team reviews suggestions and adds new categories. It will not block your listing, so
+              choose the closest category above to carry on.
             </p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div className="sl-other-row">
               <input
-                className="input"
-                style={{ flex: "1 1 240px" }}
-                placeholder="e.g. Solar inverter repair, Millet flour…"
+                id="sl-other-name"
+                className="sl-input"
+                placeholder="e.g. Solar inverter repair, Millet flour"
                 value={otherName}
                 onChange={(e) => setOtherName(e.target.value)}
                 onKeyDown={(e) => {
@@ -323,54 +242,14 @@ export default function CategoryPicker({
                 }}
                 maxLength={80}
               />
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={!otherName.trim() || suggesting}
-                onClick={() => void submitSuggestion()}
-              >
-                {suggesting ? "Sending…" : "Suggest"}
+              <button type="button" className="btn btn-primary btn-sm" disabled={!otherName.trim() || suggesting} onClick={() => void submitSuggestion()}>
+                {suggesting ? "Sending…" : "Send"}
               </button>
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={() => setOtherOpen(false)}
-              >
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setOtherOpen(false)}>
                 Cancel
               </button>
             </div>
-            {suggestedName && (
-              <p
-                style={{
-                  fontSize: "var(--fs-xs)",
-                  color: "var(--brand)",
-                  marginTop: 10,
-                  marginBottom: 0,
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 6,
-                }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                  style={{ flexShrink: 0, marginTop: 2 }}
-                >
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-                <span>
-                  Sent “{suggestedName}”. You can suggest another, or pick the
-                  closest category above to publish now.
-                </span>
-              </p>
-            )}
+            {suggestedName && <p className="sl-note is-ok"><Check /> Sent “{suggestedName}”. You can pick the closest category above to publish now.</p>}
           </div>
         )}
       </div>

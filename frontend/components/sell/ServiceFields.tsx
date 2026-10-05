@@ -4,7 +4,7 @@ import React from "react";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
-import { Section, RateCardEditor, TagInput } from "./editors";
+import { Section, MoreOptions, RateCardEditor, TagInput } from "./editors";
 import type { ServiceFormState } from "./formTypes";
 import type { Errors } from "./validation";
 
@@ -20,12 +20,12 @@ export default function ServiceFields({
   return (
     <>
       <Section
-        title="Pricing"
-        desc="Publish a rate-card where you can. Choose 'Request quote' only when pricing truly depends on scope."
+        title="Price"
+        desc="List what you charge for your common jobs. Pick 'Request a quote' only if the price truly depends on the work."
       >
-        <div style={{ maxWidth: 260, marginBottom: 16 }}>
+        <div className="sl-mb">
           <Select
-            label="Pricing model"
+            label="How do you charge?"
             value={value.pricingModel}
             onChange={(e) =>
               onChange({
@@ -33,15 +33,15 @@ export default function ServiceFields({
               })
             }
             options={[
-              { value: "fixed", label: "Fixed price" },
-              { value: "hourly", label: "Hourly rate" },
-              { value: "quote", label: "Request a quote" },
+              { value: "fixed", label: "A fixed price per job" },
+              { value: "hourly", label: "By the hour" },
+              { value: "quote", label: "Buyers ask for a quote" },
             ]}
           />
         </div>
-        <label className="field-label">Rate card</label>
+        <label className="field-label">Your services and prices</label>
         <p className="field-hint" style={{ marginTop: 0, marginBottom: 10 }}>
-          List your common services and their prices.
+          For example: “Monthly GST filing, ₹1,500 per month”.
         </p>
         <RateCardEditor
           value={value.rateCard}
@@ -50,48 +50,40 @@ export default function ServiceFields({
         {errors.rateCard && <p className="field-error">{errors.rateCard}</p>}
       </Section>
 
-      <Section title="Service details">
-        <div style={{ display: "grid", gap: 16 }}>
+      <MoreOptions title="Add more details (optional)" hint="Areas you serve, qualifications, experience, hours">
+        <div className="sl-stack">
           <TagInput
-            label="Service areas (cities)"
-            hint="Type a city and press Enter. Add all cities you serve."
+            label="Cities you serve"
+            hint="Type a city and press Enter."
             value={value.serviceArea}
             onChange={(serviceArea) => onChange({ serviceArea })}
             placeholder="e.g. Pune, Mumbai, Nagpur"
           />
           <TagInput
-            label="Credentials & certifications"
-            hint="e.g. CA, ISO 9001, licensed electrician."
+            label="Qualifications and licences"
+            hint="For example CA, ISO 9001 or licensed electrician."
             value={value.credentials}
             onChange={(credentials) => onChange({ credentials })}
-            placeholder="Add a credential and press Enter"
+            placeholder="Add one and press Enter"
           />
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: 12,
-            }}
-          >
-            <Input
-              label="Years of experience"
-              type="number"
-              min={0}
-              inputMode="numeric"
-              placeholder="e.g. 8"
-              value={value.experienceYears}
-              onChange={(e) => onChange({ experienceYears: e.target.value })}
-              error={errors.experienceYears}
-            />
-          </div>
+          <Input
+            label="Years of experience"
+            type="number"
+            min={0}
+            inputMode="numeric"
+            placeholder="e.g. 8"
+            value={value.experienceYears}
+            onChange={(e) => onChange({ experienceYears: e.target.value })}
+            error={errors.experienceYears}
+          />
           <Textarea
-            label="Availability"
-            placeholder="e.g. Mon–Sat, 9am–7pm. Emergency support on call."
+            label="When you are available"
+            placeholder="e.g. Mon to Sat, 9am to 7pm. Emergency support on call."
             value={value.availabilitySchedule}
             onChange={(e) => onChange({ availabilitySchedule: e.target.value })}
           />
         </div>
-      </Section>
+      </MoreOptions>
     </>
   );
 }

@@ -50,6 +50,7 @@ function summarize(listing, byId) {
     status: listing.status,
     sellerId: listing.sellerId,
     sellerCompany: (who && who.company) || listing.sellerId,
+    sellerStatus: (who && who.sellerStatus) || null,
     categoryId: listing.categoryId || null,
     category: listing.legacyCategory || (Array.isArray(listing.categoryPath) ? listing.categoryPath.join(" > ") : "") || null,
     price: listing.product ? listing.product.price : null,
@@ -178,7 +179,7 @@ router.get("/:id", async (req, res, next) => {
     const who = byId.get(listing.sellerId);
     return res.json({
       success: true,
-      data: { ...listing, sellerCompany: (who && who.company) || listing.sellerId },
+      data: { ...listing, sellerCompany: (who && who.company) || listing.sellerId, sellerStatus: (who && who.sellerStatus) || null },
     });
   } catch (err) {
     next(err);

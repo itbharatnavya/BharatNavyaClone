@@ -51,3 +51,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# Local admin credentials written by scripts/reset-admin-password.js
+backend/.admin-credentials.local

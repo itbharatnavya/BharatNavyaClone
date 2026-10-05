@@ -254,7 +254,7 @@ async function getSellerCompanyNames(ids = []) {
   const uniq = [...new Set(ids)].filter(Boolean);
   if (!uniq.length) return new Map();
   const { rows } = await pool.query(
-    `SELECT u.id, u.name, sp.company_name
+    `SELECT u.id, u.name, sp.company_name, sp.status AS seller_status
        FROM users u
        LEFT JOIN seller_profiles sp ON sp.user_id = u.id
       WHERE u.id = ANY($1)`,
@@ -262,7 +262,7 @@ async function getSellerCompanyNames(ids = []) {
   );
   const m = new Map();
   for (const r of rows) {
-    m.set(r.id, { company: r.company_name || r.name || null, name: r.name || null });
+    m.set(r.id, { company: r.company_name || r.name || null, name: r.name || null, sellerStatus: r.seller_status || null });
   }
   return m;
 }

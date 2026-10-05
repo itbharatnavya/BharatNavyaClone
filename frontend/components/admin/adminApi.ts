@@ -965,6 +965,7 @@ export interface AdminListingRow {
   status: string;
   sellerId: string;
   sellerCompany: string;
+  sellerStatus?: string | null;
   categoryId: string | null;
   category: string | null;
   price: number | null;

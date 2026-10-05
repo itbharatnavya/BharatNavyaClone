@@ -5348,30 +5348,34 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 .lcard-top .lcard-cta { min-height: 2.1rem; padding: 0 0.9rem; font-size: var(--fs-xs); }
 .lcard-top .lcard-info { width: 2.1rem; height: 2.1rem; }
 
-/* BN mark animation. Every 5s the tricolour swoosh and arrow redraw themselves, wiping up and to the right
-   (green, then the white gap, then the orange arrow, which gives a small push at the end). The artwork is the
-   original logo split into four colour layers (public/brand/bn-*.png) that stack back to exactly the same image.
-   The plain logo is what you see at rest; the layered copy only appears for the 1.8s redraw. */
+/* BN mark animation. The mark is always drawn from four colour layers (public/brand/bn-*.png) that stack back to exactly the
+   original logo; the plain PNG only reserves the space (it is invisible). Every 5s the swoosh layers wipe themselves in again,
+   green, then the white gap, then the orange arrow, which gives a small push. Nothing is ever swapped or hidden between
+   frames, so if the animation does not run the full logo is simply shown. */
 .bn-header .bn-wordmark { position: relative; }
-.bn-header .bn-wordmark > img { animation: bn-mark-base 5s linear 3s infinite; }
-.bn-header .bn-wordmark .bn-mark { position: absolute; inset: 0; opacity: 0; pointer-events: none; animation: bn-mark-show 5s linear 3s infinite; }
+.bn-header .bn-wordmark > img { opacity: 0; }
+.bn-header .bn-wordmark .bn-mark { position: absolute; inset: 0; pointer-events: none; }
 .bn-header .bn-wordmark .bn-mark img { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; padding: 0 !important; max-width: none !important; object-fit: contain; background: transparent !important; }
-.bn-mark .is-green { animation: bn-draw-green 5s linear 3s infinite both; }
-.bn-mark .is-white { animation: bn-draw-white 5s linear 3s infinite both; }
-.bn-mark .is-orange { animation: bn-draw-orange 5s linear 3s infinite both, bn-push 5s ease-out 3s infinite; transform-origin: 20% 90%; }
-@keyframes bn-mark-base { 0%, 2.2% { opacity: 1; } 2.4%, 35.8% { opacity: 0; } 36%, 100% { opacity: 1; } }
-@keyframes bn-mark-show { 0%, 2.2% { opacity: 0; } 2.4%, 35.8% { opacity: 1; } 36%, 100% { opacity: 0; } }
+.bn-mark .is-green { animation: bn-draw-green 5s linear 2s infinite; }
+.bn-mark .is-white { animation: bn-draw-white 5s linear 2s infinite; }
+.bn-mark .is-orange { animation: bn-draw-orange 5s linear 2s infinite, bn-push 5s ease-out 2s infinite; transform-origin: 20% 90%; }
 @keyframes bn-draw-green {
-  0%, 2.4% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
-  19.2%, 100% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  0%, 2% { clip-path: none; }
+  2.1% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
+  19.2% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  100% { clip-path: none; }
 }
 @keyframes bn-draw-white {
-  0%, 4.3% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
-  20.6%, 100% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  0%, 2% { clip-path: none; }
+  4.3% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
+  20.6% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  100% { clip-path: none; }
 }
 @keyframes bn-draw-orange {
-  0%, 5.8% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
-  22.6%, 100% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  0%, 2% { clip-path: none; }
+  5.8% { clip-path: polygon(0 0, 0% 0, -60% 100%, 0 100%); }
+  22.6% { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
+  100% { clip-path: none; }
 }
 @keyframes bn-push {
   0%, 22.6% { transform: none; }
@@ -5379,7 +5383,7 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
   35.8%, 100% { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bn-header .bn-wordmark > img, .bn-header .bn-wordmark .bn-mark, .bn-mark img { animation: none !important; }
+  .bn-mark img { animation: none !important; clip-path: none !important; transform: none !important; }
 }
 .wy { overflow: visible; }
 
@@ -5411,3 +5415,250 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
    element's own box instead, which swings rings and badges off-centre; pin the box to the viewBox everywhere. */
 .bn-ill :is(.bn-ill-orbit, .bn-ill-pulse-ring, .bn-ill-check, .bn-ill-dot, .bn-ill-person),
 .wy :is(.wy-ping, .wy-ring, .wy-stamp, .wy-node, .wy-signal) { transform-box: view-box; }
+
+/* Recruitment hero art: centred on the whole hero (copy and path cards), not just the copy row. */
+@media (min-width: 1024px) {
+  .bn-rhero > .bn-rhero-grid { position: static; }
+  .bn-rhero > .bn-rhero-grid > .bn-rhero-art { position: absolute; top: 50%; right: 6%; width: min(24rem, 26%); transform: translateY(-50%); pointer-events: none; }
+}
+
+/* Listing card top row on phones: label shrinks, actions stay their own size and never cover it. */
+.lcard-top .lcard-kind { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lcard-top .lcard-actions { width: auto !important; flex: 0 0 auto; margin-left: auto; }
+.lcard-top .lcard-cta { width: auto; flex: 0 0 auto; }
+@media (max-width: 520px) {
+  .lcard-top { gap: 0.35rem; }
+  .lcard-top .lcard-cta { min-height: 2rem; padding: 0 0.75rem; }
+  .lcard-top .lcard-info { width: 2rem; height: 2rem; }
+  .ps-product-grid .lcard-kind, .bn-product-grid .lcard-kind { display: none; }
+  .ps-product-grid .lcard-top, .bn-product-grid .lcard-top { justify-content: flex-end; }
+}
+
+/* Phones and tablets: the filter rail is only a bottom sheet opened by the Filters button. A selected listing
+   used to un-hide it inline (a later rule won), covering the expanded listing. */
+@media (max-width: 1100px) {
+  .directory-listing-workbench > .directory-listing-filter-rail:not(.is-open),
+  .directory-listing-workbench.has-selection > .directory-listing-filter-rail:not(.is-open) { display: none !important; }
+  .directory-listing-workbench > .directory-listing-filter-rail.is-open,
+  .directory-listing-workbench.has-selection > .directory-listing-filter-rail.is-open { position: fixed !important; z-index: 400; inset: 0; grid-column: auto; max-height: none; display: flex !important; align-items: flex-end; background: rgb(18 20 27 / 0.45); overflow: hidden; }
+}
+@media (max-width: 640px) { .rfq-tab { height: 2.5rem; padding: 0 0.6rem; bottom: 5.75rem; } .rfq-tab svg { width: 1.1rem; height: 1.1rem; } }
+
+/* Legibility on phones: footer copy never drops under 12px; breadcrumb links get a tappable height. */
+.bn-footer small { font-size: var(--fs-xs); }
+@media (max-width: 640px) {
+  nav[aria-label="Breadcrumb"] a, .breadcrumbs a { display: inline-flex; align-items: center; min-height: 2rem; }
+}
+
+/* Fact grids (job detail ledger): one hairline border around the card and 1px dividers inside, all the same colour.
+   The old rules mixed a light top/left, a grey right/bottom and dark cell borders, which also vanished at the rounded corners. */
+.recruitment-role-ledger { gap: 1px; border: 1px solid var(--counter-line); background: var(--counter-line); color: var(--counter-ink); }
+.recruitment-role-ledger > div { border: 0; background: var(--counter-ivory); }
+.recruitment-role-ledger dt { color: var(--counter-muted); }
+@media (max-width: 640px) { .hs-link { display: inline-flex; align-items: center; min-height: 2.5rem; } }
+
+/* Job detail copy: every block is a white card instead of bare text on the page background. */
+.recruitment-detail-copy { gap: var(--counter-space-4); }
+.recruitment-detail-copy > section { max-width: none; padding: clamp(1.1rem, 3vw, 1.75rem); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); box-shadow: var(--counter-shadow-rest); }
+.recruitment-detail-copy h2 { margin: 0 0 var(--counter-space-3); font: 800 var(--fs-xl)/1.15 var(--font-anek-latin), sans-serif; color: var(--counter-indigo); }
+.recruitment-detail-copy p, .recruitment-detail-copy ul > li { color: var(--counter-ink); font-size: var(--fs-md); line-height: 1.65; }
+.recruitment-detail-copy ul { margin: 0; padding: 0; list-style: none; gap: var(--counter-space-2); }
+.recruitment-detail-copy ul > li { position: relative; padding: 0.55rem 0.8rem 0.55rem 2.2rem; border-radius: var(--r-sm); background: color-mix(in srgb, var(--counter-indigo-soft) 45%, white); }
+.recruitment-detail-copy ul > li::before { content: ""; position: absolute; left: 0.85rem; top: 1.05rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--counter-indigo); }
+/* The detail hero is only a layout grid; its own cards carry the surface, so no shadow box behind them. */
+.recruitment-detail-hero { box-shadow: none; overflow: visible; background: transparent; }
+
+/* Page-level ad slots line up with the footer: same side gutter, and the same gap above and below
+   (the footer supplies the gap below, so the page above must not add its own bottom padding). */
+:is(.recruitment-core, .counter-public-page, .directory-design) > :is(aside.le-ad-slot, .bn-ad-rotator > aside.le-ad-slot),
+:is(.recruitment-core, .counter-public-page, .directory-design) > .bn-ad-rotator > aside.le-ad-slot { margin: var(--counter-section-gap) var(--counter-page-gutter) 0; }
+.recruitment-detail { padding-bottom: 0; }
+
+/* Results toolbar: flat header inside the results card (no nested shadow box), left-aligned title, and one
+   consistent control height for Filters, the list/grid switch and the sort select. */
+.directory-listing-toolbar { display: grid; justify-content: stretch; gap: var(--counter-space-3); padding: 0 0 var(--counter-space-3); border-radius: 0; background: transparent; box-shadow: none; }
+.directory-listing-toolbar > span { justify-self: start; text-align: left; }
+.dlw-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--counter-space-2); }
+.dlw-filter-toggle { justify-content: center; min-height: 2.5rem; padding: 0 1rem; }
+.dlw-view { align-items: center; height: 2.5rem; padding: 0.2rem; gap: 0.1rem; }
+.dlw-view button { width: 2.1rem; height: 2.1rem; padding: 0; border-radius: 50%; }
+.dlw-controls label { margin: 0; }
+.dlw-controls select { min-height: 2.5rem; padding-block: 0; font-size: var(--fs-sm) !important; font-weight: 700; }
+@media (max-width: 560px) { .dlw-controls label { flex: 1 1 100%; } }
+.dlw-filter-toggle, .dlw-controls select { min-height: 2.75rem; }
+.dlw-view { height: 2.75rem; padding: 0.25rem; box-sizing: border-box; }
+.dlw-view button { width: 2.25rem; height: 2.25rem; }
+.dlw-view button { min-height: 0; min-width: 0; aspect-ratio: 1; }
+.dlw-controls .dlw-view button { min-height: 0; min-width: 0; width: 2.25rem; height: 2.25rem; }
+.dlw-controls .dlw-view button:not(#_) { min-height: 0; min-width: 0; width: 2.25rem; height: 2.25rem; }
+
+/* Recruitment results header on tablets and phones: a padded white strip, count text wraps inside it, and the
+   Refine button keeps one line and its own width instead of squeezing against the edge. */
+@media (max-width: 850px) {
+  .recruitment-results-tools { align-items: center; gap: var(--counter-space-3); padding: var(--counter-space-3) var(--counter-space-4); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); }
+  .recruitment-results-count { min-width: 0; flex: 1 1 auto; }
+  .recruitment-results-tools .recruitment-filter-toggle:not(#_) { flex: 0 0 auto; width: auto; min-height: 2.5rem; padding: 0 1rem; white-space: nowrap; justify-content: center; gap: 0.45rem; }
+}
+.recruitment-result-row > * { min-width: 0; }
+.recruitment-result-row :is(strong, span, small, p) { overflow-wrap: anywhere; white-space: normal; }
+
+/* --- Audit fixes: ghost shadows, border consistency, button text, minimum small text --- */
+.employer-careers-hero { box-shadow: none; background: transparent; overflow: visible; }
+:is(.directory-result-row, .recruitment-result-row):not(#_) { border-width: 1px; }
+small { font-size: var(--fs-xs); }
+.le-button, .btn { max-width: 100%; }
+@media (max-width: 640px) {
+  .le-button, .hs-close-actions a { white-space: normal; text-align: center; justify-content: center; line-height: 1.2; padding-block: 0.6rem; height: auto; }
+  .hs-close-actions { width: 100%; }
+  .hs-close-actions a { flex: 1 1 100%; }
+}
+.directory-result-row + .directory-result-row:not(#_), .recruitment-result-row + .recruitment-result-row:not(#_) { border-top: 1px solid var(--counter-line); }
+
+/* ===========================================================================
+   Listing flow (/sell): plain-language steps, white cards on the canvas.
+   =========================================================================== */
+.sl-page { width: min(calc(100% - 1.5rem), 44rem); margin: 0 auto; padding: 1.25rem 0 5rem; }
+.sl-head { display: grid; gap: 0.4rem; margin-bottom: 1.1rem; }
+.sl-eyebrow { color: var(--counter-indigo); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sl-head h1 { margin: 0; font: 800 var(--fs-2xl)/1.1 var(--font-anek-latin), sans-serif; letter-spacing: -0.02em; }
+.sl-head p { margin: 0; color: var(--counter-muted); font-size: var(--fs-md); }
+
+.sl-steps { display: flex; align-items: center; margin: 0 0 1.1rem; padding: 0.5rem 0.75rem; list-style: none; border: 1px solid var(--counter-line); border-radius: var(--r-pill); background: var(--counter-ivory); }
+.sl-steps li { display: flex; align-items: center; flex: 1; min-width: 0; }
+.sl-steps li:last-child { flex: 0 0 auto; }
+.sl-steps li:not(:last-child)::after { content: ""; flex: 1; height: 2px; margin: 0 0.6rem; border-radius: 2px; background: var(--counter-line); }
+.sl-steps li.is-done:not(:last-child)::after { background: var(--counter-indigo); }
+.sl-steps button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.15rem 0; border: 0; background: transparent; color: var(--counter-muted); font: 700 var(--fs-sm)/1 var(--font-work-sans), sans-serif; cursor: pointer; white-space: nowrap; }
+.sl-steps button:disabled { cursor: default; }
+.sl-steps button > span { width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border: 1px solid var(--counter-line-strong); border-radius: 50%; background: var(--counter-ivory); color: var(--counter-muted); font-size: var(--fs-xs); }
+.sl-steps .is-active button { color: var(--counter-ink); }
+.sl-steps .is-active button > span { border-color: var(--counter-indigo); background: var(--counter-indigo); color: #fff; }
+.sl-steps .is-done button { color: var(--counter-indigo); }
+.sl-steps .is-done button > span { border-color: var(--counter-indigo); background: var(--counter-indigo-soft); color: var(--counter-indigo); }
+@media (max-width: 420px) { .sl-steps button { font-size: var(--fs-xs); gap: 0.35rem; } .sl-steps li:not(:last-child)::after { margin: 0 0.35rem; } }
+
+.sl-body { display: grid; gap: var(--counter-space-4); }
+.sl-panel { padding: clamp(1.1rem, 3vw, 1.75rem); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); }
+.sl-label { display: block; margin: 0 0 0.4rem; color: var(--counter-ink); font: 700 var(--fs-sm)/1.3 var(--font-work-sans), sans-serif; }
+.sl-input { width: 100%; min-height: 2.9rem; padding: 0 1.1rem; border: 1px solid var(--counter-line-strong); border-radius: var(--r-pill); background: #fff; color: var(--counter-ink); font: 500 var(--fs-md)/1.2 var(--font-work-sans), sans-serif; }
+.sl-input:focus { outline: 2px solid var(--counter-focus); outline-offset: 1px; border-color: var(--counter-focus); }
+.sl-input::placeholder { color: var(--counter-muted); opacity: 0.8; }
+.sl-note { margin: 0.4rem 0 0; color: var(--counter-muted); font-size: var(--fs-sm); line-height: 1.5; }
+.sl-note.is-ok { display: flex; gap: 0.4rem; align-items: flex-start; color: var(--counter-indigo); }
+.sl-note.is-ok svg { flex: 0 0 auto; margin-top: 0.1rem; }
+.sl-foot { text-align: center; }
+.sl-error { margin: 0; color: var(--counter-error); font-size: var(--fs-sm); font-weight: 600; }
+
+.sl-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--counter-space-3); }
+.sl-choice { display: grid; align-content: start; gap: 0.4rem; padding: 1.25rem; border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: #fff; color: var(--counter-ink); text-align: left; cursor: pointer; transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease; }
+.sl-choice:hover, .sl-choice:focus-visible { border-color: var(--counter-indigo); box-shadow: 0 8px 22px rgba(18, 48, 126, 0.12); transform: translateY(-2px); }
+.sl-choice:focus-visible { outline: 2px solid var(--counter-focus); outline-offset: 2px; }
+.sl-choice-icon { width: 3rem; height: 3rem; display: grid; place-items: center; margin-bottom: 0.3rem; border-radius: var(--r-md); background: var(--counter-indigo-soft); color: var(--counter-indigo); }
+.sl-choice-icon svg { width: 1.6rem; height: 1.6rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.sl-choice strong { font: 800 var(--fs-xl)/1.1 var(--font-anek-latin), sans-serif; }
+.sl-choice > span:not(.sl-choice-icon) { color: var(--counter-muted); font-size: var(--fs-sm); line-height: 1.5; }
+.sl-choice em { margin-top: 0.5rem; color: var(--counter-indigo); font-style: normal; font-weight: 800; font-size: var(--fs-sm); }
+.sl-choice em::after { content: " \2192"; }
+@media (max-width: 540px) { .sl-choices { grid-template-columns: minmax(0, 1fr); } }
+
+.sl-cat { display: grid; gap: var(--counter-space-3); }
+.sl-search { position: relative; }
+.sl-search svg { position: absolute; left: 1rem; top: 50%; width: 1.15rem; height: 1.15rem; transform: translateY(-50%); fill: none; stroke: var(--counter-muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.sl-search .sl-input { padding-left: 2.7rem; }
+.sl-chosen { display: flex; align-items: center; gap: 0.8rem; padding: 0.85rem 1rem; border: 1px solid var(--counter-indigo); border-radius: var(--r-md); background: var(--counter-indigo-soft); }
+.sl-chosen-mark { width: 2rem; height: 2rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: var(--counter-indigo); color: #fff; }
+.sl-chosen-copy { display: grid; gap: 0.1rem; min-width: 0; }
+.sl-chosen-copy small { color: var(--counter-indigo); font-size: var(--fs-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.sl-chosen-copy strong { font-size: var(--fs-md); }
+.sl-chosen-copy em { color: var(--counter-muted); font-style: normal; font-size: var(--fs-sm); }
+.sl-matches { overflow: hidden; border: 1px solid var(--counter-line); border-radius: var(--r-md); background: #fff; }
+.sl-matches-title { margin: 0; padding: 0.6rem 1rem; background: color-mix(in srgb, var(--counter-indigo-soft) 50%, white); color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.sl-match { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; width: 100%; padding: 0.8rem 1rem; border: 0; border-top: 1px solid var(--counter-line); background: #fff; color: var(--counter-ink); text-align: left; cursor: pointer; }
+.sl-match:hover, .sl-match:focus-visible { background: color-mix(in srgb, var(--counter-indigo-soft) 55%, white); }
+.sl-match.is-selected { background: var(--counter-indigo-soft); }
+.sl-match-copy { display: grid; gap: 0.1rem; min-width: 0; }
+.sl-match-copy strong { font-size: var(--fs-md); }
+.sl-match-copy small { color: var(--counter-muted); font-size: var(--fs-sm); }
+.sl-match-tag, .sl-match-state { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.65rem; border-radius: var(--r-pill); background: var(--counter-indigo-soft); color: var(--counter-indigo); font-size: var(--fs-xs); font-weight: 800; }
+.sl-empty { margin: 0; padding: 0.9rem 1rem; border: 1px dashed var(--counter-line-strong); border-radius: var(--r-md); color: var(--counter-muted); font-size: var(--fs-sm); line-height: 1.5; }
+.sl-browse-toggle { display: inline-flex; align-items: center; gap: 0.4rem; justify-self: start; padding: 0.35rem 0; border: 0; background: transparent; color: var(--counter-indigo); font: 800 var(--fs-sm)/1 var(--font-work-sans), sans-serif; cursor: pointer; }
+.sl-browse-toggle svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.sl-browse { display: grid; gap: var(--counter-space-3); }
+.sl-other { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem; margin-top: 0.25rem; padding-top: 0.9rem; border-top: 1px solid var(--counter-line); color: var(--counter-muted); font-size: var(--fs-sm); }
+.sl-other-form { width: 100%; }
+.sl-other-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sl-other-row .sl-input { flex: 1 1 14rem; }
+.sl-link { padding: 0; border: 0; background: transparent; color: var(--counter-indigo); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+.sl-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0; padding: 0.55rem 0.9rem; border-radius: var(--r-pill); background: var(--counter-indigo-soft); color: var(--counter-ink); font-size: var(--fs-sm); }
+.sl-pill span { padding: 0.1rem 0.6rem; border-radius: var(--r-pill); background: var(--counter-indigo); color: #fff; font-size: var(--fs-xs); font-weight: 800; }
+.sl-pill button { margin-left: auto; padding: 0; border: 0; background: transparent; color: var(--counter-indigo); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+.sl-card { padding: clamp(1.1rem, 3vw, 1.5rem); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); }
+.sl-card-head { margin-bottom: 1rem; }
+.sl-card-head h3 { margin: 0; font: 800 var(--fs-lg)/1.2 var(--font-anek-latin), sans-serif; }
+.sl-card-head p { margin: 0.3rem 0 0; color: var(--counter-muted); font-size: var(--fs-sm); line-height: 1.5; }
+.sl-more { border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); }
+.sl-more summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; cursor: pointer; list-style: none; }
+.sl-more summary::-webkit-details-marker { display: none; }
+.sl-more summary span { display: grid; gap: 0.15rem; }
+.sl-more summary strong { font-size: var(--fs-md); }
+.sl-more summary small { color: var(--counter-muted); font-size: var(--fs-sm); }
+.sl-more summary svg { flex: 0 0 auto; width: 1.25rem; height: 1.25rem; fill: none; stroke: var(--counter-indigo); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease; }
+.sl-more[open] summary svg { transform: rotate(180deg); }
+.sl-more[open] summary { border-bottom: 1px solid var(--counter-line); }
+.sl-more-body { padding: 1.25rem; }
+.sl-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--counter-space-3); }
+.sl-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--counter-space-3); }
+.sl-grid3.is-end { align-items: end; }
+@media (max-width: 640px) { .sl-grid2, .sl-grid3 { grid-template-columns: minmax(0, 1fr); } }
+.sl-stack { display: grid; gap: var(--counter-space-4); }
+.sl-mt { margin-top: var(--counter-space-3); }
+.sl-mb { margin-bottom: var(--counter-space-4); }
+.sl-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sl-chips .chip { display: inline-flex; align-items: center; gap: 0.4rem; }
+.sl-chips .chip button { display: inline-flex; padding: 0; border: 0; background: transparent; color: var(--counter-muted); cursor: pointer; }
+.sl-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--counter-space-3); margin-top: var(--counter-space-2); }
+
+.sl-done { display: grid; justify-items: center; gap: 0.9rem; padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 2rem); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: var(--counter-ivory); text-align: center; }
+.sl-done-mark { width: 4.25rem; height: 4.25rem; display: grid; place-items: center; border-radius: 50%; background: var(--counter-success); color: #fff; }
+.sl-done h1 { margin: 0; font: 800 var(--fs-2xl)/1.1 var(--font-anek-latin), sans-serif; }
+.sl-done > p { max-width: 30rem; margin: 0; color: var(--counter-muted); font-size: var(--fs-md); line-height: 1.55; }
+.sl-done-card { display: flex; align-items: center; gap: 0.9rem; width: min(100%, 24rem); padding: 0.75rem; border: 1px solid var(--counter-line); border-radius: var(--r-md); text-align: left; }
+.sl-done-card img, .sl-done-initial { width: 3.5rem; height: 3.5rem; flex: 0 0 auto; border-radius: var(--r-sm); object-fit: cover; }
+.sl-done-initial { display: grid; place-items: center; background: var(--counter-indigo-soft); color: var(--counter-indigo); font: 800 var(--fs-xl) var(--font-anek-latin), sans-serif; }
+.sl-done-card span { display: grid; gap: 0.15rem; min-width: 0; }
+.sl-done-card strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl-done-card small { color: var(--counter-muted); font-size: var(--fs-sm); }
+.sl-done-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+.sl-done-next { width: 100%; margin-top: 0.75rem; padding-top: 1.25rem; border-top: 1px solid var(--counter-line); text-align: left; }
+.sl-done-next h2 { margin: 0 0 0.75rem; font: 800 var(--fs-lg) var(--font-anek-latin), sans-serif; }
+.sl-done-next ul { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.sl-done-next li { display: grid; gap: 0.1rem; padding: 0.8rem 1rem; border: 1px solid var(--counter-line); border-radius: var(--r-md); }
+.sl-done-next li a { color: var(--counter-indigo); font-weight: 800; }
+.sl-done-next li span { color: var(--counter-muted); font-size: var(--fs-sm); }
+
+/* Admin data tables: action buttons stay on one compact line, so rows are one line tall and the table scrolls sideways on phones. */
+.admin-table td > .flex-wrap { flex-wrap: nowrap; }
+.admin-table td :is(.btn, button) { white-space: nowrap; }
+.admin-table td .btn:not(#_) { min-height: 2.25rem; padding-inline: 0.85rem; }
+.sl-quick { display: grid; gap: 0.6rem; }
+.sl-quick .sl-matches-title { padding: 0; background: transparent; }
+.sl-quick-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sl-quick-chips .chip { cursor: pointer; }
+
+/* Listing card top row follows the card's own width (not the screen's): when the card is narrow the kind label goes, so it can never sit under the Contact button. */
+.lcard { container-type: inline-size; container-name: lcard; }
+@container lcard (max-width: 19rem) {
+  .lcard-top .lcard-kind { display: none; }
+  .lcard-top { justify-content: flex-end; }
+}
+
+/* Small ad tiles: brand sidebar (below the "Can't find it?" card) and category filter rail (below the filters).
+   They hide themselves when there is no ad. */
+.brand-aside-ad, .dlw-rail-ad { height: 13rem; margin-top: var(--counter-space-4); overflow: hidden; border-radius: var(--r-lg); }
+.brand-aside-ad:empty, .dlw-rail-ad:empty { display: none; }
+.dlw-rail-ad > * { height: 100%; margin: 0; }
+@media (max-width: 1100px) { .dlw-rail-ad { display: none; } }
+.dlw-mobile-ad { display: none; }
+@media (max-width: 1100px) { .dlw-mobile-ad { display: block; } .dlw-mobile-ad > * { height: 100%; margin: 0; } }

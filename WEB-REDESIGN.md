@@ -1394,6 +1394,46 @@ live.
 9. **`RecruitmentGate` pass-through and no-price listing cards shipped without individual
    sign-off** — flagged twice (previous entry and this one); revisit if either needs reverting.
 
+### Pull of `origin/design` (tip `0f33b42`) — 2026-10-05
+
+Merged 12 new UI-developer commits (`0e74423`..`0f33b42`) into `feature/design-integration`.
+**No conflicts**; none of the UI developer's code was changed during the merge.
+
+**What came in**
+- `/sell` rebuilt as a step flow for first-time sellers (what you sell, category, details). New
+  `frontend/lib/categorySuggest.ts` suggests categories from plain words. Business name is asked
+  only when the account has no seller profile (`becomeSeller` on publish).
+- `/login` and `/register` show listing-specific copy when `next` starts with `/sell`.
+- Ads are small tiles: under the filters on category pages (`railAd` prop of
+  `UnifiedListingWorkbench`), under the "Can't find it" card on brand pages.
+- Listing cards: Contact/info buttons in the top row, kind label hidden by card width.
+- Logo always drawn from layers (never disappears). Many layout fixes (results toolbars, job
+  pages, hiring timeline, borders, small text, mobile card actions, admin tables scroll sideways).
+- Admin listing review shows "Seller pending" and warns on approve. A listing is public only when
+  the listing AND the seller profile are approved.
+- New `backend/scripts/reset-admin-password.js`; `.gitignore` ignores
+  `backend/.admin-credentials.local`.
+
+**API impact (additive only; restart backend after pulling)**
+- `identity.getSellerCompanyNames` now also returns `sellerStatus`.
+- `GET /api/admin/listings` and `GET /api/admin/listings/:id` include a new `sellerStatus` field.
+  No existing field changed. `/sell` uses only existing calls (`getCategories`, `createListing`,
+  `becomeSeller`).
+
+**Checks run**
+- Frontend `npx tsc --noEmit`: clean.
+- Backend `npm test`: 134 tests, 120 pass, 14 fail. The same 14 fail on the branch before this
+  merge (Recruitment data layer, identity register/login, review and privileged-field tests; e.g.
+  FK `applications_job_id_fkey`), so they are not caused by this pull. Still need a separate look.
+- Not done: browser/overflow pass, production build.
+
+**Carried from the developer's notes (unverified)**
+- `/sell` photo upload not exercised; Home hero hover and logo animation not watched live.
+- After pulling: stop dev server, `rm -rf frontend/.next`, restart (stale Turbopack cache caused a
+  hydration error).
+- Earlier pending items (back-to-top corner, FR-16, FR-19, AC-9, seeding testing-server stories,
+  GSAP visual pass) are unaffected by this pull.
+
 ---
 
 ## Reference material

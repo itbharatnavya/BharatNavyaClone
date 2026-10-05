@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-Updated: 1 October 2026 (end of the long design session; see section 0)
+Updated: 5 October 2026 (see section 0 and the "2 to 5 October" block below it)
 
 Official branch: `design`
 
@@ -62,6 +62,41 @@ This is the single continuation source of truth for current Bharat Navya product
 4. The Recruitment hero "Search jobs" button renders as a tall amber block beside the stacked fields; slimmer?
 5. Older sections still below the new category block (six service families on Directory, role families on Recruitment); category rows repeat cards because each has only 4; hover text colours are still removed (owner request, temporary, see `git log`).
 6. Push the local commits to `origin/design`.
+
+
+### 2 to 5 October 2026: what changed since the section above
+
+Everything below is pushed to `origin/design` (tip `cbaca5b` at the time of writing). The Home India map (Natural Earth outline) is committed.
+
+**Platform-wide**
+- **CTA colour:** primary buttons are now dark blue (`--counter-cta` `#12307e`, hover `--counter-cta-hover`, edge `--counter-cta-edge`, label `--counter-on-cta` white). On blue surfaces they invert to white with a dark-blue label (rule at the end of `counter-soft-system.css`; add `is-on-blue` or the container to that list). Amber (`--counter-highlight`) is kept only for small accents (title highlight, badges, stars). This supersedes the "one amber CTA" wording in `DESIGN-SYSTEM.md`.
+- **Floating chrome:** "Post requirement" is a bookmark tab on the right edge (`.rfq-tab`, icon only, label slides out on hover/focus) just above the assistant bubble. Back-to-top takes the corner when it appears and the bubble steps left (`.navya-agent-dock`).
+- **Footer:** white card, no Directory/Recruitment block.
+- **Header BN mark:** always drawn from colour layers in `public/brand/bn-*.png` (the plain PNG only reserves the space and is invisible); every 5s the swoosh layers wipe in again. Nothing is swapped, so it can never vanish. Off for reduced motion.
+- **Home:** the four hero cards start their animation on hover and replay while hovered; the sponsored ad was removed from Home; connected-hub icons are no longer clipped.
+- **Listing cards:** no prices on cards (preview pane and listing page still show them); Contact and info buttons sit in the top row (`.lcard-top`); the kind label hides by card width via a container query (`.lcard` is a `lcard` container), so it never sits under the buttons in narrow grids.
+- **Ads on category and brand pages:** the big banner is gone. Category pages show a small tile under the filters (`railAd` prop of `UnifiedListingWorkbench`, `.dlw-rail-ad`); brand pages show one in the sidebar under the "Can't find it?" card (`.brand-aside-ad`). Both hide when there is no ad, and phones get a tile after the results.
+- **Status strip (Directory/Recruitment):** two rows, no names, first bubble is "Add your story" (guests get the sign-in modal; signed-in users go to the dashboard Stories tab). Demo stories: 28 companies and 15 employers (`node backend/scripts/seed-demo-stories.js`).
+- **Results toolbars and job pages:** flat toolbar header, equal-height controls, round list/grid switch; job detail sections are cards; hiring timeline fixed; page-level ads align with the footer.
+- **Audit fixes:** ghost shadow boxes behind scene sections and the employer hero removed, list rows keep four borders, minimum 12px small text, wrapping CTA text on phones. Mobile fixes for card actions and for the search page where selecting a listing used to reveal the filter rail.
+
+**Listing flow (`/sell`) rebuilt for first-time sellers**
+- Steps: What (one plain field plus Product or Service), Category (suggestions from `lib/categorySuggest.ts`, browse tree on request), Details (photos first, name and description, price, optional extras behind `MoreOptions`, location). Business name is asked only when the account has no seller profile (`becomeSeller` is called on publish). Success screen with next steps. Styles are `.sl-*` at the end of `counter-soft-system.css`; the old `.counter-sell-page` and `.counter-listing-*` rules are no longer used by this page.
+- `/login` and `/register` show listing-specific copy when `next` starts with `/sell`.
+- **Two approvals:** a listing is public only when the listing is approved AND the seller profile is `approved` (seller approval lives on `/admin/users/:id`). The admin listing review now shows "Seller pending" and warns on approve (`getSellerCompanyNames` returns `sellerStatus`; restart the backend after pulling).
+
+**Admin**
+- Local admin account is `usr_admin` (`admin@bharatsource.in`). Run `node backend/scripts/reset-admin-password.js` to set a new random password; it is written to the git-ignored `backend/.admin-credentials.local` and never printed.
+- Admin tables scroll sideways on phones with one-line rows (`.admin-table`). All tabs load without errors; add/edit/delete actions on most tabs were not exercised.
+
+**Open or not verified**
+- Photo upload in `/sell` was not exercised (file picker); AI photo draft needs `ANTHROPIC_API_KEY`.
+- The Home hero cards hover and the logo animation were checked in frames and by simulated events, not watched live.
+- Section intro headings on Directory ("Where products meet possibility", "One requirement") sit on the page background; the owner may want them in cards.
+- Offer page has a section with only top and bottom borders.
+- Recruitment hero art re-centring is untested because the art hides below 1024px.
+- Local test data from the walkthrough (seller "Meera Nair", business "Nair Coconut Traders", one coconut water listing) exists in the local Postgres only.
+- Dev server: after pulling, stop it, `rm -rf frontend/.next`, restart (stale Turbopack caches caused a hydration error).
 
 ## 1. Start here in a new session
 

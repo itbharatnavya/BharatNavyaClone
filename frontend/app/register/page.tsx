@@ -42,6 +42,7 @@ export default function RegisterPage() {
   // actual "don't render the form" decision happens right before the JSX
   // return, below.
   const { loading: authLoading, redirecting } = useGuestOnly(next, DEFAULT_NEXT);
+  const listingIntent = next.startsWith("/sell");
 
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -150,7 +151,7 @@ export default function RegisterPage() {
               color: "var(--ink)",
             }}
           >
-            {t("auth.register.asideTitle", "Start building your place on Bharat Navya.")}
+            {listingIntent ? "Create your account, then list your first product." : t("auth.register.asideTitle", "Start building your place on Bharat Navya.")}
           </h2>
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
             {t(
@@ -174,10 +175,10 @@ export default function RegisterPage() {
       >
         <div className="counter-auth-form" style={{ width: "100%", maxWidth: 420 }}>
           <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, marginBottom: 4 }}>
-            {t("auth.register.title", "Create your account")}
+            {listingIntent ? "Create your account to start listing" : t("auth.register.title", "Create your account")}
           </h1>
           <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", marginBottom: 24 }}>
-            {t("auth.register.subtitle", "Create your account to access more of Bharat Navya.")}
+            {listingIntent ? "It takes a minute. You will go straight to adding your product or service." : t("auth.register.subtitle", "Create your account to access more of Bharat Navya.")}
           </p>
 
           <form onSubmit={handleSubmit} noValidate>

@@ -113,10 +113,10 @@ export function AdminTable({
 }) {
   return (
     <div
-      className="overflow-x-auto rounded-xl border border-border bg-canvas"
+      className="admin-table overflow-x-auto rounded-xl border border-border bg-white"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full min-w-[56rem] border-collapse text-sm">
         <thead>
           <tr className="bg-bg-subtle">
             {columns.map((c, i) => (

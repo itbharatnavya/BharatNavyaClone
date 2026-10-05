@@ -176,8 +176,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
           The category chip it shows while you're here still comes from the
           self-pinning effect above. */}
       <div className="container-bs section-pad-sm counter-category-content">
-        {/* Category-top ad slider (rotates all active bookings; hidden when none). */}
-        <AdSlider placement="category_top" categorySlug={slug} />
+        {/* The category-top ad is a small tile under the filters (railAd below); on phones it follows the results. */}
 
         {/* Store sections: sub-category image tiles + a rail of the store's top brands.
             Each renders nothing when its data is absent. */}
@@ -189,8 +188,10 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
             query={query || ""}
             initialFilters={{ ...initialFilters, city: city || initialFilters?.city, sort: initialFilters?.sort || "newest" }}
             fixedCategory={slug}
+            railAd={<AdSlider placement="category_top" categorySlug={slug} fillHeight />}
           />
         </div>
+        <div className="dlw-mobile-ad brand-aside-ad"><AdSlider placement="category_top" categorySlug={slug} fillHeight /></div>
       </div>
     </div>
   );

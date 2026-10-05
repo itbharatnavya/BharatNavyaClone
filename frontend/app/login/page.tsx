@@ -43,6 +43,7 @@ export default function LoginPage() {
   // of Hooks) — the actual "don't render the form" decision happens at the
   // bottom, right before the JSX return.
   const { loading: authLoading, redirecting } = useGuestOnly(next, DEFAULT_NEXT);
+  const listingIntent = next.startsWith("/sell");
 
   const [tab, setTab] = useState<Tab>("otp");
 
@@ -216,10 +217,10 @@ export default function LoginPage() {
               color: "var(--ink)",
             }}
           >
-            {t("auth.login.welcome", "Welcome back to Bharat Navya.")}
+            {listingIntent ? "Sign in to list your business." : t("auth.login.welcome", "Welcome back to Bharat Navya.")}
           </h2>
           <p style={{ marginTop: 12, color: "var(--muted)", fontSize: "var(--fs-sm)" }}>
-            {t("auth.login.asideCopy", "Companies, careers, and opportunities—all in one place.")}
+            {listingIntent ? "Add your first product or service in about three minutes. New here? Create an account first." : t("auth.login.asideCopy", "Companies, careers, and opportunities—all in one place.")}
           </p>
         </div>
       </div>
@@ -236,7 +237,7 @@ export default function LoginPage() {
         }}
       >
         <div className="counter-auth-form" style={{ width: "100%", maxWidth: 400 }}>
-          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, marginBottom: 4 }}>{t("auth.login.title", "Sign in")}</h1>
+          <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 700, marginBottom: 4 }}>{listingIntent ? "Sign in to list" : t("auth.login.title", "Sign in")}</h1>
           <p className="counter-auth-subtitle" style={{ color: "var(--muted)", fontSize: "var(--fs-sm)", marginBottom: 24 }}>
             {t("auth.login.subtitle", "One account to access Directory and Recruitment.")}
           </p>
