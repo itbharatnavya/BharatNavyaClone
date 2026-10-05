@@ -19,6 +19,7 @@
  */
 
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
 
@@ -121,7 +122,7 @@ function release() {
  * null on any failure (missing binary, empty prompt, spawn error, non-zero exit,
  * timeout, or empty output). Never throws.
  */
-async function askClaude(prompt, { timeoutMs = 15000 } = {}) {
+async function askClaude(prompt, { timeoutMs = 15000, isolated = false } = {}) {
   const bin = resolveBin();
   if (!bin) return null;
 
@@ -151,7 +152,15 @@ async function askClaude(prompt, { timeoutMs = 15000 } = {}) {
 
       try {
         // ARGS ARRAY (no shell) — the prompt is passed verbatim, unescaped.
-        child = spawn(bin, ["-p", text], { stdio: ["ignore", "pipe", "pipe"] });
+        // `isolated`: end-user-facing prose (Ask Navya agent). Without it the child inherits
+        // the HOST's Claude Code user settings — hooks, plugins, output styles — and an
+        // operator's personal setup (e.g. a terse "caveman" plugin) leaks into customer
+        // answers. Run from a neutral cwd (no project CLAUDE.md) with only `local` settings;
+        // NOT --bare, which would drop the subscription (OAuth) login this module relies on.
+        const args = isolated
+          ? ["-p", text, "--setting-sources", "local", "--disable-slash-commands", "--no-session-persistence"]
+          : ["-p", text];
+        child = spawn(bin, args, { stdio: ["ignore", "pipe", "pipe"], ...(isolated ? { cwd: os.tmpdir() } : {}) });
       } catch {
         finish(null);
         return;

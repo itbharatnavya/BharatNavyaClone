@@ -11,6 +11,7 @@
 
 const MOUNTS = [
   { path: "/api/ai", router: require("./routes/ai.routes"), phase: "public" },
+  { path: "/api/assistant/agent", router: require("./routes/agent.routes"), phase: "public" },
   { path: "/api/assistant", router: require("./routes/assistant.routes"), phase: "public" },
 ];
 

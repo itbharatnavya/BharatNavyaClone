@@ -85,6 +85,10 @@ module.exports = {
   // When there's no API key, the AI paths fall back to the locally authenticated
   // `claude` CLI. Set AI_CLI_ENABLED=false to force the pure deterministic path.
   AI_CLI_ENABLED: process.env.AI_CLI_ENABLED !== "false",
+  // Ask Navya agent (POST /api/assistant/agent): max `claude` CLI answers per hour
+  // across ALL users (the CLI runs on one shared subscription). Over the cap the
+  // agent still answers, from retrieved in-app data only (no model call).
+  AGENT_AI_PER_HOUR: parseInt(process.env.AGENT_AI_PER_HOUR || "40", 10),
   // In the test env (NODE_ENV=test — set by test/_env.js), PG_URL_TEST takes
   // precedence so `npm test` runs against a dedicated, disposable database
   // (scripts/setup-test-db.js builds it) and never the working dev DB. Falls back

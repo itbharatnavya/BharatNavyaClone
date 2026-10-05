@@ -132,6 +132,37 @@ async function getApprovedSellerIds() {
   return rows.map((r) => r.user_id);
 }
 
+/** Approved sellers whose company name matches any of the given tokens (ILIKE),
+ *  public fields only (never contact details) — the Ask Navya agent's company
+ *  lookup. Best match first = most tokens hit, then rating. Tokens are bound
+ *  parameters; `%`/`_` are escaped so user text can't widen the pattern. */
+async function searchApprovedSellersByName(tokens = [], limit = 3) {
+  const toks = [...new Set(tokens.map((t) => String(t).trim().toLowerCase()).filter((t) => t.length >= 3))].slice(0, 6);
+  if (!toks.length) return [];
+  const pats = toks.map((t) => `%${t.replace(/[\\%_]/g, "\\$&")}%`);
+  const { rows } = await pool.query(
+    `SELECT u.id, sp.company_name, sp.slug, sp.location_city, sp.location_state,
+            sp.is_verified, sp.rating, sp.review_count,
+            (SELECT count(*)::int FROM unnest($1::text[]) p WHERE sp.company_name ILIKE p) AS hits
+       FROM seller_profiles sp JOIN users u ON u.id = sp.user_id
+      WHERE sp.status = 'approved' AND sp.slug IS NOT NULL
+        AND sp.company_name ILIKE ANY($1::text[])
+      ORDER BY hits DESC, sp.rating DESC NULLS LAST
+      LIMIT $2`,
+    [pats, Math.max(1, Math.min(10, limit))]
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    companyName: r.company_name,
+    slug: r.slug,
+    city: r.location_city || null,
+    state: r.location_state || null,
+    isVerified: !!r.is_verified,
+    rating: r.rating == null ? 0 : Number(r.rating),
+    reviewCount: r.review_count == null ? 0 : Number(r.review_count),
+  }));
+}
+
 /** { sellers, experts } platform totals — routes/assistant.js's `buildStatsReply`
  *  "how many sellers / experts" answer, was `store.all("users.json")` (full
  *  composite hydrate of EVERY user, 9 child tables) + two JS `.filter().length`.
@@ -689,7 +720,7 @@ module.exports = {
   getEmployerCard, getEmployerCards,
   getSellerCard, getSellerCards,
   getCandidateCard, getCandidateCards,
-  getApprovedSellerIds, filterSellerIds, directoryCounts, getSellerBrowseCards, getSellerPriorityTiers,
+  getApprovedSellerIds, filterSellerIds, directoryCounts, searchApprovedSellersByName, getSellerBrowseCards, getSellerPriorityTiers,
   sellerSlugTaken, employerSlugTaken,
   getSellerCompanyNames, getAccountCards,
   getReviewFeedParties,

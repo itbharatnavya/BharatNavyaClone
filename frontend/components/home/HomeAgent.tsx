@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { FormEvent, KeyboardEvent, ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Modal from "@/components/Modal";
-import { assistantChat } from "@/lib/api";
+import { assistantAgent } from "@/lib/api";
 
 interface AgentLink {
   label: string;
@@ -22,7 +23,14 @@ interface AgentMessage {
   content: string;
   suggestions?: AgentLink[];
   results?: AgentResult[];
+  mode?: "in_app" | "hybrid" | "general";
+  followUps?: string[];
 }
+
+const MODE_LABEL: Record<string, string> = {
+  hybrid: "Bharat Navya data and general guidance",
+  general: "General guidance, not from Bharat Navya data",
+};
 
 const STARTERS = [
   "I want to start a food packaging business",
@@ -87,12 +95,14 @@ export default function HomeAgent({ variant = "default", stageClassName, scene, 
     const history = nextMessages.slice(-8).map(({ role, content }) => ({ role, content }));
 
     try {
-      const response = await assistantChat(prompt, history);
+      const response = await assistantAgent(prompt, history);
       setMessages((current) => [...current, {
         role: "assistant",
         content: response.reply,
         suggestions: Array.isArray(response.suggestions) ? response.suggestions : [],
         results: Array.isArray(response.results) ? response.results : [],
+        mode: response.mode,
+        followUps: Array.isArray(response.followUps) ? response.followUps : [],
       }]);
     } catch {
       setMessages((current) => [...current, {
@@ -174,9 +184,15 @@ export default function HomeAgent({ variant = "default", stageClassName, scene, 
     >
       <div className="bn-agent-conversation" ref={conversationRef} aria-live="polite" aria-busy={loading}>
         {messages.map((message, index) => <div key={`${message.role}-${index}`} className={`bn-agent-message is-${message.role}`}>
-          <div className="bn-agent-message-copy"><ReactMarkdown>{message.content}</ReactMarkdown></div>
+          <div className="bn-agent-message-copy">
+            {message.role === "assistant" && message.mode && MODE_LABEL[message.mode] && <small className={`bn-agent-mode is-${message.mode}`}>{MODE_LABEL[message.mode]}</small>}
+            {message.role === "assistant"
+              ? <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ table: ({ node: _n, ...props }) => <div className="bn-agent-table"><table {...props} /></div> }}>{message.content}</ReactMarkdown>
+              : message.content}
+          </div>
           {message.results && message.results.length > 0 && <div className="bn-agent-results" aria-label="Recommended records">{message.results.map((result) => <Link href={result.href || "#"} key={`${result.href}-${result.title}`} onClick={() => setOpen(false)}><strong>{result.title}</strong>{result.subtitle && <span>{result.subtitle}</span>}<b aria-hidden>→</b></Link>)}</div>}
           {message.suggestions && message.suggestions.length > 0 && <div className="bn-agent-actions">{message.suggestions.map((suggestion) => <Link href={suggestion.href || "#"} key={`${suggestion.href}-${suggestion.label}`} onClick={() => setOpen(false)}>{suggestion.label}<span aria-hidden>→</span></Link>)}</div>}
+          {index === messages.length - 1 && !loading && message.followUps && message.followUps.length > 0 && <div className="bn-agent-followups" role="group" aria-label="Suggested follow-up questions">{message.followUps.map((q) => <button type="button" key={q} onClick={() => void send(q)}>{q}</button>)}</div>}
         </div>)}
         {loading && <div className="bn-agent-message is-assistant is-loading"><div className="bn-agent-message-copy"><span/><span/><span/><em className="sr-only">Bharat Navya is thinking</em></div></div>}
       </div>

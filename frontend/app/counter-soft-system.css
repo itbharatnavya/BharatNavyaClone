@@ -592,6 +592,26 @@
   font-weight: 800;
 }
 
+/* Ask Navya agent: markdown replies (the base copy style is pre-wrap, which would double-space block output). */
+.bn-agent-message.is-assistant .bn-agent-message-copy { white-space: normal; overflow-wrap: anywhere; }
+.bn-agent-message-copy > * + * { margin-top: 0.55rem; }
+.bn-agent-message-copy :is(h1, h2, h3, h4) { margin: 0.7rem 0 0; font-size: var(--fs-sm); font-weight: 800; }
+.bn-agent-message-copy strong { font-weight: 800; }
+.bn-agent-message-copy :is(ul, ol) { margin-top: 0.4rem; }
+.bn-agent-message-copy a { color: var(--counter-indigo); font-weight: 700; }
+.bn-agent-message-copy .bn-agent-table { max-width: 100%; overflow-x: auto; }
+.bn-agent-message-copy table { border-collapse: collapse; min-width: 100%; font-size: var(--fs-xs); }
+.bn-agent-message-copy :is(th, td) { padding: 0.35rem 0.55rem; border: 1px solid var(--counter-line); text-align: left; vertical-align: top; }
+.bn-agent-message-copy th { background: var(--counter-green-soft); font-weight: 800; }
+.bn-agent-mode { display: block; margin-bottom: 0.45rem; font-size: var(--fs-xs); font-weight: 800; color: var(--counter-indigo); }
+.bn-agent-mode.is-general { color: var(--counter-muted, #5b6478); }
+.bn-agent-followups { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.1rem; }
+.bn-agent-followups > button {
+  min-height: 2.2rem; padding: 0.35rem 0.7rem; border: 1px solid var(--counter-line); border-radius: var(--r-pill);
+  background: var(--counter-ivory); color: var(--counter-ink); font-size: var(--fs-xs); font-weight: 700; text-align: left; cursor: pointer;
+}
+.bn-agent-followups > button:hover { border-color: var(--counter-indigo); }
+
 .bn-agent-message.is-loading .bn-agent-message-copy {
   display: flex;
   gap: 0.35rem;

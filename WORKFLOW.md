@@ -113,6 +113,43 @@ duplicate it, only tracks deltas against it.
 
 ## 3. Change log (newest first)
 
+### 2026-10-05 — Ask Navya agent: new retrieval-grounded `POST /api/assistant/agent` for the home-page Ask Navya modal (the floating bubble keeps `/api/assistant/chat`)
+
+**Why.** The home-page "Ask Navya" modal was wired to `/api/assistant/chat`, a rule-based
+navigation guide: "what is GST" returned the GST Services category instead of an answer, and
+greetings got a canned search-tips reply. The owner wanted an agent that answers the question
+first (in-app facts as the priority source, clearly-labelled general guidance otherwise) and
+only then offers matching Bharat Navya records. The floating bubble on every page is a different
+product (navigation guide) and its contract is frozen, so it was left alone.
+
+**What changed.**
+- Backend: `modules/ai/routes/agent.routes.js` (HTTP only) + `modules/ai/service/{agent,agentRetrieval,agentKnowledge}.js`;
+  mounted in `modules/ai/mount.js` at `/api/assistant/agent`. `identity.searchApprovedSellersByName`
+  added to the identity port (public fields only). `AGENT_AI_PER_HOUR` (default 40, global) in
+  `lib/config.js` + `.env.example`.
+- `lib/claudeCli.js`: `askClaude(prompt, { isolated: true })` — runs the child from a neutral cwd with
+  `--setting-sources local --disable-slash-commands --no-session-persistence`, so the host's Claude Code
+  hooks/plugins (a terse-style plugin was leaking into answers) never reach end users. Not `--bare` (drops the OAuth login).
+- Frontend: `assistantAgent()` in `lib/api.ts`; `components/home/HomeAgent.tsx` now renders markdown
+  (`react-markdown` + new dep `remark-gfm`), a "general guidance" tag, and follow-up chips; styles in `app/counter-soft-system.css`.
+- Docs: CLAUDE.md §5 "Ask Navya = TWO separate assistants" has the full design and rules.
+
+**Behaviour to remember.**
+- Still the local `claude` CLI — no API key, no billing. With no CLI (e.g. Vercel) every question gets the
+  deterministic in-app answer (`composeFallback`): how-the-app-works facts, live listings/sellers/jobs/plans/counts as
+  cards. General-knowledge questions (e.g. "what is GST") cannot be answered there and get the "couldn't find it on Bharat Navya" reply.
+- Links in a reply are limited to hrefs that came from retrieval; external URLs are stripped. No seller phone/email ever enters the prompt.
+- Recruitment answers follow `featureFlags.recruitmentLive` (coming-soon wording when off).
+
+**Verified.** `test/agent.test.js` (parser, link sanitizer, flag-aware KB, never-blank fallback), `ai.querycount` + `architecture`
+tests, `tsc --noEmit`, and live CLI runs (in-app listing question, sell + pricing question, general GST question, prompt-injection attempt).
+
+**Gotcha hit.** After `npm install remark-gfm` the running `next dev` kept serving the old bundle and the modal still hit
+`/api/assistant/chat` — restart the frontend dev server after adding a dependency (backend log shows which endpoint the browser calls).
+
+**Open.** No token streaming (the CLI returns the whole answer at once). Fallback wording on a CLI-less host could say AI is
+offline for general questions. The owner plans to rename this assistant later (UI label only).
+
 ### 2026-09-30 — Directory pagination reset fix, brand-page pagination, search precision (AND matching + phrase boost)
 
 **Reported:** pagination not working on search/category/brand listing pages; searching "multi pin collector" returned unrelated listings (467 hits) instead of the matching product.

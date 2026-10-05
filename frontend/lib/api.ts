@@ -510,6 +510,28 @@ export function assistantChat(
   });
 }
 
+// Ask Navya agent (home-page Ask Navya card): retrieval-grounded answers, in-app data
+// first, general guidance clearly labelled. Markdown `reply`; separate from assistantChat.
+export interface AgentReply {
+  reply: string;
+  mode: "in_app" | "hybrid" | "general";
+  results: Array<{ title: string; subtitle: string; href: string }>;
+  suggestions: Array<{ label: string; href: string }>;
+  followUps: string[];
+  usedAI: boolean;
+  degraded: boolean;
+  remaining: number;
+}
+export function assistantAgent(
+  message: string,
+  history?: Array<{ role: string; content: string }>
+): Promise<AgentReply> {
+  return request<AgentReply>(`/api/assistant/agent`, {
+    method: "POST",
+    body: JSON.stringify({ message, history }),
+  });
+}
+
 // Category/search/home ad slots (monetization).
 export function getAds(placement: string, category?: string): Promise<any[]> {
   const qs = new URLSearchParams({ placement, ...(category ? { category } : {}) }).toString();
