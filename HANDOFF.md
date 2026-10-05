@@ -430,3 +430,42 @@ Each page tells its own story; there is deliberately no shared feature-card temp
 - Home also has `WhyScene` ("What makes Bharat Navya different"): three illustrated cards (connected hub, trust ring and checks, India city network) that animate once in view. Order on Home: proof, pinned showcase, RouteScene, WhyScene, closing.
 - Pinned ScrollTriggers set `refreshPriority: 1`. Without it, triggers created before a later pin (child effects run first) ignore the pin spacing and fire far too early.
 - RfqScene and HireScene play once on arrival (not scrubbed); only pinned scenes are scroll-driven.
+
+## 5 to 6 October 2026: what changed since the block above
+Branch `design`, tip `d0a8225` at the time of writing. All verified with computed-style checks in the Browser pane (not full screenshot passes), see "not verified" at the end.
+
+**Listing card (`components/ListingCard.tsx`) was redesigned.** One hierarchy at every width: title, key facts strip (`.lcard-facts`, up to two from `buildSpecs`, now exported), seller row (`.lcard-by`: avatar, name, verified tick, city and rating), then a full-width Contact button plus info icon. No Product/Service tag anywhere, no prices. `hideSeller` drops the seller row. List layout (`.lcard--row`) puts Contact in a right column and stacks under 640px. The old `.lcard-top/.lcard-meta/.lcard--noseller` and container-query hacks were deleted from `counter-soft-system.css`.
+
+**Directory list view rows** (`UnifiedListingWorkbench.tsx`, `.directory-listing-ledger`): 112px photo, larger title, seller + verified tick, place and rating, up to two fact pills on the right. Compact under 760px.
+
+**Ads**
+- Filter rails (Directory search, category pages, Recruitment roles): filters take 2/3 of the rail height, a small ad tile the bottom 1/3 (`.dlw-rail-ad`, `.rec-rail-ad`), desktop only.
+- Phones (760px and under): the sponsored ad sits between listings (`infeedAd` prop, after the 4th Directory listing and 3rd role); the bottom-of-page copy is hidden (`.bn-ad-desktop-only`, `.bn-ad-below-rail`). Spacing around it is even (`.dlw-infeed-ad`).
+- Detail pages (job, listing, seller): a small ad tile sits under the floating side card and floats with it (`.bn-side-stack` on job, `.bn-side-ad` inside `.cp-aside` / `.ld-aside`); the full-width ad shows only when the layout is one column (`.bn-bottom-ad.is-850/.is-980`). Employer profile has no floating card, so it is unchanged.
+
+**Interaction**
+- Expanding a row now scrolls it under the header (`lib/scrollToExpanded.ts`), used in Directory search, Recruitment roles and the two Recruitment dashboard application lists. Uses setTimeout, not rAF (rAF does not fire in a hidden pane).
+- Pagination checked on Directory search and Recruitment roles (page 2 loads, URL updates).
+
+**Recruitment**
+- Tracker section on phones/tablets (<=1000px): pinned phone mockup whose screen shows the active stage; the stage list is invisible scroll distance (`.trk[data-live]` rules at the end of `counter-soft-system.css`). No-motion users still get the inline list.
+- Filters: on <=850px "Refine roles" is a bottom sheet (max 60vh); on desktop it is one scrolling card (inner `.jf-panel` border removed).
+- Role search bar (`RoleSearchBar.tsx`): lens icon in the query field, pin icon in the location field, "Anywhere" option, "Role or skill" placeholder; stacks under 640px with the two fields sharing a row and Search below.
+- Hero hub briefcase centred.
+
+**Auth pages** (`.counter-auth-page`): the blue panel is an inset rounded card with a gap under the header at all widths. Sign-in method tabs are a segmented pill with no divider.
+
+**Platform-wide**
+- Blues unified: `--counter-indigo` is now `#12307e` (hover `#1b3fa0`), and `--counter-green` (Directory surfaces) is also `#12307e`, so heroes, active pills and CTAs share one navy. Update DESIGN-SYSTEM.md table if you edit these again.
+- Section rhythm: `.hs-sec` / `.ps-sec` padding is half the section gap; first/last sections have no outer padding (32px between sections).
+- Selects and fields never touch their rounded edge (`.flt-block > select` padding); filter scrollbars are slim and inset (`::-webkit-scrollbar` rules for the filter cards).
+- Lens icon via `components/SearchLens.tsx` on admin search boxes (`Input leftIcon`). AI sparkle icon redrawn centred in all four places it is used.
+- Phone country-code select is smaller (4.5rem). The register "Have a referral code?" button lost its zero padding.
+- AI assistant is named "BN Assistant" and shows a hover note beside the bubble (`.navya-agent-tip`).
+- Logo no longer disappears when the header docks (`.is-search-docked .bn-wordmark span:not(.bn-mark)`).
+- `/categories`: page on the canvas, heading in a white card, sub-categories are clickable chips. Category hero shows the category photo on the right, fading into the navy.
+
+**Not verified / open**
+- Hydration error in the console on `/categories` (and a Next dev "1 error" badge); not traced.
+- Card redesign not looked at in list view, many-column grids or phone widths via screenshots; admin add/edit/delete, /sell photo upload, Recruitment landing spacing after the rhythm change, and pinned-scene behaviour on Home after the padding change are unchecked.
+- If the dev server shows `useContext of null` or hydration mismatches, stop it, `rm -rf frontend/.next`, restart with `BACKEND_URL=http://localhost:4000 npm run dev`.
