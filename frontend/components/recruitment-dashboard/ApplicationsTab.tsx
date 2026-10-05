@@ -1,4 +1,5 @@
 "use client";
+import { scrollToExpanded } from "@/lib/scrollToExpanded";
 
 // Recruiter's received applications across their jobs — mirrors Directory's LeadsTab
 // against getJobApplications, with a candidate-detail expand panel (photo, skills,
@@ -97,7 +98,7 @@ export default function ApplicationsTab({ jobId }: { jobId?: string | null }) {
               <div key={app.id} className="card" style={{ padding: 14 }}>
                 <div
                   style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", cursor: "pointer" }}
-                  onClick={() => setExpandedId(expanded ? null : app.id)}
+                  onClick={(event) => { setExpandedId(expanded ? null : app.id); if (!expanded) scrollToExpanded(event.currentTarget.parentElement); }}
                 >
                   <Avatar name={c?.name || "Candidate"} src={c?.avatarUrl} size={40} />
                   <div style={{ flex: 1, minWidth: 160 }}>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { scrollToExpanded } from "@/lib/scrollToExpanded";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
@@ -30,11 +31,11 @@ function parseWorkplaceParam(raw: string | null): WorkplaceType | undefined {
   return key === "onsite" || key === "hybrid" || key === "remote" ? key : undefined;
 }
 
-function ResultRow({ job, selected, expanded, onPreview, onToggle }: { job: Job; selected: boolean; expanded: boolean; onPreview: () => void; onToggle: () => void }) {
+function ResultRow({ job, selected, expanded, onPreview, onToggle }: { job: Job; selected: boolean; expanded: boolean; onPreview: () => void; onToggle: (event: React.SyntheticEvent) => void }) {
   const company = job.employer?.companyName || "Hiring company";
   function handleCardClick(event: React.MouseEvent<HTMLElement>) {
     if ((event.target as HTMLElement).closest("a, button")) return;
-    onToggle();
+    onToggle(event);
   }
   return <article className={`recruitment-result-row ${selected ? "is-selected" : ""}`} onClick={handleCardClick} onMouseEnter={onPreview} onFocusCapture={onPreview}>
     <Avatar src={job.employer?.logo} name={company} size={52} />
@@ -44,7 +45,7 @@ function ResultRow({ job, selected, expanded, onPreview, onToggle }: { job: Job;
       <div className="recruitment-result-facts"><span>{jobLocation(job)}</span><span><strong>{formatSalary(job)}</strong></span><span>{jobFreshness(job.postedAt)}</span></div>
       {job.skills?.length > 0 && <div className="recruitment-result-skills">{job.skills.slice(0, 4).map((skill) => <span key={skill}>{skill}</span>)}</div>}
     </div>
-    <div className="recruitment-result-side"><small>{closingContext(job.expiresAt)}</small><Link href={`/job/${job.id}`}>View role <Arrow /></Link><button type="button" onClick={onToggle} aria-expanded={expanded}>{expanded ? "Hide context" : "View context"}</button></div>
+    <div className="recruitment-result-side"><small>{closingContext(job.expiresAt)}</small><Link href={`/job/${job.id}`}>View role <Arrow /></Link><button type="button" onClick={(event) => onToggle(event)} aria-expanded={expanded}>{expanded ? "Hide context" : "View context"}</button></div>
   </article>;
 }
 
@@ -125,7 +126,7 @@ function JobsBrowseInner() {
     <header className="recruitment-results-head"><div className="recruitment-core-shell"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Recruitment", href: "/recruitment" }, { label: "Browse roles" }]} /><h1>Roles with the context to decide.</h1><p>Compare transparent job facts alongside the company and workplace behind the role.</p><div ref={searchAnchorRef} className="recruitment-results-search" aria-hidden={docked || undefined}><RoleSearchBar query={query} onQueryChange={(value) => { setQuery(value); setRoleQuery(value); }} city={filters.city || ""} onCityChange={(city) => { setFilters((current) => ({ ...current, city: city || undefined })); setRoleCity(city); }} /></div></div></header>
     <div className="recruitment-core-shell counter-results-stack">
       <SearchContextSwitch destination="directory" query={query} city={filters.city} />
-      <ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" />
+      <div className="bn-ad-desktop-only"><ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" /></div>
       <div className="recruitment-results-tools"><div className="recruitment-results-count"><strong aria-live="polite">{loading ? "Finding current roles…" : `${data?.total || 0} ${(data?.total || 0) === 1 ? "role" : "roles"}`}</strong><span>Real roles, ordered by current API results</span></div><button className="recruitment-filter-toggle" type="button" onClick={() => setFiltersOpen(true)}><FilterIcon /> Refine roles</button></div>
       <div className="recruitment-results-layout">
         <div className="recruitment-results-filter-rail">
@@ -134,12 +135,12 @@ function JobsBrowseInner() {
         <section aria-label="Role results"><div className="recruitment-results-list">
           {loading && Array.from({ length: 5 }, (_, index) => <div className="recruitment-skeleton" key={index} />)}
           {!loading && error && <div className="recruitment-state" role="status"><strong>Roles could not be loaded.</strong><p>{error}</p><button type="button" onClick={() => setRetry((value) => value + 1)}>Try again</button></div>}
-          {!loading && !error && jobs.map((job) => {
+          {!loading && !error && jobs.map((job, jobIndex) => {
             const expanded = job.id === expandedId;
-            return <article className={`recruitment-result-item${expanded ? " is-expanded" : ""}`} key={job.id}>
-              <ResultRow job={job} selected={job.id === selectedJob?.id} expanded={expanded} onPreview={() => setSelectedId(job.id)} onToggle={() => { setSelectedId(job.id); setExpandedId((current) => current === job.id ? null : job.id); }} />
+            return <React.Fragment key={job.id}>{jobIndex === 3 && <div className="dlw-infeed-ad"><ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" /></div>}<article className={`recruitment-result-item${expanded ? " is-expanded" : ""}`}>
+              <ResultRow job={job} selected={job.id === selectedJob?.id} expanded={expanded} onPreview={() => setSelectedId(job.id)} onToggle={(event) => { setSelectedId(job.id); setExpandedId((current) => current === job.id ? null : job.id); scrollToExpanded((event.currentTarget as Element).closest(".recruitment-result-item")); }} />
               {expanded && <div className="recruitment-inline-preview"><RoleContextPreview model={rolePreviewModel(job)} /></div>}
-            </article>;
+            </article></React.Fragment>;
           })}
           {!loading && !error && jobs.length === 0 && <div className="recruitment-state"><strong>No roles match these filters.</strong><p>Try a broader role, remove a location, or clear the salary range.</p></div>}
         </div>{data && data.totalPages > 1 && <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}><Pagination page={data.page} totalPages={data.totalPages} onChange={changePage} /></div>}</section>

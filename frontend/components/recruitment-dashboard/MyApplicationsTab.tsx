@@ -1,4 +1,5 @@
 "use client";
+import { scrollToExpanded } from "@/lib/scrollToExpanded";
 
 // Candidate's own applications — status pipeline + history (enhancement doc §3).
 // Unconditional per the doc: any candidate sees this, no employer-side gating.
@@ -132,7 +133,7 @@ export default function MyApplicationsTab() {
               <div key={app.id} className="card" style={{ padding: 14 }}>
                 <div
                   style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", cursor: "pointer" }}
-                  onClick={() => setExpandedId(expanded ? null : app.id)}
+                  onClick={(event) => { setExpandedId(expanded ? null : app.id); if (!expanded) scrollToExpanded(event.currentTarget.parentElement); }}
                 >
                   <div style={{ flex: 1, minWidth: 160 }}>
                     <Link href={`/job/${app.jobId}`} style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }} onClick={(e) => e.stopPropagation()}>

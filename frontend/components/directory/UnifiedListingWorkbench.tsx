@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { scrollToExpanded } from "@/lib/scrollToExpanded";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
@@ -117,17 +118,22 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   </section>;
 }
 
+const INFEED_AFTER = 4;
+
 export default function UnifiedListingWorkbench({
   query,
   initialFilters,
   fixedCategory,
   railAd,
+  infeedAd,
 }: {
   query: string;
   initialFilters: ListingFilterState;
   fixedCategory?: string;
   /** Optional small ad shown under the filter panel (desktop only). */
   railAd?: React.ReactNode;
+  /** Optional ad dropped between listings on phones, where a bottom-of-page slot is rarely seen. */
+  infeedAd?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -262,21 +268,24 @@ export default function UnifiedListingWorkbench({
         </div>
       </div>
       {error && <div className="directory-listing-state" role="status"><strong>Listings could not be loaded.</strong><p>{error}</p></div>}
-      {view === "grid" && !loading && !error && visibleListings.length > 0 && <ul className="dlw-grid" role="list">{visibleListings.map((listing) => <li key={listing.id}><ListingCard listing={listing} /></li>)}</ul>}
+      {view === "grid" && !loading && !error && visibleListings.length > 0 && <ul className="dlw-grid" role="list">{visibleListings.flatMap((listing, index) => [
+        <li key={listing.id}><ListingCard listing={listing} /></li>,
+        ...(infeedAd && index === INFEED_AFTER - 1 ? [<li key="infeed-ad" className="dlw-infeed-ad">{infeedAd}</li>] : []),
+      ])}</ul>}
       {view === "grid" && loading && <div className="dlw-grid is-loading" aria-hidden>{[1, 2, 3, 4, 5, 6].map((item) => <span key={item} />)}</div>}
       <div className="directory-listing-ledger" hidden={view === "grid"}>
         {loading && [1, 2, 3, 4].map((item) => <div className="directory-listing-row is-loading" key={item} />)}
-        {!loading && !error && visibleListings.map((listing) => {
+        {!loading && !error && visibleListings.map((listing, index) => {
           const media = listingImage(listing);
           const active = listing.id === selected?.id;
-          return <article className={`directory-listing-item${active ? " is-expanded" : ""}`} key={listing.id}>
-            <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={() => setSelectedId(listing.id)} aria-pressed={active}>
+          return <React.Fragment key={listing.id}>{infeedAd && index === INFEED_AFTER ? <div className="dlw-infeed-ad">{infeedAd}</div> : null}<article className={`directory-listing-item${active ? " is-expanded" : ""}`}>
+            <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={(event) => { setSelectedId(listing.id); scrollToExpanded(event.currentTarget.closest("article")); }} aria-pressed={active}>
               <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" loading="lazy" decoding="async" /> : listing.type.slice(0, 1).toUpperCase()}</span>
               <span className="directory-listing-row-copy"><small>{listing.type}</small><strong>{listing.title}</strong><span>{sellerName(listing)}</span></span>
               <Arrow />
             </button>
             {active && <div className="directory-listing-preview-inline"><ListingPreview listing={listing} onClose={() => setSelectedId(null)} /></div>}
-          </article>;
+          </article></React.Fragment>;
         })}
       </div>
       {!loading && !error && visibleListings.length === 0 && <div className="directory-listing-state"><strong>No services or products match.</strong><p>Try another need, category, location or price range.</p></div>}
