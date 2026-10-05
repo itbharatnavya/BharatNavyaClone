@@ -5653,3 +5653,12 @@ small { font-size: var(--fs-xs); }
   .lcard-top .lcard-kind { display: none; }
   .lcard-top { justify-content: flex-end; }
 }
+
+/* Small ad tiles: brand sidebar (below the "Can't find it?" card) and category filter rail (below the filters).
+   They hide themselves when there is no ad. */
+.brand-aside-ad, .dlw-rail-ad { height: 13rem; margin-top: var(--counter-space-4); overflow: hidden; border-radius: var(--r-lg); }
+.brand-aside-ad:empty, .dlw-rail-ad:empty { display: none; }
+.dlw-rail-ad > * { height: 100%; margin: 0; }
+@media (max-width: 1100px) { .dlw-rail-ad { display: none; } }
+.dlw-mobile-ad { display: none; }
+@media (max-width: 1100px) { .dlw-mobile-ad { display: block; } .dlw-mobile-ad > * { height: 100%; margin: 0; } }

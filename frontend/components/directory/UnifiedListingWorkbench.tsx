@@ -121,10 +121,13 @@ export default function UnifiedListingWorkbench({
   query,
   initialFilters,
   fixedCategory,
+  railAd,
 }: {
   query: string;
   initialFilters: ListingFilterState;
   fixedCategory?: string;
+  /** Optional small ad shown under the filter panel (desktop only). */
+  railAd?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -287,6 +290,7 @@ export default function UnifiedListingWorkbench({
         <button type="button" className="flt-sheet-close" onClick={() => setFiltersOpen(false)} aria-label="Close filters"><svg aria-hidden viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
         <Filters hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
       </aside>
+      {railAd && <div className="dlw-rail-ad">{railAd}</div>}
     </div>
   </div>;
 }

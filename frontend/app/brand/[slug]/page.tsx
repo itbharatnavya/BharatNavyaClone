@@ -339,7 +339,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
               </span>
             </Link>
 
-            <ApiAdvertisingSlot compact placement={["brand_top", "category_top"]} kind="native" context="Sponsored near brand results" summary="One clearly labelled placement, separate from this brand's organic listings and sort order." action="View promoted record" />
+            <div className="brand-aside-ad brand-infeed-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement={["brand_top", "category_top"]} kind="native" action="View promotion" context="Sponsored near brand results" summary="A clearly labelled placement, separate from this brand's organic listings." /></div>
             <div className="brand-layout">
               <div className="brand-main">
                 {view === "list" ? (
@@ -369,6 +369,9 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
 
               <aside className="brand-aside">
                 <BrandRfqCard />
+                <div className="brand-aside-ad">
+                  <ApiAdvertisingSlot imageOnly showFallback={false} placement={["brand_top", "category_top"]} kind="native" action="View promotion" context="Sponsored near brand results" summary="A clearly labelled placement, separate from this brand's organic listings." />
+                </div>
               </aside>
             </div>
           </>
@@ -495,7 +498,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
         .brand-grid {
           display: grid;
           gap: 20px;
-          grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
         }
         .brand-list {
           display: flex;
