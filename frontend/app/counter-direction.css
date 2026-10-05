@@ -20,7 +20,7 @@
   --counter-chalk: #c9d9ef;
   --counter-line: #b9cce6;
   --counter-line-strong: color-mix(in srgb, var(--counter-ink) 58%, var(--counter-line));
-  --counter-indigo: #1b3fa0;
+  --counter-indigo: #12307e;
   --counter-indigo-soft: #dbe4fb;
   --counter-green: #2556c8; /* Directory blue */
   --counter-green-soft: #dbe4fb;
@@ -36,7 +36,7 @@
   --counter-on-highlight: #12141b;
   --counter-sky: #9db8ff; /* accent text on blue surfaces */
   --counter-focus: #3b6cf5; /* focus rings, stars, chart lines */
-  --counter-indigo-hover: #12307e;
+  --counter-indigo-hover: #1b3fa0;
   --counter-saffron-soft: #dbe4fb;
   --counter-ink: #12141b;
   --counter-muted: #565c69;
