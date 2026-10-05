@@ -5707,3 +5707,5 @@ small { font-size: var(--fs-xs); }
   .trk[data-live] .trk-step { min-height: 52vh; padding: 0; }
   .trk[data-live] .trk-notes li { padding: 0.4rem 0.6rem; font-size: var(--fs-xs); }
 }
+/* In-feed ad between ledger rows (rows themselves share borders, so the ad needs its own even space). */
+:is(.recruitment-results-list, .directory-listing-ledger) > .dlw-infeed-ad { margin-block: var(--counter-space-4); }
