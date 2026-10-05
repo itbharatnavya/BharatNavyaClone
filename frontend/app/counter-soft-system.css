@@ -5803,3 +5803,7 @@ small { font-size: var(--fs-xs); }
   .directory-listing-workbench > .directory-listing-filter-rail:not(:has(.dlw-rail-ad)) { display: flex; flex-direction: column; overflow: hidden; }
   .directory-listing-filter-rail > .directory-listing-filter-panel { min-height: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--counter-line-strong) transparent; }
 }
+
+/* Recruitment filters: one container. The outer card scrolls; the inner panel adds no border of its own (it was clipped at the bottom). */
+.recruitment-results-filters:not(#_) { overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--counter-line-strong) transparent; }
+.recruitment-results-filters .jf-panel:not(#_) { border: 0; box-shadow: none; background: transparent; border-radius: 0; }
