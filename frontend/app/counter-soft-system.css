@@ -5847,3 +5847,8 @@ small { font-size: var(--fs-xs); }
 .counter-auth-page .counter-auth-tabs:not(#_) { display: flex; gap: 0.25rem !important; padding: 0.25rem; border-radius: var(--r-pill) !important; }
 .counter-auth-page .counter-auth-tabs > button:not(#_) { border: 0 !important; border-right: 0 !important; border-radius: var(--r-pill) !important; background: transparent; }
 .counter-auth-page .counter-auth-tabs > button[aria-pressed="true"]:not(#_) { background: var(--counter-indigo) !important; color: white !important; }
+
+/* One rhythm between page sections everywhere (Home, Directory, Recruitment scenes): the shared section gap, no more, no less. */
+:is(.hs-sec, .ps-sec):not(#_) { padding-block: calc(var(--counter-section-gap) / 2); }
+:is(.hs-sec, .ps-sec):first-child:not(#_) { padding-top: 0; }
+:is(.hs-sec, .ps-sec):last-child:not(#_) { padding-bottom: 0; }
