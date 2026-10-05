@@ -3,7 +3,8 @@
 // Recruitment, candidate side: "Never wonder where your application is." Five stages
 // run down the left (what you see, what the employer sees); a phone on the right
 // stays in view and its notifications arrive as each stage scrolls past. On small
-// screens the phone is dropped and each stage shows its notification inline.
+// screens the phone stays pinned and its screen carries the active stage's text while the
+// (hidden) stage list only provides the scroll distance; without motion each stage is inline.
 // The employer and role are the newest live job. Styles: .trk-*.
 
 import { useEffect, useRef, useState } from "react";
@@ -31,12 +32,16 @@ export default function TrackerScene() {
     const notes = q(".trk-notes li");
     const phone = q(".trk-phone")[0];
     const label = q(".trk-stage")[0];
+    const youText = q(".trk-detail-you")[0];
+    const themText = q(".trk-detail-them")[0];
     section.dataset.live = "true";
     const set = (index: number) => {
       steps.forEach((step, i) => step.classList.toggle("is-active", i === index));
       notes.forEach((note, i) => note.classList.toggle("is-in", i <= index));
       phone.style.setProperty("--p", String((index + 1) / STAGES.length));
       label.textContent = STAGES[index].title;
+      youText.textContent = STAGES[index].you;
+      themText.textContent = STAGES[index].them;
     };
     set(0);
     // The active stage is the last one whose top has passed 45% of the viewport. Read from
@@ -75,6 +80,7 @@ export default function TrackerScene() {
         <p className="trk-job"><strong>{title}</strong><small>{company}</small></p>
         <div className="trk-progress"><i /></div>
         <span className="trk-stage">Applied</span>
+        <div className="trk-detail"><p><b>You see</b><span className="trk-detail-you">{STAGES[0].you}</span></p><p><b>Employer sees</b><span className="trk-detail-them">{STAGES[0].them}</span></p></div>
         <ul className="trk-notes">{STAGES.map((stage, i) => <li key={stage.title} className="is-in"><span>{i + 1}</span>{stage.note(company)}</li>)}</ul>
       </div></div>
     </div>

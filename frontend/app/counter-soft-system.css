@@ -5691,3 +5691,19 @@ small { font-size: var(--fs-xs); }
 .international-phone.is-compact .international-phone-row { grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0.5rem; }
 .international-phone-country-trigger { gap: 0.2rem; padding: 0.65rem 0.5rem 0.65rem 0.65rem; font-size: var(--fs-sm); font-weight: 600; }
 .international-phone-country-trigger svg { width: 0.65rem; }
+
+/* Application tracker on phones and tablets: the phone stays pinned and its screen tells the story as you scroll.
+   The stage list stays in the layout (invisible) purely as scroll distance. Without motion, the inline list is used. */
+.trk-detail { display: none; }
+@media (max-width: 1000px) {
+  .trk[data-live] .trk-board { padding-top: 0.5rem; }
+  .trk[data-live] .trk-phone { display: block; order: -1; position: sticky; top: 6rem; z-index: 2; width: min(100%, 19rem); margin-inline: auto; }
+  .trk[data-live] .trk-screen { min-height: 0; gap: 0.55rem; }
+  .trk[data-live] .trk-detail { display: grid; gap: 0.6rem; padding: 0.75rem; border-radius: var(--r-md); background: var(--counter-indigo-soft); }
+  .trk[data-live] .trk-detail p { margin: 0; display: grid; gap: 0.1rem; font-size: var(--fs-sm); line-height: 1.4; color: var(--counter-ink); }
+  .trk[data-live] .trk-detail b { color: var(--counter-indigo); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+  .trk[data-live] .trk-steps { visibility: hidden; margin-top: -2rem; }
+  .trk[data-live] .trk-steps::before { display: none; }
+  .trk[data-live] .trk-step { min-height: 52vh; padding: 0; }
+  .trk[data-live] .trk-notes li { padding: 0.4rem 0.6rem; font-size: var(--fs-xs); }
+}
