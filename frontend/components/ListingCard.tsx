@@ -118,25 +118,27 @@ function SaveToggle({ listing }: { listing: Listing }) {
   );
 }
 
-function Identity({ listing }: { listing: Listing }) {
+function SellerLine({ listing }: { listing: Listing }) {
   const verified = listing.isVerifiedSeller || !!listing.seller?.isVerified;
+  return (
+    <span className="lcard-seller">
+      <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
+      <span>{sellerName(listing)}</span>
+      {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
+    </span>
+  );
+}
+
+function PlaceLine({ listing }: { listing: Listing }) {
   const rating = listing.seller?.rating ?? 0;
   const city = sellerCity(listing);
+  if (!city && !(rating > 0)) return null;
   return (
-    <div className="lcard-identity">
-      <span className="lcard-seller">
-        <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
-        <span>{sellerName(listing)}</span>
-        {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
-      </span>
-      {(city || rating > 0) && (
-        <span className="lcard-place">
-          {city}
-          {city && rating > 0 && <i aria-hidden>·</i>}
-          {rating > 0 && <b>{rating.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg></b>}
-        </span>
-      )}
-    </div>
+    <span className="lcard-place">
+      {city}
+      {city && rating > 0 && <i aria-hidden>·</i>}
+      {rating > 0 && <b>{rating.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg></b>}
+    </span>
   );
 }
 
@@ -165,7 +167,7 @@ export default function ListingCard({ listing, href, onContact, className = "", 
 
       <div className="lcard-body">
         <div className="lcard-top">
-          <span className="lcard-kind">{isService ? "Service" : "Product"}</span>
+          {hideSeller ? <span className="lcard-kind">{isService ? "Service" : "Product"}</span> : <SellerLine listing={listing} />}
           <div className="lcard-actions">
             {onContact
               ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
@@ -176,8 +178,12 @@ export default function ListingCard({ listing, href, onContact, className = "", 
           </div>
         </div>
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        {!hideSeller && <Identity listing={listing} />}
-        {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
+        {(!hideSeller || specs.length > 0) && (
+          <div className="lcard-meta">
+            {!hideSeller && <PlaceLine listing={listing} />}
+            {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
+          </div>
+        )}
       </div>
     </article>
   );

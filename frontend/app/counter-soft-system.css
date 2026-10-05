@@ -5662,3 +5662,19 @@ small { font-size: var(--fs-xs); }
 @media (max-width: 1100px) { .dlw-rail-ad { display: none; } }
 .dlw-mobile-ad { display: none; }
 @media (max-width: 1100px) { .dlw-mobile-ad { display: block; } .dlw-mobile-ad > * { height: 100%; margin: 0; } }
+
+/* Listing card: seller sits in the top row beside the actions; place + rating and the spec chips share one meta line. */
+.lcard-top .lcard-seller { flex: 1 1 auto; min-width: 0; }
+.lcard-top .lcard-kind { flex: 1 1 auto; }
+.lcard-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.35rem 0.6rem; min-width: 0; }
+.lcard-meta .lcard-place { min-width: 0; white-space: nowrap; }
+.lcard-meta .lcard-specs { margin-left: auto; justify-content: flex-end; }
+@container lcard (max-width: 19rem) {
+  .lcard-top .lcard-kind { display: block; }
+  .lcard-top { justify-content: space-between; }
+  .lcard-meta .lcard-specs { margin-left: 0; justify-content: flex-start; }
+}
+@container lcard (max-width: 15rem) {
+  .lcard-top .lcard-info { display: none; }
+}
+.bn-header .bn-wordmark > .bn-mark { display: block !important; }
