@@ -149,10 +149,10 @@ export default function ListingCard({ listing, href, onContact, className = "", 
   const product = listing.product;
   const service = listing.service;
   const flag = flagOf(listing);
-  const specs = buildSpecs(listing).slice(0, 2);
+  const facts = buildSpecs(listing).slice(0, 2);
 
   return (
-    <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", hideSeller ? "lcard--noseller" : "", className].filter(Boolean).join(" ")}>
+    <article className={["lcard", layout === "row" ? "lcard--row" : "lcard--grid", className].filter(Boolean).join(" ")}>
       <Link href={detailHref} className="lcard-media" aria-label={`View ${listing.title}`}>
         {image && !broken ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -165,24 +165,17 @@ export default function ListingCard({ listing, href, onContact, className = "", 
       <SaveToggle listing={listing} />
 
       <div className="lcard-body">
-        <div className="lcard-top">
-          {!hideSeller && <SellerLine listing={listing} />}
-          <div className="lcard-actions">
-            {onContact
-              ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
-              : <Link href={detailHref} className="lcard-cta">Contact</Link>}
-            <Link href={detailHref} className="lcard-info" aria-label="View details" title="View details">
-              <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
-            </Link>
-          </div>
-        </div>
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        {(!hideSeller || specs.length > 0) && (
-          <div className="lcard-meta">
-            {!hideSeller && <PlaceLine listing={listing} />}
-            {specs.length > 0 && <ul className="lcard-specs">{specs.map((spec, index) => <li key={index}>{spec.value}</li>)}</ul>}
-          </div>
-        )}
+        {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
+        {!hideSeller && <div className="lcard-by"><SellerLine listing={listing} /><PlaceLine listing={listing} /></div>}
+        <div className="lcard-actions">
+          {onContact
+            ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
+            : <Link href={detailHref} className="lcard-cta">Contact</Link>}
+          <Link href={detailHref} className="lcard-info" aria-label="View details" title="View details">
+            <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
+          </Link>
+        </div>
       </div>
     </article>
   );

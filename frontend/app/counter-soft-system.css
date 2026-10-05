@@ -2599,8 +2599,6 @@ main :is(h1, h2, h3, h4),
   background: color-mix(in srgb, var(--counter-ink) 91%, transparent);
 }
 
-@media (max-width: 640px) {
-  }
 
 /* Trust vocabulary is a raised, softly tinted group rather than three rows
    disappearing into the page background. */
@@ -5342,11 +5340,6 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
 @media (hover: none) { .rfq-tab-label { display: none; } }
 @media (prefers-reduced-motion: reduce) { .rfq-tab, .rfq-tab-label { transition: none; } }
 
-/* Listing card: Contact and info sit in the top row beside the kind label instead of a footer row. */
-.lcard-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-.lcard-top .lcard-actions { margin-left: auto; }
-.lcard-top .lcard-cta { min-height: 2.1rem; padding: 0 0.9rem; font-size: var(--fs-xs); }
-.lcard-top .lcard-info { width: 2.1rem; height: 2.1rem; }
 
 /* BN mark animation. The mark is always drawn from four colour layers (public/brand/bn-*.png) that stack back to exactly the
    original logo; the plain PNG only reserves the space (it is invisible). Every 5s the swoosh layers wipe themselves in again,
@@ -5422,16 +5415,8 @@ svg.wy.is-map { width: auto; height: 17rem; max-width: 100%; }
   .bn-rhero > .bn-rhero-grid > .bn-rhero-art { position: absolute; top: 50%; right: 6%; width: min(24rem, 26%); transform: translateY(-50%); pointer-events: none; }
 }
 
-/* Listing card top row on phones: label shrinks, actions stay their own size and never cover it. */
-.lcard-top .lcard-kind { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lcard-top .lcard-actions { width: auto !important; flex: 0 0 auto; margin-left: auto; }
-.lcard-top .lcard-cta { width: auto; flex: 0 0 auto; }
 @media (max-width: 520px) {
-  .lcard-top { gap: 0.35rem; }
-  .lcard-top .lcard-cta { min-height: 2rem; padding: 0 0.75rem; }
-  .lcard-top .lcard-info { width: 2rem; height: 2rem; }
   .ps-product-grid .lcard-kind, .bn-product-grid .lcard-kind { display: none; }
-  .ps-product-grid .lcard-top, .bn-product-grid .lcard-top { justify-content: flex-end; }
 }
 
 /* Phones and tablets: the filter rail is only a bottom sheet opened by the Filters button. A selected listing
@@ -5647,12 +5632,7 @@ small { font-size: var(--fs-xs); }
 .sl-quick-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .sl-quick-chips .chip { cursor: pointer; }
 
-/* Listing card top row follows the card's own width (not the screen's): when the card is narrow the kind label goes, so it can never sit under the Contact button. */
 .lcard { container-type: inline-size; container-name: lcard; }
-@container lcard (max-width: 19rem) {
-  .lcard-top .lcard-kind { display: none; }
-  .lcard-top { justify-content: flex-end; }
-}
 
 /* Small ad tiles: brand sidebar (below the "Can't find it?" card) and category filter rail (below the filters).
    They hide themselves when there is no ad. */
@@ -5663,20 +5643,6 @@ small { font-size: var(--fs-xs); }
 .dlw-mobile-ad { display: none; }
 @media (max-width: 1100px) { .dlw-mobile-ad { display: block; } .dlw-mobile-ad > * { height: 100%; margin: 0; } }
 
-/* Listing card: seller sits in the top row beside the actions; place + rating and the spec chips share one meta line. */
-.lcard-top .lcard-seller { flex: 1 1 auto; min-width: 0; }
-.lcard-top .lcard-kind { flex: 1 1 auto; }
-.lcard-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.35rem 0.6rem; min-width: 0; }
-.lcard-meta .lcard-place { min-width: 0; white-space: nowrap; }
-.lcard-meta .lcard-specs { margin-left: auto; justify-content: flex-end; }
-@container lcard (max-width: 19rem) {
-  .lcard-top .lcard-kind { display: block; }
-  .lcard-top { justify-content: space-between; }
-  .lcard-meta .lcard-specs { margin-left: 0; justify-content: flex-start; }
-}
-@container lcard (max-width: 15rem) {
-  .lcard-top .lcard-info { display: none; }
-}
 .bn-header .bn-wordmark > .bn-mark { display: block !important; }
 
 /* In-feed ads: on phones the sponsored slot sits between listings; the bottom-of-page copy is hidden there. */
@@ -5818,32 +5784,39 @@ small { font-size: var(--fs-xs); }
 @media (min-width: 981px) { .cp-aside .bn-side-ad, .ld-aside .bn-side-ad { display: block; } .bn-bottom-ad.is-980 { display: none; } }
 @media (max-width: 850px) { .bn-side-stack { position: static; } }
 
-/* Narrow cards (many-up grids): no room for the seller beside Contact, so the card body becomes a grid:
-   seller, title and place span the width; the first spec pill sits bottom-left on the same row as Contact + info. */
-@container lcard (max-width: 18rem) {
-  .lcard-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: 0.45rem 0.5rem; }
-  .lcard-top, .lcard-meta { display: contents; }
-  .lcard-top .lcard-seller, .lcard-top .lcard-kind, .lcard-body > .lcard-title, .lcard-meta .lcard-place { grid-column: 1 / -1; }
-  .lcard-meta .lcard-specs { grid-column: 1; margin: 0; min-width: 0; flex-wrap: nowrap; overflow: hidden; justify-content: flex-start; }
-  .lcard-meta .lcard-specs li:nth-child(n+2) { display: none; }
-  .lcard-meta .lcard-specs li { overflow: hidden; text-overflow: ellipsis; }
-  .lcard-top .lcard-seller, .lcard-top .lcard-kind { order: 0; }
-  .lcard-body > .lcard-title { order: 1; }
-  .lcard-meta .lcard-place { order: 2; }
-  .lcard-meta .lcard-specs { order: 3; }
-  .lcard-top .lcard-actions { order: 4; grid-column: 2; margin: 0; padding: 0; align-self: center; }
-  .lcard-top .lcard-info { display: grid; }
+
+
+/* Listing card, one hierarchy at every width: title, then key facts, then who sells it, then Contact. */
+.lcard-body { gap: 0.7rem; }
+.lcard-facts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 0.6rem; margin: 0; padding: 0.55rem 0.75rem; border-radius: var(--r-md); background: color-mix(in srgb, var(--counter-indigo) 6%, white); }
+.lcard-facts > div { min-width: 0; display: grid; gap: 0.1rem; }
+.lcard-facts dt { color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lcard-facts dd { margin: 0; color: var(--counter-ink); font-size: var(--fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lcard-by { display: grid; gap: 0.2rem; min-width: 0; padding-top: 0.7rem; border-top: 1px solid var(--counter-line); }
+.lcard-by .lcard-place { padding-left: 2.15rem; margin-top: -0.1rem; }
+.lcard-body > .lcard-actions { margin-top: auto; width: 100%; gap: 0.5rem; }
+.lcard-body > .lcard-actions .lcard-cta { flex: 1 1 auto; justify-content: center; min-height: 2.5rem; font-size: var(--fs-sm); }
+.lcard-body > .lcard-actions .lcard-info { width: 2.5rem; height: 2.5rem; flex: 0 0 auto; }
+/* Row layout (list view): details on the left, Contact column on the right. */
+.lcard--row .lcard-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--counter-space-5); }
+.lcard--row .lcard-body > :not(.lcard-actions) { grid-column: 1; }
+.lcard--row .lcard-body > .lcard-actions { grid-column: 2; grid-row: 1 / span 4; width: auto; margin: 0; }
+.lcard--row .lcard-body > .lcard-actions .lcard-cta { flex: 0 0 auto; padding: 0 1.4rem; }
+.lcard--row .lcard-facts { width: fit-content; max-width: 100%; }
+@media (max-width: 640px) {
+  .lcard--row .lcard-body { grid-template-columns: minmax(0, 1fr); }
+  .lcard--row .lcard-body > .lcard-actions { grid-column: 1; grid-row: auto; width: 100%; }
+  .lcard--row .lcard-body > .lcard-actions .lcard-cta { flex: 1 1 auto; }
 }
 
-/* Cards without a seller line (company pages): same bottom row, any width. */
-.lcard--noseller .lcard-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: 0.45rem 0.5rem; }
-.lcard--noseller .lcard-top, .lcard--noseller .lcard-meta { display: contents; }
-.lcard--noseller .lcard-top .lcard-seller, .lcard--noseller .lcard-top .lcard-kind, .lcard--noseller .lcard-body > .lcard-title, .lcard--noseller .lcard-meta .lcard-place { grid-column: 1 / -1; }
-.lcard--noseller .lcard-meta .lcard-specs { grid-column: 1; margin: 0; min-width: 0; flex-wrap: nowrap; overflow: hidden; justify-content: flex-start; }
-.lcard--noseller .lcard-meta .lcard-specs li { overflow: hidden; text-overflow: ellipsis; }
-.lcard--noseller .lcard-top .lcard-seller, .lcard--noseller .lcard-top .lcard-kind { order: 0; }
-.lcard--noseller .lcard-body > .lcard-title { order: 1; }
-.lcard--noseller .lcard-meta .lcard-place { order: 2; }
-.lcard--noseller .lcard-meta .lcard-specs { order: 3; }
-.lcard--noseller .lcard-top .lcard-actions { order: 4; grid-column: 2; margin: 0; padding: 0; align-self: center; }
-.lcard--noseller .lcard-top .lcard-info { display: grid; }
+/* All categories: the page sits on the canvas like every other page; the heading block is a white card, not bare text on white. */
+.bn-catalog:not(#_) { background: transparent; padding-top: var(--counter-space-4); }
+.bn-catalog-head:not(#_) { padding: var(--counter-space-5) var(--counter-space-6); margin-bottom: var(--counter-space-4); border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: white; }
+@media (max-width: 640px) { .bn-catalog-head:not(#_) { padding: var(--counter-space-4); } }
+
+/* Scrollbars inside rounded filter cards: slim, inset from the corners, never on top of the border. */
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div) { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--counter-ink) 22%, white) transparent; scrollbar-gutter: stable; }
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div)::-webkit-scrollbar { width: 10px; }
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div)::-webkit-scrollbar-track { margin-block: 1rem; background: transparent; }
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div)::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--counter-ink) 22%, white); background-clip: padding-box; }
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div)::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--counter-ink) 38%, white); background-clip: padding-box; }
