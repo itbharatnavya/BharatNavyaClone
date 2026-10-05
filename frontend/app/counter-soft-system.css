@@ -5739,3 +5739,5 @@ small { font-size: var(--fs-xs); }
 .rec-rail-ad > * { height: 100%; margin: 0; }
 @media (min-width: 851px) { .bn-ad-below-rail.is-rec { display: none; } }
 @media (min-width: 851px) and (max-width: 1100px) { .bn-ad-below-rail:not(.is-rec) { display: block; } }
+/* Role rows carry a 12px bottom margin of their own; trim the ad's top so space above equals space below. */
+.recruitment-results-list > .dlw-infeed-ad { margin-top: 0.25rem; }
