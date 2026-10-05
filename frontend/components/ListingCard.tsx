@@ -146,7 +146,6 @@ export default function ListingCard({ listing, href, onContact, className = "", 
   const [broken, setBroken] = React.useState(false);
   const detailHref = href || `/listing/${listing.id}`;
   const image = listing.media?.find((m) => m.type !== "video")?.url || listing.media?.[0]?.url;
-  const isService = listing.type === "service";
   const product = listing.product;
   const service = listing.service;
   const flag = flagOf(listing);
@@ -167,7 +166,7 @@ export default function ListingCard({ listing, href, onContact, className = "", 
 
       <div className="lcard-body">
         <div className="lcard-top">
-          {hideSeller ? <span className="lcard-kind">{isService ? "Service" : "Product"}</span> : <SellerLine listing={listing} />}
+          {!hideSeller && <SellerLine listing={listing} />}
           <div className="lcard-actions">
             {onContact
               ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>

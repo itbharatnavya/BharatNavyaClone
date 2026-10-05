@@ -5807,3 +5807,23 @@ small { font-size: var(--fs-xs); }
 /* Recruitment filters: one container. The outer card scrolls; the inner panel adds no border of its own (it was clipped at the bottom). */
 .recruitment-results-filters:not(#_) { overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--counter-line-strong) transparent; }
 .recruitment-results-filters .jf-panel:not(#_) { border: 0; box-shadow: none; background: transparent; border-radius: 0; }
+
+/* Detail pages: a small ad tile under the floating side card (stays with it); the full-width ad only shows when the layout is one column. */
+.bn-side-ad { display: none; height: 13rem; margin-top: var(--counter-space-4); overflow: hidden; border-radius: var(--r-lg); }
+.bn-side-ad:empty { display: none !important; }
+.bn-side-ad > * { height: 100%; margin: 0; }
+.bn-side-stack { position: sticky; top: calc(var(--bn-header-height) + 1rem); align-self: start; min-width: 0; }
+.bn-side-stack > .recruitment-apply-panel { position: static; }
+@media (min-width: 851px) { .bn-side-stack .bn-side-ad { display: block; } .bn-bottom-ad.is-850 { display: none; } }
+@media (min-width: 981px) { .cp-aside .bn-side-ad, .ld-aside .bn-side-ad { display: block; } .bn-bottom-ad.is-980 { display: none; } }
+@media (max-width: 850px) { .bn-side-stack { position: static; } }
+
+/* Narrow cards (many-up grids): there is no room for the seller beside Contact, so the actions drop to the bottom right. */
+@container lcard (max-width: 18rem) {
+  .lcard-top { display: contents; }
+  .lcard-top .lcard-seller, .lcard-top .lcard-kind { order: 0; flex: 0 0 auto; }
+  .lcard-body > .lcard-title { order: 1; }
+  .lcard-body > .lcard-meta { order: 2; }
+  .lcard-top .lcard-actions { order: 3; align-self: flex-end; margin-top: auto; padding-top: 0.25rem; }
+  .lcard-top .lcard-info { display: grid; }
+}

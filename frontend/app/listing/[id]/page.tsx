@@ -551,11 +551,12 @@ export default function ListingDetailPage() {
           {/* STICKY SELLER CARD */}
           <aside className="ld-aside" id="seller-contact">
             <SellerContactCard listing={listing} seller={contact} onContactUnlocked={refreshContact} />
+            <div className="bn-side-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement={["listing_detail", "category_top"]} kind="native" context="Sponsored" summary="" action="View promotion" /></div>
           </aside>
         </div>
         <a className="ld-mobile-cta" href="#seller-contact">Contact seller</a>
 
-        <ApiAdvertisingSlot compact placement={["listing_detail", "category_top"]} kind="native" context="Sponsored near listing details" summary="A related promoted service or product, kept separate from this listing’s seller evidence and terms." action="View promoted record" />
+        <div className="bn-bottom-ad is-980"><ApiAdvertisingSlot compact placement={["listing_detail", "category_top"]} kind="native" context="Sponsored near listing details" summary="A related promoted service or product, kept separate from this listing’s seller evidence and terms." action="View promoted record" /></div>
 
         {/* OTHER SELLERS OFFERING THIS PRODUCT (multi-vendor) — hides itself when none */}
         {listing.type === "product" && <OtherSellers offers={offers} offerCount={offers.length} minPrice={minPrice} />}
