@@ -5775,3 +5775,11 @@ small { font-size: var(--fs-xs); }
   .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-chevron { right: 1rem; }
   .recruitment-core .rsb-wrap .rsb:not(.rsb-compact) .rsb-submit { width: 100%; justify-content: center; }
 }
+
+/* Sign-in and register on phones and tablets: the blue panel is an inset rounded card under the header, like the other heroes. */
+@media (max-width: 900px) {
+  .counter-auth-page:not(#_) { padding: var(--counter-space-4) var(--counter-page-gutter, 1rem) 0; gap: var(--counter-space-4); border-top: 0; background: #dce9fb; overflow: visible; }
+  .counter-auth-page .counter-auth-aside:not(#_) { border-radius: var(--r-lg); min-height: 13rem; padding: 1.5rem !important; border: 0 !important; justify-content: flex-start !important; }
+  .counter-auth-page .counter-auth-aside::before { top: 1.25rem; left: 1.5rem; }
+  .counter-auth-page .counter-auth-form-zone:not(#_) { padding: 0 0 var(--counter-space-5) !important; background: transparent; }
+}
