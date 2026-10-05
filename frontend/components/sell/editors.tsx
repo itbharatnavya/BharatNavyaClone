@@ -39,19 +39,37 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="card card-flat card-pad" style={{ marginBottom: 16 }}>
-      <div style={{ marginBottom: 16 }}>
-        <h3 style={{ fontSize: "var(--fs-sm)", fontWeight: 600, color: "var(--ink)" }}>
-          {title}
-        </h3>
-        {desc && (
-          <p style={{ fontSize: "var(--fs-xs)", color: "var(--muted)", marginTop: 4 }}>
-            {desc}
-          </p>
-        )}
+    <section className="sl-card">
+      <div className="sl-card-head">
+        <h3>{title}</h3>
+        {desc && <p>{desc}</p>}
       </div>
       {children}
     </section>
+  );
+}
+
+// Optional extras tucked behind one tap so the required path stays short.
+export function MoreOptions({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="sl-more">
+      <summary>
+        <span>
+          <strong>{title}</strong>
+          {hint && <small>{hint}</small>}
+        </span>
+        <svg aria-hidden viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+      </summary>
+      <div className="sl-more-body">{children}</div>
+    </details>
   );
 }
 

@@ -182,7 +182,11 @@ export default function ListingVerificationTab() {
     try {
       if (approve) {
         await adminApproveListing(row.id);
-        addToast(`"${row.title}" approved — now live.`, "success");
+        if (row.sellerStatus && row.sellerStatus !== "approved") {
+          addToast(`"${row.title}" approved. It stays hidden from buyers until you approve the seller (${row.sellerCompany}) too.`, "info");
+        } else {
+          addToast(`"${row.title}" approved — now live.`, "success");
+        }
       } else {
         await adminRejectListing(row.id);
         addToast(`"${row.title}" rejected.`, "info");
@@ -332,7 +336,7 @@ export default function ListingVerificationTab() {
                     <button
                       type="button"
                       onClick={() => setReviewing(r)}
-                      className="flex items-center gap-2.5 text-left"
+                      className="flex w-full min-w-0 items-center gap-2.5 text-left"
                     >
                       <span
                         className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-lg bg-bg-subtle"
@@ -353,6 +357,11 @@ export default function ListingVerificationTab() {
                   </Td>
                   <Td className="max-w-[130px]">
                     <span className="line-clamp-1">{r.sellerCompany}</span>
+                    {r.sellerStatus && r.sellerStatus !== "approved" && (
+                      <a href={`/admin/users/${r.sellerId}?from=directory`} className="mt-0.5 block text-xs font-semibold text-error hover:underline">
+                        Seller {r.sellerStatus}
+                      </a>
+                    )}
                   </Td>
                   <Td className="whitespace-nowrap">
                     <Pill tone={verificationTone(r.verification?.status)}>

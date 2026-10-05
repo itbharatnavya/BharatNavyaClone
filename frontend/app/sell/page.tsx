@@ -7,9 +7,12 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useRequireAuth } from "@/lib/useRequireAuth";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
-import { getCategories, createListing } from "@/lib/api";
+import { getCategories, createListing, becomeSeller } from "@/lib/api";
+import { tokenize } from "@/lib/categorySuggest";
 import type {
   Category,
   ListingType,
@@ -23,11 +26,10 @@ import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import Button from "@/components/Button";
-import Stepper from "@/components/sell/Stepper";
 import CategoryPicker from "@/components/sell/CategoryPicker";
 import ProductFields from "@/components/sell/ProductFields";
 import ServiceFields from "@/components/sell/ServiceFields";
-import { Section, TagInput } from "@/components/sell/editors";
+import { Section, MoreOptions, TagInput } from "@/components/sell/editors";
 import MediaUpload from "@/components/sell/MediaUpload";
 import { STATE_OPTIONS, CityField } from "@/components/LocationPicker";
 import {
@@ -50,10 +52,26 @@ import {
 } from "@/components/sell/validation";
 
 const STEPS = [
-  { key: "type", label: "Type" },
+  { key: "type", label: "What" },
   { key: "category", label: "Category" },
   { key: "details", label: "Details" },
 ];
+
+const titleCase = (text: string) =>
+  text
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+
+function CheckMark({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
 
 // Location picker sentinels for the "Available in" <select>.
 const LOC_PAN = "__pan__";
@@ -79,6 +97,12 @@ export default function SellPage() {
   const [step, setStep] = useState(0);
   const [type, setType] = useState<ListingType | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
+  // What the seller typed on the first step, used to suggest a category and pre-fill the title.
+  const [hint, setHint] = useState("");
+  // Brand-new accounts have no business profile yet, so we ask for the business name here.
+  const [companyName, setCompanyName] = useState("");
+  const [created, setCreated] = useState<Listing | null>(null);
+  const { refresh } = useAuth();
 
   // ---- common fields ----
   const [title, setTitle] = useState("");
@@ -189,6 +213,31 @@ export default function SellPage() {
     setType(t);
     setCategory(null);
     setStep(1);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0 });
+  };
+
+  const goStep = (n: number) => {
+    setStep(n);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0 });
+  };
+
+  const needsBusiness = !user?.sellerProfile;
+
+  const resetForAnother = () => {
+    setCreated(null);
+    setType(null);
+    setCategory(null);
+    setHint("");
+    setTitle("");
+    setDescription("");
+    setKeywords([]);
+    setMedia([]);
+    setProduct(initialProduct);
+    setService(initialService);
+    setTriedCategory(false);
+    setTriedDetails(false);
+    setStep(0);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0 });
   };
 
   // ---- validation ----
@@ -196,6 +245,9 @@ export default function SellPage() {
   // messages clear the moment a field is corrected (once `triedDetails` is set).
   const buildDetailErrors = (): Errors =>
     mergeErrors(
+      needsBusiness && companyName.trim().length < 2
+        ? { companyName: "Add your business name (at least 2 letters)." }
+        : {},
       validateBasics({ title, description, keywords }),
       validateMedia(media),
       validateLocation({
@@ -232,12 +284,24 @@ export default function SellPage() {
     }
     setSubmitting(true);
     try {
+      if (needsBusiness) {
+        await becomeSeller({
+          companyName: companyName.trim(),
+          city: user?.city || undefined,
+          state: user?.state || undefined,
+        } as Parameters<typeof becomeSeller>[0]);
+        await refresh();
+      }
+      // No search words added? Use the meaningful words from the title.
+      const autoKeywords = keywords.length
+        ? keywords
+        : Array.from(new Set(tokenize(title))).filter((w) => w.length > 2).slice(0, 8);
       const body: Partial<Listing> = {
         type: type!,
         title: title.trim(),
         description: description.trim(),
         categoryId: category!.id,
-        keywords,
+        keywords: autoKeywords,
         media: media
           .filter((u) => u.trim())
           .map((url) => ({ type: "image" as const, url: url.trim() })),
@@ -287,16 +351,10 @@ export default function SellPage() {
         body.service = detail;
       }
 
-      const created = await createListing(body);
-      if (created.status === "active") {
-        addToast("Listing verified automatically — it's live now.", "success");
-      } else {
-        addToast(
-          "Listing submitted. It's being verified (AI first, then our team if needed) and will go live once approved.",
-          "info"
-        );
-      }
-      router.push(`/listing/${created.id}`);
+      const made = await createListing(body);
+      setCreated(made);
+      setSubmitting(false);
+      if (typeof window !== "undefined") window.scrollTo({ top: 0 });
     } catch (e) {
       addToast(e instanceof Error ? e.message : "Failed to publish listing.", "error");
       setSubmitting(false);
@@ -308,138 +366,158 @@ export default function SellPage() {
   // ---- gate render ----
   if (loading || !user) {
     return (
-      <div className="container-bs section-pad counter-workspace-page counter-sell-page">
-        <div className="skeleton" style={{ height: 32, width: 220, marginBottom: 16 }} />
-        <div className="skeleton" style={{ height: 200, width: "100%" }} />
+      <div className="sl-page">
+        <div className="skeleton" style={{ height: 32, width: 260, marginBottom: 16 }} />
+        <div className="skeleton" style={{ height: 220, width: "100%" }} />
+      </div>
+    );
+  }
+
+  const stepTitles = [
+    { h: "What would you like to list?", p: "It takes about 3 minutes. You can change anything later." },
+    { h: "Where does it belong?", p: "Pick the category buyers will look in." },
+    { h: type === "service" ? "Tell buyers about your service" : "Tell buyers about your product", p: "Add a photo and a few details. A name and a short description are all you need." },
+  ];
+
+  // ---- published: confirmation with next steps ----
+  if (created) {
+    const live = created.status === "active";
+    const shareText = `${created.title} on Bharat Navya`;
+    const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/listing/${created.id}` : `/listing/${created.id}`;
+    return (
+      <div className="sl-page">
+        <div className="sl-done">
+          <span className="sl-done-mark"><CheckMark size={30} /></span>
+          <h1>{live ? "Your listing is live" : "Your listing is submitted"}</h1>
+          <p>
+            {live
+              ? "Buyers can find it now. Enquiries will reach you in your dashboard."
+              : "We check every new business and listing before buyers see it, usually within a day. You will see it switch to live in your dashboard."}
+          </p>
+          <div className="sl-done-card">
+            {created.media?.[0]?.url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={created.media[0].url} alt="" />
+            ) : (
+              <span className="sl-done-initial">{created.title.charAt(0).toUpperCase()}</span>
+            )}
+            <span>
+              <strong>{created.title}</strong>
+              <small>{live ? "Live" : "Waiting for approval"}</small>
+            </span>
+          </div>
+          <div className="sl-done-actions">
+            <Link className="btn btn-primary" href={`/listing/${created.id}`}>View your listing</Link>
+            <button type="button" className="btn btn-secondary" onClick={resetForAnother}>Add another listing</button>
+          </div>
+          <div className="sl-done-next">
+            <h2>What to do next</h2>
+            <ul>
+              {live ? (
+                <li>
+                  <a href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`} target="_blank" rel="noopener noreferrer">Share it on WhatsApp</a>
+                  <span>Tell your regular customers it is here.</span>
+                </li>
+              ) : (
+                <li>
+                  <Link href="/dashboard?tab=listings">Watch its status</Link>
+                  <span>You will see it switch to live here once it is approved. Then you can share it.</span>
+                </li>
+              )}
+              <li>
+                <Link href="/dashboard?tab=profile">Complete your business profile</Link>
+                <span>A full profile and verified badge build trust with buyers.</span>
+              </li>
+              <li>
+                <Link href="/dashboard?tab=listings">See all your listings</Link>
+                <span>Edit, pause or add photos any time.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container-bs section-pad-sm counter-workspace-page counter-sell-page" style={{ maxWidth: 960 }}>
-      <header className="counter-workspace-intro">
-      <div style={{ marginBottom: 8 }}>
-        <span className="counter-workspace-label">Directory workspace</span>
-      </div>
-      <h1 style={{ fontSize: "var(--fs-2xl)", fontWeight: 700, letterSpacing: "-0.02em" }}>
-        Create a service or product listing
-      </h1>
-      <p style={{ color: "var(--muted)", marginTop: 6, marginBottom: 24 }}>
-        Show what your company offers, where it operates, and the evidence people
-        need before they make contact.
-      </p>
+    <div className="sl-page">
+      <header className="sl-head">
+        <span className="sl-eyebrow">List your business</span>
+        <h1>{stepTitles[step].h}</h1>
+        <p>{stepTitles[step].p}</p>
       </header>
 
-      <div className="counter-listing-stepper" style={{ marginBottom: 28 }}>
-        <Stepper
-          steps={STEPS}
-          current={step}
-          onStepClick={(i) => {
-            if (i === 0) setStep(0);
-            if (i === 1 && type) setStep(1);
-            if (i === 2 && canGoDetails) setStep(2);
-          }}
-        />
-      </div>
-
-      {/* ---------- Step 1: type ---------- */}
-      {step === 0 && (
-        <div className="counter-listing-type-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
-          {(
-            [
-              {
-                t: "service" as const,
-                icon: (
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 3 3 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z" />
-                  </svg>
-                ),
-                title: "Service",
-                desc: "Present capabilities, service areas, credentials and working terms.",
-              },
-              {
-                t: "product" as const,
-                icon: (
-                  <svg
-                    width="30"
-                    height="30"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5" />
-                    <path d="M12 13v8" />
-                  </svg>
-                ),
-                title: "Product",
-                desc: "Keep the existing goods flow for price, MOQ, specifications and photos.",
-              },
-            ]
-          ).map((opt) => {
-            const active = type === opt.t;
-            return (
+      <ol className="sl-steps" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
+        {STEPS.map((st, i) => {
+          const done = i < step;
+          const reachable = i <= step;
+          return (
+            <li key={st.key} className={`${i === step ? "is-active" : ""}${done ? " is-done" : ""}`}>
               <button
-                key={opt.t}
                 type="button"
-                onClick={() => chooseType(opt.t)}
-                className={`card counter-listing-type is-${opt.t} ${active ? "is-active" : ""}`}
-                style={{
-                  textAlign: "left",
-                  padding: 22,
-                  cursor: "pointer",
-                  borderColor: active ? "var(--brand)" : "var(--border)",
-                  outline: active ? "2px solid var(--brand)" : "none",
+                disabled={!reachable}
+                aria-current={i === step ? "step" : undefined}
+                onClick={() => {
+                  if (i === 0) goStep(0);
+                  if (i === 1 && type) goStep(1);
+                  if (i === 2 && canGoDetails) goStep(2);
                 }}
               >
-                <div style={{ color: "var(--brand)", lineHeight: 0 }}>{opt.icon}</div>
-                <div
-                  style={{
-                    fontSize: "var(--fs-lg)",
-                    fontWeight: 600,
-                    marginTop: 10,
-                    color: "var(--ink)",
-                  }}
-                >
-                  {opt.title}
-                </div>
-                <div style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 4 }}>
-                  {opt.desc}
-                </div>
+                <span>{done ? <CheckMark size={14} /> : i + 1}</span>
+                {st.label}
               </button>
-            );
-          })}
+            </li>
+          );
+        })}
+      </ol>
+
+      {/* ---------- Step 1: what ---------- */}
+      {step === 0 && (
+        <div className="sl-body sl-panel">
+          <div className="sl-field">
+            <label className="sl-label" htmlFor="sl-hint">What are you selling or offering?</label>
+            <input
+              id="sl-hint"
+              className="sl-input"
+              placeholder="e.g. Coconut water, 200 ml bottles"
+              value={hint}
+              onChange={(e) => setHint(e.target.value)}
+              maxLength={80}
+              autoComplete="off"
+            />
+            <p className="sl-note">A few words is fine. We use it to suggest the right category for you.</p>
+          </div>
+
+          <p className="sl-label">It is a…</p>
+          <div className="sl-choices">
+            <button type="button" className="sl-choice" onClick={() => chooseType("product")}>
+              <span className="sl-choice-icon" aria-hidden>
+                <svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5" /><path d="M12 13v8" /></svg>
+              </span>
+              <strong>Product</strong>
+              <span>Something you make or sell, like tea, cement, cloth or bottled water.</span>
+              <em>Choose product</em>
+            </button>
+            <button type="button" className="sl-choice" onClick={() => chooseType("service")}>
+              <span className="sl-choice-icon" aria-hidden>
+                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 3 3 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z" /></svg>
+              </span>
+              <strong>Service</strong>
+              <span>Work you do for others, like accounting, repairs, design or transport.</span>
+              <em>Choose service</em>
+            </button>
+          </div>
         </div>
       )}
 
       {/* ---------- Step 2: category ---------- */}
       {step === 1 && type && (
-        <div>
-          {catError && (
-            <p style={{ color: "var(--error)", marginBottom: 12 }}>{catError}</p>
-          )}
+        <div className="sl-body sl-panel">
+          {catError && <p className="sl-error">{catError}</p>}
           <CategoryPicker
             categories={categories}
             type={type}
+            hint={hint}
             value={category?.id}
             onSelect={(c) => {
               setCategory(c);
@@ -451,20 +529,17 @@ export default function SellPage() {
               {validateCategory(category?.id).category}
             </p>
           )}
-          <div
-            style={{ display: "flex", gap: 10, marginTop: 24, justifyContent: "space-between" }}
-          >
-            <Button variant="ghost" onClick={() => setStep(0)}>
-              ← Back
-            </Button>
+          <div className="sl-actions">
+            <Button variant="ghost" onClick={() => goStep(0)}>← Back</Button>
             <Button
-              variant="brand"
+              variant="primary"
               onClick={() => {
                 if (!category) {
                   setTriedCategory(true);
                   return;
                 }
-                setStep(2);
+                if (!title.trim() && hint.trim()) setTitle(titleCase(hint));
+                goStep(2);
               }}
             >
               Continue →
@@ -475,47 +550,73 @@ export default function SellPage() {
 
       {/* ---------- Step 3: details ---------- */}
       {step === 2 && type && (
-        <div>
-          <Section title="Basics">
-            <div style={{ display: "grid", gap: 16 }}>
+        <div className="sl-body">
+          {category && (
+            <p className="sl-pill">
+              <span>{type === "service" ? "Service" : "Product"}</span> in {category.name}
+              <button type="button" onClick={() => goStep(1)}>Change</button>
+            </p>
+          )}
+
+          {needsBusiness && (
+            <Section title="Your business" desc="Buyers see this name on your listing. You can add the rest of your profile later.">
               <Input
-                label="Title"
+                label="Business name"
+                placeholder="e.g. Nair Coconut Traders"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                error={detailErrors.companyName}
+                maxLength={80}
+              />
+            </Section>
+          )}
+
+          <Section
+            title="Photos"
+            desc="Start with a clear photo taken in daylight. Listings with a photo are approved faster and get far more enquiries."
+          >
+            <MediaUpload
+              value={media}
+              onChange={setMedia}
+              max={LIMITS.mediaMax}
+              error={detailErrors.media}
+            />
+          </Section>
+
+          <Section title={type === "service" ? "About your service" : "About your product"}>
+            <div className="sl-stack">
+              <Input
+                label={type === "service" ? "Name of your service" : "Product name"}
                 placeholder={
                   type === "product"
-                    ? "e.g. Stainless Steel 304 Sheet — 2mm"
-                    : "e.g. GST filing & bookkeeping for SMEs"
+                    ? "e.g. Tender Coconut Water, 200 ml bottle"
+                    : "e.g. GST filing and bookkeeping for small businesses"
                 }
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 maxLength={LIMITS.titleMax + 20}
                 error={detailErrors.title}
-                hint={
-                  !detailErrors.title
-                    ? `${title.trim().length}/${LIMITS.titleMax}`
-                    : undefined
-                }
+                hint={!detailErrors.title ? "Say what it is in plain words, with size or type." : undefined}
               />
               <Textarea
-                label="Description"
-                placeholder="Describe what you're offering, quality, terms…"
+                label="Describe it"
+                placeholder={
+                  type === "product"
+                    ? "What it is, how it is packed, how fast you can deliver, anything that makes it special."
+                    : "What you do, who it is for, how you work and how soon you can start."
+                }
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                style={{ minHeight: 130 }}
+                style={{ minHeight: 120 }}
                 maxLength={LIMITS.descMax + 100}
                 error={detailErrors.description}
                 hint={
                   !detailErrors.description
-                    ? `At least ${LIMITS.descMin} characters — ${description.trim().length} so far.`
+                    ? description.trim().length >= LIMITS.descMin
+                      ? "Looks good."
+                      : `A few sentences help buyers trust you (${Math.max(0, LIMITS.descMin - description.trim().length)} more characters to go).`
                     : undefined
                 }
-              />
-              <TagInput
-                label="Keywords"
-                hint="Help buyers find you. Press Enter to add each keyword."
-                error={detailErrors.keywords}
-                value={keywords}
-                onChange={setKeywords}
-                placeholder="e.g. wholesale, ss304, industrial"
               />
             </div>
           </Section>
@@ -536,62 +637,32 @@ export default function SellPage() {
             />
           )}
 
-          <Section
-            title="Photos"
-            desc="Upload clear photos from your phone or computer — listings with photos get far more responses."
-          >
-            <MediaUpload
-              value={media}
-              onChange={setMedia}
-              max={LIMITS.mediaMax}
-              error={detailErrors.media}
-            />
-          </Section>
-
-          <Section title="Available in" desc="Where buyers can find this listing.">
-            <div style={{ display: "grid", gap: 12 }}>
+          <Section title="Where can you supply?" desc="Buyers in these places will see your listing first.">
+            <div className="sl-stack">
               <Select
                 label="Available in"
-                hint="Serve all of India, a specific branch, or a set of cities."
                 value={locChoice}
                 onChange={(e) => onLocChoice(e.target.value)}
                 error={detailErrors.location}
                 options={[
-                  { value: LOC_PAN, label: "PAN India (all of India)" },
+                  { value: LOC_PAN, label: "All over India" },
                   ...sellerLocations.map((l) => ({
                     value: l.id,
-                    label: `${l.label} — ${l.city}${l.state ? ", " + l.state : ""}`,
+                    label: `${l.label}, ${l.city}${l.state ? ", " + l.state : ""}`,
                   })),
-                  { value: LOC_CITIES, label: "Add specific cities…" },
+                  { value: LOC_CITIES, label: "Only some cities…" },
                 ]}
               />
 
               {locChoice === LOC_CITIES && (
-                <div style={{ display: "grid", gap: 12 }}>
+                <div className="sl-stack">
                   {serviceCities.length > 0 && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    <div className="sl-chips">
                       {serviceCities.map((a, i) => (
-                        <span
-                          key={`${a.state}-${a.city}-${i}`}
-                          className="chip"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
-                        >
+                        <span key={`${a.state}-${a.city}-${i}`} className="chip">
                           {a.city}
                           {a.state ? `, ${a.state}` : ""}
-                          <button
-                            type="button"
-                            aria-label={`Remove ${a.city}`}
-                            onClick={() => removeServiceCity(i)}
-                            style={{
-                              display: "inline-flex",
-                              background: "none",
-                              border: "none",
-                              cursor: "pointer",
-                              color: "var(--muted)",
-                              padding: 0,
-                              lineHeight: 0,
-                            }}
-                          >
+                          <button type="button" aria-label={`Remove ${a.city}`} onClick={() => removeServiceCity(i)}>
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                               <path d="M18 6L6 18" />
                               <path d="M6 6l12 12" />
@@ -601,14 +672,7 @@ export default function SellPage() {
                       ))}
                     </div>
                   )}
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                      gap: 12,
-                      alignItems: "end",
-                    }}
-                  >
+                  <div className="sl-grid3 is-end">
                     <Select
                       label="State"
                       placeholder="Select state"
@@ -627,38 +691,39 @@ export default function SellPage() {
                       onChange={setScCity}
                       idPrefix="sc"
                     />
-                    <div>
-                      <Button variant="secondary" onClick={addServiceCity}>
-                        Add city
-                      </Button>
-                    </div>
+                    <Button variant="secondary" onClick={addServiceCity}>Add city</Button>
                   </div>
                 </div>
               )}
             </div>
           </Section>
 
+          <MoreOptions title="Help buyers find it (optional)" hint="Search words. We add some from your title if you skip this.">
+            <TagInput
+              label="Search words"
+              hint="Words buyers might type. Press Enter after each one."
+              error={detailErrors.keywords}
+              value={keywords}
+              onChange={setKeywords}
+              placeholder="e.g. tender coconut, packaged drink, healthy"
+            />
+          </MoreOptions>
+
           {triedDetails && Object.keys(detailErrors).length > 0 && (
-            <p
-              className="field-error"
-              style={{ marginTop: 16, textAlign: "right" }}
-            >
-              {Object.keys(detailErrors).length} field
-              {Object.keys(detailErrors).length > 1 ? "s need" : " needs"} attention
-              before you can publish.
+            <p className="sl-error" role="alert">
+              {Object.keys(detailErrors).length === 1
+                ? "One thing needs your attention before you can publish."
+                : `${Object.keys(detailErrors).length} things need your attention before you can publish.`}
             </p>
           )}
 
-          <div
-            style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "space-between" }}
-          >
-            <Button variant="ghost" onClick={() => setStep(1)}>
-              ← Back
-            </Button>
+          <div className="sl-actions">
+            <Button variant="ghost" onClick={() => goStep(1)}>← Back</Button>
             <Button variant="primary" onClick={submit} disabled={submitting}>
               {submitting ? "Publishing…" : "Publish listing"}
             </Button>
           </div>
+          <p className="sl-note sl-foot">You can edit or remove it any time from your dashboard.</p>
         </div>
       )}
     </div>
