@@ -5709,3 +5709,33 @@ small { font-size: var(--fs-xs); }
 }
 /* In-feed ad between ledger rows (rows themselves share borders, so the ad needs its own even space). */
 :is(.recruitment-results-list, .directory-listing-ledger) > .dlw-infeed-ad { margin-block: var(--counter-space-4); }
+
+/* Directory list view: roomier rows that use the width (bigger photo and title, seller + place, key facts on the right). */
+.directory-listing-ledger .directory-listing-row { min-height: 8.5rem; grid-template-columns: 7rem minmax(0, 1fr) auto 1rem; gap: var(--counter-space-4); padding: 0.85rem 1.1rem 0.85rem 0.85rem; border-radius: var(--r-lg); }
+.directory-listing-ledger .directory-listing-thumb { width: 7rem; height: 7rem; border-radius: var(--r-md); }
+.directory-listing-ledger .directory-listing-row-copy { gap: 0.3rem; }
+.directory-listing-ledger .directory-listing-row-copy > small { color: var(--counter-indigo); letter-spacing: 0.08em; }
+.directory-listing-ledger .directory-listing-row-copy > strong { font: 700 var(--fs-lg)/1.25 var(--font-anek-latin), sans-serif; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.directory-listing-ledger .directory-listing-row-copy > .dlr-seller { display: flex; align-items: center; gap: 0.4rem; color: var(--counter-ink); font-size: var(--fs-sm); font-weight: 600; }
+.directory-listing-ledger .directory-listing-row-copy > .dlr-place { color: var(--counter-muted); font-size: var(--fs-sm); }
+.dlr-tick { width: 1rem; height: 1rem; flex: 0 0 auto; padding: 0.12rem; border-radius: 50%; background: var(--counter-success); fill: none; stroke: white; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.dlr-aside { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; max-width: 14rem; }
+.dlr-aside i { padding: 0.25rem 0.75rem; border: 1px solid var(--counter-line); border-radius: var(--r-pill); color: var(--counter-muted); font-size: var(--fs-xs); font-style: normal; font-weight: 600; white-space: nowrap; }
+@media (max-width: 760px) {
+  .directory-listing-ledger .directory-listing-row { min-height: 0; grid-template-columns: 5rem minmax(0, 1fr) 1rem; gap: var(--counter-space-3); padding: 0.7rem; }
+  .directory-listing-ledger .directory-listing-thumb { width: 5rem; height: 5rem; }
+  .dlr-aside { display: none; }
+}
+
+/* Filter rail: filters take two thirds of the height, a small ad fills the bottom third. */
+@media (min-width: 1101px) {
+  .directory-listing-workbench > .directory-listing-filter-rail:has(.dlw-rail-ad) { height: calc(100vh - var(--bn-header-height) - var(--counter-space-6)); display: grid; grid-template-rows: minmax(0, 2fr) minmax(0, 1fr); gap: var(--counter-space-4); overflow: hidden; }
+  .directory-listing-filter-rail:has(.dlw-rail-ad) > .directory-listing-filter-panel { min-height: 0; overflow: auto; scrollbar-width: thin; }
+  .directory-listing-filter-rail > .dlw-rail-ad { height: auto; min-height: 0; margin-top: 0; }
+  .bn-ad-below-rail { display: none; }
+}
+.rec-rail-ad { min-height: 0; overflow: hidden; border-radius: var(--r-lg); }
+.rec-rail-ad:empty { display: none; }
+.rec-rail-ad > * { height: 100%; margin: 0; }
+@media (min-width: 851px) { .bn-ad-below-rail.is-rec { display: none; } }
+@media (min-width: 851px) and (max-width: 1100px) { .bn-ad-below-rail:not(.is-rec) { display: block; } }

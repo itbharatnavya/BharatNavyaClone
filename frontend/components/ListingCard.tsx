@@ -40,7 +40,7 @@ function sellerCity(listing: Listing): string | undefined {
 // Product: MOQ + up to 2 specifications. Service: experience + service area.
 // Shared by both layouts so a product/service reads identically whichever
 // view (row or grid) is showing it.
-function buildSpecs(listing: Listing): { label: string; value: string }[] {
+export function buildSpecs(listing: Listing): { label: string; value: string }[] {
   const isService = listing.type === "service";
   const product = listing.product;
   const service = listing.service;

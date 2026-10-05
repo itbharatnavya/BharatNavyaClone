@@ -126,11 +126,12 @@ function JobsBrowseInner() {
     <header className="recruitment-results-head"><div className="recruitment-core-shell"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Recruitment", href: "/recruitment" }, { label: "Browse roles" }]} /><h1>Roles with the context to decide.</h1><p>Compare transparent job facts alongside the company and workplace behind the role.</p><div ref={searchAnchorRef} className="recruitment-results-search" aria-hidden={docked || undefined}><RoleSearchBar query={query} onQueryChange={(value) => { setQuery(value); setRoleQuery(value); }} city={filters.city || ""} onCityChange={(city) => { setFilters((current) => ({ ...current, city: city || undefined })); setRoleCity(city); }} /></div></div></header>
     <div className="recruitment-core-shell counter-results-stack">
       <SearchContextSwitch destination="directory" query={query} city={filters.city} />
-      <div className="bn-ad-desktop-only"><ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" /></div>
+      <div className="bn-ad-desktop-only bn-ad-below-rail is-rec"><ApiAdvertisingSlot compact placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" /></div>
       <div className="recruitment-results-tools"><div className="recruitment-results-count"><strong aria-live="polite">{loading ? "Finding current roles…" : `${data?.total || 0} ${(data?.total || 0) === 1 ? "role" : "roles"}`}</strong><span>Real roles, ordered by current API results</span></div><button className="recruitment-filter-toggle" type="button" onClick={() => setFiltersOpen(true)}><FilterIcon /> Refine roles</button></div>
       <div className="recruitment-results-layout">
         <div className="recruitment-results-filter-rail">
           <aside className="recruitment-results-filters" aria-label="Filter roles">{filterPanel}</aside>
+          <div className="rec-rail-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement={["recruitment_search", "recruitment_home"]} kind="native" context="Sponsored" summary="" action="View opportunity" /></div>
         </div>
         <section aria-label="Role results"><div className="recruitment-results-list">
           {loading && Array.from({ length: 5 }, (_, index) => <div className="recruitment-skeleton" key={index} />)}

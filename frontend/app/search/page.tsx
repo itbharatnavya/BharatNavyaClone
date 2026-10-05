@@ -255,8 +255,8 @@ function DirectorySearchResults() {
 
     <div className="directory-shell directory-unified-results counter-results-stack">
       <SearchContextSwitch destination="recruitment" query={seed.query} city={seed.initialFilters.city || ""} />
-      <UnifiedListingWorkbench key={`results-${seed.query}-${seed.initialFilters.city || ""}`} query={seed.query} initialFilters={seed.initialFilters} infeedAd={<ApiAdvertisingSlot compact placement={["search_top", "category_top"]} kind="native" context="Sponsored in Directory results" summary="A relevant promoted listing, clearly separated from organic results and verification signals." action="View promoted record" />} />
-      <div className="bn-ad-desktop-only"><ApiAdvertisingSlot compact placement={["search_top", "category_top"]} kind="native" context="Sponsored in Directory results" summary="A relevant promoted listing, clearly separated from organic results and verification signals." action="View promoted record" /></div>
+      <UnifiedListingWorkbench key={`results-${seed.query}-${seed.initialFilters.city || ""}`} query={seed.query} initialFilters={seed.initialFilters} railAd={<ApiAdvertisingSlot imageOnly showFallback={false} placement={["search_top", "category_top"]} kind="native" context="Sponsored" summary="" action="View promotion" />} infeedAd={<ApiAdvertisingSlot compact placement={["search_top", "category_top"]} kind="native" context="Sponsored in Directory results" summary="A relevant promoted listing, clearly separated from organic results and verification signals." action="View promoted record" />} />
+      <div className="bn-ad-desktop-only bn-ad-below-rail"><ApiAdvertisingSlot compact placement={["search_top", "category_top"]} kind="native" context="Sponsored in Directory results" summary="A relevant promoted listing, clearly separated from organic results and verification signals." action="View promoted record" /></div>
     </div>
   </div>;
 }

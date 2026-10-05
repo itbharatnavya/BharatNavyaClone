@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import Filters, { type FilterOption, type ListingFilterState } from "@/components/Filters";
 import Pagination from "@/components/Pagination";
-import ListingCard from "@/components/ListingCard";
+import ListingCard, { buildSpecs } from "@/components/ListingCard";
 import { getListings, type ListingQuery } from "@/lib/api";
 import { flattenCategories, useCategories } from "@/lib/catalog";
 import type { Listing, ListingsResponse } from "@/lib/types";
@@ -281,7 +281,13 @@ export default function UnifiedListingWorkbench({
           return <React.Fragment key={listing.id}>{infeedAd && index === INFEED_AFTER ? <div className="dlw-infeed-ad">{infeedAd}</div> : null}<article className={`directory-listing-item${active ? " is-expanded" : ""}`}>
             <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={(event) => { setSelectedId(listing.id); scrollToExpanded(event.currentTarget.closest("article")); }} aria-pressed={active}>
               <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" loading="lazy" decoding="async" /> : listing.type.slice(0, 1).toUpperCase()}</span>
-              <span className="directory-listing-row-copy"><small>{listing.type}</small><strong>{listing.title}</strong><span>{sellerName(listing)}</span></span>
+              <span className="directory-listing-row-copy">
+                <small>{listing.type}</small>
+                <strong>{listing.title}</strong>
+                <span className="dlr-seller">{sellerName(listing)}{(listing.isVerifiedSeller || listing.seller?.isVerified) && <svg className="dlr-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}</span>
+                <span className="dlr-place">{[listing.seller?.city || listing.location?.city, (listing.seller?.rating ?? 0) > 0 ? `${(listing.seller?.rating ?? 0).toFixed(1)} rating` : ""].filter(Boolean).join(" · ")}</span>
+              </span>
+              <span className="dlr-aside">{buildSpecs(listing).slice(0, 2).map((spec, i) => <i key={i}>{spec.value}</i>)}</span>
               <Arrow />
             </button>
             {active && <div className="directory-listing-preview-inline"><ListingPreview listing={listing} onClose={() => setSelectedId(null)} /></div>}
