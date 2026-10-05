@@ -5749,3 +5749,12 @@ small { font-size: var(--fs-xs); }
 .navya-agent-dock:is(:hover, :focus-within) .navya-agent-tip { opacity: 1; transform: none; }
 @media (hover: none) { .navya-agent-tip { display: none; } }
 @media (prefers-reduced-motion: reduce) { .navya-agent-tip { transition: none; } }
+
+/* Recruitment "Refine roles" on phones and tablets: a bottom sheet like the Directory filters, not a full-height drawer. */
+@keyframes rf-sheet-up { from { transform: translateY(2rem); opacity: 0.7; } to { transform: none; opacity: 1; } }
+@media (max-width: 850px) {
+  .recruitment-filter-sheet.is-open > div { top: auto; bottom: 0; left: 0; right: 0; width: 100%; height: auto; max-height: min(60vh, 34rem); padding: 0 1rem 1rem; border-radius: var(--r-lg) var(--r-lg) 0 0; animation: rf-sheet-up 220ms cubic-bezier(0.32, 0.72, 0, 1); }
+  .recruitment-filter-sheet > div > header { position: sticky; top: 0; z-index: 2; margin: 0 -1rem 0.5rem; padding: 0.85rem 1rem; background: var(--counter-ivory); }
+  .recruitment-filter-sheet > div > header button { width: 2.5rem; height: 2.5rem; border-radius: 50%; }
+  .recruitment-filter-sheet > div > :not(header) { border: 0 !important; box-shadow: none !important; padding-inline: 0 !important; }
+}
