@@ -5835,3 +5835,10 @@ small { font-size: var(--fs-xs); }
 .bn-catalog-subs a:is(:hover, :focus-visible):not(#_) { background: var(--counter-indigo); border-color: var(--counter-indigo); color: white; }
 /* Buttons with a leading icon: icon and label are centred as one group with an even gap. */
 .btn > span:has(> svg) { justify-content: center; }
+
+/* Sign-in and register on desktop: the blue panel is an inset rounded card with the same gap under the header as other pages. */
+@media (min-width: 901px) {
+  .counter-auth-page:not(#_) { padding: var(--counter-space-4) var(--counter-page-gutter, 1rem) var(--counter-space-4); gap: var(--counter-space-4); border-top: 0; background: #dce9fb; overflow: visible; }
+  .counter-auth-page .counter-auth-aside:not(#_) { top: calc(var(--bn-header-height) + var(--counter-space-4)); height: calc(100vh - var(--bn-header-height) - var(--counter-space-6)); min-height: 30rem; border-radius: var(--r-lg); border: 0 !important; }
+  .counter-auth-page .counter-auth-form-zone:not(#_) { background: transparent; }
+}
