@@ -5741,3 +5741,11 @@ small { font-size: var(--fs-xs); }
 @media (min-width: 851px) and (max-width: 1100px) { .bn-ad-below-rail:not(.is-rec) { display: block; } }
 /* Role rows carry a 12px bottom margin of their own; trim the ad's top so space above equals space below. */
 .recruitment-results-list > .dlw-infeed-ad { margin-top: 0.25rem; }
+
+/* BN Assistant: a small notification-style note pops up beside the bubble on hover or keyboard focus. */
+.navya-agent-tip { position: absolute; right: 0; bottom: calc(100% + 0.7rem); width: max-content; max-width: min(16rem, calc(100vw - 2rem)); display: grid; gap: 0.15rem; padding: 0.7rem 0.9rem; border: 1px solid var(--counter-line); border-radius: var(--r-md); background: white; color: var(--counter-muted); font-size: var(--fs-sm); line-height: 1.35; box-shadow: var(--counter-shadow-lift); opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; }
+.navya-agent-tip strong { color: var(--counter-ink); font-size: var(--fs-sm); font-weight: 700; }
+.navya-agent-tip::after { content: ""; position: absolute; right: 1.1rem; bottom: -0.4rem; width: 0.7rem; height: 0.7rem; border-right: 1px solid var(--counter-line); border-bottom: 1px solid var(--counter-line); background: white; transform: rotate(45deg); }
+.navya-agent-dock:is(:hover, :focus-within) .navya-agent-tip { opacity: 1; transform: none; }
+@media (hover: none) { .navya-agent-tip { display: none; } }
+@media (prefers-reduced-motion: reduce) { .navya-agent-tip { transition: none; } }

@@ -25,7 +25,7 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Hi! I’m Navya AI Agent. I can help you navigate Bharat Navya and understand where to go next.",
+    "Hi! I’m BN Assistant. I can help you navigate Bharat Navya and understand where to go next.",
 };
 
 // Client-side quick starters (fill + send). API suggestions come back as links.
@@ -136,7 +136,7 @@ export default function ChatAssistant() {
       ]);
       if (typeof res.remaining === "number") setRemaining(res.remaining);
     } catch {
-      setError("Couldn't reach Navya AI Agent. Please try again.");
+      setError("Couldn't reach BN Assistant. Please try again.");
       setMessages((prev) => [
         ...prev,
         {
@@ -170,7 +170,7 @@ export default function ChatAssistant() {
           <button
             ref={triggerRef}
             type="button"
-            aria-label="Open Navya AI Agent"
+            aria-label="Open BN Assistant"
             aria-expanded={open}
             aria-controls="bharat-navya-assistant"
             onClick={openAssistant}
@@ -178,24 +178,25 @@ export default function ChatAssistant() {
           >
             <AssistantIcon size={23} />
           </button>
+          <span className="navya-agent-tip" aria-hidden><strong>BN Assistant</strong>Talk to me, I can help you find things</span>
         </div>
       )}
 
       {/* Chat panel: a full-width sheet on phones, a floating card on desktop */}
       {open && (
-        <div id="bharat-navya-assistant" role="dialog" aria-modal="false" aria-label="Navya AI Agent" className="navya-agent-panel na-panel">
+        <div id="bharat-navya-assistant" role="dialog" aria-modal="false" aria-label="BN Assistant" className="navya-agent-panel na-panel">
           <header className="na-head">
             <span className="na-avatar"><AssistantIcon size={20} /></span>
             <div className="na-title">
-              <strong>Ask Navya</strong>
+              <strong>BN Assistant</strong>
               <small><i className="na-dot" aria-hidden />{remaining !== null ? `${remaining} answers left this hour` : "Online, here to help"}</small>
             </div>
-            <button ref={closeRef} type="button" aria-label="Close Navya AI Agent" onClick={closeAssistant} className="na-close"><CloseIcon /></button>
+            <button ref={closeRef} type="button" aria-label="Close BN Assistant" onClick={closeAssistant} className="na-close"><CloseIcon /></button>
           </header>
 
           <div ref={scrollRef} className="na-body">
             <div className="na-intro">
-              <strong>Hi, I’m Navya.</strong>
+              <strong>Hi, I’m BN Assistant.</strong>
               <p>I can help you find companies, products, services and roles, and point you to the right place on Bharat Navya.</p>
             </div>
 
@@ -233,15 +234,15 @@ export default function ChatAssistant() {
               </div>
             ))}
 
-            {loading && <div className="na-msg is-bot"><div className="na-bubble na-typing" aria-label="Navya is typing"><i /><i /><i /></div></div>}
+            {loading && <div className="na-msg is-bot"><div className="na-bubble na-typing" aria-label="BN Assistant is typing"><i /><i /><i /></div></div>}
           </div>
 
           <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="na-composer">
-            <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask anything…" aria-label="Message Navya AI Agent" disabled={loading} />
+            <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask anything…" aria-label="Message BN Assistant" disabled={loading} />
             <button type="submit" aria-label="Send" disabled={loading || !input.trim()}><SendIcon /></button>
           </form>
           {error && <div className="na-error" role="alert" aria-live="assertive">{error}</div>}
-          <p className="na-foot">Navya can make mistakes. Check important details.</p>
+          <p className="na-foot">BN Assistant can make mistakes. Check important details.</p>
         </div>
       )}
     </>
