@@ -5685,3 +5685,9 @@ small { font-size: var(--fs-xs); }
   .dlw-infeed-ad { display: block; grid-column: 1 / -1; min-width: 0; list-style: none; }
   .bn-ad-desktop-only { display: none; }
 }
+
+/* Country code selector: sized to a "+91", not a full field. */
+.international-phone-row,
+.international-phone.is-compact .international-phone-row { grid-template-columns: 4.5rem minmax(0, 1fr); gap: 0.5rem; }
+.international-phone-country-trigger { gap: 0.2rem; padding: 0.65rem 0.5rem 0.65rem 0.65rem; font-size: var(--fs-sm); font-weight: 600; }
+.international-phone-country-trigger svg { width: 0.65rem; }
