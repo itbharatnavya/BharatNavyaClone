@@ -5875,3 +5875,7 @@ small { font-size: var(--fs-xs); }
 /* Mobile menu: Products is a small heading with its two items indented under it. */
 .bn-mobile-nav .bn-mobile-nav-group { padding: 0.6rem 1rem 0.2rem; color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .bn-mobile-nav a.is-sub { padding-left: 1.75rem !important; }
+
+/* Dashboards, workspace forms and admin sit on the light-blue canvas like every other page (white cards on blue).
+   The old full-width white sheet behind them ran straight into the floating header. */
+:is(.counter-workspace-page, .counter-dashboard-page, .counter-admin-page, .counter-admin-login)::before { display: none !important; }
