@@ -62,6 +62,10 @@ module.exports = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "30d",
   BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || "10", 10),
   OTP_TTL_MS: parseInt(process.env.OTP_TTL_MS || String(5 * 60 * 1000), 10),
+  // Returns the generated OTP in POST /api/auth/send-otp responses (no SMS gateway
+  // yet). Dev already does this via isDev; set OTP_ECHO=true only on a non-prod
+  // testing deployment. Never on production — it defeats the OTP entirely.
+  OTP_ECHO: process.env.OTP_ECHO === "true",
 
   // --- Rate limiting (lib/security.js, Phase 1 §1c/1d) ---
   // Set RATE_LIMIT_ENABLED=false to disable all limiters (used by the test suite).

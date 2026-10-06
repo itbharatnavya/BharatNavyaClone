@@ -66,13 +66,14 @@ router.post("/register", validate(schemas.register), async (req, res, next) => {
   }
 });
 
-// POST /api/auth/send-otp — generate an OTP (returned only in dev).
+// POST /api/auth/send-otp — issue an OTP (echoed back only when isDev or OTP_ECHO).
 router.post("/send-otp", validate(schemas.sendOtp), async (req, res, next) => {
   try {
     const { mobile } = req.body;
-    const otp = auth.generateOtp(mobile);
+    const otp = auth.generateOtpCode();
+    await identity.issueOtp(mobile, otp, config.OTP_TTL_MS);
     const data = { message: "OTP sent" };
-    if (config.isDev) data.otp = otp;
+    if (config.isDev || config.OTP_ECHO) data.otp = otp;
     return res.json({ success: true, data });
   } catch (err) {
     next(err);
@@ -83,7 +84,8 @@ router.post("/send-otp", validate(schemas.sendOtp), async (req, res, next) => {
 router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) => {
   try {
     const { mobile, otp } = req.body;
-    if (!auth.verifyOtp(mobile, otp)) {
+    const devMaster = config.isDev && otp === "123456";
+    if (!devMaster && !(await identity.consumeOtp(mobile, otp))) {
       return res.status(401).json({ success: false, error: "Invalid or expired OTP" });
     }
 

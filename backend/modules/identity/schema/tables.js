@@ -27,4 +27,5 @@ module.exports = [
   "employer_profiles",
   "referrals",
   "fcm_tokens",
+  "otp_codes",
 ];

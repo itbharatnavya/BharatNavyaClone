@@ -612,6 +612,31 @@ async function getUserByEmail(email) {
   return rows[0] ? usersStore.getById(rows[0].id) : null;
 }
 
+/** Store the live OTP for a mobile, replacing any earlier one (0017_add_otp_codes.sql).
+ *  Expiry uses the DB clock; expired rows are swept on each issue. */
+async function issueOtp(mobile, otp, ttlMs) {
+  await pool.query(
+    `INSERT INTO otp_codes (mobile, otp, expires_at)
+     VALUES ($1, $2, now() + ($3::text || ' milliseconds')::interval)
+     ON CONFLICT (mobile) DO UPDATE
+       SET otp = EXCLUDED.otp, expires_at = EXCLUDED.expires_at, created_at = now()`,
+    [mobile, otp, String(ttlMs)]
+  );
+  await pool.query(`DELETE FROM otp_codes WHERE expires_at < now()`);
+}
+
+/** Consume the OTP for a mobile if it matches and hasn't expired. The DELETE is the
+ *  check-and-spend in one statement, so a code can be used exactly once even when
+ *  verify requests race across instances. A wrong code leaves the stored one intact. */
+async function consumeOtp(mobile, otp) {
+  if (!mobile || !otp) return false;
+  const { rowCount } = await pool.query(
+    `DELETE FROM otp_codes WHERE mobile = $1 AND otp = $2 AND expires_at > now()`,
+    [mobile, otp]
+  );
+  return rowCount > 0;
+}
+
 /**
  * Social login (0016_add_google_oauth.sql and whatever each future provider's
  * own migration adds). One provider-id column per linked provider; this map is
@@ -728,6 +753,7 @@ module.exports = {
   getSellerBySlug, getEmployerBySlug,
   getUserByMobile, getUserByEmail,
   getUserByOauthId, linkOauthId, oauthDraftFields,
+  issueOtp, consumeOtp,
   getEmployerUserIds, getEmployerStatusCards,
   setEmployerApproval,
   createUser, updateUser, removeUser,

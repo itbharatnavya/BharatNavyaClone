@@ -168,6 +168,44 @@ offline for general questions. The owner plans to rename this assistant later (U
 
 ---
 
+### 2026-10-06 — OTP codes moved to Postgres; OTP echo flag for the testing server
+
+**Why:** OTP codes lived in an in-process `Map` (`lib/auth.js`). Vercel runs each request on
+whatever instance is free, so a code sent by one instance could not be verified by another —
+verify returned "Invalid or expired OTP" intermittently on the testing server. Separately, the
+testing server runs `NODE_ENV=production`, so the OTP was never echoed back, and there is no
+SMS gateway yet, so the login toast had nothing to show.
+
+**Changes:**
+- `lib/db/schema-migrations/0017_add_otp_codes.sql` (+ baseline `schema.sql`) — `otp_codes`
+  table: `mobile` PK, `otp`, `expires_at`. One live code per mobile; re-sending replaces it.
+- `modules/identity/index.js` — `issueOtp(mobile, otp, ttlMs)` and `consumeOtp(mobile, otp)`.
+  `consumeOtp` is a single `DELETE … WHERE mobile AND otp AND expires_at > now()`, so a code
+  is spent atomically even when verifies race. Expiry is checked against the DB clock.
+  `otp_codes` added to `modules/identity/schema/tables.js`.
+- `lib/auth.js` — in-memory store removed; `generateOtpCode()` (CSPRNG) is all that's left.
+- `modules/identity/routes/auth.routes.js` — send-otp persists the code; echo only when
+  `isDev || OTP_ECHO`. verify-otp consumes via the port; dev master `123456` still works only
+  when `isDev`.
+- `lib/config.js` / `.env.example` — `OTP_ECHO` flag (default off).
+- `test/otp-store.test.js` — 8 scenarios: single use, wrong code keeps the live one, resend
+  replaces, no-issue rejected, expired rejected, racing verifies spend once, code is in
+  Postgres, dev master code.
+
+**Verified:** `otp-store`, `auth.behavior`, `identity-write-port`, `phase1-security`,
+`architecture` — 26/26 pass. Full `npm test`: 124 pass, 25 fail, all golden-fixture
+mismatches on jobs and admin-users (`workplaceType: 'onsite'` is new in actual output, from
+migration 0015 already on the branch). Not caused by this change; goldens need
+`npm run goldens:update` after review, not done here.
+
+**Left open:**
+- Migration numbering: `0017_add_fcm_tokens.sql` (from the design merge) and
+  `0017_add_otp_codes.sql` share the `0017` prefix. Both apply (sorted by filename), but the
+  next migration should use `0018`.
+- Testing server Neon DB needs `0017_add_otp_codes.sql` applied before this backend deploy
+  works. `OTP_ECHO=true` is set on Vercel production.
+- Live check still to do after deploy: verify with `123456` on the testing server must return 401.
+
 ### 2026-09-29 — Google social login (backend + frontend), extensible for Facebook/Apple later
 
 **Why:** Product owner wants social login on `/login`, Google now, Facebook/Apple once

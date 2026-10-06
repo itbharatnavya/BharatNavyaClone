@@ -25,6 +25,15 @@ CREATE TABLE IF NOT EXISTS counters (
   value BIGINT NOT NULL DEFAULT 0
 );
 
+-- ── otp_codes (mobile OTP login — 0017_add_otp_codes.sql) ───────────────────────
+CREATE TABLE IF NOT EXISTS otp_codes (
+  mobile      TEXT PRIMARY KEY,
+  otp         TEXT NOT NULL,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS otp_codes_expires_idx ON otp_codes(expires_at);
+
 -- ── users ──────────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
   id                  TEXT PRIMARY KEY,

@@ -48,40 +48,12 @@ function verifyToken(token) {
 }
 
 /* --------------------------------------------------------------- OTP ------- */
-// In-memory OTP store (single-process dev server). mobile -> { otp, expiresAt }.
+// Codes are stored by modules/identity (issueOtp / consumeOtp, table otp_codes) so
+// every serverless instance sees the same live code.
 
-const _otps = new Map();
-
-/** Drop every expired entry so the Map can't grow without bound (BACKEND-AUDIT.md S3). */
-function sweepOtps() {
-  const now = Date.now();
-  for (const [key, rec] of _otps) {
-    if (now > rec.expiresAt) _otps.delete(key);
-  }
-}
-
-/** Generate + store a 6-digit OTP for a mobile number. Returns the code.
- *  Uses crypto.randomInt (CSPRNG) — Math.random() is predictable (BACKEND-AUDIT.md S3). */
-function generateOtp(mobile) {
-  sweepOtps();
-  const otp = String(crypto.randomInt(100000, 1000000));
-  _otps.set(mobile, { otp, expiresAt: Date.now() + config.OTP_TTL_MS });
-  return otp;
-}
-
-/** Verify (and consume) an OTP. Dev master code "123456" always passes in dev. */
-function verifyOtp(mobile, otp) {
-  if (config.isDev && otp === "123456") return true;
-  sweepOtps();
-  const rec = _otps.get(mobile);
-  if (!rec) return false;
-  if (Date.now() > rec.expiresAt) {
-    _otps.delete(mobile);
-    return false;
-  }
-  const ok = rec.otp === otp;
-  if (ok) _otps.delete(mobile);
-  return ok;
+/** A fresh 6-digit OTP. crypto.randomInt is a CSPRNG — Math.random() is predictable. */
+function generateOtpCode() {
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 module.exports = {
@@ -90,6 +62,5 @@ module.exports = {
   verifyPassword,
   signToken,
   verifyToken,
-  generateOtp,
-  verifyOtp,
+  generateOtpCode,
 };
