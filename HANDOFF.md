@@ -1,6 +1,35 @@
 # Bharat Navya — canonical handoff
 
-Updated: 5 October 2026 (see section 0 and the "2 to 5 October" block below it)
+## START HERE (updated 6 October 2026)
+
+If you are a new Claude/Codex session picking this up, read this block first, then `AGENTS.md`, `DESIGN-SYSTEM.md`, and the dated "what changed" blocks at the end of this file (newest last). Older sections (0 to 11) are history; where they disagree with this block, this block wins.
+
+**Where the work lives**
+- Repo: `mahir-bharat/BharatNavya` on GitHub. Work branch: `design`. The owner and dev pull `design` and deploy it (Vercel production `bharatnavya.vercel.app` was confirmed serving `design` builds on 5 Oct). Never push anywhere except `origin/design`; never touch `main`.
+- Working copy: the Codex worktree `/Users/parthus/.codex/worktrees/design-integration-merge/BharatConnect` (local branch `codex/design-integration-merge`), pushed with `git push origin HEAD:design`. The main checkout `/Users/parthus/Documents/ChatGPT/BharatConnect` is stale (many commits behind, with uncommitted changes) and the owner said to leave it untouched.
+- "Deploy" from the owner means: commit and push to `origin/design` so the dev can pull. Commit messages end with a `Co-Authored-By` line.
+
+**Run it**
+- Backend: `cd backend && node index.js` (port 4000, Postgres via `PG_URL` in git-ignored `backend/.env`). Restart after backend edits.
+- Frontend: `cd frontend && BACKEND_URL=http://localhost:4000 npm run dev` (port 3000). If you see `Cannot read properties of null (reading 'useContext')` or hydration mismatches, kill port 3000, `rm -rf frontend/.next`, start again.
+- Admin login: `admin@bharatsource.in`; password is in git-ignored `backend/.admin-credentials.local` (reset with `node backend/scripts/reset-admin-password.js`). Never print or commit it.
+- Checks: `cd frontend && npx tsc --noEmit` must be clean. Verify in the browser at 390px and 1440px (no sideways scroll).
+
+**Owner's standing preferences (follow without being told)**
+- One navy for every CTA, active pill and blue surface: `#12307e` (hover `#1b3fa0`). `--counter-indigo` and `--counter-green` both resolve to it now. Amber only for small highlights, never CTAs.
+- White cards on the light-blue canvas `#dce9fb`; nothing full-bleed white or black; every page gets the same gap under the floating header and the same section rhythm (`--counter-section-gap`).
+- No prices on listing cards; no Product/Service tag on cards. Lens icon in every search field. No emojis. Text never touches a rounded edge (proper padding).
+- Ads: small tiles (filter rail bottom third, under floating side cards on detail pages), between listings on phones, never a big block at the top.
+- Show work visually: check in the browser pane at phone and desktop width before saying it is done; the owner reviews by screenshots and is quick to spot overlaps, uneven spacing, off-centre icons and colour mismatches.
+- Keep this handoff updated and pushed when asked "handoff updated?".
+
+**Open threads right now**
+- Header logo redesign (exploration only, not on the platform): `frontend/public/logo-options.html` (uncommitted, view at `http://localhost:3000/logo-options.html`). Owner likes **6B** (logo in the centre of the bar, bar cut around it) and **7B** (logo at the left, bar starts after it with a curved end), both with **no white disc** behind the logo. Geometry lives in the `.cbar.is-notch` rules: logo size `--s`, cut radius `R = 0.649 x s + gap` (0.649 is the measured enclosing-circle ratio of `bharat-navya-logo.png`), bar height `2R - trim`. Owner asked for generous space between logo and bar and centred nav. Next step when they choose: build it into `components/Navbar.tsx`.
+- Unverified: dashboards after the white-sheet removal (needs a signed-in check), card redesign in list view and phone widths, Recruitment landing spacing, the `/categories` hydration warning.
+
+---
+
+Updated: 6 October 2026 (see START HERE above and the dated blocks at the end)
 
 Official branch: `design`
 
@@ -469,3 +498,11 @@ Branch `design`, tip `d0a8225` at the time of writing. All verified with compute
 - Hydration error in the console on `/categories` (and a Next dev "1 error" badge); not traced.
 - Card redesign not looked at in list view, many-column grids or phone widths via screenshots; admin add/edit/delete, /sell photo upload, Recruitment landing spacing after the rhythm change, and pinned-scene behaviour on Home after the padding change are unchecked.
 - If the dev server shows `useContext of null` or hydration mismatches, stop it, `rm -rf frontend/.next`, restart with `BACKEND_URL=http://localhost:4000 npm run dev`.
+
+
+## 6 October 2026: what changed since the 5 to 6 October block
+Branch `design`, tip after this commit. Verified in the Browser pane unless noted.
+- **Header navigation is Home · Products · About** (`components/Navbar.tsx`, `.bn-nav-products`, `.bn-nav-panel`). Products opens on hover, focus or click a small card with Directory and Recruitment (icon, name, one line); closes on mouse-out, Escape, outside click or navigation. Products is the active pill on Directory or Recruitment pages. Phone menu: Home, a "Products" heading with Directory and Recruitment indented, About.
+- Opening the hamburger closes the account popup and vice versa (not clicked through signed in).
+- Dashboards, workspace and admin pages no longer paint a full-width white sheet behind themselves (`::before` hidden); they sit on the canvas. Admin sign-in has no black band any more; workspace labels have no leading dash.
+- Logo exploration file described in START HERE.
