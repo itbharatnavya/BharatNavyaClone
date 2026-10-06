@@ -107,7 +107,7 @@ export default function Navbar() {
           {!loading && user && featureFlags.notifications && <NotificationBell />}
           {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
           {!loading && user && <div className="bn-account" ref={accountRef}>
-            <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}><Avatar name={user.name} size={40} /></button>
+            <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => { setMenuOpen(false); setAccountOpen((value) => !value); }}><Avatar name={user.name} size={40} /></button>
             {accountOpen && <div className="bn-account-menu">
               <strong>{user.name}</strong>
               {inDirectoryContext ? (
@@ -121,7 +121,7 @@ export default function Navbar() {
               <button type="button" onClick={logout}>Sign out</button>
             </div>}
           </div>}
-          <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}><MenuIcon open={menuOpen} /></button>
+          <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => { setAccountOpen(false); setMenuOpen((value) => !value); }}><MenuIcon open={menuOpen} /></button>
           {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
         </div>
       </div>
