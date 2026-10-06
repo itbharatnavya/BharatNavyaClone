@@ -163,7 +163,7 @@ export default function ListingsTab({ user }: Props) {
     <div>
       <PanelHeader
         title={tr("dashboard.listings.title", "My listings")}
-        subtitle={tr("dashboard.listings.subtitle", "Edit, mark sold, or remove your products & services.")}
+        subtitle={tr("dashboard.listings.subtitle", "Edit photos and details, change status or price, mark sold, or remove your products & services.")}
         actions={
           <Button href="/sell" variant="primary" leftIcon={<Icon name="plus" size={16} />}>
             {tr("dashboard.postNew", "Post new")}
@@ -244,8 +244,11 @@ export default function ListingsTab({ user }: Props) {
                 </div>
 
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  <Button size="sm" variant="secondary" leftIcon={<Icon name="edit" size={14} />} onClick={() => openEdit(l)}>
+                  <Button size="sm" variant="secondary" leftIcon={<Icon name="edit" size={14} />} href={`/sell?edit=${l.id}`}>
                     {tr("common.edit", "Edit")}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => openEdit(l)}>
+                    {tr("dashboard.listings.statusPrice", "Status & price")}
                   </Button>
                   {l.status !== "sold" && (
                     <Button
@@ -271,7 +274,7 @@ export default function ListingsTab({ user }: Props) {
       <Modal
         open={!!editing}
         onClose={() => (busy ? undefined : setEditing(null))}
-        title={tr("dashboard.listings.editTitle", "Edit listing")}
+        title={tr("dashboard.listings.editTitle", "Status & price")}
         footer={
           <>
             <Button variant="ghost" onClick={() => setEditing(null)} disabled={busy}>

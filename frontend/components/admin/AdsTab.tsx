@@ -19,6 +19,7 @@
 // All selection inputs are native dropdowns (mobile-friendly, non-technical admin).
 
 import React, { useEffect, useState } from "react";
+import { DIRECTORY_AD_PLACEMENTS, RECRUITMENT_AD_PLACEMENTS } from "@/lib/adPlacements";
 import {
   getAdSlots,
   createAdSlot,
@@ -56,15 +57,8 @@ import { useToast } from "@/components/Toast";
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 // Placement destinations the public serving layer understands, split by product.
-const DIRECTORY_PLACEMENTS = [
-  { value: "category_top", label: "Category top (category pages)" },
-  { value: "search_top", label: "Search top (search results)" },
-  { value: "home_hero", label: "Home hero (homepage)" },
-];
-const RECRUITMENT_PLACEMENTS = [
-  { value: "recruitment_home", label: "Recruitment — home page" },
-  { value: "recruitment_search_top", label: "Recruitment — job search top" },
-];
+const DIRECTORY_PLACEMENTS = DIRECTORY_AD_PLACEMENTS.map((p) => ({ value: p.value, label: p.label }));
+const RECRUITMENT_PLACEMENTS = RECRUITMENT_AD_PLACEMENTS.map((p) => ({ value: p.value, label: p.label }));
 
 // Serving statuses. Public /api/ads serves "active" + "scheduled" (within the
 // date window); "paused" is the admin off-switch; "pending" is an unreviewed

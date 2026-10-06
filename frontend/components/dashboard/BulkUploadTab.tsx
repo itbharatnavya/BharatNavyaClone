@@ -337,7 +337,7 @@ export default function BulkUploadTab({ user }: Props) {
       setResult(res);
       if (res.created > 0) {
         addToast(
-          tr("bulk.createdToast", `Created ${res.created} listing${res.created === 1 ? "" : "s"}`),
+          tr("bulk.createdToast", `Created ${res.created} listing${res.created === 1 ? "" : "s"} — sent for review`),
           "success"
         );
       }
@@ -504,6 +504,15 @@ export default function BulkUploadTab({ user }: Props) {
                 : ""}
             </div>
           </div>
+
+          {result.created > 0 && (
+            <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", marginTop: 10, lineHeight: 1.6 }}>
+              {tr(
+                "bulk.reviewNote",
+                "These listings are now waiting for our team to review them — they go live once approved. Each one has a placeholder photo: open it from My listings and use Edit to add your real photos."
+              )}
+            </p>
+          )}
 
           {result.errors.length > 0 && (
             <div style={{ marginTop: 12 }}>

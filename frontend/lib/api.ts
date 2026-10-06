@@ -771,6 +771,12 @@ export function getBlogs(query: BlogQuery = {}): Promise<Blog[]> {
   );
 }
 
+// The signed-in author's own posts in EVERY state (draft / published / hidden). The public
+// getBlogs() only returns published posts, so a dashboard must use this one to show drafts.
+export function getMyBlogs(authorType?: "seller" | "employer"): Promise<Blog[]> {
+  return request<Blog[]>(`/api/blogs/mine${authorType ? `?authorType=${authorType}` : ""}`);
+}
+
 export function getBlog(slug: string): Promise<Blog> {
   return request<Blog>(`/api/blogs/${slug}`);
 }
@@ -1652,10 +1658,11 @@ export interface BoostRequest {
   boostType: BoostType;
   days: number;
   amount: number | null;
-  status: string; // "pending" | "active" | "rejected"
+  status: string; // "pending" | "active" | "rejected" | "expired" (an approved boost past its end date)
   createdAt: string;
   approvedAt?: string | null;
   rejectedAt?: string | null;
+  expiresAt?: string | null; // when an approved boost stops applying; null = no end date
   // enriched by the backend
   listingTitle?: string | null;
   boostLabel?: string;

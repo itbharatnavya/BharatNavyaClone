@@ -26,6 +26,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import ImageUpload from "@/components/ImageUpload";
+import { DIRECTORY_AD_PLACEMENTS, adPlacementLabel } from "@/lib/adPlacements";
 import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./shared";
 import { validateAd, type Errors } from "./validation";
 import {
@@ -46,17 +47,7 @@ interface Props {
 
 type Source = "listing" | "custom";
 
-const PLACEMENT_OPTIONS = [
-  { value: "category_top", label: "Category top — on category pages" },
-  { value: "search_top", label: "Search top — above search results" },
-  { value: "home_hero", label: "Home hero — on the homepage" },
-];
-
-const PLACEMENT_LABEL: Record<string, string> = {
-  category_top: "Category top",
-  search_top: "Search top",
-  home_hero: "Home hero",
-};
+const PLACEMENT_OPTIONS = DIRECTORY_AD_PLACEMENTS.map((p) => ({ value: p.value, label: p.label }));
 
 // Status badge styling — pending = amber, active/scheduled = green, paused = grey.
 function statusStyle(status: string): { bg: string; color: string; label: string } {
@@ -226,11 +217,13 @@ export default function AdvertiseTab({ user }: Props) {
     try {
       await createMyAd({
         placementType,
-        categoryIds: categorySlug ? [categorySlug] : [],
+        // Category targeting only means something on the category-top slot (the only one that
+        // knows which category a page is about); other slots always run for all categories.
+        categoryIds: placementType === "category_top" && categorySlug ? [categorySlug] : [],
         listingId: source === "listing" ? listingId || null : null,
         creativeImageUrl: creativeImageUrl.trim(),
         headline: headline.trim(),
-        targetUrl: targetUrl.trim() || undefined,
+        targetUrl: targetUrl.trim(),
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
@@ -412,7 +405,7 @@ export default function AdvertiseTab({ user }: Props) {
                 placeholder="e.g. Bulk steel at factory rates"
               />
               <Input
-                label={tr("dashboard.advertise.targetUrl", "Link (optional)")}
+                label={tr("dashboard.advertise.targetUrl", "Link")}
                 value={targetUrl}
                 onChange={(e) => setTargetUrl(e.target.value)}
                 error={adErrors.targetUrl}
@@ -436,13 +429,15 @@ export default function AdvertiseTab({ user }: Props) {
               onChange={(e) => setPlacementType(e.target.value as AdPlacementType)}
               options={PLACEMENT_OPTIONS}
             />
-            <Select
-              label={tr("dashboard.advertise.category", "Target category")}
-              value={categorySlug}
-              onChange={(e) => setCategorySlug(e.target.value)}
-              hint="Leave on “All categories” to show everywhere."
-              options={categoryOptions}
-            />
+            {placementType === "category_top" && (
+              <Select
+                label={tr("dashboard.advertise.category", "Target category")}
+                value={categorySlug}
+                onChange={(e) => setCategorySlug(e.target.value)}
+                hint="Leave on “All categories” to show on every category page."
+                options={categoryOptions}
+              />
+            )}
           </div>
 
           {/* Dates */}
@@ -563,7 +558,7 @@ export default function AdvertiseTab({ user }: Props) {
                       flexWrap: "wrap",
                     }}
                   >
-                    <span>{PLACEMENT_LABEL[a.placementType || ""] || a.placementType || "—"}</span>
+                    <span>{adPlacementLabel(a.placementType)}</span>
                     <span aria-hidden>·</span>
                     <span>{targetingLabel(a)}</span>
                   </div>

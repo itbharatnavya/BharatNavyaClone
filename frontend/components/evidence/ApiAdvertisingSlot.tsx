@@ -13,6 +13,8 @@ interface ApiAd {
 
 interface ApiAdvertisingSlotProps {
   placement: string | string[];
+  /** Page's category slug(s), comma-separated for a path — category-targeted ads then only show on matching pages. */
+  category?: string;
   kind: "native" | "external";
   context: string;
   summary: string;
@@ -28,7 +30,7 @@ interface ApiAdvertisingSlotProps {
 const MAX_ADS = 5;
 const ROTATE_MS = 4000;
 
-export default function ApiAdvertisingSlot({ placement, kind, context, summary, action, compact = false, imageOnly = false, showFallback = true, fallbackTitle, fallbackSummary, fallbackAction }: ApiAdvertisingSlotProps) {
+export default function ApiAdvertisingSlot({ placement, category, kind, context, summary, action, compact = false, imageOnly = false, showFallback = true, fallbackTitle, fallbackSummary, fallbackAction }: ApiAdvertisingSlotProps) {
   const [ads, setAds] = useState<ApiAd[]>([]);
   const [index, setIndex] = useState(0);
   const [held, setHeld] = useState(false);
@@ -39,7 +41,7 @@ export default function ApiAdvertisingSlot({ placement, kind, context, summary, 
   useEffect(() => {
     let active = true;
     const placements = placementKey.split("|");
-    Promise.all(placements.map((slot) => getAds(slot).catch(() => [])))
+    Promise.all(placements.map((slot) => getAds(slot, category).catch(() => [])))
       .then((groups) => {
         if (!active) return;
         const items = groups.find((group) => Array.isArray(group) && group.length) || [];
@@ -48,7 +50,7 @@ export default function ApiAdvertisingSlot({ placement, kind, context, summary, 
       })
       .catch(() => active && setAds([]));
     return () => { active = false; };
-  }, [placementKey]);
+  }, [placementKey, category]);
 
   // Rotate through the placement's ads. Hover/focus on the ad and a background tab hold it,
   // and reduced-motion users keep the first ad.

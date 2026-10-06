@@ -167,8 +167,11 @@ export function validateAd(v: {
   else if (headline.length < 3) e.headline = "Headline is too short.";
   else if (headline.length > 80) e.headline = "Keep the headline under 80 characters.";
 
-  if (!isBlank(v.targetUrl) && !isUrlish(v.targetUrl))
-    e.targetUrl = "Enter a full URL or a site path starting with /.";
+  // A listing ad links to its own page automatically; a custom image needs an explicit link,
+  // because an ad with no link is never shown.
+  if (isBlank(v.targetUrl)) {
+    if (v.source === "custom") e.targetUrl = "Add the link buyers should go to when they tap the ad.";
+  } else if (!isUrlish(v.targetUrl)) e.targetUrl = "Enter a full URL or a site path starting with /.";
 
   if (v.startDate && v.endDate && v.endDate < v.startDate)
     e.endDate = "End date must be on or after the start date.";

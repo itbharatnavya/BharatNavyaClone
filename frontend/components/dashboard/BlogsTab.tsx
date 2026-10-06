@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import type { User, Blog, BlogStatus } from "@/lib/types";
-import { getBlogs, createBlog, updateBlog, deleteBlog } from "@/lib/api";
+import { getMyBlogs, createBlog, updateBlog, deleteBlog } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import Button from "@/components/Button";
 import Badge from "@/components/Badge";
@@ -10,6 +10,7 @@ import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
+import ImageUpload from "@/components/ImageUpload";
 import { PanelHeader, EmptyState, Loading, Icon, formatDate, useTr } from "./shared";
 import { validateBlog, type Errors } from "./validation";
 
@@ -57,7 +58,7 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
   const load = React.useCallback(async () => {
     setLoading(true);
     try {
-      const list = await getBlogs({ sellerId: user.id, authorType });
+      const list = await getMyBlogs(authorType);
       setBlogs(list);
     } catch (e) {
       addToast((e as Error).message || "Failed to load blogs", "error");
@@ -101,7 +102,7 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
         title: draft.title.trim(),
         excerpt: draft.excerpt.trim() || undefined,
         body: draft.body,
-        coverImage: draft.coverImage.trim() || undefined,
+        coverImage: draft.coverImage.trim(),
         status: draft.status,
         tags: draft.tags
           .split(",")
@@ -176,7 +177,9 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
               <div style={{ minWidth: 200, flex: 1 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                   <span style={{ fontWeight: 600, color: "var(--ink)", fontSize: "var(--fs-sm)" }}>{b.title}</span>
-                  <Badge variant={b.status === "published" ? "new" : "neutral"}>{b.status}</Badge>
+                  <Badge variant={b.status === "published" ? "new" : "neutral"}>
+                    {b.status === "hidden" ? "hidden by moderator" : b.status}
+                  </Badge>
                 </div>
                 <div style={{ fontSize: "var(--fs-xs)", color: "var(--faint)", marginTop: 4 }}>
                   {b.publishedAt ? formatDate(b.publishedAt) : formatDate(b.createdAt)}
@@ -249,19 +252,27 @@ export default function BlogsTab({ user, product = "directory" }: Props) {
                 label={tr("dashboard.blogs.fieldStatus", "Status")}
                 value={draft.status}
                 onChange={(e) => setDraft({ ...draft, status: e.target.value as BlogStatus })}
-                options={[
-                  { value: "draft", label: "Draft" },
-                  { value: "published", label: "Published" },
-                ]}
+                disabled={draft.status === "hidden"}
+                hint={draft.status === "hidden" ? "Hidden by a moderator — only an admin can change this." : undefined}
+                options={
+                  draft.status === "hidden"
+                    ? [{ value: "hidden", label: "Hidden by moderator" }]
+                    : [
+                        { value: "draft", label: "Draft" },
+                        { value: "published", label: "Published" },
+                      ]
+                }
               />
             </div>
-            <Input
-              label={tr("dashboard.blogs.fieldCover", "Cover image URL")}
-              value={draft.coverImage}
-              onChange={(e) => setDraft({ ...draft, coverImage: e.target.value })}
-              error={errors.coverImage}
-              placeholder="https://…"
-            />
+            <div>
+              <label className="field-label">{tr("dashboard.blogs.fieldCover", "Cover image")}</label>
+              <ImageUpload
+                value={draft.coverImage}
+                onChange={(url) => setDraft({ ...draft, coverImage: url })}
+                label="Upload cover image"
+              />
+              {errors.coverImage && <p className="field-error">{errors.coverImage}</p>}
+            </div>
           </div>
         )}
       </Modal>

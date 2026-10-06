@@ -14,13 +14,11 @@ import Select from "@/components/Select";
 import Button from "@/components/Button";
 import ImageUpload from "@/components/ImageUpload";
 import { Section } from "@/components/sell/editors";
+import { RECRUITMENT_AD_PLACEMENTS } from "@/lib/adPlacements";
 import { useToast } from "@/components/Toast";
 import { createMyAd, getMyAds, updateMyAd, deleteMyAd, type MyAd, type AdPlacementType } from "@/lib/api";
 
-const AD_PLACEMENTS: { value: AdPlacementType; label: string }[] = [
-  { value: "recruitment_home", label: "Recruitment home page" },
-  { value: "recruitment_search_top", label: "Job search results — top banner" },
-];
+const AD_PLACEMENTS: { value: AdPlacementType; label: string }[] = RECRUITMENT_AD_PLACEMENTS.map((p) => ({ value: p.value, label: p.label }));
 
 function statusStyle(status: string): { bg: string; color: string; label: string } {
   switch (status) {
@@ -62,7 +60,7 @@ export default function AdvertisementsTab() {
     loadAds();
   }, [loadAds]);
 
-  const canSubmit = creativeImageUrl.trim() !== "" && headline.trim() !== "" && !submitting;
+  const canSubmit = creativeImageUrl.trim() !== "" && headline.trim() !== "" && targetUrl.trim() !== "" && !submitting;
 
   async function submit() {
     if (!canSubmit) return;
@@ -72,7 +70,7 @@ export default function AdvertisementsTab() {
         placementType,
         creativeImageUrl: creativeImageUrl.trim(),
         headline: headline.trim(),
-        targetUrl: targetUrl.trim() || undefined,
+        targetUrl: targetUrl.trim(),
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
@@ -123,7 +121,7 @@ export default function AdvertisementsTab() {
         </div>
         <Input label="Headline" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="e.g. TechNova is hiring across 6 roles" />
         <Input
-          label="Link (optional)"
+          label="Link"
           value={targetUrl}
           onChange={(e) => setTargetUrl(e.target.value)}
           placeholder="/employer/your-company"

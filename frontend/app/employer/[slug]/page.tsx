@@ -70,7 +70,7 @@ function EmployerProfileInner() {
       </aside>
     </div>
   </div>
-  <ApiAdvertisingSlot compact placement={["employer_profile", "recruitment_home"]} kind="native" context="Sponsored near employer profiles" summary="A relevant promoted employer or role, kept separate from this employer’s workplace evidence and open roles." action="View opportunity" />
+  <ApiAdvertisingSlot compact placement="recruitment_home" kind="native" context="Sponsored near employer profiles" summary="A relevant promoted employer or role, kept separate from this employer’s workplace evidence and open roles." action="View opportunity" />
   </div>;
 }
 

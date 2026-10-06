@@ -4,14 +4,18 @@
 // user can post. Three steps: choose type → pick category → dynamic details.
 // Auto-fill from photo (AI, with graceful fallback). Submits via createListing
 // and routes to the new listing page.
+//
+// EDIT MODE: /sell?edit=<listingId> loads one of the caller's listings into this same form
+// (photos, category, details, location, search words) and saves with updateListing. The type
+// (product/service) is fixed once created. Material edits are re-verified by the backend.
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
-import { getCategories, createListing, becomeSeller } from "@/lib/api";
+import { getCategories, createListing, updateListing, getMyListings, becomeSeller } from "@/lib/api";
 import { tokenize } from "@/lib/categorySuggest";
 import type {
   Category,
@@ -27,7 +31,7 @@ import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import Button from "@/components/Button";
 import CategoryPicker from "@/components/sell/CategoryPicker";
-import ProductFields from "@/components/sell/ProductFields";
+import ProductFields, { UNIT_OPTIONS } from "@/components/sell/ProductFields";
 import ServiceFields from "@/components/sell/ServiceFields";
 import { Section, MoreOptions, TagInput } from "@/components/sell/editors";
 import MediaUpload from "@/components/sell/MediaUpload";
@@ -76,10 +80,25 @@ function CheckMark({ size = 16 }: { size?: number }) {
 // Location picker sentinels for the "Available in" <select>.
 const LOC_PAN = "__pan__";
 const LOC_CITIES = "__cities__";
+// Edit mode only: the listing's existing city/state when it isn't one of the seller's branches.
+const LOC_CURRENT = "__current__";
 
+// useSearchParams needs a Suspense boundary in the App Router.
 export default function SellPage() {
+  return (
+    <Suspense fallback={<div className="sl-page"><div className="skeleton" style={{ height: 220, width: "100%" }} /></div>}>
+      <SellForm />
+    </Suspense>
+  );
+}
+
+function SellForm() {
   const router = useRouter();
-  const { user, loading } = useRequireAuth({ redirectTo: "/login?next=/sell" });
+  const editId = useSearchParams().get("edit");
+  const isEdit = !!editId;
+  const { user, loading } = useRequireAuth({
+    redirectTo: `/login?next=${encodeURIComponent(editId ? `/sell?edit=${editId}` : "/sell")}`,
+  });
   const { addToast } = useToast();
 
   // ---- categories ----
@@ -102,6 +121,11 @@ export default function SellPage() {
   // Brand-new accounts have no business profile yet, so we ask for the business name here.
   const [companyName, setCompanyName] = useState("");
   const [created, setCreated] = useState<Listing | null>(null);
+  // Edit mode: the listing being edited, the saved result, and load state.
+  const [original, setOriginal] = useState<Listing | null>(null);
+  const [saved, setSaved] = useState<Listing | null>(null);
+  const [editLoading, setEditLoading] = useState(isEdit);
+  const [editError, setEditError] = useState<string | null>(null);
   const { refresh } = useAuth();
 
   // ---- common fields ----
@@ -155,20 +179,20 @@ export default function SellPage() {
   // Preselect the first branch (also covers the single-branch case) and reflect its
   // city/state into the location fields so validation + display line up.
   useEffect(() => {
-    if (!branchInited.current && sellerLocations.length > 0) {
+    if (!isEdit && !branchInited.current && sellerLocations.length > 0) {
       branchInited.current = true;
       const first = sellerLocations[0];
       setLocChoice(first.id);
       setCity(first.city || "");
       setState(first.state || "");
     }
-  }, [sellerLocations]);
+  }, [sellerLocations, isEdit]);
 
   // Change the "Available in" choice: a branch reflects its city/state; PAN India and
   // "specific cities" clear the single city/state (they don't use it directly).
   const onLocChoice = (v: string) => {
     setLocChoice(v);
-    if (v === LOC_PAN || v === LOC_CITIES) return;
+    if (v === LOC_PAN || v === LOC_CITIES || v === LOC_CURRENT) return;
     const loc = sellerLocations.find((l) => l.id === v);
     if (loc) {
       setCity(loc.city || "");
@@ -221,7 +245,73 @@ export default function SellPage() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0 });
   };
 
-  const needsBusiness = !user?.sellerProfile;
+  const needsBusiness = !user?.sellerProfile && !isEdit;
+
+  // ---- edit mode: load the listing into the form (once categories + user are ready) ----
+  const editLoaded = useRef(false);
+  useEffect(() => {
+    if (!editId || !user || categories.length === 0 || editLoaded.current) return;
+    editLoaded.current = true;
+    getMyListings()
+      .then((list) => {
+        const l = list.find((x) => x.id === editId);
+        if (!l) {
+          setEditError("We couldn't find that listing in your account.");
+          return;
+        }
+        setOriginal(l);
+        setType(l.type);
+        setCategory(
+          categories.find((c) => c.id === l.categoryId) ||
+            ({ id: l.categoryId, name: l.legacyCategory || "Current category" } as Category)
+        );
+        setTitle(l.title || "");
+        setDescription(l.description || "");
+        setKeywords(l.keywords || []);
+        setMedia((l.media || []).filter((m) => m.type !== "video").map((m) => m.url));
+        setCity(l.location?.city || "");
+        setState(l.location?.state || "");
+        if (l.panIndia || l.location?.panIndia) {
+          setLocChoice(LOC_PAN);
+        } else if (l.serviceCities && l.serviceCities.length > 0) {
+          setLocChoice(LOC_CITIES);
+          setServiceCities(l.serviceCities);
+        } else if (l.locationId && sellerLocations.some((b) => b.id === l.locationId)) {
+          setLocChoice(l.locationId);
+        } else if (l.location?.city) {
+          setLocChoice(LOC_CURRENT);
+        } else {
+          setLocChoice(LOC_PAN);
+        }
+        if (l.type === "product" && l.product) {
+          const p = l.product as ProductDetail & { condition?: ProductCondition };
+          const unit = p.unitOfMeasure || "";
+          setUnitOther(!!unit && !UNIT_OPTIONS.includes(unit));
+          setProduct({
+            price: p.price != null ? String(p.price) : "",
+            currency: p.currency || "INR",
+            unitOfMeasure: unit,
+            moq: p.moq != null ? String(p.moq) : "",
+            condition: p.condition || "new",
+            priceTiers: p.priceTiers || [],
+            specifications: p.specifications || {},
+          });
+        } else if (l.type === "service" && l.service) {
+          const sv = l.service;
+          setService({
+            pricingModel: sv.pricingModel || "quote",
+            rateCard: sv.rateCard || [],
+            serviceArea: sv.serviceArea || [],
+            credentials: sv.credentials || [],
+            experienceYears: sv.experienceYears != null ? String(sv.experienceYears) : "",
+            availabilitySchedule: sv.availabilitySchedule || "",
+          });
+        }
+        setStep(2);
+      })
+      .catch((e) => setEditError(e instanceof Error ? e.message : "Could not load that listing."))
+      .finally(() => setEditLoading(false));
+  }, [editId, user, categories, sellerLocations]);
 
   const resetForAnother = () => {
     setCreated(null);
@@ -302,9 +392,11 @@ export default function SellPage() {
         description: description.trim(),
         categoryId: category!.id,
         keywords: autoKeywords,
-        media: media
-          .filter((u) => u.trim())
-          .map((url) => ({ type: "image" as const, url: url.trim() })),
+        media: [
+          ...media.filter((u) => u.trim()).map((url) => ({ type: "image" as const, url: url.trim() })),
+          // Videos aren't editable here — keep any the listing already has.
+          ...(isEdit ? (original?.media || []).filter((m) => m.type === "video") : []),
+        ],
       };
 
       // ---- Location: PAN India | specific cities | a branch/derived location ----
@@ -316,9 +408,16 @@ export default function SellPage() {
         // First city seeds the primary location for display.
         const first = serviceCities[0];
         body.location = { city: first.city, state: first.state };
+      } else if (locChoice === LOC_CURRENT) {
+        body.location = { city: city.trim(), state: state.trim() };
       } else {
         body.locationId = locChoice;
         body.location = { city: city.trim(), state: state.trim() };
+      }
+      if (isEdit && locChoice !== LOC_PAN) {
+        // Moving away from PAN India / specific cities has to be said explicitly on update.
+        body.panIndia = false;
+        if (locChoice !== LOC_CITIES) body.serviceCities = [];
       }
 
       if (type === "product") {
@@ -329,12 +428,12 @@ export default function SellPage() {
           unitOfMeasure: product.unitOfMeasure || undefined,
           moq: product.moq ? Number(product.moq) : null,
           specifications: product.specifications,
-          certifications: [],
-          variants: [],
-          sampleAvailable: false,
           condition: product.condition,
-        };
-        body.product = detail;
+          // Fields the form doesn't edit are kept from the saved listing on update (the API
+          // replaces the whole product block), and defaulted on create.
+          ...(isEdit ? {} : { certifications: [], variants: [], sampleAvailable: false }),
+        } as ProductDetail & { condition?: ProductCondition };
+        body.product = isEdit ? ({ ...(original?.product || {}), ...detail } as ProductDetail) : detail;
       } else {
         const detail: ServiceDetail = {
           rateCard: service.rateCard,
@@ -345,12 +444,19 @@ export default function SellPage() {
             ? Number(service.experienceYears)
             : undefined,
           availabilitySchedule: service.availabilitySchedule || undefined,
-          portfolio: [],
-          bookingType: "enquiry",
-        };
-        body.service = detail;
+          ...(isEdit ? {} : { portfolio: [], bookingType: "enquiry" as const }),
+        } as ServiceDetail;
+        body.service = isEdit ? ({ ...(original?.service || {}), ...detail } as ServiceDetail) : detail;
       }
 
+      if (isEdit && editId) {
+        delete body.type; // a listing's type can't change after it is created
+        const updated = await updateListing(editId, body);
+        setSaved(updated);
+        setSubmitting(false);
+        if (typeof window !== "undefined") window.scrollTo({ top: 0 });
+        return;
+      }
       const made = await createListing(body);
       setCreated(made);
       setSubmitting(false);
@@ -364,7 +470,7 @@ export default function SellPage() {
   const canGoDetails = !!category;
 
   // ---- gate render ----
-  if (loading || !user) {
+  if (loading || !user || editLoading) {
     return (
       <div className="sl-page">
         <div className="skeleton" style={{ height: 32, width: 260, marginBottom: 16 }} />
@@ -378,6 +484,58 @@ export default function SellPage() {
     { h: "Where does it belong?", p: "Pick the category buyers will look in." },
     { h: type === "service" ? "Tell buyers about your service" : "Tell buyers about your product", p: "Add a photo and a few details. A name and a short description are all you need." },
   ];
+
+  if (isEdit && editError) {
+    return (
+      <div className="sl-page">
+        <div className="sl-done">
+          <h1>Can&apos;t edit this listing</h1>
+          <p>{editError}</p>
+          <div className="sl-done-actions">
+            <Link className="btn btn-primary" href="/dashboard?tab=listings">Back to my listings</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- edit saved: confirmation ----
+  if (saved) {
+    const live = saved.status === "active";
+    const held = saved.status === "pending";
+    const reverified = !!saved.verification && (saved.verification as { reverifiedAfterEdit?: boolean }).reverifiedAfterEdit;
+    return (
+      <div className="sl-page">
+        <div className="sl-done">
+          <span className="sl-done-mark"><CheckMark size={30} /></span>
+          <h1>Changes saved</h1>
+          <p>
+            {held
+              ? "You changed what buyers see, so our team will check this listing again. It stays hidden from buyers until it is approved, usually within a day."
+              : live && reverified
+              ? "We checked your changes and the listing is still live."
+              : "Your listing has been updated."}
+          </p>
+          <div className="sl-done-card">
+            {saved.media?.[0]?.url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={saved.media[0].url} alt="" />
+            ) : (
+              <span className="sl-done-initial">{saved.title.charAt(0).toUpperCase()}</span>
+            )}
+            <span>
+              <strong>{saved.title}</strong>
+              <small>{held ? "Waiting for approval" : live ? "Live" : saved.status}</small>
+            </span>
+          </div>
+          <div className="sl-done-actions">
+            <Link className="btn btn-primary" href={`/listing/${saved.id}`}>View listing</Link>
+            <Link className="btn btn-secondary" href="/dashboard?tab=listings">Back to my listings</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ---- published: confirmation with next steps ----
   if (created) {
@@ -442,13 +600,14 @@ export default function SellPage() {
   return (
     <div className="sl-page">
       <header className="sl-head">
-        <span className="sl-eyebrow">List your business</span>
-        <h1>{stepTitles[step].h}</h1>
-        <p>{stepTitles[step].p}</p>
+        <span className="sl-eyebrow">{isEdit ? "Edit listing" : "List your business"}</span>
+        <h1>{isEdit && step === 2 ? "Update your listing" : stepTitles[step].h}</h1>
+        <p>{isEdit && step === 2 ? "Change photos, details, price or where you supply. Save when you are done." : stepTitles[step].p}</p>
       </header>
 
       <ol className="sl-steps" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
         {STEPS.map((st, i) => {
+          if (isEdit && i === 0) return null; // type is fixed once a listing exists
           const done = i < step;
           const reachable = i <= step;
           return (
@@ -530,7 +689,7 @@ export default function SellPage() {
             </p>
           )}
           <div className="sl-actions">
-            <Button variant="ghost" onClick={() => goStep(0)}>← Back</Button>
+            <Button variant="ghost" onClick={() => goStep(isEdit ? 2 : 0)}>← Back</Button>
             <Button
               variant="primary"
               onClick={() => {
@@ -646,6 +805,9 @@ export default function SellPage() {
                 error={detailErrors.location}
                 options={[
                   { value: LOC_PAN, label: "All over India" },
+                  ...(isEdit && locChoice === LOC_CURRENT
+                    ? [{ value: LOC_CURRENT, label: `${city}${state ? ", " + state : ""} (current)` }]
+                    : []),
                   ...sellerLocations.map((l) => ({
                     value: l.id,
                     label: `${l.label}, ${l.city}${l.state ? ", " + l.state : ""}`,
@@ -720,10 +882,14 @@ export default function SellPage() {
           <div className="sl-actions">
             <Button variant="ghost" onClick={() => goStep(1)}>← Back</Button>
             <Button variant="primary" onClick={submit} disabled={submitting}>
-              {submitting ? "Publishing…" : "Publish listing"}
+              {submitting ? (isEdit ? "Saving…" : "Publishing…") : isEdit ? "Save changes" : "Publish listing"}
             </Button>
           </div>
-          <p className="sl-note sl-foot">You can edit or remove it any time from your dashboard.</p>
+          <p className="sl-note sl-foot">
+            {isEdit
+              ? "Changing photos, the name, the description or the category means our team checks the listing again before buyers see it."
+              : "You can edit or remove it any time from your dashboard."}
+          </p>
         </div>
       )}
     </div>

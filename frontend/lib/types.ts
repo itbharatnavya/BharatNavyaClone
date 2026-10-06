@@ -488,7 +488,7 @@ export interface RecentActivityItem {
 // ============================================================
 // Reach tools — Blog & Story
 // ============================================================
-export type BlogStatus = "draft" | "published";
+export type BlogStatus = "draft" | "published" | "hidden"; // hidden = moderator-set, read-only for authors
 
 // Author denormalized server-side (backend/routes/blogs.js's attachAuthors) — present
 // once the author has a sellerProfile or employerProfile; absent (undefined) otherwise.

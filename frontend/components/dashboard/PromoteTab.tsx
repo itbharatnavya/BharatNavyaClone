@@ -58,6 +58,8 @@ function statusStyle(status: string): { bg: string; color: string; label: string
       return { bg: "#DCFCE7", color: "#166534", label: "Active" };
     case "rejected":
       return { bg: "#F1F5F9", color: "#475569", label: "Rejected" };
+    case "expired":
+      return { bg: "#F1F5F9", color: "#475569", label: "Ended" };
     case "pending":
     default:
       return { bg: "#E3EBFF", color: "#1B3FA0", label: "Pending review" };
@@ -107,7 +109,8 @@ export default function PromoteTab({ user }: Props) {
   const listingOptions = useMemo(
     () => [
       { value: "", label: "Select one of your listings…" },
-      ...listings.map((l) => ({ value: l.id, label: l.title })),
+      // Only a live listing can be boosted (the API refuses anything else).
+      ...listings.filter((l) => l.status === "active").map((l) => ({ value: l.id, label: l.title })),
     ],
     [listings]
   );
@@ -294,6 +297,15 @@ export default function PromoteTab({ user }: Props) {
                       <>
                         <span aria-hidden>·</span>
                         <span>{formatDate(b.createdAt)}</span>
+                      </>
+                    )}
+                    {(b.status === "active" || b.status === "expired") && b.expiresAt && (
+                      <>
+                        <span aria-hidden>·</span>
+                        <span>
+                          {b.status === "active" ? "Runs until " : "Ended "}
+                          {formatDate(b.expiresAt)}
+                        </span>
                       </>
                     )}
                   </div>

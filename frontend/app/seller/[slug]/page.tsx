@@ -118,7 +118,7 @@ export default function CompanyProfilePage() {
           </section>;
         })}
 
-        <div className="bn-bottom-ad is-980"><ApiAdvertisingSlot compact placement={["seller_profile", "category_top"]} kind="native" context="Sponsored near company profiles" summary="A relevant promoted company or service, kept separate from this company’s own evidence and reviews." action="View promoted record" /></div>
+        <div className="bn-bottom-ad is-980"><ApiAdvertisingSlot compact placement="category_top" kind="native" context="Sponsored near company profiles" summary="A relevant promoted company or service, kept separate from this company’s own evidence and reviews." action="View promoted record" /></div>
 
         <section className="cp-block" aria-labelledby="cp-reviews">
           <h2 id="cp-reviews">Reviews</h2>
@@ -133,7 +133,7 @@ export default function CompanyProfilePage() {
           <a className="cp-button is-block" href={inquiryHref}>{seller.contactEmail ? "Start an inquiry" : "Sign in to inquire"}</a>
           <small>Contact details and response expectations come from the company record.</small>
         </div>
-      <div className="bn-side-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement={["seller_profile", "category_top"]} kind="native" context="Sponsored" summary="" action="View promotion" /></div>
+      <div className="bn-side-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement="category_top" kind="native" context="Sponsored" summary="" action="View promotion" /></div>
       </aside>
     </div>
     <a className="ld-mobile-cta" href="#cp-inquiry">Contact company</a>
