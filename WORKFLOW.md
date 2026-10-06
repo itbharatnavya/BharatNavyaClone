@@ -168,6 +168,18 @@ offline for general questions. The owner plans to rename this assistant later (U
 
 ---
 
+### 2026-10-06 — Testing server deploy: migrations 0017 + 0018, seller tools, OTP fix live
+
+- Testing Neon DB: applied `0017_add_fcm_tokens.sql`, `0017_add_otp_codes.sql`, then
+  `0018_blog_excerpt_boost_expiry.sql` through `npm run migrate-schema`. 20 applied, 0 pending.
+- Backend `bharatnavya-api` and frontend `bharatnavya` redeployed with `vercel deploy --prod`.
+- Live checks passed: login page and admin page 200; unauthenticated `/me` and bogus Google
+  token 401; admin login ok; OTP send/verify 200; upload returned a `*.public.blob.vercel-storage.com`
+  URL, so the testing server uses `UPLOAD_STORAGE=vercel-blob`.
+- Local dev stays on `UPLOAD_STORAGE=local`. Live will need a storage decision (S3 or Blob) before go-live.
+- Docs: `CHANGES-SELLER-TOOLS.md` storage section corrected (was wrongly "must be s3").
+- Seller-tools commits on the branch: `0563a53` backend, `a0ef06f` frontend, `a44d768` docs.
+
 ### 2026-10-06 — OTP codes moved to Postgres; OTP echo flag for the testing server
 
 **Why:** OTP codes lived in an in-process `Map` (`lib/auth.js`). Vercel runs each request on

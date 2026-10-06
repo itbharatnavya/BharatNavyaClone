@@ -109,13 +109,15 @@ one additive line (`brand-detail`, `listing-detail`, `listings-browse`, `listing
 - Bulk rows keep a placeholder category photo until the seller edits them; bulk has no image column.
 - `GET /api/listings/:id` is public for listings in any status (pending / rejected too). Pre-existing, untouched.
 - Self-serve ads still have no payment step (admin sets price) — unchanged by design.
-- Local image storage doesn't persist on Vercel; the testing/prod backend needs `UPLOAD_STORAGE=s3`
-  (see HANDOVER.md "File storage") or photos, ad creatives and blog covers will not survive.
+- Upload storage is chosen by `UPLOAD_STORAGE` (`backend/lib/uploadStorage.js`). Local disk does not
+  persist on Vercel. Current setup: **local** on developer machines (`frontend/public/uploads/`),
+  **`vercel-blob`** on the testing server (Blob store linked to the backend project, so
+  `BLOB_READ_WRITE_TOKEN` is present). `s3` remains the planned option for live — decide before go-live.
 
 ## 5. Rolling out to the testing server (when approved)
 1. `PG_URL=<neon-url> npm run migrate-schema:status` then `npm run migrate-schema` (applies 0018; also shows whether
    0016 / 0017 were ever applied there).
 2. Deploy backend + frontend.
 3. Seed Directory ads on the testing DB (it has none) or create a few via `/admin` → Ads.
-4. Confirm `UPLOAD_STORAGE=s3` is set and upload one photo end to end.
+4. Confirm the testing server's `UPLOAD_STORAGE` is `vercel-blob` and upload one photo end to end.
 5. Re-run the probe checks against the testing URL (read-only first).

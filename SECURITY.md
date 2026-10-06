@@ -57,8 +57,17 @@ machine on a shared/office network**. See also **HANDOVER.md** and **CLAUDE.md**
       e.g. `express-rate-limit`. Currently none.
 - [ ] **Confirm input validation coverage.** `zod` and `lib/validate.js` exist — verify every
       write route validates its body (see DIRECTORY.md for which are partial).
-- [ ] **OTP delivery:** in dev the login OTP is returned in the API response for convenience.
-      **Ensure it is NOT returned in production** and is actually sent via SMS. (Grep `routes/auth.js` for the OTP-in-response path.)
+- [ ] **OTP delivery (go-live blocker):** the login OTP is currently echoed in the `send-otp`
+      response (toast) because there is no SMS gateway. Before production:
+      1. Integrate an SMS provider and send the code by SMS in `modules/identity/routes/auth.routes.js`
+         `POST /api/auth/send-otp`. Remove the `data.otp` echo from that response entirely.
+      2. Confirm `OTP_ECHO` is NOT set on the production Vercel env (it is `true` on the testing
+         server only). Confirm `NODE_ENV=production` there.
+      3. Confirm the dev master code `123456` is rejected on production (`lib/auth`/`verify-otp`
+         only accept it when `isDev`). Live check: `verify-otp` with `123456` → 401.
+      4. Confirm migration `0017_add_otp_codes.sql` is applied on the production DB (OTP codes are
+         stored in Postgres, `modules/identity` `issueOtp`/`consumeOtp`).
+      5. Consider a per-mobile send limit on top of the IP/mobile auth limiter to stop SMS pumping.
 - [ ] **File-DB durability:** `lib/store.js` uses `proper-lockfile`, but confirm writes are
       atomic (write-temp-then-rename) and add a **backup/snapshot** of `backend/DB/` (cron copy or
       git-crypt private repo). A crash mid-write must not corrupt a collection. (See DIRECTORY.md P0.)
