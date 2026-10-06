@@ -23,6 +23,14 @@ const links = [
   { href: "/about", label: "About", match: (path: string) => path === "/about" },
 ];
 
+// "Products" groups the two suite products under one menu item; hovering, focusing or tapping it opens a small panel.
+const PRODUCTS = [
+  { href: "/directory", label: "Directory", blurb: "Companies, products and services", icon: <svg aria-hidden viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11" /><path d="M9 20v-6h6v6" /></svg> },
+  { href: "/recruitment", label: "Recruitment", blurb: "Roles, employers and hiring", icon: <svg aria-hidden viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="2" /><path d="M9 7.5V6a3 3 0 0 1 6 0v1.5M3.5 13h17" /></svg> },
+];
+
+function Chevron() { return <svg aria-hidden viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>; }
+
 function MenuIcon({ open }: { open: boolean }) {
   return open ? <svg aria-hidden viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg> : <svg aria-hidden viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>;
 }
@@ -34,6 +42,11 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const [productsOpen, setProductsOpen] = useState(false);
+  const productsRef = useRef<HTMLDivElement>(null);
+  const productsTimer = useRef<number | undefined>(undefined);
+  const openProducts = () => { window.clearTimeout(productsTimer.current); setProductsOpen(true); };
+  const closeProductsSoon = () => { window.clearTimeout(productsTimer.current); productsTimer.current = window.setTimeout(() => setProductsOpen(false), 140); };
   const { progress } = useSearchDock();
   const directoryDocked = (pathname === "/directory" || pathname === "/search") && progress > 0;
   const recruitmentDocked = (pathname === "/recruitment" || pathname === "/recruitment/jobs") && progress > 0;
@@ -48,7 +61,16 @@ export default function Navbar() {
   const inDirectoryContext = links[1].match(pathname) || pathname === "/dashboard";
   const inRecruitmentContext = links[2].match(pathname) || pathname === "/recruitment/dashboard";
 
-  useEffect(() => { setMenuOpen(false); setAccountOpen(false); }, [pathname]);
+  useEffect(() => { setMenuOpen(false); setAccountOpen(false); setProductsOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!productsOpen) return;
+    const close = (event: MouseEvent) => { if (!productsRef.current?.contains(event.target as Node)) setProductsOpen(false); };
+    const esc = (event: KeyboardEvent) => { if (event.key === "Escape") setProductsOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, [productsOpen]);
+  const inProducts = inDirectoryContext || inRecruitmentContext;
   useEffect(() => {
     if (!accountOpen) return;
     const close = (event: MouseEvent) => { if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false); };
@@ -67,7 +89,17 @@ export default function Navbar() {
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" /><span className="bn-mark" aria-hidden>{/* eslint-disable @next/next/no-img-element */}<img src="/brand/bn-navy.png" alt="" /><img className="is-white" src="/brand/bn-white.png" alt="" /><img className="is-green" src="/brand/bn-green.png" alt="" /><img className="is-orange" src="/brand/bn-orange.png" alt="" /></span>
         </Link>
         {!searchDocked && <nav className="bn-primary-nav" aria-label="Primary navigation">
-          {links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}
+          <Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link>
+          <div className={`bn-nav-products${productsOpen ? " is-open" : ""}`} ref={productsRef} onMouseEnter={openProducts} onMouseLeave={closeProductsSoon}>
+            <button type="button" className="bn-nav-trigger" aria-expanded={productsOpen} aria-haspopup="true" aria-current={inProducts ? "page" : undefined} onClick={() => setProductsOpen((value) => !value)} onFocus={openProducts}>Products<Chevron /></button>
+            <div className="bn-nav-panel" role="menu" aria-label="Products">
+              {PRODUCTS.map((item) => <Link key={item.href} href={item.href} role="menuitem" className={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "is-current" : undefined} onClick={() => setProductsOpen(false)}>
+                <span className="bn-nav-panel-icon">{item.icon}</span>
+                <span><strong>{item.label}</strong><small>{item.blurb}</small></span>
+              </Link>)}
+            </div>
+          </div>
+          <Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>
         </nav>}
         {directoryDocked && <DirectoryDockedSearch />}
         {recruitmentDocked && <RecruitmentDockedSearch />}
@@ -90,7 +122,7 @@ export default function Navbar() {
             </div>}
           </div>}
           <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}><MenuIcon open={menuOpen} /></button>
-          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation">{links.map((link) => <Link key={link.href} href={link.href} aria-current={link.match(pathname) ? "page" : undefined}>{link.label}</Link>)}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
+          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
         </div>
       </div>
     </header>

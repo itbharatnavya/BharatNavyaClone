@@ -5852,3 +5852,26 @@ small { font-size: var(--fs-xs); }
 :is(.hs-sec, .ps-sec):not(#_) { padding-block: calc(var(--counter-section-gap) / 2); }
 :is(.hs-sec, .ps-sec):first-child:not(#_) { padding-top: 0; }
 :is(.hs-sec, .ps-sec):last-child:not(#_) { padding-bottom: 0; }
+
+/* Header "Products" menu: Home · Products · About. Products opens a small panel to choose Directory or Recruitment. */
+.bn-nav-products { position: relative; display: flex; align-items: center; }
+.bn-header .bn-primary-nav .bn-nav-trigger { height: 2.75rem; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0 1rem 0 1.15rem; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--counter-muted); font: 650 inherit/1 var(--font-anek-latin), sans-serif; font-size: inherit; cursor: pointer; transition: background-color 0.2s ease; }
+.bn-header .bn-primary-nav .bn-nav-trigger svg { width: 0.95rem; height: 0.95rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease; }
+.bn-header .bn-primary-nav .bn-nav-trigger:hover, .bn-nav-products.is-open .bn-nav-trigger:not([aria-current]) { background: color-mix(in srgb, var(--counter-ink) 7%, transparent); }
+.bn-header .bn-primary-nav .bn-nav-trigger[aria-current="page"] { background: var(--counter-indigo); color: white; }
+.bn-nav-products.is-open .bn-nav-trigger svg { transform: rotate(180deg); }
+.bn-header .bn-primary-nav .bn-nav-trigger:focus-visible { outline: 3px solid var(--counter-focus); outline-offset: 2px; }
+.bn-nav-panel { position: absolute; z-index: 60; top: calc(100% + 0.6rem); left: 50%; width: 22rem; display: grid; gap: 0.35rem; padding: 0.5rem; border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: white; box-shadow: var(--counter-shadow-lift, 0 18px 40px rgb(18 48 126 / 0.16)); opacity: 0; visibility: hidden; transform: translate(-50%, -6px); transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s linear 0.16s; }
+.bn-nav-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -0.7rem; height: 0.7rem; } /* hover bridge */
+.bn-nav-products.is-open .bn-nav-panel { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
+.bn-header .bn-primary-nav .bn-nav-panel a { height: auto; display: grid; justify-items: start; place-items: center start; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0.75rem; padding: 0.7rem 0.8rem; border-radius: var(--r-md); background: transparent; color: var(--counter-ink); font-family: var(--font-work-sans), sans-serif; font-weight: 400; text-align: left; }
+.bn-header .bn-primary-nav .bn-nav-panel a:hover, .bn-header .bn-primary-nav .bn-nav-panel a:focus-visible { background: color-mix(in srgb, var(--counter-indigo) 7%, white); }
+.bn-header .bn-primary-nav .bn-nav-panel a.is-current { background: color-mix(in srgb, var(--counter-indigo) 10%, white); }
+.bn-nav-panel strong { display: block; color: var(--counter-ink); font: 700 var(--fs-md)/1.2 var(--font-anek-latin), sans-serif; }
+.bn-nav-panel small { display: block; margin-top: 0.1rem; color: var(--counter-muted); font-size: var(--fs-sm); }
+.bn-nav-panel-icon { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: var(--r-sm); background: var(--counter-indigo); color: white; }
+.bn-nav-panel-icon svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) { .bn-nav-panel, .bn-nav-trigger svg { transition: none; } }
+/* Mobile menu: Products is a small heading with its two items indented under it. */
+.bn-mobile-nav .bn-mobile-nav-group { padding: 0.6rem 1rem 0.2rem; color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.bn-mobile-nav a.is-sub { padding-left: 1.75rem !important; }
