@@ -33,7 +33,7 @@ const LISTING_COLUMNS = {
   boostToTopLastUsed: col("boost_to_top_last_used", ts), manualPinRank: col("manual_pin_rank", i),
   locationId: col("location_id", t), views: col("views", i), panIndia: col("pan_india", b),
   productKey: col("product_key", t), serviceCities: col("service_cities", arr),
-  verification: col("verification", "jsonb"),
+  verification: col("verification", "jsonb"), rankBoostEndDate: col("rank_boost_end_date", ts),
 };
 const LISTING_NESTED = [
   { docKey: "location", fields: {

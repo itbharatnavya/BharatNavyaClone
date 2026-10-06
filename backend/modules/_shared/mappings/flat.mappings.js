@@ -145,7 +145,7 @@ function buildFlatConfigs(nextId) {
         id: col("id", t), sellerId: col("seller_id", t), title: col("title", t), slug: col("slug", t),
         coverImage: col("cover_image", t), body: col("body", t), categoryId: col("category_id", t),
         tags: col("tags", arr), status: col("status", t), publishedAt: col("published_at", ts), views: col("views", i),
-        authorType: col("author_type", t),
+        authorType: col("author_type", t), excerpt: col("excerpt", t), createdAt: col("created_at", ts),
       },
     },
     {
@@ -155,6 +155,7 @@ function buildFlatConfigs(nextId) {
         id: col("id", t), sellerId: col("seller_id", t), listingId: col("listing_id", t),
         boostType: col("boost_type", t), days: col("days", i), amount: col("amount", n), status: col("status", t),
         createdAt: col("created_at", ts), approvedAt: col("approved_at", ts),
+        rejectedAt: col("rejected_at", ts), expiresAt: col("expires_at", ts),
       },
     },
     {

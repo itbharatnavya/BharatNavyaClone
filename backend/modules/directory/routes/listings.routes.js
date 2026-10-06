@@ -20,7 +20,7 @@ const { searchListings, computeFacets, slugify } = require("../../../lib/search"
 const { rankListings } = require("../../../lib/ranking");
 const { coordsForCity, distanceKm } = require("../../../lib/geo");
 const { resolveSellerLocations } = require("../../../lib/sellerLocations");
-const { verifyListing } = require("../../../lib/listingVerification");
+const { verifyListing, deterministicChecks } = require("../../../lib/listingVerification");
 const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const DETERMINISTIC_SORTS = new Set(["price_asc", "price_desc", "rating", "newest"]);
@@ -844,7 +844,7 @@ router.post("/bulk", authGuard, async (req, res, next) => {
           locationId: null,
           panIndia,
           serviceCities: [],
-          status: "active",
+          status: "pending", // bulk rows are never published blind — see verification below
           createdAt: new Date().toISOString(),
           rating: 0,
           reviewCount: 0,
@@ -861,6 +861,24 @@ router.post("/bulk", authGuard, async (req, res, next) => {
         };
         // Stamp the multi-vendor grouping key (brand + title) like the single-create path.
         listing.productKey = productKeyOf(listing);
+
+        // Bulk rows skip the per-row AI review (a 200-row sheet would mean 200 CLI calls)
+        // but must not skip verification: they carry the deterministic checks and are held
+        // as needs_review, so an admin approves them from the same queue
+        // (/admin → listing verification, incl. "approve many") before they go live.
+        const det = deterministicChecks(listing);
+        listing.verification = {
+          status: "needs_review",
+          score: det.score,
+          aiRan: false,
+          deterministicChecks: det.checks,
+          ai: null,
+          summary: "Bulk upload — held for admin review before going live.",
+          createdAt: new Date().toISOString(),
+          reviewedBy: null,
+          reviewedAt: null,
+          source: "bulk",
+        };
 
         await directory.listingsRepo.insert(listing, "lst");
         created += 1;
@@ -879,6 +897,22 @@ router.post("/bulk", authGuard, async (req, res, next) => {
 });
 
 /* ----------------------------------------------- PUT /:id (update) --------- */
+
+// Fields a buyer sees and that verification judged: if any changed, the old approval no
+// longer vouches for the listing. Compared after normalisation (media by URL list).
+function isMaterialChange(listing, patch) {
+  const urls = (m) => (Array.isArray(m) ? m.map((x) => (x && x.url) || "").join("|") : "");
+  const norm = (v) => String(v == null ? "" : v).trim();
+  if (patch.media !== undefined && urls(patch.media) !== urls(listing.media)) return true;
+  if (patch.title !== undefined && norm(patch.title) !== norm(listing.title)) return true;
+  if (patch.description !== undefined && norm(patch.description) !== norm(listing.description)) return true;
+  if (patch.categoryId !== undefined && norm(patch.categoryId) !== norm(listing.categoryId)) return true;
+  if (patch.product && typeof patch.product === "object") {
+    const oldBrand = norm(listing.product && listing.product.brand);
+    if (patch.product.brand !== undefined && norm(patch.product.brand) !== oldBrand) return true;
+  }
+  return false;
+}
 
 router.put("/:id", authGuard, async (req, res, next) => {
   try {
@@ -1005,9 +1039,46 @@ router.put("/:id", authGuard, async (req, res, next) => {
       }
     }
 
+    // A raw city/state location (the edit form's "current location" choice) gets its geo
+    // coordinates stamped the same way create does, so "near me" search keeps working.
+    if (patch.location && patch.location.city && !patch.panIndia && patch.location.lat === undefined) {
+      const coords = coordsForCity(patch.location.city);
+      if (coords) patch.location = { ...patch.location, lat: coords.lat, lng: coords.lng };
+    }
+
     // Re-stamp the multi-vendor grouping key from the merged title/brand (store.update
     // shallow-merges, so `product` is replaced wholesale when patched).
     patch.productKey = productKeyOf({ ...listing, ...patch });
+
+    // RE-VERIFICATION: a seller can't change what a buyer sees (photos, title, description,
+    // category, brand) on an already-approved listing and keep the approval. Material edits
+    // by a non-admin run the same verifier as create; an admin edit is trusted as-is. A price
+    // / status / location-only edit is not material and never re-queues the listing.
+    if (!isAdmin && isMaterialChange(listing, patch)) {
+      const merged = { ...listing, ...patch };
+      const verification = await verifyListing(merged);
+      patch.verification = {
+        status: verification.status,
+        score: verification.score,
+        aiRan: verification.aiRan,
+        deterministicChecks: verification.deterministic.checks,
+        ai: verification.ai,
+        summary: verification.summary,
+        createdAt: verification.checkedAt,
+        reviewedBy: null,
+        reviewedAt: null,
+        reverifiedAfterEdit: true,
+      };
+      const requested = patch.status !== undefined ? patch.status : listing.status;
+      if (verification.status === "auto_approved") {
+        // Passed again: keep what the seller asked for, but a held listing goes live.
+        patch.status = requested === "pending" || requested === "rejected" ? "active" : requested;
+      } else if (["inactive", "sold", "draft"].includes(requested)) {
+        patch.status = requested; // seller is taking it down anyway — keep that, flag stays on record
+      } else {
+        patch.status = "pending"; // held for an admin until they approve it again
+      }
+    }
 
     const updated = await directory.listingsRepo.update(req.params.id, patch);
     return res.json({ success: true, data: updated });

@@ -31,6 +31,7 @@ function uploadFail(res, err, next) {
 const inquiriesRepo = repoForCollection("inquiries.json");
 
 const plansRepo = repoForCollection("subscription-plans.json");
+const { PLACEMENT_KEYS, isValidPlacement } = require("../../../lib/adPlacements");
 const adSlotsRepo = repoForCollection("ad-slots.json");
 const adBookingsRepo = repoForCollection("ad-bookings.json");
 const paymentsRepo = repoForCollection("payment-records.json");
@@ -527,9 +528,28 @@ function normaliseBooking(body) {
   };
 }
 
+// A booking can only be served where a page actually has a slot for it, and only with a
+// link to send people to — reject anything else up front instead of saving an ad that
+// never renders.
+function bookingProblem(b, { requireLinkIfServing }) {
+  if (b.placementType !== undefined && !isValidPlacement(b.placementType)) {
+    return `placementType must be one of: ${PLACEMENT_KEYS.join(", ")}`;
+  }
+  const serving = ["active", "scheduled"].includes(b.status);
+  if (requireLinkIfServing && serving && !(typeof b.targetUrl === "string" && b.targetUrl.trim())) {
+    return "A link (targetUrl) is required before a campaign can go live";
+  }
+  return null;
+}
+
 // POST /ad-bookings — AdBooking (DESIGN §3.6). id adb_xxx.
 router.post("/ad-bookings", async (req, res, next) => {
   try {
+    const problem = bookingProblem(
+      { placementType: (req.body || {}).placementType, status: (req.body || {}).status, targetUrl: (req.body || {}).targetUrl },
+      { requireLinkIfServing: true }
+    );
+    if (problem) return res.status(400).json({ success: false, error: problem });
     const booking = {
       ...normaliseBooking(req.body || {}),
       createdAt: new Date().toISOString(),
@@ -565,6 +585,16 @@ router.put("/ad-bookings/:id", async (req, res, next) => {
     ];
     for (const f of fields) {
       if (body[f] !== undefined) patch[f] = body[f];
+    }
+    {
+      const existing = await adBookingsRepo.findById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, error: "Ad booking not found" });
+      const merged = { ...existing, ...patch };
+      const problem = bookingProblem(
+        { placementType: patch.placementType, status: merged.status, targetUrl: merged.targetUrl },
+        { requireLinkIfServing: patch.status !== undefined || patch.targetUrl !== undefined }
+      );
+      if (problem) return res.status(400).json({ success: false, error: problem });
     }
     if (patch.creativeImageUrl !== undefined) {
       patch.creativeImageUrl = await resolveUpload(patch.creativeImageUrl);

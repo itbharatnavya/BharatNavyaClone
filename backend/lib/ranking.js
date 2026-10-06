@@ -52,6 +52,15 @@ function featuredActive(listing, now) {
   return now >= start && now <= end;
 }
 
+/** A seller-bought rank/category-top boost lapses at rankBoostEndDate; null = no expiry
+ *  (admin-set and legacy boosts keep applying exactly as before). */
+function rankBoostValue(listing, now) {
+  const score = Number(listing.rankBoostScore) || 0;
+  if (!score) return 0;
+  const end = listing.rankBoostEndDate ? Date.parse(listing.rankBoostEndDate) : Infinity;
+  return now <= end ? score : 0;
+}
+
 /** Relevance floor: is this listing eligible to receive paid boost for the current
  *  query/category context? Paid boost is only allowed on already-relevant results. */
 function isEligible(listing, { query, categorySlug }) {
@@ -131,7 +140,7 @@ async function rankListings(listings, { query, categorySlug, tierBySeller } = {}
 
     // ---- paid boost ----
     const tier = tierMap.get(l.sellerId) || "none";
-    const normBoost = Math.min(1, Math.max(0, (l.rankBoostScore || 0) / RANK_BOOST_CAP));
+    const normBoost = Math.min(1, Math.max(0, rankBoostValue(l, now) / RANK_BOOST_CAP));
     const tierBaseline = TIER_BASELINE[tier] || 0;
     const featuredBonus = featuredActive(l, now) ? FEATURED_BONUS : 0;
     const paidBoost = Math.min(1, normBoost + tierBaseline + featuredBonus);

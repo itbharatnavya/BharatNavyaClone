@@ -239,7 +239,8 @@ CREATE TABLE IF NOT EXISTS listings (
   -- AI-VERIFICATION GATE (backend/lib/listingVerification.js): the whole
   -- { status, score, aiRan, deterministicChecks, ai, summary, reviewedBy, ... }
   -- object, round-tripped as-is (mirrors the file-DB shape 1:1).
-  verification           JSONB
+  verification           JSONB,
+  rank_boost_end_date    TIMESTAMPTZ -- see schema-migrations/0018
 );
 CREATE INDEX IF NOT EXISTS listings_seller_idx ON listings(seller_id);
 CREATE INDEX IF NOT EXISTS listings_category_idx ON listings(category_id);
@@ -383,7 +384,9 @@ CREATE TABLE IF NOT EXISTS blogs (
   status        TEXT,
   published_at  TIMESTAMPTZ,
   views         INTEGER NOT NULL DEFAULT 0,
-  author_type   TEXT NOT NULL DEFAULT 'seller' -- 'seller' | 'employer' — see schema-migrations/0007
+  author_type   TEXT NOT NULL DEFAULT 'seller', -- 'seller' | 'employer' — see schema-migrations/0007
+  excerpt       TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now() -- see schema-migrations/0018
 );
 
 CREATE TABLE IF NOT EXISTS boost_requests (
@@ -395,7 +398,9 @@ CREATE TABLE IF NOT EXISTS boost_requests (
   amount       NUMERIC(12,2),
   status       TEXT,
   created_at   TIMESTAMPTZ,
-  approved_at  TIMESTAMPTZ
+  approved_at  TIMESTAMPTZ,
+  rejected_at  TIMESTAMPTZ,
+  expires_at   TIMESTAMPTZ -- see schema-migrations/0018
 );
 
 CREATE TABLE IF NOT EXISTS category_suggestions (

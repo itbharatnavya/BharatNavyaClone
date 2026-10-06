@@ -26,16 +26,7 @@ function uploadFail(res, err, next) {
   return next(err);
 }
 
-const PLACEMENTS = [
-  "category_top",
-  "search_top",
-  "home_hero",
-  // Recruitment (RECRUITMENT.md) — same booking pipeline (pending → admin
-  // review → served by routes/ads.js), just its own placement slots so a
-  // Directory campaign never mixes into a Recruitment page or vice versa.
-  "recruitment_home",
-  "recruitment_search_top",
-];
+const { PLACEMENT_KEYS: PLACEMENTS } = require("../../../lib/adPlacements");
 
 function isAdmin(user) {
   return !!user && (user.roles || []).includes("admin");
@@ -60,6 +51,13 @@ router.post("/", authGuard, async (req, res, next) => {
     if (!creativeImageUrl) {
       return res.status(400).json({ success: false, error: "An ad image is required" });
     }
+    // Where the ad sends people. A listing ad defaults to its own page; any other ad needs
+    // an explicit link — a slot only renders an ad that has image + headline + link.
+    let targetUrl = typeof body.targetUrl === "string" ? body.targetUrl.trim() : "";
+    if (!targetUrl && body.listingId) targetUrl = `/listing/${body.listingId}`;
+    if (!targetUrl) {
+      return res.status(400).json({ success: false, error: "A link (where the ad should send people) is required" });
+    }
     if (!headline) {
       return res.status(400).json({ success: false, error: "A headline is required" });
     }
@@ -83,8 +81,7 @@ router.post("/", authGuard, async (req, res, next) => {
       categoryIds,
       creativeImageUrl: await resolveUpload(creativeImageUrl),
       headline,
-      targetUrl:
-        (typeof body.targetUrl === "string" && body.targetUrl.trim()) || null,
+      targetUrl,
       startDate: body.startDate || null,
       endDate: body.endDate || null,
       priority: 0, // FORCED
@@ -136,7 +133,11 @@ router.put("/:id", authGuard, async (req, res, next) => {
     if (body.creativeImageUrl !== undefined) {
       patch.creativeImageUrl = await resolveUpload(String(body.creativeImageUrl).trim());
     }
-    if (body.targetUrl !== undefined) patch.targetUrl = (typeof body.targetUrl === "string" && body.targetUrl.trim()) || null;
+    if (body.targetUrl !== undefined) {
+      const t = typeof body.targetUrl === "string" ? body.targetUrl.trim() : "";
+      if (!t) return res.status(400).json({ success: false, error: "A link (where the ad should send people) is required" });
+      patch.targetUrl = t;
+    }
     if (body.startDate !== undefined) patch.startDate = body.startDate || null;
     if (body.endDate !== undefined) patch.endDate = body.endDate || null;
     if (body.status !== undefined) {

@@ -40,6 +40,17 @@ const BOOST_LABELS = {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+const MAX_BOOST_DAYS = 365;
+
+// An approved boost whose window has passed reads as "expired" — computed, not stored,
+// so nothing needs a scheduler (serverless-safe) and the DB row stays the audit trail.
+function withExpiry(r, now) {
+  if (r.status === "active" && r.expiresAt && Date.parse(r.expiresAt) < now) {
+    return { ...r, status: "expired" };
+  }
+  return r;
+}
+
 /** Coerce a loose value to a finite Number, or null. */
 function num(v) {
   if (v === undefined || v === null || v === "") return null;
@@ -64,10 +75,11 @@ router.post("/", authGuard, async (req, res, next) => {
         error: "boostType must be one of feature|category_top|rank",
       });
     }
-    if (days === null || days <= 0) {
-      return res
-        .status(400)
-        .json({ success: false, error: "days must be a positive number" });
+    if (days === null || !Number.isInteger(days) || days <= 0 || days > MAX_BOOST_DAYS) {
+      return res.status(400).json({
+        success: false,
+        error: `days must be a whole number between 1 and ${MAX_BOOST_DAYS}`,
+      });
     }
 
     // The listing must exist AND belong to the requesting seller.
@@ -79,6 +91,25 @@ router.post("/", authGuard, async (req, res, next) => {
       return res
         .status(403)
         .json({ success: false, error: "You can only boost your own listings" });
+    }
+
+    if (listing.status !== "active") {
+      return res.status(400).json({
+        success: false,
+        error: "Only a live (active) listing can be boosted",
+      });
+    }
+
+    // One open request per listing + boost type: stops accidental double-submits and
+    // double-charging the same boost.
+    const open = await boostsRepo.findMany({
+      where: { sellerId: req.user.id, listingId, boostType, status: "pending" },
+    });
+    if (open.length > 0) {
+      return res.status(409).json({
+        success: false,
+        error: "You already have a pending request for this boost on this listing",
+      });
     }
 
     const request = {
@@ -103,7 +134,9 @@ router.get("/", authGuard, async (req, res, next) => {
     const requests = await boostsRepo.findMany({ where: { sellerId: req.user.id } });
     const titleById = await directory.listingTitlesByIds(requests.map((r) => r.listingId));
 
+    const now = Date.now();
     const mine = requests
+      .map((r) => withExpiry(r, now))
       .sort((a, b) =>
         String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
       )
@@ -130,7 +163,9 @@ router.get("/admin", authGuard, requireRole("admin"), async (req, res, next) => 
       identity.getSellerCompanyNames(requests.map((r) => r.sellerId)),
     ]);
 
+    const now = Date.now();
     const rows = requests
+      .map((r) => withExpiry(r, now))
       .sort((a, b) =>
         String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
       )
@@ -164,6 +199,15 @@ router.post(
           .json({ success: false, error: "Boost request not found" });
       }
 
+      // Only a pending request can be approved — a second click (or a stale admin tab)
+      // must not apply the same boost twice.
+      if (request.status !== "pending") {
+        return res.status(409).json({
+          success: false,
+          error: `Request is already ${request.status} — only pending requests can be approved`,
+        });
+      }
+
       const listing = await directory.listingsRepo.getById(request.listingId);
       if (!listing) {
         return res
@@ -171,27 +215,44 @@ router.post(
           .json({ success: false, error: "Listing not found" });
       }
 
-      // Apply the boost to the listing per its type.
+      // Apply the boost to the listing per its type, honouring `days` for every type.
       const now = new Date();
+      const days = Number(request.days) || 0;
       const patch = {};
+      let expiresAt;
       if (request.boostType === "feature") {
+        // Extend an already-running feature window instead of resetting it.
+        const curEnd = listing.featuredEndDate ? Date.parse(listing.featuredEndDate) : 0;
+        const running = listing.isFeatured && curEnd > now.getTime();
+        const base = running ? curEnd : now.getTime();
         patch.isFeatured = true;
-        patch.featuredStartDate = now.toISOString();
-        patch.featuredEndDate = new Date(
-          now.getTime() + (Number(request.days) || 0) * DAY_MS
-        ).toISOString();
-      } else if (request.boostType === "category_top") {
-        patch.rankBoostScore =
-          (Number(listing.rankBoostScore) || 0) + CATEGORY_TOP_DELTA;
-      } else if (request.boostType === "rank") {
-        patch.rankBoostScore =
-          (Number(listing.rankBoostScore) || 0) + RANK_BOOST_DELTA;
+        patch.featuredStartDate = running && listing.featuredStartDate ? listing.featuredStartDate : now.toISOString();
+        expiresAt = new Date(base + days * DAY_MS).toISOString();
+        patch.featuredEndDate = expiresAt;
+      } else {
+        const delta = request.boostType === "category_top" ? CATEGORY_TOP_DELTA : RANK_BOOST_DELTA;
+        const curScore = Number(listing.rankBoostScore) || 0;
+        const curEnd = listing.rankBoostEndDate ? Date.parse(listing.rankBoostEndDate) : null;
+        // A lapsed boost no longer counts; a score with no end date is an admin-set
+        // permanent boost, which stays permanent.
+        const lapsed = curEnd !== null && curEnd < now.getTime();
+        const activeScore = lapsed ? 0 : curScore;
+        patch.rankBoostScore = activeScore + delta;
+        if (activeScore > 0 && curEnd === null) {
+          patch.rankBoostEndDate = null;
+          expiresAt = null;
+        } else {
+          const base = curEnd !== null && !lapsed ? Math.max(curEnd, now.getTime()) : now.getTime();
+          expiresAt = new Date(base + days * DAY_MS).toISOString();
+          patch.rankBoostEndDate = expiresAt;
+        }
       }
       await directory.listingsRepo.update(listing.id, patch);
 
       const updated = await boostsRepo.updateById(request.id, {
         status: "active",
         approvedAt: now.toISOString(),
+        expiresAt,
       });
       return res.json({ success: true, data: updated });
     } catch (err) {
@@ -207,15 +268,22 @@ router.post(
   requireRole("admin"),
   async (req, res, next) => {
     try {
-      const updated = await boostsRepo.updateById(req.params.id, {
-        status: "rejected",
-        rejectedAt: new Date().toISOString(),
-      });
-      if (!updated) {
+      const request = await boostsRepo.findById(req.params.id);
+      if (!request) {
         return res
           .status(404)
           .json({ success: false, error: "Boost request not found" });
       }
+      if (request.status !== "pending") {
+        return res.status(409).json({
+          success: false,
+          error: `Request is already ${request.status} — only pending requests can be rejected`,
+        });
+      }
+      const updated = await boostsRepo.updateById(request.id, {
+        status: "rejected",
+        rejectedAt: new Date().toISOString(),
+      });
       return res.json({ success: true, data: updated });
     } catch (err) {
       next(err);

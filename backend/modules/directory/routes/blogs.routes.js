@@ -16,7 +16,7 @@ const express = require("express");
 const router = express.Router();
 const { repoForCollection } = require("../../_shared");
 const identity = require("../../identity");
-const { authGuard } = require("../../../middleware/authGuard");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
 const { resolveUpload } = require("../../../lib/uploadStorage");
 
 // A media field ("data:" URL → save + swap for the stored /uploads/ path; a plain URL
@@ -29,6 +29,18 @@ function uploadFail(res, err, next) {
 }
 
 const blogsRepo = repoForCollection("blogs.json");
+
+// What an owner may set. "hidden" is a moderator state (moderation.routes) — an owner can
+// neither apply nor lift it; only an admin can.
+const OWNER_STATUSES = new Set(["draft", "published"]);
+const ADMIN_STATUSES = new Set(["draft", "published", "hidden"]);
+const EXCERPT_MAX = 300;
+
+function cleanExcerpt(v) {
+  if (v === undefined || v === null) return null;
+  const t = String(v).trim().slice(0, EXCERPT_MAX);
+  return t || null;
+}
 
 function slugify(s) {
   return String(s || "")
@@ -112,13 +124,39 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// GET /:slug — single blog by slug; increments the view counter.
-router.get("/:slug", async (req, res, next) => {
+// GET /mine — the signed-in author's OWN posts in every state (draft / published /
+// hidden), newest first. The public list only returns published posts, so without this
+// a saved draft would be invisible to the person who wrote it. ?authorType= scopes it to
+// one dashboard (Directory = seller, Recruitment = employer). Registered before /:slug.
+router.get("/mine", authGuard, async (req, res, next) => {
+  try {
+    const { authorType } = req.query;
+    let blogs = await blogsRepo.findMany({ where: { sellerId: req.user.id } });
+    if (authorType) blogs = blogs.filter((b) => (b.authorType || "seller") === authorType);
+    const stamp = (b) => String(b.publishedAt || b.createdAt || "");
+    blogs.sort((a, b) => stamp(b).localeCompare(stamp(a)));
+    return res.json({ success: true, data: await attachAuthors(blogs) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /:slug — single blog by slug; increments the view counter (published posts only).
+// Drafts and moderator-hidden posts are non-existent to the public; the author (and an
+// admin) can still open their own draft to preview it.
+router.get("/:slug", optionalAuth, async (req, res, next) => {
   try {
     const blog = await blogsRepo.findOne({ where: { slug: req.params.slug } });
-    // A moderator-hidden blog is treated as non-existent to the public site.
-    if (!blog || blog.status === "hidden") {
+    if (!blog) {
       return res.status(404).json({ success: false, error: "Blog not found" });
+    }
+    if (blog.status !== "published") {
+      const canPreview =
+        blog.status === "draft" && req.user && (blog.sellerId === req.user.id || isAdmin(req.user));
+      if (!canPreview) {
+        return res.status(404).json({ success: false, error: "Blog not found" });
+      }
+      return res.json({ success: true, data: await attachAuthors(blog) });
     }
     const updated = await blogsRepo.incrementById(blog.id, "views", 1);
     return res.json({ success: true, data: await attachAuthors(updated || blog) });
@@ -133,11 +171,19 @@ router.get("/:slug", async (req, res, next) => {
 // an employerProfile, since that's the newly-exposed capability.
 router.post("/", authGuard, async (req, res, next) => {
   try {
-    const { title, coverImage, body, categoryId, tags, authorType } = req.body || {};
+    const { title, coverImage, body, categoryId, tags, authorType, excerpt, status } = req.body || {};
     if (!title || !body) {
       return res
         .status(400)
         .json({ success: false, error: "title and body are required" });
+    }
+    // A client-sent status is honoured (draft | published). Omitted = published, which
+    // is the long-standing default for API callers that don't send one.
+    const resolvedStatus = status === undefined || status === null ? "published" : status;
+    if (!OWNER_STATUSES.has(resolvedStatus)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "status must be draft or published" });
     }
     const resolvedAuthorType = authorType === "employer" ? "employer" : "seller";
     if (resolvedAuthorType === "employer" && !req.user.employerProfile) {
@@ -150,11 +196,13 @@ router.post("/", authGuard, async (req, res, next) => {
       title,
       slug,
       coverImage: (await resolveUpload(coverImage)) || null,
+      excerpt: cleanExcerpt(excerpt),
       body,
       categoryId: categoryId || null,
       tags: Array.isArray(tags) ? tags : [],
-      status: "published",
-      publishedAt: new Date().toISOString(),
+      status: resolvedStatus,
+      createdAt: new Date().toISOString(),
+      publishedAt: resolvedStatus === "published" ? new Date().toISOString() : null,
       views: 0,
     };
     const created = await blogsRepo.insert(doc, "blog");
@@ -174,14 +222,33 @@ router.put("/:id", authGuard, async (req, res, next) => {
     if (blog.sellerId !== req.user.id && !isAdmin(req.user)) {
       return res.status(403).json({ success: false, error: "Forbidden" });
     }
-    const { title, coverImage, body, categoryId, tags, status } = req.body || {};
+    const { title, coverImage, body, categoryId, tags, status, excerpt } = req.body || {};
     const patch = {};
+    const admin = isAdmin(req.user);
     if (title !== undefined) patch.title = title;
-    if (coverImage !== undefined) patch.coverImage = await resolveUpload(coverImage);
+    if (coverImage !== undefined) patch.coverImage = (await resolveUpload(coverImage)) || null; // "" clears it
     if (body !== undefined) patch.body = body;
     if (categoryId !== undefined) patch.categoryId = categoryId;
     if (tags !== undefined) patch.tags = Array.isArray(tags) ? tags : [];
-    if (status !== undefined) patch.status = status;
+    if (excerpt !== undefined) patch.excerpt = cleanExcerpt(excerpt);
+    if (status !== undefined && status !== blog.status) {
+      const allowed = admin ? ADMIN_STATUSES : OWNER_STATUSES;
+      if (!allowed.has(status)) {
+        return res.status(400).json({
+          success: false,
+          error: admin ? "status must be draft, published or hidden" : "status must be draft or published",
+        });
+      }
+      if (blog.status === "hidden" && !admin) {
+        return res.status(403).json({
+          success: false,
+          error: "This post was hidden by a moderator — only an admin can change its status.",
+        });
+      }
+      patch.status = status;
+      // First time it goes live, stamp the publish date; unpublishing keeps the old one.
+      if (status === "published" && !blog.publishedAt) patch.publishedAt = new Date().toISOString();
+    }
     const updated = await blogsRepo.updateById(blog.id, patch);
     return res.json({ success: true, data: updated });
   } catch (err) {

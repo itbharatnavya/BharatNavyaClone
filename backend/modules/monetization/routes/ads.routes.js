@@ -28,8 +28,14 @@ router.get("/", async (req, res, next) => {
     bookings = bookings.filter((b) => active(b, now));
     if (placement) bookings = bookings.filter((b) => b.placementType === placement);
     if (category) {
+      // `category` may be one slug or a comma-separated path (a listing page sends its whole
+      // category path), so an ad targeted at a parent category still matches a leaf page.
+      const wanted = String(category).split(",").map((s) => s.trim()).filter(Boolean);
       bookings = bookings.filter(
-        (b) => !b.categoryIds || b.categoryIds.length === 0 || b.categoryIds.includes(category)
+        (b) =>
+          !b.categoryIds ||
+          b.categoryIds.length === 0 ||
+          b.categoryIds.some((id) => wanted.includes(id))
       );
     }
     bookings.sort((a, b) => (b.priority || 0) - (a.priority || 0));
