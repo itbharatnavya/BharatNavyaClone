@@ -5882,3 +5882,5 @@ small { font-size: var(--fs-xs); }
 /* Admin sign-in sits on the light-blue canvas like every other sign-in page: a white card, no dark band. */
 .counter-admin-login:not(#_) { background: transparent; }
 .counter-admin-login .card:not(#_) { border-color: var(--counter-line) !important; }
+/* Workspace labels (e.g. "Bharat Navya operations") are plain eyebrows, no leading dash. */
+.counter-workspace-label::before { display: none !important; }
