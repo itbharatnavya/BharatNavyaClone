@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-## START HERE (updated 6 October 2026)
+## START HERE (updated 7 October 2026)
 
 If you are a new Claude/Codex session picking this up, read this block first, then `AGENTS.md`, `DESIGN-SYSTEM.md`, and the dated "what changed" blocks at the end of this file (newest last). Older sections (0 to 11) are history; where they disagree with this block, this block wins.
 
@@ -8,6 +8,8 @@ If you are a new Claude/Codex session picking this up, read this block first, th
 - Repo: `mahir-bharat/BharatNavya` on GitHub. Work branch: `design`. The owner and dev pull `design` and deploy it (Vercel production `bharatnavya.vercel.app` was confirmed serving `design` builds on 5 Oct). Never push anywhere except `origin/design`; never touch `main`.
 - Working copy: the Codex worktree `/Users/parthus/.codex/worktrees/design-integration-merge/BharatConnect` (local branch `codex/design-integration-merge`), pushed with `git push origin HEAD:design`. The main checkout `/Users/parthus/Documents/ChatGPT/BharatConnect` is stale (many commits behind, with uncommitted changes) and the owner said to leave it untouched.
 - "Deploy" from the owner means: commit and push to `origin/design` so the dev can pull. Commit messages end with a `Co-Authored-By` line.
+- Push auth: the active `gh` account on this Mac is the personal `Parthuss`, which cannot see the repo ("Repository not found"). The `itbharatnavya` account is also logged in. Push with it for the one command without switching the default, e.g. `T=$(gh auth token --user itbharatnavya); git -c credential.helper= -c credential.helper="!f(){ echo username=itbharatnavya; echo password=$T; }; f" push origin HEAD:design`. Never print the token.
+- When a change touches `backend/`, tell the owner the dev must redeploy the backend too (7 Oct: the featured-sellers payload gained fields the company cards need).
 
 **Run it**
 - Backend: `cd backend && node index.js` (port 4000, Postgres via `PG_URL` in git-ignored `backend/.env`). Restart after backend edits.
@@ -25,6 +27,10 @@ If you are a new Claude/Codex session picking this up, read this block first, th
 
 **Open threads right now**
 - Header logo redesign (exploration only, not on the platform): `frontend/public/logo-options.html` (uncommitted, view at `http://localhost:3000/logo-options.html`). Owner likes **6B** (logo in the centre of the bar, bar cut around it) and **7B** (logo at the left, bar starts after it with a curved end), both with **no white disc** behind the logo. Geometry lives in the `.cbar.is-notch` rules: logo size `--s`, cut radius `R = 0.649 x s + gap` (0.649 is the measured enclosing-circle ratio of `bharat-navya-logo.png`), bar height `2R - trim`. Owner asked for generous space between logo and bar and centred nav. Next step when they choose: build it into `components/Navbar.tsx`.
+- Untracked on purpose in `frontend/public/`: `logo-options.html` (above), plus `header-3d-options.html` and `logo-3d-options.html`, which were not made by the Claude session and whose author/purpose is unknown. Do not commit them under `public/` (they would become live pages).
+- Growth OS is in the Products menu as a non-link "Coming soon" tile (`UPCOMING` in `Navbar.tsx`). When it gets a route, move it into `PRODUCTS`.
+- Advertise (header) links to the seller dashboard's Advertise tab via sign-in; non-sellers land on Profile to become a seller first. A no-account "apply to advertise" form would need a new endpoint plus an admin view; offered, not requested.
+- Desktop root font size now scales with the window (see 7 October block). Ask Mahir to confirm on his laptop that the ad no longer cuts off; the 13px floor means very short windows still show less.
 - Unverified: dashboards after the white-sheet removal (needs a signed-in check), card redesign in list view and phone widths, Recruitment landing spacing, the `/categories` hydration warning.
 
 ---
@@ -506,3 +512,33 @@ Branch `design`, tip after this commit. Verified in the Browser pane unless note
 - Opening the hamburger closes the account popup and vice versa (not clicked through signed in).
 - Dashboards, workspace and admin pages no longer paint a full-width white sheet behind themselves (`::before` hidden); they sit on the canvas. Admin sign-in has no black band any more; workspace labels have no leading dash.
 - Logo exploration file described in START HERE.
+
+## 7 October 2026: what changed since the 6 October block
+Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane with computed-style or layout checks at 1440 and 375 unless noted.
+
+**Directory landing**
+- Products section replaced by company cards: `components/directory/CompanyShowcase.tsx` (`.cc-*`), used in `DirectorySections.tsx`. Data is `useFeaturedSellers()` (8 sellers). Card: cover photo (untinted) with the logo or initials overlapping, name + verified tick, category and city, two-line about, three stats (rating with reviews, reply rate, years since founding), chips (GST registered, Trust seal, team size), listing count and "View company". Grid 4/3/2/1 columns. `ProductShowcase.tsx` is now unused but still in the repo.
+- Backend: `GET /api/users/sellers/featured` (`backend/modules/identity/routes/users.routes.js`, `computeFeaturedSellerCards`) now also returns `logo, coverImage, trustSealVerified, gstNumber, yearEstablished, employeeCount, category` (first legacy category) and `about` (220 chars). Additive only.
+- Hero (`components/discovery/LandingHero.tsx`): the slideshow has no pause button and no longer stops on hover or focus (only reduced motion or a hidden tab hold it). On 1024px and up the photo fills the hero: the gradient (`.bn-landing-media:not(#_)::after`) shows the photo in the outer 10% at the left, solid navy behind the copy to 40%, then fades to the photo by 78%. The owner rejected a lighter, see-through version; keep the navy solid behind the text.
+- First hero pill is "All categories": a native `<select>` styled as a white pill (`.bn-chip-menu`, `HeroCategoryMenu`), every top-level category with sub-categories in `<optgroup>`s, navigates to `/search?category=`.
+
+**Header**
+- "Advertise" outlined button left of Join / Sign in (`.bn-advertise`, hidden under 900px; in the phone menu as a link).
+- Products menu is a horizontal row of tiles, icon beside text (`.bn-nav-panel`, about 800px wide at 1440, descriptions wrap rather than clip). Growth OS added as a muted non-link tile with a "Coming soon" tag (`.bn-nav-panel-soon`); also a muted line in the phone menu. The screenshot of the open panel could not be captured in the pane (its fade transition does not run there), so it was checked by measurement only.
+
+**Home**
+- Under the hero: the stats card takes 2/3 and a `home_hero` ad tile (`ApiAdvertisingSlot imageOnly`) 1/3 (`.hs-proof-row`, `.hs-proof-ad`). Stats go full width when there is no ad; ad stacks below under 900px.
+
+**Recruitment hero search** (`RecruitmentSectionSearch` in `components/SectionSearchDock.tsx`)
+- Workplace select removed from the bar (it stays in the jobs page filters); the hero search no longer sends `workplace`. Location label reads "Anywhere". Desktop bar is compact (34rem, columns role / 9.25rem location / arrow). Phones: role, location, full-width "Search jobs".
+
+**Platform-wide**
+- Desktop sizing: `@media (min-width: 900px) { html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px) } }` at the end of `counter-soft-system.css`. Everything is rem, so laptops of different sizes and scaling show the same slice of the page (16px at 1440x810). Phones and tablets stay 16px. If something px-sized looks off on a small or very large screen, this is why.
+- Search-bar focus: inputs/selects inside search bars draw no outline of their own; the focused field gets a rounded navy ring drawn as an `::after` overlay inset 3px, so field dividers stay straight. Do not put `border-radius` on the field labels themselves (it bent the divider).
+- Footer: no separate white box; full width, transparent at the top fading to white by 9rem.
+- Guest sign-in popup (`components/auth/GuestAccountNudge.tsx`): fixed a bug where it reopened on the next scroll after being closed. It now rechecks closed/shown before revealing, stops listening after it shows once, and survives blocked storage. Tested by forcing the 2-minute condition.
+
+**Not verified / open**
+- Keyboard focus ring and the viewport scaling have not been checked on Windows (Mahir's laptop); ask for a look.
+- Only two of the five Directory hero photos were looked at with the new gradient.
+
