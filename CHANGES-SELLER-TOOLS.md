@@ -89,7 +89,7 @@ See "Rolling out to the testing server" at the end — the DB migration must run
 Listing responses now include `rankBoostEndDate` (null by default). Five golden fixtures were updated for that
 one additive line (`brand-detail`, `listing-detail`, `listings-browse`, `listings-page2`, `seller-detail`).
 
-### Ad carousel round (2026-10-06, local only — not yet committed)
+### Ad carousel round (2026-10-06; committed and deployed to the testing server 2026-10-07)
 - **One slider everywhere.** New `frontend/components/ads/useAdRotation.ts` + `AdControls.tsx`; `ApiAdvertisingSlot` now
   rotates through **every** approved ad for the placement (cap raised 5 → 50; `GET /api/ads` returns all, `limit`
   default 50 / max 100, bad values fall back to 50). `AdSlider` (category pages) replaced by the same component;
@@ -111,6 +111,18 @@ one additive line (`brand-detail`, `listing-detail`, `listings-browse`, `listing
 - Verified: 78/78 browser checks (every page: indicator style, ~4 s period, next/prev, pause/resume, hover hold,
   different ads per slot, constant pill width and slot height, swipe, no overflow at 390 px) and the 27/27 seller-tool
   flow check; backend suite 136 pass (the same 25 pre-existing failures); `tsc` clean.
+
+### Testing-server deploy record (2026-10-07)
+- Code: `feature/design-integration` @ `7081f63` (seller tools, ad carousel, design pull) deployed with `vercel --prod`
+  from `backend/` (bharatnavya-api) then `frontend/` (bharatnavya, aliased to bharatnavya.vercel.app).
+- Schema: migration `0018` was already applied on the testing Neon DB; no other migration pending.
+- Data seeded on the testing DB (demo only, idempotent): `seed-demo-stories.js` (45 stories — 30 seller groups, 15
+  employer groups) and `seed-ads-demo.js` (37 ad campaigns; now 9 active on each Directory placement and 9–11 on the
+  Recruitment ones, so every slot shows the "n / total" counter).
+- Verified live (45/45): every ad placement > 5 ads via the API, stories for both products, the carousel rotates on home,
+  directory, search, recruitment, job search, blog, categories and brands, header is Home / Products / About, no
+  page errors and no horizontal overflow at 1440px or 390px.
+- To undo the demo ads: `node scripts/seed-ads-demo.js --remove` against the same DB.
 
 ## 3. Tests
 
