@@ -1436,6 +1436,54 @@ Merged 12 new UI-developer commits (`0e74423`..`0f33b42`) into `feature/design-i
 
 ---
 
+### Pulled `origin/design` again (`08faf6e..f9afdc1`) — merged 2026-10-07
+
+5 new commits from the UI dev, 3 files (+107/-6): `components/Navbar.tsx`, `app/counter-soft-system.css`, `HANDOFF.md`.
+Merged with `git merge --no-ff --no-commit`, tested, then committed and pushed on the owner's go-ahead (no AI
+attribution line). **No conflicts** — `counter-soft-system.css` auto-merged (their additions are appended at the end
+of the file; this branch's ad-carousel CSS sits in a different region). No backend change, no new dependency, no
+schema change. `rm -rf frontend/.next` + dev-server restart done before testing (stale Turbopack cache warning).
+
+**What the design branch changed**
+- **Header navigation is now Home · Products · About.** "Products" is a menu (`.bn-nav-products` / `.bn-nav-panel`) that
+  opens on hover, focus or click and lists Directory and Recruitment (icon, name, one line). Closes on mouse-out,
+  Escape, outside click or navigation. Products is the active pill on any Directory or Recruitment page. Phone menu:
+  Home, a "PRODUCTS" heading with Directory and Recruitment indented under it, About.
+- Opening the account popup closes the hamburger menu and vice versa.
+- **Dashboards, workspace forms and admin pages sit on the light-blue canvas** — the full-width white sheet
+  (`::before`) that ran into the floating header is hidden.
+- **Admin sign-in** is a white card on the canvas (no dark band); workspace labels ("Bharat Navya operations") lose
+  their leading dash.
+- `HANDOFF.md` gains a "START HERE" block (where the work lives, how to run it, the owner's standing design
+  preferences, open threads) and a 6 October change list. The logo-options exploration file it mentions is
+  uncommitted on their side and not part of this pull.
+
+**Verified after the merge (all pass)**
+- `npx tsc --noEmit` clean; 15 routes return 200 (`/`, `/directory`, `/recruitment`, `/search`, `/listing/…`, `/brand/…`,
+  `/about`, `/login`, `/register`, `/post-job`, `/dashboard`, `/admin`, `/sell`, `/blog`, `/categories`).
+- Header: nav text, panel contents, hover-open / mouse-out close, Escape close, navigation, active pill on Directory and
+  Recruitment, phone menu structure. Dashboard `::before` hidden and admin sign-in background transparent (checked by
+  computed style + screenshots).
+- Zero horizontal overflow on 15 pages at 390px and at 1440px; no uncaught page errors.
+- This branch's own work still intact on the merged code: ad carousel check 78/78 and seller-tools flow check 27/27.
+
+**Flags for the owner (not changed — design-branch behaviour / decisions)**
+1. **Hover then click closes the Products menu on a mouse.** Hover opens the panel and the trigger's click handler then
+   toggles it shut, so a desktop user who hovers and clicks sees it close (touch and keyboard are fine; the items are
+   reachable by hovering and clicking an item). Cosmetic; a one-line fix (`onClick` open-only on hover-capable pointers)
+   is available if wanted.
+2. **Ads vs the design branch's stated preference.** `HANDOFF.md` says ads are "small tiles … never a big block at the
+   top" and the designer removed the Home ad slot on 2 Oct. This branch (owner request) put a `home_hero` carousel back
+   on the homepage as a compact strip under the hero, and added compact strips at the bottom of `/categories`,
+   `/brands`, `/collections`, `/collection/<slug>`, `/blog`, `/blog/<slug>`, `/recruitment/blog`. They render nothing
+   when no ad is live. Tell the UI dev so the next design pass doesn't strip them again, or say if any should go.
+3. `HANDOFF.md` still instructs "commit messages end with a Co-Authored-By line" — not followed on this branch
+   (standing owner instruction: no AI attribution).
+4. Pending from earlier passes, unchanged by this pull: GSAP visual pass, back-to-top corner, `/categories` hydration
+   warning noted by the UI dev (not reproduced as a page error in the sweep above).
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).
