@@ -249,6 +249,15 @@ function computeFeaturedSellerCards(users, activeCounts) {
       responseRate: sp.responseRate,
       listingCount: activeCounts.get(u.id) || 0,
       badges: deriveBadges(sp),
+      // Added for the Directory landing's company cards (all additive).
+      logo: sp.logo || null,
+      coverImage: sp.coverImage || null,
+      trustSealVerified: sp.trustSealVerified,
+      gstNumber: sp.gstNumber,
+      yearEstablished: sp.yearEstablished,
+      employeeCount: sp.employeeCount || null,
+      category: (sp.legacyCategories && sp.legacyCategories[0]) || null,
+      about: sp.about ? String(sp.about).slice(0, 220) : null,
     };
   });
 }

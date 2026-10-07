@@ -55,6 +55,11 @@ export default function DirectoryPage() {
 
   function runExample(item: string) { setQuery(item); markSearchNav(); router.push(`/search?q=${encodeURIComponent(item)}`); }
   const popularCategories = useMemo(() => [...tree].sort((a, b) => (b.listingCount || 0) - (a.listingCount || 0) || a.order - b.order).slice(0, 4).map((category) => ({ label: category.name.split(/[,&]/)[0].trim(), href: `/search?category=${encodeURIComponent(category.slug)}`, icon: iconFor(category) })), [tree]);
+  const categoryMenu = useMemo(() => [...tree].sort((a, b) => a.name.localeCompare(b.name)).map((category) => ({
+    label: category.name,
+    href: `/search?category=${encodeURIComponent(category.slug)}`,
+    children: [...(category.children || [])].sort((a, b) => a.name.localeCompare(b.name)).map((child) => ({ label: child.name, href: `/search?category=${encodeURIComponent(child.slug)}` })),
+  })), [tree]);
   const categoryGroups = useMemo(() => [...tree].sort((a, b) => (b.listingCount || 0) - (a.listingCount || 0) || a.order - b.order).map((category) => ({ key: category.slug, label: category.name, href: `/search?category=${encodeURIComponent(category.slug)}`, image: `/demo/${imgFor(category)}.jpg`, meta: category.listingCount ? `${category.listingCount.toLocaleString("en-IN")} listings` : undefined })), [tree]);
 
   return <div className="le-page counter-directory-page">
@@ -62,7 +67,7 @@ export default function DirectoryPage() {
       id="directory-title"
       title="Turn business search into business action."
       search={<div ref={searchAnchorRef} data-dock-source className="le-hero-search" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><DirectorySectionSearch /></div>}
-      chips={popularCategories.length ? <HeroChips label="Popular categories" items={popularCategories} /> : <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>}
+      chips={popularCategories.length ? <HeroChips label="Popular categories" items={popularCategories} menu={{ label: "All categories", groups: categoryMenu }} /> : <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>}
       slides={directorySlides}
       actions={directoryActions}
       actionsLabel="Directory actions"

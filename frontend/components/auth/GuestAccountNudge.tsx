@@ -18,6 +18,17 @@ const EXCLUDED_PREFIXES = [
   "/seller/dashboard", "/employer/dashboard", "/my-", "/messages",
 ];
 
+// Storage can be blocked (private windows, strict settings); the nudge must still close.
+function read(store: "local" | "session", key: string): string | null {
+  try { return (store === "local" ? localStorage : sessionStorage).getItem(key); } catch { return null; }
+}
+function write(store: "local" | "session", key: string, value: string) {
+  try { (store === "local" ? localStorage : sessionStorage).setItem(key, value); } catch { /* ignore */ }
+}
+// Once closed or shown this session, never again (also guards against storage being unavailable).
+let closedThisLoad = false;
+const blocked = () => closedThisLoad || !!read("session", SHOWN_KEY) || Date.now() - Number(read("local", DISMISSED_KEY) || 0) < DISMISS_MS;
+
 export default function GuestAccountNudge() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -32,21 +43,29 @@ export default function GuestAccountNudge() {
       setVisible(false);
       return;
     }
+    if (blocked()) return;
 
-    const dismissedAt = Number(localStorage.getItem(DISMISSED_KEY) || 0);
-    if (Date.now() - dismissedAt < DISMISS_MS || sessionStorage.getItem(SHOWN_KEY)) return;
-
-    const startedAt = Number(sessionStorage.getItem(START_KEY) || Date.now());
-    sessionStorage.setItem(START_KEY, String(startedAt));
-    const lastPath = sessionStorage.getItem(LAST_PATH_KEY);
-    const views = Number(sessionStorage.getItem(VIEWS_KEY) || 0) + (lastPath === pathname ? 0 : 1);
-    sessionStorage.setItem(VIEWS_KEY, String(views));
-    sessionStorage.setItem(LAST_PATH_KEY, pathname);
+    const startedAt = Number(read("session", START_KEY) || Date.now());
+    write("session", START_KEY, String(startedAt));
+    const lastPath = read("session", LAST_PATH_KEY);
+    const views = Number(read("session", VIEWS_KEY) || 0) + (lastPath === pathname ? 0 : 1);
+    write("session", VIEWS_KEY, String(views));
+    write("session", LAST_PATH_KEY, pathname);
 
     let engaged = views >= 2;
+    let done = false;
+    const stop = () => {
+      done = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+    // Shows at most once: rechecks the closed/shown flags every time and stops listening after.
     const reveal = () => {
+      if (done) return;
+      if (blocked()) { stop(); return; }
       if (!engaged || document.querySelector('[role="dialog"][aria-modal="true"]')) return;
-      sessionStorage.setItem(SHOWN_KEY, "true");
+      write("session", SHOWN_KEY, "true");
+      stop();
       setVisible(true);
     };
     const onScroll = () => {
@@ -56,23 +75,21 @@ export default function GuestAccountNudge() {
         if (Date.now() - startedAt >= WAIT_MS) reveal();
       }
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
     const remaining = Math.max(0, WAIT_MS - (Date.now() - startedAt));
     const timer = window.setTimeout(reveal, remaining);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("scroll", onScroll);
-    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return stop;
   }, [eligible, loading, pathname, user]);
 
   if (!visible || user || !eligible) return null;
 
   const dismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    closedThisLoad = true;
+    write("local", DISMISSED_KEY, String(Date.now()));
+    write("session", SHOWN_KEY, "true");
     setVisible(false);
   };
 
-  return <ContactAuthModal open purpose="account" onClose={dismiss} onSuccess={() => setVisible(false)} />;
+  return <ContactAuthModal open purpose="account" onClose={dismiss} onSuccess={() => { closedThisLoad = true; setVisible(false); }} />;
 }
