@@ -6024,3 +6024,13 @@ small { font-size: var(--fs-xs); }
   .bn-rhero .bn-section-search-location:not(#_) { grid-column: 2; }
   .bn-rhero .bn-section-search-submit:not(#_) { grid-column: 3; }
 }
+
+/* Footer: no separate white box. It runs edge to edge and the page's light blue fades into white
+   across its top, so the page flows into the footer. */
+.bn-footer.is-counter-public:not(#_) {
+  margin: var(--counter-section-gap) 0 0;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0) 0, rgb(255 255 255 / 0.7) 4rem, #fff 9rem);
+  padding-top: clamp(3rem, 6vw, 5rem);
+}
