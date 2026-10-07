@@ -5,6 +5,7 @@
 // scans as a single even grid. Each card links to the category; sub-categories
 // link to theirs. Text never sits on a photo.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useCategoryTree } from "@/components/CategoryMegaMenu";
@@ -54,5 +55,6 @@ export default function CategoriesPage() {
           </li>;
         })}
       </ul>}
+    <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored in the Directory" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
   </div>;
 }

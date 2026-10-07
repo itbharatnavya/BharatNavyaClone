@@ -5,6 +5,7 @@
 // responsive ListingCard grid the category/brand pages use. Breadcrumb:
 // Home / Collections / <title>. Friendly empty + unknown states.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useState } from "react";
 import { getCollection } from "@/lib/api";
 import type { CollectionDetail } from "@/lib/api";
@@ -204,6 +205,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
           </div>
         )}
       </div>
+      <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored on this collection" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
     </div>
   );
 }

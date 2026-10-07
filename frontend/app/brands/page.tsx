@@ -4,6 +4,7 @@
 // (top-level stores) re-fetches the brand set; each brand renders as a monogram
 // card linking to its landing page. Breadcrumb: Home / Brands.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useMemo, useState } from "react";
 import { getBrands, getCategories } from "@/lib/api";
 import type { Brand } from "@/lib/api";
@@ -155,6 +156,7 @@ export default function BrandsPage() {
           </>
         )}
       </div>
+      <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored on brands" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
     </div>
   );
 }

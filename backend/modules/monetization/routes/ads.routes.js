@@ -39,7 +39,11 @@ router.get("/", async (req, res, next) => {
       );
     }
     bookings.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-    res.json({ success: true, data: bookings });
+    // Every approved ad for the slot is returned (the page rotates through all of them);
+    // `limit` is only a safety ceiling for the payload.
+    const asked = parseInt(req.query.limit, 10);
+    const limit = asked >= 1 ? Math.min(100, asked) : 50;
+    res.json({ success: true, data: bookings.slice(0, limit) });
   } catch (err) {
     next(err);
   }

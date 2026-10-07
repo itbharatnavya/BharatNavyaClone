@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { getAds } from "@/lib/api";
 import AdvertisingSlot from "./AdvertisingSlot";
+import AdControls from "@/components/ads/AdControls";
+import { useAdRotation } from "@/components/ads/useAdRotation";
 
 interface ApiAd {
   id?: string;
@@ -27,16 +29,15 @@ interface ApiAdvertisingSlotProps {
   fallbackAction?: string;
 }
 
-const MAX_ADS = 5;
-const ROTATE_MS = 4000;
+// Every approved ad for the placement takes part in the rotation; this is only a safety ceiling.
+const MAX_ADS = 50;
 
 export default function ApiAdvertisingSlot({ placement, category, kind, context, summary, action, compact = false, imageOnly = false, showFallback = true, fallbackTitle, fallbackSummary, fallbackAction }: ApiAdvertisingSlotProps) {
   const [ads, setAds] = useState<ApiAd[]>([]);
-  const [index, setIndex] = useState(0);
-  const [held, setHeld] = useState(false);
-  const [away, setAway] = useState(false);
   const placementKey = Array.isArray(placement) ? placement.join("|") : placement;
   const recruitmentPlacement = /(recruitment|job|employer)/.test(placementKey);
+  const rotation = useAdRotation(ads.length, placementKey);
+  const { index } = rotation;
 
   useEffect(() => {
     let active = true;
@@ -46,26 +47,17 @@ export default function ApiAdvertisingSlot({ placement, category, kind, context,
         if (!active) return;
         const items = groups.find((group) => Array.isArray(group) && group.length) || [];
         setAds(items.filter((item: ApiAd) => item?.headline && item?.creativeImageUrl && item?.targetUrl).slice(0, MAX_ADS));
-        setIndex(0);
       })
       .catch(() => active && setAds([]));
     return () => { active = false; };
   }, [placementKey, category]);
 
-  // Rotate through the placement's ads. Hover/focus on the ad and a background tab hold it,
-  // and reduced-motion users keep the first ad.
+  // Warm the next picture so a change never flashes an empty frame.
   useEffect(() => {
-    const sync = () => setAway(document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    sync();
-    document.addEventListener("visibilitychange", sync);
-    return () => document.removeEventListener("visibilitychange", sync);
-  }, []);
-  const rotating = ads.length > 1 && !held && !away;
-  useEffect(() => {
-    if (!rotating) return;
-    const timer = window.setTimeout(() => setIndex((value) => (value + 1) % ads.length), ROTATE_MS);
-    return () => window.clearTimeout(timer);
-  }, [rotating, index, ads.length]);
+    if (ads.length < 2) return;
+    const nextAd = ads[(index + 1) % ads.length];
+    if (nextAd?.creativeImageUrl) { const img = new Image(); img.src = nextAd.creativeImageUrl; }
+  }, [ads, index]);
 
   const ad = ads[index] || null;
 
@@ -84,16 +76,20 @@ export default function ApiAdvertisingSlot({ placement, category, kind, context,
     />;
   }
 
-  const dots = ads.length > 1 ? <span className="bn-ad-dots" role="group" aria-label="Choose a promotion">
-    {ads.map((item, position) => <button key={item.id || position} type="button" aria-label={`Show promotion ${position + 1} of ${ads.length}`} aria-pressed={position === index} onClick={() => setIndex(position)} />)}
-  </span> : null;
+  const controls = <AdControls
+    count={ads.length}
+    index={index}
+    paused={rotation.userPaused}
+    onPrev={rotation.prev}
+    onNext={rotation.next}
+    onGoTo={rotation.goTo}
+    onTogglePause={rotation.togglePause}
+  />;
 
   return <div
     className="bn-ad-rotator"
-    onMouseEnter={() => setHeld(true)}
-    onMouseLeave={() => setHeld(false)}
-    onFocus={() => setHeld(true)}
-    onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeld(false); }}
+    ref={rotation.wrapRef}
+    {...rotation.handlers}
   >
     <AdvertisingSlot
       key={ad.id || index}
@@ -105,7 +101,7 @@ export default function ApiAdvertisingSlot({ placement, category, kind, context,
       summary={summary}
       href={ad.targetUrl}
       action={action}
-      controls={dots}
+      controls={controls}
       media={{ src: ad.creativeImageUrl, alt: ad.headline, kind: "work-sample", source: "api" }}
     />
   </div>;

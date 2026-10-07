@@ -9,7 +9,7 @@ import type { CategoryNode } from "@/lib/types";
 import type { ListingFilterState } from "@/components/Filters";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import { CategoryIcon } from "@/components/CategoryMegaMenu";
-import AdSlider from "@/components/AdSlider";
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { useSearchDock } from "@/lib/searchDock";
 import { PAN_INDIA_LABEL } from "@/lib/indiaGeo";
 import UnifiedListingWorkbench from "@/components/directory/UnifiedListingWorkbench";
@@ -190,10 +190,10 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
             query={query || ""}
             initialFilters={{ ...initialFilters, city: city || initialFilters?.city, sort: initialFilters?.sort || "newest" }}
             fixedCategory={slug}
-            railAd={<AdSlider placement="category_top" categorySlug={slug} fillHeight />}
+            railAd={<ApiAdvertisingSlot imageOnly showFallback={false} placement="category_top" category={slug} kind="native" context="Sponsored" summary="" action="View promotion" />}
           />
         </div>
-        <div className="dlw-mobile-ad brand-aside-ad"><AdSlider placement="category_top" categorySlug={slug} fillHeight /></div>
+        <div className="dlw-mobile-ad brand-aside-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement="category_top" category={slug} kind="native" context="Sponsored" summary="" action="View promotion" /></div>
       </div>
     </div>
   );

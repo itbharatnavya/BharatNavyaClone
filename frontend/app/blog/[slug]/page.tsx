@@ -5,6 +5,7 @@
 // seller profile, and an "About the vendor" card that links to their profile and
 // their listings. Author resolution is best-effort (see components/seller/vendorAuthors).
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -260,6 +261,7 @@ export default function BlogArticlePage({
         )}
       </div>
 
+      <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored near this article" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
       <style>{`
         .blog-prose {
           font-size: var(--fs-md);

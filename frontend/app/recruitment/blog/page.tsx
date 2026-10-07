@@ -7,6 +7,7 @@
 // to authorType=employer via the same GET /api/blogs the suite-wide /blog page uses.
 // The suite-wide /blog page is untouched — this is an additional, filtered entry point.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getBlogs } from "@/lib/api";
@@ -114,6 +115,7 @@ export default function RecruitmentBlogPage() {
 
       </div>
 
+      <ApiAdvertisingSlot compact showFallback={false} placement="recruitment_home" kind="native" context="Sponsored near hiring articles" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
       <style jsx>{`
         .rb-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
         .rb-card { overflow: hidden; height: 100%; display: flex; flex-direction: column; }

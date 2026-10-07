@@ -5,6 +5,7 @@
 // interlinked — the card body links to /blog/<slug>, the vendor name links to
 // /seller/<slug>. Cover uses coverImage with a soft-gradient fallback.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getBlogs } from "@/lib/api";
@@ -157,6 +158,7 @@ export default function BlogIndexPage() {
 
       </div>
 
+      <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored near articles" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
       <style jsx>{`
         .blog-grid {
           display: grid;

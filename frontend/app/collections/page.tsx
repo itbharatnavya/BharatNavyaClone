@@ -5,6 +5,7 @@
 // /collection/<slug>. Breadcrumb: Home / Collections. Skeletons + empty state.
 // The organizing/merchandising layer — kept off the homepage on purpose.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import React, { useEffect, useState } from "react";
 import { getCollections } from "@/lib/api";
 import type { Collection } from "@/lib/api";
@@ -98,6 +99,7 @@ export default function CollectionsPage() {
           </div>
         )}
       </div>
+      <ApiAdvertisingSlot compact showFallback={false} placement="category_top" kind="native" context="Sponsored on collections" summary="A clearly labelled placement, separate from the content on this page." action="View promotion" />
     </div>
   );
 }

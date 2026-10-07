@@ -377,3 +377,36 @@ test("bulk upload: rows are held for review with deterministic checks, bad rows 
   assert.equal(ap.status, 200);
   assert.equal((await request(app).get(`/api/listings/${row.id}`)).body.data.status, "active");
 });
+
+// --------------------------------------------------------------------------------------
+// 6. ad serving returns EVERY approved ad (the page rotates through all of them)
+// --------------------------------------------------------------------------------------
+test("ads: serving returns all approved ads for a placement, `limit` only caps the payload", async () => {
+  const ids = [];
+  for (let i = 0; i < 7; i++) {
+    const r = await request(app)
+      .post("/api/admin/ad-bookings")
+      .set(A)
+      .send({
+        placementType: "home_hero",
+        status: "active",
+        headline: `${TAG} rotation ${i}`,
+        creativeImageUrl: "/demo/machinery-1.jpg",
+        targetUrl: "/directory",
+        priority: 1000 - i,
+      });
+    assert.equal(r.status, 201, JSON.stringify(r.body));
+    ids.push(r.body.data.id);
+    made.ads.push(r.body.data.id);
+  }
+  const all = await request(app).get("/api/ads?placement=home_hero");
+  const mine = all.body.data.filter((a) => ids.includes(a.id));
+  assert.equal(mine.length, 7, "all 7 approved ads must be served (no cap at 5)");
+  // priority order is kept (highest first)
+  assert.deepEqual(mine.map((a) => a.id), ids);
+
+  const capped = await request(app).get("/api/ads?placement=home_hero&limit=3");
+  assert.equal(capped.body.data.length, 3);
+  const bad = await request(app).get("/api/ads?placement=home_hero&limit=-4");
+  assert.ok(bad.body.data.length >= 7, "a nonsense limit falls back to the default instead of emptying the slot");
+});
