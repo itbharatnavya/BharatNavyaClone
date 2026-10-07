@@ -89,6 +89,29 @@ See "Rolling out to the testing server" at the end — the DB migration must run
 Listing responses now include `rankBoostEndDate` (null by default). Five golden fixtures were updated for that
 one additive line (`brand-detail`, `listing-detail`, `listings-browse`, `listings-page2`, `seller-detail`).
 
+### Ad carousel round (2026-10-06, local only — not yet committed)
+- **One slider everywhere.** New `frontend/components/ads/useAdRotation.ts` + `AdControls.tsx`; `ApiAdvertisingSlot` now
+  rotates through **every** approved ad for the placement (cap raised 5 → 50; `GET /api/ads` returns all, `limit`
+  default 50 / max 100, bad values fall back to 50). `AdSlider` (category pages) replaced by the same component;
+  dead `AdSlider`, `PromoBanner`, `NativePromotionSlot` deleted.
+- **Timing / behaviour:** 4 s per ad. Holds on hover, keyboard focus (not mouse-click focus), hidden tab, scrolled
+  out of view, or after the visitor presses pause. "Reduce motion" now only removes the fade — it no longer freezes
+  the rotation (that was why ads seemed stuck). Random start per page view; each slot of one placement starts one ad
+  further along, so rail / in-feed / bottom slots don't show the same ad. Swipe left/right on touch. Next picture is
+  preloaded.
+- **Fixed-size controls:** arrows on the picture sides + one pill: up to 5 ads = dots, more = fixed-width "3 / 24"
+  counter with a position bar, plus a pause button. Width/height don't change while paging (tested).
+- **Phones:** compact promotion stacks (picture on top, text below) instead of a thin picture beside clipped text.
+- **More pages carry ads:** `/categories`, `/brands`, `/collections`, `/collection/<slug>`, `/blog`, `/blog/<slug>`
+  (`category_top`) and `/recruitment/blog` (`recruitment_home`), on top of home, directory, search, category,
+  listing, seller, brand, recruitment, job search, job and employer pages. Slots render nothing when no ad is live.
+- **Demo data for local testing:** `node backend/scripts/seed-ads-demo.js` adds 37 active campaigns for existing
+  approved sellers/employers (home_hero 8, category_top 8, search_top 8, recruitment_home 7, recruitment_search_top 6);
+  `--remove` deletes them. Local/demo only.
+- Verified: 78/78 browser checks (every page: indicator style, ~4 s period, next/prev, pause/resume, hover hold,
+  different ads per slot, constant pill width and slot height, swipe, no overflow at 390 px) and the 27/27 seller-tool
+  flow check; backend suite 136 pass (the same 25 pre-existing failures); `tsc` clean.
+
 ## 3. Tests
 
 - `backend/test/seller-tools.test.js` — 11 tests (blogs, boosts incl. ranking expiry, placement parity,
