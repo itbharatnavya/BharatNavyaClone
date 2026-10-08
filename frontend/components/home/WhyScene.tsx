@@ -88,9 +88,9 @@ function India() {
 }
 
 const CARDS = [
-  { art: <Connected />, title: "Everything connected", body: "Companies, products, services, roles and people live in one place, so you never have to start over somewhere else." },
-  { art: <Trust />, title: "Trust you can check", body: "Verification, ratings and company details sit on every record, so you can judge before you reach out." },
-  { art: <India />, title: "Built for all of India", body: "From metro hubs to industrial towns, find and be found by businesses wherever they are." },
+  { art: <Connected />, title: "All in one place", body: "Companies, products, services and jobs, with one account." },
+  { art: <Trust />, title: "Check before you call", body: "See verification, ratings and company details before you reach out." },
+  { art: <India />, title: "Built for all of India", body: "Find businesses in big cities and small towns." },
 ];
 
 export default function WhyScene() {
@@ -101,7 +101,7 @@ export default function WhyScene() {
     cards.forEach((card) => ScrollTrigger.create({ trigger: card, start: "top 85%", end: "bottom 5%", onToggle: (self) => card.classList.toggle("is-live", self.isActive) }));
   });
   return <section ref={root} className="hs-sec wy" aria-labelledby="why-title"><div className="le-shell">
-    <header className="le-section-head"><div><h2 id="why-title">What makes Bharat Navya different.</h2></div><p>Three ideas behind every page, search and record on the platform.</p></header>
+    <header className="le-section-head"><div><h2 id="why-title">Why Bharat Navya.</h2></div></header>
     <ul className="wy-grid">
       {CARDS.map((card) => <li key={card.title} className="wy-card">
         <h3>{card.title}</h3>

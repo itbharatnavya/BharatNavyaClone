@@ -1641,6 +1641,51 @@ server. No backend change, no schema change, no new dependency.
 2. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
    hydration warning.
 
+### Pulled `origin/design` again (`747a912..dd63595`) — merged 2026-10-08 (night)
+
+1 new commit from the UI dev (`dd63595`, "Home redesign, plain-language copy, section panels, no-pause motion"),
+22 frontend files (+488/-320) plus `HANDOFF.md` and `counter-soft-system.css` (+223). Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(frontend only) to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Plain-language copy (owner rule: short, simple, no slogans).** Home "Suppliers, services and jobs in one
+  place.", Recruitment "Find work. Hire people.", "Jobs by field", footer reduced to one line plus copyright,
+  stats labels "Categories / Listings / Open jobs", About copy shortened. Public copy now says "jobs" where
+  rewritten; the jobs page search and filters still say "roles". Not yet done: Pricing, Sell, RFQ, Post a
+  job, sign-in/register, dashboards, detail pages.
+- **Home:** the scroll-pinned "Three ways" tour is replaced by `components/home/ProductHub.tsx` (`.hub-*`): a
+  navy panel with an SVG hub that cycles Directory / Recruitment / Ask Navya, no pin, no pause. `RouteScene`
+  ("Say what you need") removed from Home (file kept, unused). "Why Bharat Navya" cards are navy. Closing
+  section shortened. Our Pass 1 live counts (`useHomeData`) are kept.
+- **Hero cards (`HeroStage`):** Directory scene = one requirement, three quotes, best one picked and accepted;
+  Recruitment scene = application status track (Applied, Viewed, Shortlisted, Interview) ending on an
+  interview card. Ask Navya unchanged.
+- **Section panels:** any `.hs-sec` / `.ps-sec` whose `.le-shell` holds a `header.le-section-head` is a white
+  rounded panel with a one-row head; the blurb paragraphs in those heads were deleted from the TSX.
+- **No pause anywhere (owner rule).** `components/ads/useAdRotation.ts`, `AdControls.tsx` and
+  `evidence/ApiAdvertisingSlot.tsx` (our ad carousel files) lose the pause button and the hover / keyboard
+  focus hold; the carousel only holds when the tab is hidden or the ad is scrolled out of view. The Directory
+  hero slideshow and the home ticker likewise. `CLAUDE.md`'s ad slider bullet updated to match.
+- **Directory:** "Get found by buyers" (`StorefrontScene`) autoplays in view and loops instead of pinning.
+  **Recruitment:** compact hero path cards, the role finder is one connected board.
+- Footer fade is stronger. `HANDOFF.md`: 8 October (evening) block.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/about`, `/recruitment/jobs`
+  return 200 locally.
+- Owner checked the changes locally.
+- Not done: 390px pass on the new hub panel and hero cards; the 78-check ad carousel script was not re-run and
+  may still assert the old hold / pause behaviour.
+
+**Flags for the owner**
+1. Removing the pause control drops the accessible way to stop auto-moving content (WCAG 2.2.2). Recorded
+   as the owner's call, not reversed here.
+2. The Directory hero card brings quote / "Accept" wording back into the home hero, while this doc records
+   quotation language as deliberately absent from the primary journey. Looks intentional; confirm.
+3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning.
+
 ---
 
 ## Reference material

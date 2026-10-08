@@ -62,7 +62,7 @@ function AskScene({ t, end, companies }: SceneProps) {
       <span className="bn-scene-typed">{typed}{(typing || (at(700) && !at(3400))) && <i className="bn-scene-caret" />}</span>
       <b className={`bn-scene-send${at(2300) ? " is-ready" : ""}${at(3300) && !at(3550) ? " is-press" : ""}`}><Icon d={ICONS.send} /></b>
     </div>
-    <p className={`bn-scene-label${at(3500) ? " is-in" : ""}`}>Matching records</p>
+    <p className={`bn-scene-label${at(3500) ? " is-in" : ""}`}>Matches</p>
     {rows.map((row, index) => <div key={index} className={`bn-scene-row${at(3600 + index * 300) ? " is-in" : ""}${index === 0 && at(5200) ? " is-hover" : ""}`}>
       <Person row={row} />
       <em className="bn-scene-tag">Verified</em>
@@ -71,42 +71,42 @@ function AskScene({ t, end, companies }: SceneProps) {
   </div>;
 }
 
+// Directory: one requirement goes out, quotes come back, the best one is picked and accepted.
+const QUOTES = [{ price: "₹18.0", days: "3 days" }, { price: "₹16.5", days: "2 days" }, { price: "₹17.2", days: "4 days" }];
 function DirectoryScene({ t, end, companies }: SceneProps) {
   const at = (ms: number) => t >= ms;
   const rows = [0, 1, 2].map((index) => companies[index] || {});
-  const cursor = !at(1000) ? { x: 20, y: 12 } : !at(3200) ? { x: 5.2, y: 3.5 } : { x: 21.4, y: 6.6 };
-  const sent = at(4200);
+  const picked = at(3200);
+  const accepted = at(4600);
+  const cursor = !at(3600) ? { x: 20, y: 13 } : { x: 21.6, y: 9.9 };
   return <div className="bn-scene">
-    <div className="bn-scene-head"><Icon d={ICONS.search} /><strong>Companies</strong></div>
-    <div className="bn-scene-chips">
-      <span className={!at(1900) ? "is-on" : ""}>All</span>
-      <span className={at(1900) ? "is-on" : ""}>Verified</span>
-      <span>Pune</span>
-    </div>
-    {rows.map((row, index) => <div key={index} className={`bn-scene-row${at(200 + index * 200) ? " is-in" : ""}${index === 1 && at(2100) ? " is-out" : ""}`}>
+    <div className="bn-scene-head"><Icon d={ICONS.directory} /><strong>Your requirement</strong></div>
+    <p className={`bn-quote-need${at(150) ? " is-in" : ""}`}>500 corrugated boxes · Pune</p>
+    {rows.map((row, index) => <div key={index} className={`bn-scene-row is-quote${at(900 + index * 550) ? " is-in" : ""}${picked && index === 1 ? " is-best" : ""}${picked && index !== 1 ? " is-dim" : ""}`}>
       <Person row={row} />
-      {index === 0 && <span className={`bn-scene-button${sent ? " is-done" : ""}${at(3900) && !at(4200) ? " is-press" : ""}`}>{sent ? <><Icon d={ICONS.check} />Sent</> : "Enquire"}</span>}
-      {index === 2 && <em className={`bn-scene-tag is-stamp${at(2600) ? " is-in" : ""}`}>Verified</em>}
+      <span className="bn-quote-price"><b>{QUOTES[index].price}</b><small>{QUOTES[index].days}</small></span>
+      {index === 1 && <em className={`bn-quote-best${picked ? " is-in" : ""}`}>Best</em>}
+      {index === 1 && <span className={`bn-scene-button${accepted ? " is-done" : ""}${at(4300) && !accepted ? " is-press" : ""}${picked ? " is-shown" : " is-hidden"}`}>{accepted ? <><Icon d={ICONS.check} />Accepted</> : "Accept"}</span>}
     </div>)}
-    <Cursor x={cursor.x} y={cursor.y} show={at(1000) && t < end - 500} press={(at(1700) && !at(1950)) || (at(3900) && !at(4200))} />
+    <Cursor x={cursor.x} y={cursor.y} show={at(3600) && t < end - 500} press={at(4300) && !accepted} />
   </div>;
 }
 
-function RecruitmentScene({ t, end, jobs }: SceneProps) {
+// Recruitment: the applicant always sees where the application stands, step by step.
+const STEPS = ["Applied", "Viewed", "Shortlisted", "Interview"];
+function RecruitmentScene({ t, jobs }: SceneProps) {
   const at = (ms: number) => t >= ms;
-  const rows = [0, 1, 2].map((index) => jobs[index] || {});
-  const cursor = !at(1000) ? { x: 20, y: 12 } : !at(2900) ? { x: 10, y: 4.3 } : { x: 20.4, y: 8.7 };
-  const applied = at(3900);
+  const job = jobs[0] || {};
+  const done = STEPS.filter((_, i) => at(700 + i * 1100)).length;
   return <div className="bn-scene">
-    <div className="bn-scene-head"><Icon d={ICONS.recruitment} /><strong>Open roles</strong></div>
-    {rows.map((row, index) => <div key={index} className={`bn-scene-row is-job${at(200 + index * 200) ? " is-in" : ""}${index === 0 && at(1700) ? " is-hover" : ""}${index === 0 && at(2100) ? " is-open" : ""}`}>
-      <Person row={row} />
-      {index === 0 && <div className="bn-scene-detail">
-        <span className="bn-scene-lines"><i className="bn-sk is-wide" /><i className="bn-sk is-thin" /></span>
-        <span className={`bn-scene-button${applied ? " is-done" : ""}${at(3600) && !applied ? " is-press" : ""}`}>{applied ? <><Icon d={ICONS.check} />Applied</> : "Apply"}</span>
-      </div>}
-    </div>)}
-    <Cursor x={cursor.x} y={cursor.y} show={at(1000) && t < end - 500} press={at(3600) && !applied} />
+    <div className="bn-scene-head"><Icon d={ICONS.recruitment} /><strong>My application</strong></div>
+    <div className={`bn-scene-row${at(150) ? " is-in" : ""}`}><Person row={job} /></div>
+    <ol className="bn-track" style={{ ["--done" as string]: Math.max(0, done - 1) / (STEPS.length - 1) }}>
+      {STEPS.map((step, i) => <li key={step} className={`${i < done ? "is-done" : ""}${i === done - 1 ? " is-now" : ""}${i === STEPS.length - 1 ? " is-last" : ""}`}>
+        <i>{i < done ? <Icon d={ICONS.check} /> : null}</i><span>{step}</span>
+      </li>)}
+    </ol>
+    <p className={`bn-track-note${at(4400) ? " is-in" : ""}`}><Icon d="M4 6h16v14H4z|M4 10h16|M9 3v4|M15 3v4" />Interview: Tue, 11:00 am</p>
   </div>;
 }
 
@@ -216,10 +216,10 @@ export default function HeroStage() {
     onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeld(false); }}
   >
     <HomeAgent variant="stage" stageClassName={`${ask.className} is-ask`} scene={ask.scene}>
-      <Label icon={ICONS.agent} title="Ask Navya" detail="Ask anything, get pointed right" />
+      <Label icon={ICONS.agent} title="Ask Navya" detail="Ask in plain words" />
     </HomeAgent>
     <Link href="/directory" className={`${directory.className} is-directory`}>{directory.scene}<span className="bn-hstage-label"><Label icon={ICONS.directory} title="Directory" detail="Companies, products, services" /></span></Link>
-    <Link href="/recruitment" className={`${recruitment.className} is-recruitment`}>{recruitment.scene}<span className="bn-hstage-label"><Label icon={ICONS.recruitment} title="Recruitment" detail="Roles, employers, workplaces" /></span></Link>
-    <div className={`${growth.className} is-growth`} aria-disabled="true">{growth.scene}<span className="bn-hstage-label"><Label icon={ICONS.growth} title="Growth OS" detail="Business intelligence" soon /></span></div>
+    <Link href="/recruitment" className={`${recruitment.className} is-recruitment`}>{recruitment.scene}<span className="bn-hstage-label"><Label icon={ICONS.recruitment} title="Recruitment" detail="Jobs and employers" /></span></Link>
+    <div className={`${growth.className} is-growth`} aria-disabled="true">{growth.scene}<span className="bn-hstage-label"><Label icon={ICONS.growth} title="Growth OS" detail="Business insights" soon /></span></div>
   </div>;
 }

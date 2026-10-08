@@ -1,26 +1,25 @@
 "use client";
 
-// Directory, seller side: "Be the business people find." On roomy screens the section
-// pins while a company profile builds itself in four steps (company, verified badge,
-// products, first enquiry) and the matching step lights up on the left. Elsewhere the
-// same build plays once when it scrolls into view. Styles: .sf-*.
+// Directory, seller side: "Be the business people find." While the section is on screen a
+// company profile builds itself in four steps (company, verified badge, products, first
+// enquiry) and the matching step lights up on the left; it then rests and plays again.
+// No scroll locking: it pauses when the section leaves the screen. Styles: .sf-*.
 
 import { useRef } from "react";
 import Link from "next/link";
 import { useStory } from "@/components/home/useStory";
 
 const STEPS = [
-  { title: "Add your company", body: "Name, location and what you do, set up in minutes." },
-  { title: "Get verified", body: "A verified badge shows buyers who is really behind the listing." },
-  { title: "List your products", body: "Add products and services with price, minimum order and photos." },
-  { title: "Receive enquiries", body: "Buyers and requirements reach you in one inbox." },
+  { title: "Add your company", body: "Name, place and what you do. Takes minutes." },
+  { title: "Get verified", body: "A badge shows buyers you are real." },
+  { title: "List your products", body: "Add price, minimum order and photos." },
+  { title: "Get enquiries", body: "Buyer messages land in one inbox." },
 ];
 const TILES = ["/demo/packaging-2.jpg", "/demo/machinery-2.jpg", "/demo/electronics-2.jpg"];
 
 export default function StorefrontScene() {
   const root = useRef<HTMLElement>(null);
-  useStory(root, ({ gsap, q, wide }) => {
-    const section = root.current!;
+  useStory(root, ({ gsap, ScrollTrigger, q }) => {
     const num = q(".sf-num")[0];
     const proxy = { n: 0 };
     const items = q(".sf-steps li");
@@ -39,32 +38,23 @@ export default function StorefrontScene() {
       .fromTo(proxy, { n: 0 }, { n: 27, duration: 0.6 }, 2.4)
       .to({}, { duration: 0.4 }, 3);
 
-    if (!wide) {
-      // Phones and short windows: ordinary scrolling, the build plays once.
-      build(gsap.timeline({ defaults: { ease: "power2.out" }, onUpdate: count, scrollTrigger: { trigger: q(".sf-card")[0], start: "top 80%", once: true } }));
-      return;
-    }
-    section.dataset.pinned = "true";
+    // Plays on its own while the section is in view (about 1.6s per step), holds the finished card,
+    // then starts over. Pauses whenever the section is off screen.
     const tl = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: q(".sf-stage")[0],
-        start: "top 96px",
-        end: () => `+=${Math.round(window.innerHeight * 0.9 * 3.4)}`,
-        pin: true, refreshPriority: 1, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true, // pins are measured first so triggers below them include the pin spacing
-        snap: { snapTo: "labels", duration: { min: 0.2, max: 0.5 }, ease: "power1.inOut" },
-        onUpdate: () => { mark(Math.min(3, Math.round(tl.time()))); count(); },
-        onRefresh: count,
-      },
+      paused: true, repeat: -1, repeatDelay: 2.4, defaults: { ease: "power2.out" },
+      onUpdate: () => { mark(Math.min(3, Math.floor(tl.time()))); count(); },
+      onRepeat: () => mark(0),
     });
     build(tl);
-    ["s0", "s1", "s2", "s3"].forEach((label, i) => tl.addLabel(label, i));
-    return () => { delete section.dataset.pinned; };
+    tl.timeScale(0.62);
+    root.current!.dataset.auto = "true";
+    const trigger = ScrollTrigger.create({ trigger: q(".sf-stage")[0], start: "top 75%", end: "bottom 25%", onToggle: (self) => (self.isActive ? tl.play() : tl.pause()) });
+    return () => { trigger.kill(); tl.kill(); if (root.current) delete root.current.dataset.auto; };
   });
   return <section ref={root} className="ps-sec sf" aria-labelledby="sf-title"><div className="le-shell"><div className="sf-stage">
     <div className="sf-copy">
       <p className="hs-eyebrow">For businesses</p>
-      <h2 id="sf-title">Be the business people find.</h2>
+      <h2 id="sf-title">Get found by buyers.</h2>
       <ol className="sf-steps">{STEPS.map((step, i) => <li key={step.title} aria-current={i === 0}><b>{i + 1}</b><div><strong>{step.title}</strong><p>{step.body}</p></div></li>)}</ol>
       <Link className="le-button is-primary" href="/sell">List your business</Link>
     </div>

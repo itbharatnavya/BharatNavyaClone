@@ -79,11 +79,9 @@ export default function ApiAdvertisingSlot({ placement, category, kind, context,
   const controls = <AdControls
     count={ads.length}
     index={index}
-    paused={rotation.userPaused}
     onPrev={rotation.prev}
     onNext={rotation.next}
     onGoTo={rotation.goTo}
-    onTogglePause={rotation.togglePause}
   />;
 
   return <div

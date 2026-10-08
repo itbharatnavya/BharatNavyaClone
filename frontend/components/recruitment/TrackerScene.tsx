@@ -12,11 +12,11 @@ import { getJobs } from "@/lib/api";
 import { useStory } from "@/components/home/useStory";
 
 const STAGES = [
-  { title: "Applied", you: "Your profile goes straight to the employer.", them: "A new application arrives in the inbox.", note: (company: string) => `Application sent to ${company}` },
-  { title: "Viewed", you: "You are told when someone opens your profile.", them: "The team reviews skills and experience.", note: (company: string) => `${company} viewed your profile` },
-  { title: "Shortlisted", you: "You can see you are through to the next round.", them: "The candidate moves onto the shortlist.", note: () => "You are on the shortlist" },
-  { title: "Interview", you: "The time and place arrive with the invite.", them: "The interview is scheduled from the same screen.", note: () => "Interview invite: Tue, 11:00 am" },
-  { title: "Hired", you: "You get a clear, final outcome.", them: "The role is filled and the post closes.", note: (company: string) => `Offer received from ${company}` },
+  { title: "Applied", you: "Your profile goes to the employer.", them: "A new application arrives.", note: (company: string) => `Application sent to ${company}` },
+  { title: "Viewed", you: "You know when they open it.", them: "They check your skills.", note: (company: string) => `${company} viewed your profile` },
+  { title: "Shortlisted", you: "You know you made the next round.", them: "You move to the shortlist.", note: () => "You are on the shortlist" },
+  { title: "Interview", you: "You get the time and place.", them: "They set it up in one click.", note: () => "Interview invite: Tue, 11:00 am" },
+  { title: "Hired", you: "You get a clear answer.", them: "The job is filled.", note: (company: string) => `Offer received from ${company}` },
 ];
 
 export default function TrackerScene() {
@@ -62,7 +62,7 @@ export default function TrackerScene() {
   });
 
   return <section ref={root} className="ps-sec trk" aria-labelledby="trk-title"><div className="le-shell">
-    <header className="le-section-head"><div><h2 id="trk-title">Never wonder where your application is.</h2></div><p>Every application moves through the same five stages, and you and the employer both see where it stands.</p></header>
+    <header className="le-section-head"><div><h2 id="trk-title">Track every application.</h2></div></header>
     <div className="trk-board">
       <ol className="trk-steps">
         {STAGES.map((stage, i) => <li key={stage.title} className="trk-step">

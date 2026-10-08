@@ -27,8 +27,8 @@ const directorySlides: HeroSlide[] = [
 const actionIcon = (d: string) => <svg aria-hidden viewBox="0 0 24 24">{d.split("|").map((path) => <path key={path} d={path} />)}</svg>;
 const directoryActions: HeroAction[] = [
   { title: "Search the Directory", detail: "Companies, products and services", href: "/search", icon: actionIcon("M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z|m20 20-4-4") },
-  { title: "List your business", detail: "Company profile and offerings", href: "/sell", icon: actionIcon("M4 9l1.5-5h13L20 9|M4 9h16v11H4z|M9 20v-6h6v6") },
-  { title: "Promote your company", detail: "Clearly labelled placements", href: "/pricing", icon: actionIcon("M4 10v4l11 5V5z|M15 9a3 3 0 0 1 0 6|M7 15l1 5h3l-1-4") },
+  { title: "List your business", detail: "Add your company for free", href: "/sell", icon: actionIcon("M4 9l1.5-5h13L20 9|M4 9h16v11H4z|M9 20v-6h6v6") },
+  { title: "Promote your company", detail: "Get seen by more buyers", href: "/pricing", icon: actionIcon("M4 10v4l11 5V5z|M15 9a3 3 0 0 1 0 6|M7 15l1 5h3l-1-4") },
 ];
 
 
@@ -65,7 +65,7 @@ export default function DirectoryPage() {
   return <div className="le-page counter-directory-page">
     <LandingHero
       id="directory-title"
-      title="Turn business search into business action."
+      title="Find the right business."
       search={<div ref={searchAnchorRef} data-dock-source className="le-hero-search" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><DirectorySectionSearch /></div>}
       chips={popularCategories.length ? <HeroChips label="Popular categories" items={popularCategories} menu={{ label: "All categories", groups: categoryMenu }} /> : <div className="le-examples"><span>Popular needs</span>{["GST and compliance","Website development","Marketing partner","Logistics provider"].map((item) => <button type="button" key={item} onClick={() => runExample(item)}>{item}</button>)}</div>}
       slides={directorySlides}
