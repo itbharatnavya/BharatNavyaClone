@@ -47,6 +47,15 @@ export default function Navbar() {
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const [productsOpen, setProductsOpen] = useState(false);
+  // At the very top of the page the bar fades open around a larger logo; once anything can scroll under
+  // the header it becomes the solid bar again (styles: .bn-header-surface, .is-at-top).
+  const [atTop, setAtTop] = useState(true);
+  useEffect(() => {
+    const sync = () => setAtTop(window.scrollY <= 8);
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => window.removeEventListener("scroll", sync);
+  }, []);
   const productsRef = useRef<HTMLDivElement>(null);
   const productsTimer = useRef<number | undefined>(undefined);
   const openProducts = () => { window.clearTimeout(productsTimer.current); setProductsOpen(true); };
@@ -89,7 +98,8 @@ export default function Navbar() {
   }, [searchDocked]);
 
   return (
-    <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchDocked ? "is-search-docked" : ""}`}>
+    <header className={`bn-header ${counterPublic || counterWorkspace ? "is-counter-public" : ""} ${counterWorkspace ? "is-counter-workspace" : ""} ${searchDocked ? "is-search-docked" : ""} ${atTop && !searchDocked ? "is-at-top" : ""}`}>
+      <span className="bn-header-surface" aria-hidden />
       <div className="bn-header-inner">
         <Link href="/" className="bn-wordmark" aria-label="Bharat Navya home">
           {/* eslint-disable-next-line @next/next/no-img-element */}<img src="/bharat-navya-logo.png" alt="" /><span className="bn-mark" aria-hidden>{/* eslint-disable @next/next/no-img-element */}<img src="/brand/bn-navy.png" alt="" /><img className="is-white" src="/brand/bn-white.png" alt="" /><img className="is-green" src="/brand/bn-green.png" alt="" /><img className="is-orange" src="/brand/bn-orange.png" alt="" /></span>
@@ -115,7 +125,7 @@ export default function Navbar() {
         {recruitmentDocked && <RecruitmentDockedSearch />}
         <div className="bn-header-actions">
           {!loading && user && featureFlags.notifications && <NotificationBell />}
-          {!loading && <Link className="bn-advertise" href={advertiseHref}>Advertise</Link>}
+          {!loading && <Link className="bn-advertise" href={advertiseHref}><svg aria-hidden viewBox="0 0 24 24"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l6 4V5.5l-6 4H4.5a1 1 0 0 0-1 1Z" /><path d="M7 14.5 8.2 19a1 1 0 0 0 1 .75h1.1" /><path d="M16.5 9a3.5 3.5 0 0 1 0 6" /><path d="M18.8 6.6a7 7 0 0 1 0 10.8" /></svg>Advertise</Link>}
           {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
           {!loading && user && <div className="bn-account" ref={accountRef}>
             <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => { setMenuOpen(false); setAccountOpen((value) => !value); }}><Avatar name={user.name} size={40} /></button>
