@@ -9,7 +9,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Industrial Machinery & Equipment",
+        "categorySlug": "industrial-machinery-equipment",
         "city": "Coimbatore",
         "coverImage": "/demo/machinery-4.jpg",
         "employeeCount": "50-200",
@@ -19,6 +20,11 @@
         "listingCount": 25,
         "logo": null,
         "name": "Coimbatore Precision Machinery Works",
+        "offers": [
+          "Precitech Welding Equipment – Premium",
+          "Servotech Welding Equipment",
+          "Servotech Textile Machinery – Industrial Grade"
+        ],
         "rating": 5,
         "responseRate": 89,
         "reviewCount": 1,
@@ -34,7 +40,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Textiles, Fabrics & Yarn",
+        "categorySlug": "textiles-fabrics-yarn",
         "city": "Surat",
         "coverImage": "/demo/textile-5.jpg",
         "employeeCount": "11-50",
@@ -44,6 +51,11 @@
         "listingCount": 24,
         "logo": null,
         "name": "Surat Silk & Textile Mills",
+        "offers": [
+          "Ganga Textiles Yarn & Thread – Premium",
+          "Suryavanshi Weaves Yarn & Thread",
+          "Ganga Textiles Woolen Fabric – Industrial Grade"
+        ],
         "rating": 5,
         "responseRate": 88,
         "reviewCount": 1,
@@ -59,7 +71,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Tools, Hardware & Cleaning",
+        "categorySlug": "tools",
         "city": "Meerut",
         "coverImage": "/demo/industry-4.jpg",
         "employeeCount": "11-50",
@@ -69,6 +82,11 @@
         "listingCount": 44,
         "logo": null,
         "name": "Meerut Tools & Hardware Depot",
+        "offers": [
+          "Bosch Wet & Dry Vacuum Cleaners – Industrial Grade",
+          "Sparkle Clean Wet & Dry Vacuum Cleaners – Premium",
+          "ToolPro Wet & Dry Vacuum Cleaners"
+        ],
         "rating": 5,
         "responseRate": 90,
         "reviewCount": 1,
@@ -84,7 +102,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Metals, Steel & Alloys",
+        "categorySlug": "metals-steel-alloys",
         "city": "Raipur",
         "coverImage": "/demo/steel-1.jpg",
         "employeeCount": "50-200",
@@ -94,6 +113,11 @@
         "listingCount": 4,
         "logo": null,
         "name": "Jindal Steel & Metals Depot",
+        "offers": [
+          "Aluminium Sheet Plain",
+          "TMT Reinforcement Bars Fe-500D",
+          "MS Angle (Mild Steel)"
+        ],
         "rating": 5,
         "responseRate": 96,
         "reviewCount": 1,
@@ -107,7 +131,8 @@
         "badges": [
           "verified"
         ],
-        "category": null,
+        "category": "Electronics & Electrical",
+        "categorySlug": "electronics-electrical",
         "city": "Bengaluru",
         "coverImage": "/demo/electronics-1.jpg",
         "employeeCount": "200-500",
@@ -117,6 +142,11 @@
         "listingCount": 22,
         "logo": null,
         "name": "Bengaluru Circuit & Electricals",
+        "offers": [
+          "CircuitPro Switchgear & Panels – Premium",
+          "Finolex Switchgear & Panels",
+          "Bengaluru Electricals Sensors & Modules – Premium"
+        ],
         "rating": 4,
         "responseRate": 91,
         "reviewCount": 1,
@@ -131,7 +161,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Professional & Consulting Services",
+        "categorySlug": "professional-consulting-services",
         "city": "Bengaluru",
         "coverImage": "/demo/business-3.jpg",
         "employeeCount": "50-200",
@@ -141,6 +172,10 @@
         "listingCount": 2,
         "logo": null,
         "name": "TechNova IT Solutions",
+        "offers": [
+          "ERP / CRM Implementation",
+          "Web & Mobile App Development"
+        ],
         "rating": 4,
         "responseRate": 97,
         "reviewCount": 1,
@@ -155,7 +190,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Accounting, Tax & Compliance",
+        "categorySlug": "accounting",
         "city": "Pune",
         "coverImage": "/demo/business-4.jpg",
         "employeeCount": "11-50",
@@ -165,6 +201,11 @@
         "listingCount": 39,
         "logo": null,
         "name": "Pune TaxPro Accounting Services",
+        "offers": [
+          "TDS Services – Express Service",
+          "TDS Services – Annual Plan",
+          "TDS Services"
+        ],
         "rating": 0,
         "responseRate": 95,
         "reviewCount": 0,
@@ -179,7 +220,8 @@
           "fast_responder",
           "verified"
         ],
-        "category": null,
+        "category": "Agriculture & Farming",
+        "categorySlug": "agriculture-farming",
         "city": "Nashik",
         "coverImage": "/demo/agriculture-1.jpg",
         "employeeCount": "11-50",
@@ -189,6 +231,11 @@
         "listingCount": 21,
         "logo": null,
         "name": "Nashik AgroFarm Supplies",
+        "offers": [
+          "GreenField Tractor Implements – Industrial Grade",
+          "Kisan Pro Tractor Implements – Premium",
+          "Nashik AgroTools Tractor Implements"
+        ],
         "rating": 0,
         "responseRate": 97,
         "reviewCount": 0,

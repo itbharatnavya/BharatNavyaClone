@@ -1686,6 +1686,55 @@ server. No backend change, no schema change, no new dependency.
 3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
    hydration warning.
 
+### Pulled `origin/design` again (`dd63595..6b24f5b`) — merged 2026-10-09
+
+1 new commit from the UI dev (`6b24f5b`, "Category mega menu, Top companies board, one-piece role finder,
+looping hire scene, footer lockup"), 14 files (+493/-153), **backend touched (additive)**. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(backend and frontend) to the testing server. No schema change, no migration, no new dependency.
+
+**What the design branch changed**
+- **Backend (additive):** `GET /api/sellers/featured` also returns `categorySlug` and `offers` (up to 3 active
+  listing titles), and `category` is now the seller's main top-level category (the root category most of their
+  active listings sit under, falling back to the legacy category). Comes from the new
+  `directory.sellerCardExtras(ids)` (one query in `listingStats.repository.js`, exported through the directory
+  port; `users.routes.js` calls it). Redeploy the backend for the Directory board to show real categories.
+- **"All categories" mega menu:** `components/discovery/CategoryMegaMenu.tsx` replaces the native `<select>`
+  pill. Desktop: left rail of top categories with photos, sub-categories on the right, search across all
+  levels. Phones: same attached dropdown, categories as a row of photos. No dim layer, no scroll lock. Data is
+  `categoryMenu` in `app/directory/page.tsx`. **Departs from the native-`<select>` rule (CLAUDE.md section 2)
+  at the owner's request.**
+- **Directory "Top companies":** `CompanyShowcase.tsx` (`.tc-*`) replaces the company cards (`.cc-*` CSS
+  removed). Category tabs with counts over a ranked two-column board: photo with rank, name and tick,
+  category and city, one proof line (rating, years, reply rate, GST), two offer chips. Whole card is the
+  link; phones show the top four. Still fed by `useFeaturedSellers()` (8 sellers), so some tabs hold only
+  one or two companies.
+- **Recruitment:** the role finder is one box (white choices, blend, navy result), one left-to-right wipe
+  reveal, arrow removed. `HireScene` loops while in view; "See pricing" button removed.
+- **Footer:** logo lockup (name and tagline stacked beside the logo), content starts below the fade.
+  Section heads on phones: title left, button right. Home closing CTAs side by side on phones.
+- **Hero titles restored** to the pre-copy-pass versions at the owner's request (Home "The B2B platform built
+  for what's next.", Directory "Turn business search into business action.", Recruitment "Find the right
+  people. Build the right team."). This reverses the hero titles listed in the previous entry; the designer asks
+  that hero titles are not rewritten in later copy passes without asking.
+- On hold: homepage hero background, waiting for the owner's pick from `public/hero-bg-abstract.html`
+  (untracked, not committed).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/about` return 200 locally.
+- Backend restarted; `npm test` architecture suite 6/6. `sellers-featured` golden regenerated (only that file,
+  by removing it and re-running `test:goldens`, since `goldens:update` would also bake in the unrelated
+  Recruitment/identity drift); it passes. Other goldens unchanged and still failing as before.
+- Owner checked the changes locally.
+- Not done: 390px pass on the mega menu and Top companies board.
+
+**Flags for the owner**
+1. The mega menu is not a native `<select>`; accepted per the owner's request.
+2. Top companies draws only from the 8 featured sellers (`/api/sellers/featured` is still capped at 8, backend
+   gap B1 in the list above).
+3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning, ad carousel script not re-run against the no-pause behaviour.
+
 ---
 
 ## Reference material

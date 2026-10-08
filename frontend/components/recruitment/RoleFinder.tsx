@@ -59,8 +59,10 @@ export default function RoleFinder() {
   useEffect(() => { getJobs({ limit: 1 }).then((response) => setTotal(response.total)).catch(() => {}); }, []);
 
   useStory(root, ({ gsap, q }) => {
-    gsap.from(q(".rf-group"), { y: 24, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power2.out", scrollTrigger: { trigger: q(".rf-board")[0], start: "top 82%", once: true } });
-    gsap.from(q(".rf-result"), { clipPath: "inset(0% 0% 0% 100% round 24px)", duration: 0.9, ease: "power3.inOut", scrollTrigger: { trigger: q(".rf-board")[0], start: "top 82%", once: true } });
+    // The whole board wipes in as one piece, left to right; the choices settle in behind the wipe.
+    const trigger = () => ({ trigger: q(".rf-board")[0], start: "top 82%", once: true });
+    gsap.fromTo(q(".rf-board"), { clipPath: "inset(0% 100% 0% 0% round 24px)" }, { clipPath: "inset(0% 0% 0% 0% round 24px)", duration: 1.1, ease: "power3.inOut", clearProps: "clipPath", scrollTrigger: trigger() });
+    gsap.from(q(".rf-group"), { x: -16, opacity: 0, duration: 0.6, stagger: 0.08, delay: 0.25, ease: "power2.out", scrollTrigger: trigger() });
   });
 
   const shown = count ?? total;
@@ -78,6 +80,7 @@ export default function RoleFinder() {
           <div>{group.options.map(([value, label]) => <button key={value || "any"} type="button" aria-pressed={choice[group.key] === value} onClick={() => setChoice((current) => ({ ...current, [group.key]: value }))}>{label}</button>)}</div>
         </div>)}
       </div>
+      <span className="rf-blend" aria-hidden />
       <div className="rf-result" aria-live="polite">
         <p className="hs-eyebrow">Matching jobs</p>
         <strong className="rf-number"><Figure value={shown} /></strong>

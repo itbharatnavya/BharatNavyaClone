@@ -2,7 +2,8 @@
 
 // Recruitment, employer side: "Post a role. Meet the matches." A role post types
 // itself out, its skills appear, sample candidates arrive with match scores, re-rank
-// by score and the best match is shortlisted. Plays once when it scrolls into view. The role is the
+// by score and the best match is shortlisted. Loops while the section is on screen: it holds the
+// finished board, clears it (the title deletes itself) and starts over; it pauses off screen. The role is the
 // newest live job; the candidates are sample data and are labelled as such. Styles: .hire-*.
 
 import { useEffect, useRef, useState } from "react";
@@ -25,7 +26,7 @@ export default function HireScene() {
   const [job, setJob] = useState({ title: "Customer Support Executive", skills: ["Communication", "Customer Service", "CRM"] });
   useEffect(() => { getJobs({ limit: 1 }).then((response) => { const first = response.jobs[0]; if (first) setJob({ title: first.title, skills: first.skills?.length ? first.skills.slice(0, 3) : ["Communication", "Customer Service", "CRM"] }); }).catch(() => {}); }, []);
 
-  useStory(root, ({ gsap, q }) => {
+  useStory(root, ({ gsap, ScrollTrigger, q }) => {
     const title = q(".hire-title span")[0];
     const fullTitle = title.textContent || "";
     const scores = q(".hire-score");
@@ -43,19 +44,27 @@ export default function HireScene() {
     gsap.set(q(".hire-best"), { scale: 0 });
     gsap.set(q(".hire-done"), { opacity: 0 });
     sync(); // start with the title and scores empty
-    // Plays once, on its own, when the board comes into view (a scrubbed range can finish before, or after, it is on screen).
-    gsap.timeline({ defaults: { ease: "power2.out" }, onUpdate: sync, scrollTrigger: { trigger: q(".hire-board")[0], start: "top 68%", once: true } })
+    // Plays on its own while the board is in view and loops; pauses whenever it is off screen.
+    const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 0.6, defaults: { ease: "power2.out" }, onUpdate: sync });
+    tl
       .to(proxy, { t: 1, duration: 1.1, ease: "none" }, 0)
       .fromTo(q(".hire-skills li"), { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, stagger: 0.12 }, 1.2)
       .fromTo(rows, { opacity: 0, y: (i: number) => (START[i] - i) * step() + 14 }, { opacity: 1, y: (i: number) => (START[i] - i) * step(), duration: 0.5, stagger: 0.15 }, 1.8)
       .fromTo(q(".hire-bar i"), { scaleX: 0 }, { scaleX: 1, duration: 0.8, stagger: 0.1, ease: "none" }, 2)
       .to(proxy, { s: 1, duration: 0.8, ease: "none" }, 2)
       .to(rows, { y: 0, duration: 0.8, ease: "power2.inOut" }, 3.2)
-      .fromTo(q(".hire-best"), { scale: 0 }, { scale: 1, duration: 0.3 }, 4)
+      .fromTo(q(".hire-best"), { scale: 0, opacity: 1 }, { scale: 1, opacity: 1, duration: 0.3 }, 4)
       .to(q(".hire-shortlist"), { scale: 0.94, duration: 0.1 }, 4.5)
       .to(q(".hire-shortlist"), { scale: 1, duration: 0.1 }, 4.6)
-      .fromTo(q(".hire-done"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3 }, 4.7);
-    return () => { title.textContent = fullTitle; scores.forEach((el, i) => { el.textContent = String(CANDIDATES[i].score); }); };
+      .fromTo(q(".hire-done"), { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3 }, 4.7)
+      // Hold the finished board, then clear it for the next round.
+      .to(rows, { opacity: 0, y: 10, duration: 0.4, stagger: 0.06, ease: "power2.in" }, 7.6)
+      .to([...q(".hire-best"), ...q(".hire-done")], { opacity: 0, duration: 0.3 }, 7.6)
+      .to(q(".hire-skills li"), { scale: 0, opacity: 0, duration: 0.25, stagger: 0.05, ease: "power2.in" }, 7.9)
+      .to(proxy, { t: 0, s: 0, duration: 0.5, ease: "none" }, 8.1);
+    const trigger = ScrollTrigger.create({ trigger: q(".hire-board")[0], start: "top 80%", end: "bottom 20%", onToggle: (self) => (self.isActive ? tl.play() : tl.pause()) });
+    return () => {
+      trigger.kill(); tl.kill(); title.textContent = fullTitle; scores.forEach((el, i) => { el.textContent = String(CANDIDATES[i].score); }); };
   });
 
   return <section ref={root} className="ps-sec hire" aria-labelledby="hire-title"><div className="le-shell"><div className="hire-stage">
@@ -63,7 +72,7 @@ export default function HireScene() {
       <p className="hs-eyebrow">For employers</p>
       <h2 id="hire-title">Post a job. Meet good candidates.</h2>
       <ul>{POINTS.map((point) => <li key={point}><svg aria-hidden viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>{point}</li>)}</ul>
-      <div className="hire-actions"><Link className="le-button is-primary" href="/post-job">Post a job</Link><Link className="le-button" href="/pricing">See pricing</Link></div>
+      <div className="hire-actions"><Link className="le-button is-primary" href="/post-job">Post a job</Link></div>
     </div>
     <div className="hire-board" aria-hidden>
       <div className="hire-post">

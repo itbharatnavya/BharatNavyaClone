@@ -271,7 +271,13 @@ function getFeaturedSellerCards(users, activeCounts) {
 router.get("/sellers/featured", async (req, res, next) => {
   try {
     const { users, activeCounts } = await approvedSellersAndCounts();
-    const data = getFeaturedSellerCards(users, activeCounts);
+    const cards = getFeaturedSellerCards(users, activeCounts);
+    // Main category + a few listing titles for the Directory "Top companies" section.
+    const extras = await directory.sellerCardExtras(cards.map((c) => c.id));
+    const data = cards.map((c) => {
+      const x = extras.get(c.id);
+      return x ? { ...c, category: c.category || x.category, categorySlug: x.categorySlug, offers: x.offers } : c;
+    });
 
     return res.json({ success: true, data });
   } catch (err) {
