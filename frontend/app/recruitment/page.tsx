@@ -74,7 +74,7 @@ export default function RecruitmentPage() {
   return <div className="le-page counter-recruitment-page">
     <RecruitmentHero
       id="recruitment-title"
-      title="Find the right people. Build the right team."
+      title="Find work. Hire people."
       search={<div ref={searchAnchorRef} data-dock-source className="le-hero-search is-recruitment" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>}
       shortcuts={functionChips}
       jobs={freshJobs.slice(0, 4)}
@@ -89,7 +89,7 @@ export default function RecruitmentPage() {
       <div className="counter-status-promotion">
         <ApiAdvertisingSlot imageOnly placement="recruitment_home" kind="native" context="Boosted employer · Recruitment" summary="A clearly labelled employer or recruiter placement, kept separate from hiring context and organic role ranking." action="View employer" compact />
       </div>
-      <CategoryShowcase id="recruitment-functions-title" title="Browse jobs by function" groups={functionGroups} allHref="/recruitment/jobs" allLabel="All jobs" />
+      <CategoryShowcase id="recruitment-functions-title" title="Jobs by field" groups={functionGroups} allHref="/recruitment/jobs" allLabel="All jobs" />
     </section>
 
 

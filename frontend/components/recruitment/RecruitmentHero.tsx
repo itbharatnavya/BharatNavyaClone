@@ -70,7 +70,7 @@ export default function RecruitmentHero({ id, title, search, shortcuts }: {
     <nav className="le-shell bn-rhero-paths" aria-label="Recruitment paths">
       <Link href="/recruitment/jobs" className="is-seeker">
         <span className="bn-rhero-path-icon">{icon("M4 8h16v11H4z|M9 8V6a3 3 0 0 1 6 0v2|M4 13h16")}</span>
-        <span><small>Looking for work</small><strong>Find your next role</strong></span>
+        <span><small>Looking for work</small><strong>Find a job</strong></span>
         <b aria-hidden><Arrow /></b>
       </Link>
       <Link href="/post-job" className="is-hirer">

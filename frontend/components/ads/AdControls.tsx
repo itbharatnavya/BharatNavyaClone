@@ -1,18 +1,16 @@
 "use client";
 
 // AdControls — the same controls on every ad slot: previous / next arrows on the sides of the
-// picture, and one small pill with the position + a pause button. The pill never grows with the
+// picture, and one small pill with the position (no pause: ads always keep rotating). The pill never grows with the
 // number of ads: up to 5 ads it shows dots, beyond that a fixed-width "3 / 24" counter with a
 // thin position bar (so 6 ads and 600 ads take exactly the same room).
 
 interface Props {
   count: number;
   index: number;
-  paused: boolean;
   onPrev: () => void;
   onNext: () => void;
   onGoTo: (i: number) => void;
-  onTogglePause: () => void;
 }
 
 export const AD_DOTS_MAX = 5;
@@ -23,7 +21,7 @@ const Svg = ({ children }: { children: React.ReactNode }) => (
   </svg>
 );
 
-export default function AdControls({ count, index, paused, onPrev, onNext, onGoTo, onTogglePause }: Props) {
+export default function AdControls({ count, index, onPrev, onNext, onGoTo }: Props) {
   if (count <= 1) return null;
   return (
     <>
@@ -46,9 +44,6 @@ export default function AdControls({ count, index, paused, onPrev, onNext, onGoT
             <i style={{ width: `${((index + 1) / count) * 100}%` }} />
           </span>
         )}
-        <button type="button" className="bn-ad-pause" aria-label={paused ? "Resume rotation" : "Pause rotation"} aria-pressed={paused} onClick={onTogglePause}>
-          {paused ? <Svg><path d="M8 5l11 7-11 7z" /></Svg> : <Svg><path d="M9 5v14M15 5v14" /></Svg>}
-        </button>
       </div>
     </>
   );

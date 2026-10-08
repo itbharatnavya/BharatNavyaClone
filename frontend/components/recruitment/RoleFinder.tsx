@@ -12,9 +12,9 @@ import { useStory } from "@/components/home/useStory";
 
 type Key = "workplaceType" | "experienceLevel" | "employmentType";
 const GROUPS: { key: Key; label: string; options: [string, string][] }[] = [
-  { key: "workplaceType", label: "Where do you want to work?", options: [["", "Anywhere"], ["onsite", "On-site"], ["hybrid", "Hybrid"], ["remote", "Remote"]] },
-  { key: "experienceLevel", label: "What is your level?", options: [["", "Any level"], ["entry", "Entry"], ["mid", "Mid"], ["senior", "Senior"]] },
-  { key: "employmentType", label: "What kind of role?", options: [["", "Any type"], ["full-time", "Full-time"], ["contract", "Contract"], ["internship", "Internship"]] },
+  { key: "workplaceType", label: "Where?", options: [["", "Anywhere"], ["onsite", "On-site"], ["hybrid", "Hybrid"], ["remote", "Remote"]] },
+  { key: "experienceLevel", label: "Your level?", options: [["", "Any level"], ["entry", "Entry"], ["mid", "Mid"], ["senior", "Senior"]] },
+  { key: "employmentType", label: "Job type?", options: [["", "Any type"], ["full-time", "Full-time"], ["contract", "Contract"], ["internship", "Internship"]] },
 ];
 const DOTS = 24;
 
@@ -70,7 +70,7 @@ export default function RoleFinder() {
   const href = `/recruitment/jobs${params.toString() ? `?${params}` : ""}`;
 
   return <section ref={root} className="ps-sec rf" aria-labelledby="rf-title"><div className="le-shell">
-    <header className="le-section-head"><div><h2 id="rf-title">Tell us what you want. See what is out there.</h2></div><p>Pick a workplace, a level and a kind of role, and watch the matching roles update as you go.</p></header>
+    <header className="le-section-head"><div><h2 id="rf-title">What job do you want?</h2></div></header>
     <div className="rf-board">
       <div className="rf-controls">
         {GROUPS.map((group) => <div key={group.key} className="rf-group" role="group" aria-label={group.label}>
@@ -79,10 +79,10 @@ export default function RoleFinder() {
         </div>)}
       </div>
       <div className="rf-result" aria-live="polite">
-        <p className="hs-eyebrow">Open roles that match</p>
+        <p className="hs-eyebrow">Matching jobs</p>
         <strong className="rf-number"><Figure value={shown} /></strong>
         <div className="rf-dots" aria-hidden>{Array.from({ length: DOTS }, (_, i) => <i key={i} className={i < lit ? "is-lit" : undefined} style={{ ["--i" as string]: i }} />)}</div>
-        <Link className="le-button is-primary" href={href}>{shown > 0 ? `See ${shown} ${shown === 1 ? "role" : "roles"}` : "Browse all roles"}</Link>
+        <Link className="le-button is-primary" href={href}>{shown > 0 ? `See ${shown} ${shown === 1 ? "job" : "jobs"}` : "Browse all jobs"}</Link>
       </div>
     </div>
   </div></section>;

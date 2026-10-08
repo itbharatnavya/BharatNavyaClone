@@ -52,7 +52,7 @@ export default function RfqScene() {
   });
 
   return <section ref={root} className="ps-sec rfq" aria-labelledby="rfq-title"><div className="le-shell">
-    <header className="le-section-head"><div><h2 id="rfq-title">One requirement. Many quotes.</h2></div><p>Post what you need once. Relevant suppliers reply with price and delivery, and you compare them side by side.</p><Link className="le-button is-primary" href="/rfq">Post a requirement</Link></header>
+    <header className="le-section-head"><div><h2 id="rfq-title">Post once. Get many quotes.</h2></div><Link className="le-button is-primary" href="/rfq">Post a requirement</Link></header>
     <div className="rfq-board">
       <div className="rfq-req">
         <p className="hs-eyebrow">Your requirement</p>
@@ -72,6 +72,6 @@ export default function RfqScene() {
         </li>)}
       </ol>
     </div>
-    <p className="rfq-note">Sample figures, shown for illustration. Real quotes come from suppliers who match your requirement.</p>
+    <p className="rfq-note">Sample figures. Real quotes come from matching suppliers.</p>
   </div></section>;
 }

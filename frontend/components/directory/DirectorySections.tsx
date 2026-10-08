@@ -20,7 +20,7 @@ export default function DirectorySections() {
   });
   return <div ref={root} className="ps">
     <section className="ps-sec" aria-labelledby="companies-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="companies-title">The companies behind the listings.</h2></div><p>Verified manufacturers, traders and service providers, with the proof you need before you reach out: ratings, reply rate, years in business and registrations.</p><Link className="le-button" href="/search">Explore companies</Link></header>
+      <header className="le-section-head"><div><h2 id="companies-title">Top companies</h2></div><Link className="le-button" href="/search">See all companies</Link></header>
       <div className="ps-rail"><CompanyShowcase /></div>
     </div></section>
     <RfqScene />

@@ -21,26 +21,26 @@ const Icon = ({ d }: { d: string }) => <svg aria-hidden viewBox="0 0 24 24">{d.s
 const ARROW = "M5 12h14|M13 6l6 6-6 6";
 
 const PAIRS = [
-  { before: "A listing with a name, a category and a phone number.", after: "A record with identity, evidence and terms you can inspect." },
-  { before: "Applying for a role and never hearing back.", after: "A clear application status, visible to both sides." },
-  { before: "One tool for suppliers, another for hiring, none connected.", after: "One account across companies, products, services and roles." },
+  { before: "A name and a phone number.", after: "A verified profile you can check." },
+  { before: "Applying and never hearing back.", after: "Status both sides can see." },
+  { before: "Separate tools for buying and hiring.", after: "One account for everything." },
 ];
 
 const PRINCIPLES = [
-  { icon: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z|m9 12 2 2 4-4", title: "Evidence over claims", body: "Show what a business has done and what it offers, not just what it says about itself." },
-  { icon: "M4 19V9|M10 19V5|M16 19v-7|M20 19H2", title: "Clarity before contact", body: "Terms, context and status are visible before anyone has to send a message." },
-  { icon: "M16 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20|M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3|M15.5 4.3a3.5 3.5 0 0 1 0 6.4", title: "Two sides, one account", body: "Offering, buying, hiring and applying all work from the same identity." },
-  { icon: "M6 7h12a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 2v-3.2A3 3 0 0 1 3 15v-5a3 3 0 0 1 3-3Z|M8 12h.01|M12 12h.01|M16 12h.01", title: "Never a dead end", body: "Search and Ask Navya always point somewhere useful, even for a vague question." },
+  { icon: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z|m9 12 2 2 4-4", title: "Proof, not claims", body: "Show what you have done, not just what you say." },
+  { icon: "M4 19V9|M10 19V5|M16 19v-7|M20 19H2", title: "Clear before contact", body: "See the details before you send a message." },
+  { icon: "M16 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20|M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M20 20v-1.5a3.5 3.5 0 0 0-2.5-3.3|M15.5 4.3a3.5 3.5 0 0 1 0 6.4", title: "One account", body: "Sell, buy, hire or apply with the same login." },
+  { icon: "M6 7h12a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 2v-3.2A3 3 0 0 1 3 15v-5a3 3 0 0 1 3-3Z|M8 12h.01|M12 12h.01|M16 12h.01", title: "Always an answer", body: "Search and Ask Navya always point you somewhere useful." },
 ];
 
 const LIVE = [
-  { name: "Directory", line: "Companies, products and services you can inspect and enquire from.", status: "Live", href: "/directory" },
-  { name: "Recruitment", line: "Roles with context, and application status both sides can see.", status: "Live", href: "/recruitment" },
-  { name: "Ask Navya", line: "Plain-language help that points to the right place.", status: "Live", href: "/#ask-navya" },
-  { name: "Growth OS", line: "Business intelligence for companies already on the platform.", status: "Coming soon", href: "" },
+  { name: "Directory", line: "Find companies, products and services.", status: "Live", href: "/directory" },
+  { name: "Recruitment", line: "Find jobs and track applications.", status: "Live", href: "/recruitment" },
+  { name: "Ask Navya", line: "Ask in plain words.", status: "Live", href: "/#ask-navya" },
+  { name: "Growth OS", line: "Business insights for listed companies.", status: "Coming soon", href: "" },
 ];
 
-const CLOSING = "Explore what comes next.".split(" ");
+const CLOSING = "Get started.".split(" ");
 
 export default function AboutSections() {
   const root = useRef<HTMLDivElement>(null);
@@ -88,8 +88,8 @@ export default function AboutSections() {
 
   return <div ref={root} className="le-page counter-home-page hs ab">
     <section className="le-hero bn-home-hero" aria-labelledby="about-title"><div className="le-shell">
-      <h1 id="about-title"><span>Building a better way</span> to navigate the business market.</h1>
-      <p>Bharat Navya brings businesses, products, services, roles and opportunities into one connected B2B platform, so it is easier to discover what exists, understand what matters and choose the right next step.</p>
+      <h1 id="about-title"><span>Business in India,</span> made easier to find.</h1>
+      <p>Companies, products, services and jobs in one place.</p>
       <div className="ab-hero-actions">
         <Link className="le-button is-primary" href="/directory">Explore the Directory</Link>
         <Link className="le-button" href="/recruitment">Explore Recruitment</Link>
@@ -97,7 +97,7 @@ export default function AboutSections() {
     </div></section>
 
     <section className="hs-sec" aria-labelledby="problem-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="problem-title">Business information is scattered. We are putting it in one place.</h2></div><p>Most of the friction in B2B comes from not knowing enough, early enough. Here is what we set out to change.</p></header>
+      <header className="le-section-head"><div><h2 id="problem-title">Before and after</h2></div></header>
       <div className="ab-pairs">
         {PAIRS.map((pair) => <article key={pair.before} className="ab-pair">
           <p className="ab-before"><span>Before</span><em>{pair.before}</em></p>
@@ -108,7 +108,7 @@ export default function AboutSections() {
     </div></section>
 
     <section className="hs-sec" aria-labelledby="beliefs-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="beliefs-title">What we believe.</h2></div><p>Four ideas shape every page, filter and record on the platform.</p></header>
+      <header className="le-section-head"><div><h2 id="beliefs-title">What we believe.</h2></div></header>
       <div className="ab-beliefs">
         {PRINCIPLES.map((item) => <article key={item.title} className="ab-belief">
           <span className="hs-prod-icon"><Icon d={item.icon} /></span>
@@ -119,7 +119,7 @@ export default function AboutSections() {
     </div></section>
 
     <section className="hs-sec" aria-labelledby="live-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="live-title">What you can use today.</h2></div><p>One account opens everything that is live, and what is coming is shown plainly.</p></header>
+      <header className="le-section-head"><div><h2 id="live-title">Live today</h2></div></header>
       <div className="ab-live">
         <div className="ab-live-line" aria-hidden><i /></div>
         <ol className="ab-live-track">
@@ -134,7 +134,7 @@ export default function AboutSections() {
     </div></section>
 
     {feature && <section className="hs-sec" aria-labelledby="articles-title"><div className="le-shell">
-      <header className="le-section-head"><div><h2 id="articles-title">Ideas shaping better business decisions.</h2></div><p>Practical context from companies and employers across Bharat Navya.</p><Link className="le-button" href="/blog">View all articles</Link></header>
+      <header className="le-section-head"><div><h2 id="articles-title">From the blog</h2></div><Link className="le-button" href="/blog">View all articles</Link></header>
       <Link href={`/blog/${feature.slug}`} className="ab-feature">
         <span className="ab-feature-media">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={feature.coverImage!} alt="" /></span>
         <span className="ab-feature-copy"><small>{feature.author?.companyName || feature.authorName || "Bharat Navya"}</small><strong>{feature.title}</strong><em>Read the article<Icon d={ARROW} /></em></span>
@@ -149,9 +149,7 @@ export default function AboutSections() {
     <section className="hs-sec hs-close" aria-labelledby="about-close-title"><div className="le-shell">
       <div className="hs-close-panel">
         <span className="hs-close-glow" aria-hidden />
-        <p className="hs-eyebrow hs-fade">From intent to action</p>
         <h2 id="about-close-title" aria-label={CLOSING.join(" ")}>{CLOSING.map((word, index) => <span key={index} className="hs-w" aria-hidden><i>{word}</i></span>)}</h2>
-        <p className="hs-fade">Whether you need a business, a product, a service or a role, Bharat Navya gives you a clear way to continue.</p>
         <div className="hs-close-actions hs-fade">
           <Link className="le-button is-primary" href="/directory">Explore the Directory</Link>
           <Link className="le-button" href="/recruitment">Explore Recruitment</Link>

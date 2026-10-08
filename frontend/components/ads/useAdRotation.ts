@@ -3,10 +3,9 @@
 // useAdRotation — the one rotation engine behind every ad slot (ApiAdvertisingSlot).
 //
 //  - advances every AD_ROTATE_MS (4s); the dwell restarts after any manual change
-//  - holds while the pointer is over the ad, focus is inside it, the tab is hidden, the ad is
-//    scrolled out of view, or the visitor pressed pause
-//  - "reduce motion" only removes the fade (CSS); it never stops the rotation, a pause button
-//    is the accessible control instead
+//  - keeps rotating under the cursor and with focus inside (owner's call: no pause anywhere);
+//    only holds while the tab is hidden or the ad is scrolled out of view, when nobody sees it
+//  - "reduce motion" only removes the fade (CSS); it never stops the rotation
 //  - start position is random per page view and each slot of the same placement starts one ad
 //    further along, so the rail / in-feed / bottom slots of one page don't show the same ad
 //  - swipe left / right on touch screens
@@ -32,9 +31,6 @@ function releaseSlot(key: string) {
 
 export function useAdRotation(count: number, placementKey: string, intervalMs: number = AD_ROTATE_MS) {
   const [index, setIndex] = useState(0);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
   const [tabHidden, setTabHidden] = useState(false);
   const [inView, setInView] = useState(true);
   const seq = useRef(-1);
@@ -73,7 +69,7 @@ export function useAdRotation(count: number, placementKey: string, intervalMs: n
     return () => io.disconnect();
   }, [index, count]);
 
-  const holding = hovered || focused || userPaused || tabHidden || !inView;
+  const holding = tabHidden || !inView;
 
   useEffect(() => {
     if (count <= 1 || holding) return;
@@ -86,18 +82,6 @@ export function useAdRotation(count: number, placementKey: string, intervalMs: n
   const prev = useCallback(() => goTo(index - 1), [goTo, index]);
 
   const handlers = {
-    onMouseEnter: () => setHovered(true),
-    onMouseLeave: () => setHovered(false),
-    // Only KEYBOARD focus holds the ad. After a mouse/touch click the button keeps focus, and that
-    // must not freeze the rotation (matches :focus-visible).
-    onFocus: (e: React.FocusEvent<HTMLElement>) => {
-      let keyboard = true;
-      try { keyboard = (e.target as HTMLElement).matches(":focus-visible"); } catch { /* old browser: treat as keyboard */ }
-      setFocused(keyboard);
-    },
-    onBlur: (e: React.FocusEvent<HTMLElement>) => {
-      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false);
-    },
     onTouchStart: (e: TouchEvent<HTMLElement>) => {
       touchX.current = e.touches[0]?.clientX ?? null;
     },
@@ -116,8 +100,6 @@ export function useAdRotation(count: number, placementKey: string, intervalMs: n
     goTo,
     next,
     prev,
-    userPaused,
-    togglePause: () => setUserPaused((p) => !p),
     handlers,
     wrapRef: (el: HTMLElement | null) => {
       wrapRef.current = el;

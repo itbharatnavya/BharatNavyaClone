@@ -18,7 +18,7 @@ const CANDIDATES = [
   { name: "Isha P.", meta: "3 yrs · Delhi", score: 72 },
 ];
 const START = [2, 0, 3, 1];
-const POINTS = ["Structured roles candidates can trust", "Matches ranked by skills and experience", "Shortlist and update status in one place"];
+const POINTS = ["Clear job posts", "Candidates ranked by skills", "Shortlist in one place"];
 
 export default function HireScene() {
   const root = useRef<HTMLElement>(null);
@@ -61,7 +61,7 @@ export default function HireScene() {
   return <section ref={root} className="ps-sec hire" aria-labelledby="hire-title"><div className="le-shell"><div className="hire-stage">
     <div className="hire-copy">
       <p className="hs-eyebrow">For employers</p>
-      <h2 id="hire-title">Post a role. Meet the matches.</h2>
+      <h2 id="hire-title">Post a job. Meet good candidates.</h2>
       <ul>{POINTS.map((point) => <li key={point}><svg aria-hidden viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>{point}</li>)}</ul>
       <div className="hire-actions"><Link className="le-button is-primary" href="/post-job">Post a job</Link><Link className="le-button" href="/pricing">See pricing</Link></div>
     </div>
@@ -84,7 +84,7 @@ export default function HireScene() {
           </>}
         </li>)}
       </ol>
-      <p className="hire-note">Sample candidates, shown for illustration.</p>
+      <p className="hire-note">Sample candidates.</p>
     </div>
   </div></div></section>;
 }
