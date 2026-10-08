@@ -1615,6 +1615,32 @@ to the testing server. No backend change, no schema change, no new dependency.
    shadow must target `.bn-header-surface`, not `.bn-header`.
 3. Pending from earlier passes, unchanged: GSAP visual pass, `/categories` hydration warning.
 
+### Pulled `origin/design` again (`bb7e84c..747a912`) — merged 2026-10-08 (evening)
+
+1 new commit from the UI dev (`747a912`, "Header spans the full bar on wide screens, 50/50 home split, text
+Advertise"), 1 file (+8/-2): `app/counter-soft-system.css`. CSS only. Merged with `git merge --no-ff --no-commit`,
+**no conflicts**, owner checked it locally, then committed, pushed and deployed (frontend only) to the testing
+server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Home stats row is 50/50.** `.hs-proof-row` columns go from `2fr 1fr` to `1fr 1fr`: the stats card and the
+  `home_hero` ad tile are now equal width. Still full width when no ad is live; stacks under 900px.
+- **Header content spans the whole bar.** `.bn-header.is-counter-public .bn-header-inner { max-width: none }`.
+  It was capped at 90rem and centred, which pulled the logo away from the bar's left end on wide monitors.
+- **Advertise** is a plain navy text link with the megaphone, no outline box; hover shows the
+  `--counter-indigo-soft` tint.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment` return 200 locally.
+- Owner checked the changes locally.
+- Not done: 1920px visual check of the logo and centred nav, ad tile balance at 50/50.
+
+**Flags for the owner**
+1. The 50/50 split doubles the ad tile's width; ad creatives sized for a narrow tile may now crop differently
+   (`ApiAdvertisingSlot imageOnly`).
+2. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning.
+
 ---
 
 ## Reference material
