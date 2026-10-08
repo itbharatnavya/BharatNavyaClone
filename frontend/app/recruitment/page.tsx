@@ -74,7 +74,7 @@ export default function RecruitmentPage() {
   return <div className="le-page counter-recruitment-page">
     <RecruitmentHero
       id="recruitment-title"
-      title="Find work. Hire people."
+      title="Find the right people. Build the right team."
       search={<div ref={searchAnchorRef} data-dock-source className="le-hero-search is-recruitment" aria-hidden={docked || undefined} onFocusCapture={() => { heroFocusedRef.current = true; }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { heroFocusedRef.current = false; if (pendingDockRef.current !== null) { setProgress(pendingDockRef.current ? 1 : 0); pendingDockRef.current = null; } } }}><RecruitmentSectionSearch /></div>}
       shortcuts={functionChips}
       jobs={freshJobs.slice(0, 4)}

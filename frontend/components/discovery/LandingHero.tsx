@@ -9,7 +9,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import CategoryMegaMenu, { type MegaGroup } from "./CategoryMegaMenu";
 
 export interface HeroSlide { src: string }
 export interface HeroChip { label: string; href: string; icon?: ReactNode }
@@ -56,31 +56,11 @@ function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   </div>;
 }
 
-export interface HeroMenuGroup { label: string; href: string; children?: { label: string; href: string }[] }
-
-// A native <select> dressed as the first pill: every category (with its sub-categories
-// grouped under it) in one dropdown. Choosing one goes straight to that category's results.
-function HeroCategoryMenu({ label, groups }: { label: string; groups: HeroMenuGroup[] }) {
-  const router = useRouter();
-  return <label className="bn-chip-menu">
-    <svg aria-hidden viewBox="0 0 24 24"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z" /></svg>
-    <span className="sr-only">{label}</span>
-    <select value="" aria-label={label} onChange={(event) => { if (event.target.value) router.push(event.target.value); }}>
-      <option value="">{label}</option>
-      {groups.map((group) => group.children?.length
-        ? <optgroup key={group.href} label={group.label}>
-          <option value={group.href}>All in {group.label}</option>
-          {group.children.map((child) => <option key={child.href} value={child.href}>{child.label}</option>)}
-        </optgroup>
-        : <option key={group.href} value={group.href}>{group.label}</option>)}
-    </select>
-    <svg className="bn-chip-menu-caret" aria-hidden viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
-  </label>;
-}
+export type HeroMenuGroup = MegaGroup;
 
 export function HeroChips({ label, items, menu }: { label: string; items: HeroChip[]; menu?: { label: string; groups: HeroMenuGroup[] } }) {
   return <div className="le-examples bn-landing-chips" role="group" aria-label={label}>
-    {menu && menu.groups.length > 0 && <HeroCategoryMenu label={menu.label} groups={menu.groups} />}
+    {menu && menu.groups.length > 0 && <CategoryMegaMenu label={menu.label} groups={menu.groups} />}
     {items.map((item) => <Link key={item.href} href={item.href}>{item.icon}<span>{item.label}</span></Link>)}
   </div>;
 }

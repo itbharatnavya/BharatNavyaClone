@@ -201,7 +201,45 @@ async function listingTitlesByIds(ids = []) {
   return new Map(rows.map((r) => [r.id, r.title]));
 }
 
+/**
+ * sellerCardExtras(sellerIds) -> Promise<Map<sellerId, { category, categorySlug, offers }>>
+ *
+ * For the Directory landing's "Top companies" section: each seller's main top-level
+ * category (the root category most of their active listings sit under) and the titles
+ * of up to three active listings, newest first. One query over the given sellers only.
+ */
+async function sellerCardExtras(sellerIds = []) {
+  const uniq = [...new Set(sellerIds)].filter(Boolean);
+  if (!uniq.length) return new Map();
+  const { rows } = await pool.query(
+    `SELECT l.seller_id, l.title, c.name AS root_name, c.slug AS root_slug
+       FROM listings l
+       LEFT JOIN categories c ON c.slug = l.category_path[1]
+      WHERE l.status = 'active' AND l.seller_id = ANY($1)
+      ORDER BY l.seller_id, l.created_at DESC, l.id DESC`,
+    [uniq]
+  );
+  const out = new Map();
+  for (const r of rows) {
+    const entry = out.get(r.seller_id) || { tally: new Map(), offers: [] };
+    if (entry.offers.length < 3) entry.offers.push(r.title);
+    if (r.root_slug) {
+      const t = entry.tally.get(r.root_slug) || { name: r.root_name, n: 0 };
+      t.n += 1;
+      entry.tally.set(r.root_slug, t);
+    }
+    out.set(r.seller_id, entry);
+  }
+  for (const [id, entry] of out) {
+    let best = null;
+    for (const [slug, t] of entry.tally) if (!best || t.n > best.n) best = { slug, name: t.name, n: t.n };
+    out.set(id, { category: best ? best.name : null, categorySlug: best ? best.slug : null, offers: entry.offers });
+  }
+  return out;
+}
+
 module.exports = {
+  sellerCardExtras,
   listingCountsByCategory,
   firstListingImageBySeller,
   activeListingCountsBySeller,

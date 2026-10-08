@@ -9,6 +9,7 @@
  */
 
 const {
+  sellerCardExtras,
   listingCountsByCategory,
   firstListingImageBySeller,
   activeListingCountsBySeller,
@@ -30,6 +31,7 @@ const categoriesRepo = require("./repository/category.repository");
 const consultationBookingsRepo = require("./repository/consultationBooking.repository");
 
 module.exports = {
+  sellerCardExtras,
   listingCountsByCategory,
   firstListingImageBySeller,
   activeListingCountsBySeller,
