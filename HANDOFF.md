@@ -1,11 +1,12 @@
 # Bharat Navya — canonical handoff
 
-## START HERE (updated 7 October 2026)
+## START HERE (updated 8 October 2026)
 
 If you are a new Claude/Codex session picking this up, read this block first, then `AGENTS.md`, `DESIGN-SYSTEM.md`, and the dated "what changed" blocks at the end of this file (newest last). Older sections (0 to 11) are history; where they disagree with this block, this block wins.
 
 **Where the work lives**
 - Repo: `mahir-bharat/BharatNavya` on GitHub. Work branch: `design`. The owner and dev pull `design` and deploy it (Vercel production `bharatnavya.vercel.app` was confirmed serving `design` builds on 5 Oct). Never push anywhere except `origin/design`; never touch `main`.
+- The dev works on `origin/feature/design-integration` and regularly merges `design` into it. When asked to "take pull from design integration", fetch it, check `git rev-list --count origin/feature/design-integration..HEAD` is 0 (then it is a fast-forward), stash local edits, `git merge --ff-only origin/feature/design-integration`, pop the stash. Afterwards: `npm install` in `frontend/` if `package.json` changed, `npm run migrate-schema` in `backend/` for new files in `backend/lib/db/schema-migrations/`, restart both servers with a clean `.next`.
 - Working copy: the Codex worktree `/Users/parthus/.codex/worktrees/design-integration-merge/BharatConnect` (local branch `codex/design-integration-merge`), pushed with `git push origin HEAD:design`. The main checkout `/Users/parthus/Documents/ChatGPT/BharatConnect` is stale (many commits behind, with uncommitted changes) and the owner said to leave it untouched.
 - "Deploy" from the owner means: commit and push to `origin/design` so the dev can pull. Commit messages end with a `Co-Authored-By` line.
 - Push auth: the active `gh` account on this Mac is the personal `Parthuss`, which cannot see the repo ("Repository not found"). The `itbharatnavya` account is also logged in. Push with it for the one command without switching the default, e.g. `T=$(gh auth token --user itbharatnavya); git -c credential.helper= -c credential.helper="!f(){ echo username=itbharatnavya; echo password=$T; }; f" push origin HEAD:design`. Never print the token.
@@ -28,9 +29,9 @@ If you are a new Claude/Codex session picking this up, read this block first, th
 **Open threads right now**
 - Header logo redesign (exploration only, not on the platform): `frontend/public/logo-options.html` (uncommitted, view at `http://localhost:3000/logo-options.html`). Owner likes **6B** (logo in the centre of the bar, bar cut around it) and **7B** (logo at the left, bar starts after it with a curved end), both with **no white disc** behind the logo. Geometry lives in the `.cbar.is-notch` rules: logo size `--s`, cut radius `R = 0.649 x s + gap` (0.649 is the measured enclosing-circle ratio of `bharat-navya-logo.png`), bar height `2R - trim`. Owner asked for generous space between logo and bar and centred nav. Next step when they choose: build it into `components/Navbar.tsx`.
 - Untracked on purpose in `frontend/public/`: `logo-options.html` (above), plus `header-3d-options.html` and `logo-3d-options.html`, which were not made by the Claude session and whose author/purpose is unknown. Do not commit them under `public/` (they would become live pages).
-- Growth OS is in the Products menu as a non-link "Coming soon" tile (`UPCOMING` in `Navbar.tsx`). When it gets a route, move it into `PRODUCTS`.
+- Growth OS is in the Products menu as a muted non-link tile (`UPCOMING` in `Navbar.tsx`), hover tooltip "Coming soon"; the owner did not want a visible "Coming soon" tag there. When it gets a route, move it into `PRODUCTS`. The homepage hero card still shows its own "Coming soon" label (left as is).
 - Advertise (header) links to the seller dashboard's Advertise tab via sign-in; non-sellers land on Profile to become a seller first. A no-account "apply to advertise" form would need a new endpoint plus an admin view; offered, not requested.
-- Desktop root font size now scales with the window (see 7 October block). Ask Mahir to confirm on his laptop that the ad no longer cuts off; the 13px floor means very short windows still show less.
+- Desktop root font size only scales **down** on small or zoomed laptops (capped at 16px, see 8 October block). Ask Mahir to confirm on his laptop that the ad no longer cuts off; the 13px floor means very short windows still show less.
 - Unverified: dashboards after the white-sheet removal (needs a signed-in check), card redesign in list view and phone widths, Recruitment landing spacing, the `/categories` hydration warning.
 
 ---
@@ -533,7 +534,7 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 - Workplace select removed from the bar (it stays in the jobs page filters); the hero search no longer sends `workplace`. Location label reads "Anywhere". Desktop bar is compact (34rem, columns role / 9.25rem location / arrow). Phones: role, location, full-width "Search jobs".
 
 **Platform-wide**
-- Desktop sizing: `@media (min-width: 900px) { html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px) } }` at the end of `counter-soft-system.css`. Everything is rem, so laptops of different sizes and scaling show the same slice of the page (16px at 1440x810). Phones and tablets stay 16px. If something px-sized looks off on a small or very large screen, this is why.
+- Desktop sizing: `@media (min-width: 900px) { html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px) } }` at the end of `counter-soft-system.css`. Everything is rem, so laptops of different sizes and scaling show the same slice of the page (16px at 1440x810). Phones and tablets stay 16px. If something px-sized looks off on a small or very large screen, this is why. **Superseded on 8 Oct: max is now 16px.**
 - Search-bar focus: inputs/selects inside search bars draw no outline of their own; the focused field gets a rounded navy ring drawn as an `::after` overlay inset 3px, so field dividers stay straight. Do not put `border-radius` on the field labels themselves (it bent the divider).
 - Footer: no separate white box; full width, transparent at the top fading to white by 9rem.
 - Guest sign-in popup (`components/auth/GuestAccountNudge.tsx`): fixed a bug where it reopened on the next scroll after being closed. It now rechecks closed/shown before revealing, stops listening after it shows once, and survives blocked storage. Tested by forcing the 2-minute condition.
@@ -541,4 +542,10 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 **Not verified / open**
 - Keyboard focus ring and the viewport scaling have not been checked on Windows (Mahir's laptop); ask for a look.
 - Only two of the five Directory hero photos were looked at with the new gradient.
+
+## 8 October 2026: what changed since the 7 October block
+- **Pulled the dev's `feature/design-integration`** (19 commits, fast-forward to `bcab2d7`), then pushed to `design`. It brings: one rotating ad carousel for every ad slot (`components/ads/useAdRotation.ts`, `AdControls.tsx`, `lib/adPlacements.ts`; `AdSlider.tsx`, `PromoBanner.tsx`, `NativePromotionSlot.tsx` deleted), listing edit mode and seller-tools fixes, OTP codes in Postgres, the Ask Navya agent endpoint (`backend/modules/ai/service/agent*.js`), `scripts/seed-ads-demo.js`, and the `remark-gfm` package. Their notes live in `WEB-REDESIGN.md` and `CHANGES-SELLER-TOOLS.md`. Local DB got migrations 0016 to 0018 via `npm run migrate-schema`.
+- **Font size regression fixed.** The 7 Oct viewport rule also scaled *up* (about 18px on a 1920x1080 Windows screen), so the dev saw less per screen than the older live version. Now `clamp(13px, min(1.111vw, 1.975vh), 16px)`: never above the original 16px, only shrinks on short or zoomed laptops. Verified 16px at 1920x930 and 1440x810.
+- **Recruitment docked header search**: the column left over from the removed workplace select is gone (`.bn-header-search-desktop .bn-section-search--recruitment.bn-section-search--compact`, both the base and the wide-screen rule); the bar ends at the arrow.
+- **Products menu**: no visible "Coming soon" tag on Growth OS (desktop tile and phone menu); tooltip only. Phone-menu Growth OS aligned with the other sub-links (`.bn-mobile-nav-soon` padding 1.75rem).
 
