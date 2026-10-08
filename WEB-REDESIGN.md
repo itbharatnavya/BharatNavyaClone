@@ -1735,6 +1735,19 @@ looping hire scene, footer lockup"), 14 files (+493/-153), **backend touched (ad
 3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
    hydration warning, ad carousel script not re-run against the no-pause behaviour.
 
+### Pulled `origin/design` again (`6b24f5b..67dbd1a`) — merged 2026-10-09 (later)
+
+1 new commit from the UI dev (`67dbd1a`, "Top companies: drop rank numbers from the cards"), 2 files (+6/-8):
+`components/directory/CompanyShowcase.tsx`, `app/counter-soft-system.css`. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(frontend only). No backend, schema or dependency change.
+
+- The rank badge on the Directory "Top companies" cards is removed (`.tc-rank` CSS and the `rank` prop). The
+  list is an unnumbered `<ul>` labelled "Top companies" instead of an `<ol>` "ranked by rating"; the photo box
+  now fills for both photo and avatar. Order, tabs and card content are unchanged (the file's header comment
+  still says "ranked by rating").
+- `npx tsc --noEmit` clean; `/directory` 200 locally.
+
 ---
 
 ## Reference material
