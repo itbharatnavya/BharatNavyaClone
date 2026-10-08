@@ -5975,8 +5975,8 @@ small { font-size: var(--fs-xs); }
 .cc-stats { background: #f6f8fc; }
 .cc-chips li { background: #f1f4f9; color: var(--counter-ink); }
 
-/* Home: stats card 2/3, ad 1/3 beside it (full width when there is no ad or on phones). */
-.hs-proof-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--counter-space-3); align-items: stretch; }
+/* Home: stats card and ad side by side, half and half (full width when there is no ad or on phones). */
+.hs-proof-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--counter-space-3); align-items: stretch; }
 .hs-proof-row:not(:has(.hs-proof-ad > *)) { grid-template-columns: minmax(0, 1fr); }
 .hs-proof-ad { min-height: 0; overflow: hidden; border-radius: var(--r-lg); }
 .hs-proof-ad:empty { display: none; }
@@ -6083,6 +6083,9 @@ small { font-size: var(--fs-xs); }
 .bn-header.is-counter-public:not(#_) { background: transparent; border-color: transparent; box-shadow: none; }
 .bn-header-surface { position: absolute; inset: -1px; z-index: 0; border-radius: inherit; pointer-events: none; filter: drop-shadow(0 8px 12px rgb(18 20 27 / 0.1)); }
 .bn-header-surface::before, .bn-header-surface::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px solid var(--counter-line); background: #fff; }
+/* The header content spans the whole bar at every width (it used to be capped at 90rem and centred,
+   which pulled the logo away from the bar's left end on wide monitors). */
+.bn-header.is-counter-public .bn-header-inner:not(#_) { max-width: none; }
 .bn-header-surface::before { -webkit-mask: linear-gradient(90deg, transparent 0, transparent 7rem, rgb(0 0 0 / 0.9) 12.5rem, #000 17rem); mask: linear-gradient(90deg, transparent 0, transparent 7rem, rgb(0 0 0 / 0.9) 12.5rem, #000 17rem); }
 .bn-header-surface::after { transition: opacity 0.3s ease; }
 .bn-header.is-at-top .bn-header-surface::after { opacity: 0; }
@@ -6129,3 +6132,6 @@ body *::-webkit-scrollbar-track { margin: 0.85rem; }
   html { scrollbar-color: var(--counter-indigo) transparent; }
   :is(.bn-section-search-dropdown, .bn-dd-list, .directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div):not(#_) { scrollbar-color: var(--counter-indigo) transparent; }
 }
+/* Advertise: a plain navy text link with the megaphone, no outline box. Hover shows a soft tint. */
+.bn-header .bn-advertise:not(#_) { border: 0; padding: 0 0.75rem; background: transparent; color: var(--counter-indigo); font-weight: 700; border-radius: var(--r-pill); }
+.bn-header .bn-advertise:not(#_):is(:hover, :focus-visible) { background: var(--counter-indigo-soft); color: var(--counter-indigo); }
