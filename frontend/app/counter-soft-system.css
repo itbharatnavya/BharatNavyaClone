@@ -5927,3 +5927,153 @@ small { font-size: var(--fs-xs); }
 .counter-admin-login .card:not(#_) { border-color: var(--counter-line) !important; }
 /* Workspace labels (e.g. "Bharat Navya operations") are plain eyebrows, no leading dash. */
 .counter-workspace-label::before { display: none !important; }
+
+/* Company cards (Directory landing). Cover band, logo overlapping it, name and tick,
+   what/where, two-line about, three proof numbers, registration chips, footer. */
+.cc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--counter-space-3); margin: 0; padding: 0; list-style: none; }
+.cc-grid > li { display: flex; min-width: 0; animation: ps-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.cc-grid.is-loading span { min-height: 22rem; border-radius: var(--r-lg); background: #fff; animation: ps-pop 0.6s ease both; opacity: 0.6; }
+.cc { position: relative; width: 100%; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: #fff; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.cc:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(18, 48, 126, 0.14); }
+.cc-cover { display: block; height: 5.5rem; flex: 0 0 auto; background: var(--counter-indigo); overflow: hidden; }
+.cc-cover img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.85; mix-blend-mode: luminosity; transition: transform 0.4s ease; }
+.cc:hover .cc-cover img { transform: scale(1.04); }
+.cc-cover-empty { height: 100%; display: grid; place-items: center; color: rgba(255, 255, 255, 0.22); font: 800 3.5rem/1 var(--font-anek-latin), sans-serif; }
+.cc-logo { position: absolute; top: calc(5.5rem - 1.75rem); left: 1rem; display: grid; width: 3.5rem; height: 3.5rem; border: 3px solid #fff; border-radius: 1rem; background: #fff; overflow: hidden; box-shadow: 0 4px 12px rgba(18, 48, 126, 0.18); }
+.cc-logo > * { width: 100% !important; height: 100% !important; border-radius: 0 !important; }
+.cc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.5rem; padding: 2.25rem 1rem 1rem; }
+.cc-name { margin: 0; display: flex; align-items: center; gap: 0.4rem; min-width: 0; font-size: var(--fs-md); font-weight: 800; line-height: 1.25; }
+.cc-name a { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--counter-ink); text-decoration: none; }
+.cc-name a::after { content: ""; position: absolute; inset: 0; }
+.cc-tick { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; padding: 0.12rem; border-radius: 50%; background: var(--counter-success); fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.cc-where { margin: 0; color: var(--counter-muted); font-size: var(--fs-sm); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc-about { margin: 0; color: var(--counter-ink); font-size: var(--fs-sm); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cc-stats { margin: 0.25rem 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--counter-line); border-radius: var(--r-md); background: var(--counter-indigo-soft); }
+.cc-stats > div { min-width: 0; display: grid; gap: 0.1rem; padding: 0.55rem 0.5rem; text-align: center; }
+.cc-stats > div + div { border-left: 1px solid var(--counter-line); }
+.cc-stats dd { order: -1; margin: 0; display: inline-flex; align-items: center; justify-content: center; gap: 0.2rem; color: var(--counter-indigo); font-size: var(--fs-md); font-weight: 800; line-height: 1.1; }
+.cc-stats dd svg { width: 0.8rem; height: 0.8rem; fill: currentColor; }
+.cc-stats dt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 600; }
+.cc-chips { margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; }
+.cc-chips li { padding: 0.2rem 0.55rem; border-radius: var(--r-pill); background: var(--counter-indigo-soft); color: var(--counter-indigo); font-size: var(--fs-xs); font-weight: 700; white-space: nowrap; }
+.cc-foot { margin-top: auto; padding-top: 0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-top: 1px solid var(--counter-line); color: var(--counter-muted); font-size: var(--fs-sm); font-weight: 600; }
+.cc-foot span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc-link { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--counter-indigo); font-weight: 800; text-decoration: none; }
+.cc-link svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s ease; }
+.cc:hover .cc-link svg { transform: translateX(4px); }
+@media (max-width: 1100px) { .cc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 820px) { .cc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .cc-grid { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; } }
+@media (prefers-reduced-motion: reduce) { .cc, .cc-cover img, .cc-link svg, .cc-grid > li { transition: none; animation: none; } }
+
+/* Header "Advertise" link, a quiet outlined pill beside the Join / Sign in button. */
+.bn-header .bn-advertise { min-height: 2.75rem; display: inline-flex; align-items: center; padding: 0 1.1rem; border: 1.5px solid var(--counter-indigo); border-radius: var(--r-lg); background: transparent; color: var(--counter-indigo); font-weight: 800; text-decoration: none; white-space: nowrap; transition: background 0.2s ease, color 0.2s ease; }
+.bn-header .bn-advertise:is(:hover, :focus-visible) { background: var(--counter-indigo); color: #fff; }
+@media (max-width: 899px) { .bn-header .bn-advertise { display: none; } }
+.cc-stats > div { padding: 0.55rem 0.25rem; }
+.cc-stats dt { font-size: 0.7rem; letter-spacing: -0.01em; }
+/* Company cards: untinted photo, neutral stat strip and chips. */
+.cc-cover { background: #e9edf5; }
+.cc-cover img { opacity: 1; mix-blend-mode: normal; }
+.cc-cover-empty { color: rgba(18, 48, 126, 0.18); }
+.cc-stats { background: #f6f8fc; }
+.cc-chips li { background: #f1f4f9; color: var(--counter-ink); }
+
+/* Home: stats card 2/3, ad 1/3 beside it (full width when there is no ad or on phones). */
+.hs-proof-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--counter-space-3); align-items: stretch; }
+.hs-proof-row:not(:has(.hs-proof-ad > *)) { grid-template-columns: minmax(0, 1fr); }
+.hs-proof-ad { min-height: 0; overflow: hidden; border-radius: var(--r-lg); }
+.hs-proof-ad:empty { display: none; }
+.hs-proof-ad > * { height: 100%; margin: 0; }
+.hs-proof-row > .hs-proof-card { display: flex; flex-direction: column; }
+.hs-proof-row > .hs-proof-card .hs-proof-stats { flex: 1; align-items: center; }
+@media (max-width: 899px) { .hs-proof-row { grid-template-columns: minmax(0, 1fr); } .hs-proof-ad { height: 13rem; } }
+
+/* Same amount of page on every laptop. Everything is sized in rem, so on desktop widths the
+   root size follows the viewport (width for narrow screens, height for short ones), anchored
+   at 16px on a 1440x810 window. A 1366x768 or a 125%-scaled laptop therefore shows the same
+   slice of the page as a larger monitor instead of cutting off earlier. Phones and tablets
+   (under 900px) keep 16px. */
+@media (min-width: 900px) {
+  html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px); }
+}
+
+/* Hero "All categories" pill: a native select dressed as the first chip. */
+.bn-landing-chips > .bn-chip-menu { position: relative; min-height: 2.5rem; display: inline-flex; align-items: center; gap: var(--counter-space-2); padding: 0 var(--counter-space-3); border: 1px solid #fff; border-radius: var(--r-pill); background: #fff; color: var(--counter-indigo); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background-color var(--counter-motion), box-shadow var(--counter-motion); }
+.bn-landing-chips > .bn-chip-menu:is(:hover, :focus-within) { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
+.bn-chip-menu > svg { width: 1rem; height: 1rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bn-chip-menu select { appearance: none; -webkit-appearance: none; width: 7.6rem; max-width: 11rem; min-height: 2.4rem; padding: 0 1.4rem 0 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; text-overflow: ellipsis; }
+.bn-chip-menu select option, .bn-chip-menu select optgroup { color: #0f172a; background: #fff; font-weight: 600; }
+.bn-chip-menu .bn-chip-menu-caret { position: absolute; right: var(--counter-space-3); pointer-events: none; width: 0.9rem; height: 0.9rem; }
+.bn-chip-menu:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Recruitment hero search: compact. Location and workplace are short lists, so their
+   selects stay narrow; the role field takes the rest. Desktop only (phones stack). */
+@media (min-width: 701px) {
+  .bn-rhero .le-hero-search:not(#_) { width: min(100%, 34rem); }
+  .bn-rhero .bn-section-search--recruitment:not(.bn-section-search--compact):not(#_) { grid-template-columns: minmax(0, 1fr) 9.25rem auto; padding: 0.3rem; gap: 0.15rem; }
+  .bn-rhero .bn-section-search--recruitment:not(.bn-section-search--compact) label:not(#_) { gap: 0.4rem; padding: 0 0.55rem; }
+  .bn-rhero .bn-section-search--recruitment:not(.bn-section-search--compact) :is(input, select):not(#_) { min-height: 2.4rem; font-size: var(--fs-sm); text-overflow: ellipsis; }
+  .bn-rhero .bn-section-search--recruitment:not(.bn-section-search--compact) .bn-section-search-submit:not(#_) { min-height: 2.6rem; padding: 0 0.9rem; }
+}
+
+/* Search-bar focus. The bare control no longer draws its own black outline (it hugged the text and
+   looked sharp on Windows / keyboard use). The whole field shows a soft rounded ring instead, kept
+   clear of the text, so it is still obvious which field has focus. */
+:is(.bn-section-search, .rsb, .bn-universal-search, .bn-header-search-filters, .bn-search-drawer) :is(input, select):focus-visible:not(#_) { outline: none; }
+/* The ring is an overlay inside the field, so the fields keep square edges and their straight dividers. */
+:is(.bn-section-search label, .rsb .rsb-field, .rsb .rsb-city-wrap) { position: relative; }
+:is(.bn-section-search label, .rsb .rsb-field, .rsb .rsb-city-wrap):has(:is(input, select):focus-visible)::after { content: ""; position: absolute; inset: 3px; border-radius: var(--r-pill); box-shadow: inset 0 0 0 2px var(--counter-indigo), inset 0 0 0 4px rgba(18, 48, 126, 0.12); pointer-events: none; }
+
+/* Directory hero, desktop: the photo fills the whole hero. The copy sits on a navy wash that is
+   strongest at the left end and fades out across the picture, with a lighter wash at the right
+   end to frame it, instead of a solid navy block. Tablet and phone keep their own fade above. */
+@media (min-width: 1024px) {
+  .bn-landing-media:not(#_)::after {
+    background:
+      linear-gradient(90deg, rgb(18 48 126 / 0.1) 0%, rgb(18 48 126 / 0.7) 5.5%, rgb(18 48 126) 10%, rgb(18 48 126) 40%, rgb(18 48 126 / 0.55) 58%, rgb(18 48 126 / 0) 78%);
+  }
+}
+
+/* Products menu: options side by side as tiles (icon over title and blurb). Growth OS is announced
+   but not live, so its tile is muted and not a link. */
+.bn-nav-panel:not(#_) { width: min(40rem, calc(100vw - 2rem)); grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem; }
+.bn-header .bn-primary-nav .bn-nav-panel a:not(#_), .bn-nav-panel-soon { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; justify-items: start; gap: 0.7rem; padding: 0.9rem; border-radius: var(--r-md); text-align: left; }
+.bn-nav-panel small { line-height: 1.35; }
+.bn-nav-panel-soon { cursor: default; background: color-mix(in srgb, var(--counter-indigo) 3%, white); }
+.bn-nav-panel-soon .bn-nav-panel-icon { background: color-mix(in srgb, var(--counter-indigo) 14%, white); color: var(--counter-indigo); }
+.bn-nav-panel-soon strong { color: var(--counter-muted); }
+.bn-nav-panel em, .bn-mobile-nav-soon em { display: inline-block; margin-top: 0.45rem; padding: 0.15rem 0.5rem; border-radius: var(--r-pill); background: color-mix(in srgb, var(--counter-indigo) 9%, white); color: var(--counter-indigo); font-size: var(--fs-xs); font-style: normal; font-weight: 700; }
+.bn-mobile-nav-soon { min-height: 3rem; display: flex; align-items: center; gap: 0.6rem; padding: 0 1rem 0 2rem; color: var(--counter-muted); font-weight: 750; }
+.bn-mobile-nav-soon em { margin-top: 0; }
+/* Products tiles: icon beside the text, one compact row. */
+.bn-nav-panel:not(#_) { width: min(50rem, calc(100vw - 2rem)); }
+.bn-header .bn-primary-nav .bn-nav-panel a:not(#_), .bn-nav-panel-soon:not(#_) { grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: center; gap: 0.7rem; padding: 0.7rem 0.75rem; }
+.bn-nav-panel .bn-nav-panel-icon { width: 2.4rem; height: 2.4rem; }
+.bn-nav-panel strong { display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+.bn-nav-panel small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bn-nav-panel strong em:not(#_) { margin-top: 0; padding: 0.05rem 0.4rem; font-family: var(--font-inter), system-ui, sans-serif; font-size: 0.68rem; }
+/* Descriptions wrap onto a second line instead of running out of the tile. */
+.bn-nav-panel :is(a, .bn-nav-panel-soon) { min-width: 0; }
+.bn-nav-panel :is(a, .bn-nav-panel-soon) > span:last-child { min-width: 0; }
+.bn-nav-panel small:not(#_) { overflow: visible; white-space: normal; text-overflow: clip; overflow-wrap: anywhere; }
+.bn-nav-panel strong:not(#_) { flex-wrap: wrap; white-space: normal; }
+
+/* Recruitment search: workplace filter removed from the bar (still on the jobs page filters).
+   Location takes the workplace slot at every width. */
+.bn-rhero .bn-section-search-location:not(#_) { grid-column: 1 / 3; }
+@media (max-width: 640px) { .bn-rhero .bn-section-search-location:not(#_) { grid-column: 1 / -1; } }
+@media (min-width: 701px) {
+  .bn-rhero .bn-section-search-location:not(#_) { grid-column: 2; }
+  .bn-rhero .bn-section-search-submit:not(#_) { grid-column: 3; }
+}
+
+/* Footer: no separate white box. It runs edge to edge and the page's light blue fades into white
+   across its top, so the page flows into the footer. */
+.bn-footer.is-counter-public:not(#_) {
+  margin: var(--counter-section-gap) 0 0;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0) 0, rgb(255 255 255 / 0.7) 4rem, #fff 9rem);
+  padding-top: clamp(3rem, 6vw, 5rem);
+}

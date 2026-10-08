@@ -10,6 +10,7 @@
 // final layout (see useStory), so reduced motion, small screens and no-JS all get
 // the same content without pinning or scrubbing. Styles: .hs-* in counter-soft-system.css.
 
+import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { getCategories, getFeaturedSellers, getJobs, getListings } from "@/lib/api";
@@ -173,6 +174,7 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
 
   return <div ref={root} className="hs">
     <section className="hs-sec hs-proof" aria-label="Bharat Navya at a glance"><div className="le-shell">
+      <div className="hs-proof-row">
       <div className="hs-proof-card">
         <ul className="hs-proof-stats">
           <li><strong><Count to={data.categoryCount} /></strong><span>Categories to explore</span></li>
@@ -182,6 +184,8 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
         {data.categories.length > 0 && <div className="hs-marquee" aria-hidden>
           <div className="hs-marquee-track">{[...data.categories, ...data.categories].map((name, index) => <span key={index}>{name}</span>)}</div>
         </div>}
+      </div>
+      <div className="hs-proof-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement="home_hero" kind="native" context="Sponsored" summary="" action="View promotion" /></div>
       </div>
     </div></section>
 

@@ -263,9 +263,8 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
   const pathname = usePathname();
   const queryId = useId();
   const cityId = useId();
-  const workplaceId = useId();
   const listboxId = useId();
-  const { roleQuery, setRoleQuery, roleCity, setRoleCity, roleWorkplace, setRoleWorkplace, markSearchNav } = useSearchDock();
+  const { roleQuery, setRoleQuery, roleCity, setRoleCity, markSearchNav } = useSearchDock();
   const [draft, setDraft] = useState(roleQuery);
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
   const [matchedJobs, setMatchedJobs] = useState<Job[]>([]);
@@ -330,7 +329,6 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
     const params = new URLSearchParams();
     if (committed) params.set("q", committed);
     if (roleCity) params.set("city", roleCity);
-    if (roleWorkplace !== "All workplaces") params.set("workplace", roleWorkplace);
     markSearchNav();
     onSubmitted?.();
     router.push(`/recruitment/jobs${params.size ? `?${params.toString()}` : ""}`);
@@ -359,8 +357,7 @@ export function RecruitmentSectionSearch({ variant = "hero", onSubmitted }: { va
   return <div ref={wrapRef} className="bn-section-search-wrap">
     <form className={`bn-section-search bn-section-search--${variant} bn-section-search--recruitment`} onSubmit={(event) => { event.preventDefault(); search(draft); }} aria-label="Search jobs">
       <label className="bn-section-search-query" htmlFor={queryId}><SearchIcon /><span className="sr-only">Role, skill or company</span><input id={queryId} value={draft} onChange={(event) => { setDraft(event.target.value); setOpen(true); setActive(-1); }} onFocus={() => setOpen(true)} onKeyDown={handleQueryKeyDown} placeholder="Role, skill, or company" role="combobox" aria-expanded={showDropdown} aria-controls={listboxId} aria-autocomplete="list" aria-activedescendant={active >= 0 ? optionId(active) : undefined} autoComplete="off" /></label>
-      <label className="bn-section-search-location" htmlFor={cityId}><LocationIcon /><span className="sr-only">Job location</span><select id={cityId} value={roleCity} onChange={(event) => setRoleCity(event.target.value)}><option value="">All locations</option>{ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
-      <label className="bn-section-search-workplace" htmlFor={workplaceId}><span className="sr-only">Workplace preference</span><select id={workplaceId} value={roleWorkplace} onChange={(event) => setRoleWorkplace(event.target.value)}>{["All workplaces","On-site","Hybrid","Remote"].map((item) => <option key={item}>{item}</option>)}</select></label>
+      <label className="bn-section-search-location" htmlFor={cityId}><LocationIcon /><span className="sr-only">Job location</span><select id={cityId} value={roleCity} onChange={(event) => setRoleCity(event.target.value)}><option value="">Anywhere</option>{ALL_CITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
       <button className="bn-section-search-submit" type="submit"><span>{variant === "compact" ? "Search" : "Search jobs"}</span><ArrowIcon /></button>
     </form>
     {showDropdown && <div id={listboxId} role="listbox" aria-label="Search suggestions" className="card bn-section-search-dropdown">
@@ -399,11 +396,11 @@ function RecruitmentMobileSearchDrawer({ open, onClose }: { open: boolean; onClo
 }
 
 export function RecruitmentDockedSearch() {
-  const { roleQuery, roleCity, roleWorkplace } = useSearchDock();
+  const { roleQuery, roleCity } = useSearchDock();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
   const summary = roleQuery.trim() || "Search jobs";
-  const filters = `${roleCity || "All locations"} · ${roleWorkplace}`;
+  const filters = roleCity || "Anywhere";
   const dockRef = useRef<HTMLDivElement>(null);
   useDockFlight(dockRef);
   return <><div ref={dockRef} className="bn-header-search" data-section="recruitment"><div className="bn-header-search-desktop"><RecruitmentSectionSearch variant="compact" /></div><button type="button" className="bn-header-search-mobile" onClick={() => setDrawerOpen(true)} aria-label={`Edit ${summary}, ${filters}`}><SearchIcon /><span><strong>{summary}</strong><small>{filters}</small></span><ArrowIcon /></button></div><RecruitmentMobileSearchDrawer open={drawerOpen} onClose={closeDrawer} /></>;

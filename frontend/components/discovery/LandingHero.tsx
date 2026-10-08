@@ -9,6 +9,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export interface HeroSlide { src: string }
 export interface HeroChip { label: string; href: string; icon?: ReactNode }
@@ -18,13 +19,9 @@ export interface ShowcaseGroup { key: string; label: string; href: string; image
 const SLIDE_MS = 5000;
 
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
-function PauseIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M9 6v12M15 6v12" /></svg>; }
-function PlayIcon() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z" /></svg>; }
 
 function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [held, setHeld] = useState(false);
   const [reduced, setReduced] = useState(false);
 
   const [hidden, setHidden] = useState(false);
@@ -38,9 +35,8 @@ function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
     return () => { query.removeEventListener("change", sync); document.removeEventListener("visibilitychange", sync); };
   }, []);
 
-  // Hover or keyboard focus holds the current slide so its caption link can be read and used;
-  // a background tab holds it too.
-  const playing = !paused && !held && !reduced && !hidden && slides.length > 1;
+  // Keeps going under the cursor; only reduced motion or a background tab holds it.
+  const playing = !reduced && !hidden && slides.length > 1;
   useEffect(() => {
     if (!playing) return;
     const timer = window.setTimeout(() => setActive((index) => (index + 1) % slides.length), SLIDE_MS);
@@ -49,26 +45,42 @@ function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
 
   if (!slides.length) return null;
 
-  return <div
-    className={`bn-landing-media${playing ? " is-playing" : ""}`}
-    onMouseEnter={() => setHeld(true)}
-    onMouseLeave={() => setHeld(false)}
-    onFocus={() => setHeld(true)}
-    onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeld(false); }}
-  >
+  return <div className={`bn-landing-media${playing ? " is-playing" : ""}`}>
     {/* eslint-disable-next-line @next/next/no-img-element */}
     {slides.map((item, index) => <img key={item.src} src={item.src} alt="" aria-hidden className={index === active ? "is-active" : undefined} loading={index === 0 ? "eager" : "lazy"} />)}
     <div className="bn-landing-media-bar">
       {slides.length > 1 && <div className="bn-landing-media-controls">
         {slides.map((item, index) => <button key={item.src} type="button" className="bn-landing-media-step" aria-label={`Show photo ${slides.indexOf(item) + 1} of ${slides.length}`} aria-pressed={index === active} onClick={() => setActive(index)} />)}
-        {!reduced && <button type="button" className="bn-landing-media-toggle" aria-label={paused ? "Play slideshow" : "Pause slideshow"} onClick={() => setPaused((value) => !value)}>{paused ? <PlayIcon /> : <PauseIcon />}</button>}
       </div>}
     </div>
   </div>;
 }
 
-export function HeroChips({ label, items }: { label: string; items: HeroChip[] }) {
+export interface HeroMenuGroup { label: string; href: string; children?: { label: string; href: string }[] }
+
+// A native <select> dressed as the first pill: every category (with its sub-categories
+// grouped under it) in one dropdown. Choosing one goes straight to that category's results.
+function HeroCategoryMenu({ label, groups }: { label: string; groups: HeroMenuGroup[] }) {
+  const router = useRouter();
+  return <label className="bn-chip-menu">
+    <svg aria-hidden viewBox="0 0 24 24"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z" /></svg>
+    <span className="sr-only">{label}</span>
+    <select value="" aria-label={label} onChange={(event) => { if (event.target.value) router.push(event.target.value); }}>
+      <option value="">{label}</option>
+      {groups.map((group) => group.children?.length
+        ? <optgroup key={group.href} label={group.label}>
+          <option value={group.href}>All in {group.label}</option>
+          {group.children.map((child) => <option key={child.href} value={child.href}>{child.label}</option>)}
+        </optgroup>
+        : <option key={group.href} value={group.href}>{group.label}</option>)}
+    </select>
+    <svg className="bn-chip-menu-caret" aria-hidden viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+  </label>;
+}
+
+export function HeroChips({ label, items, menu }: { label: string; items: HeroChip[]; menu?: { label: string; groups: HeroMenuGroup[] } }) {
   return <div className="le-examples bn-landing-chips" role="group" aria-label={label}>
+    {menu && menu.groups.length > 0 && <HeroCategoryMenu label={menu.label} groups={menu.groups} />}
     {items.map((item) => <Link key={item.href} href={item.href}>{item.icon}<span>{item.label}</span></Link>)}
   </div>;
 }

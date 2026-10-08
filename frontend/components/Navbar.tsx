@@ -28,6 +28,10 @@ const PRODUCTS = [
   { href: "/directory", label: "Directory", blurb: "Companies, products and services", icon: <svg aria-hidden viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11" /><path d="M9 20v-6h6v6" /></svg> },
   { href: "/recruitment", label: "Recruitment", blurb: "Roles, employers and hiring", icon: <svg aria-hidden viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="2" /><path d="M9 7.5V6a3 3 0 0 1 6 0v1.5M3.5 13h17" /></svg> },
 ];
+// Announced but not live yet: shown in the Products menu, not linked.
+const UPCOMING = [
+  { label: "Growth OS", blurb: "Business intelligence", icon: <svg aria-hidden viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M20 19H2M4 9l6-4 6 7 4-5" /></svg> },
+];
 
 function Chevron() { return <svg aria-hidden viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>; }
 
@@ -71,6 +75,8 @@ export default function Navbar() {
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
   }, [productsOpen]);
   const inProducts = inDirectoryContext || inRecruitmentContext;
+  // Self-serve ads live in the dashboard's Advertise tab; signed-out visitors sign in first and land there.
+  const advertiseHref = user ? "/dashboard?tab=advertise" : `/login?next=${encodeURIComponent("/dashboard?tab=advertise")}`;
   useEffect(() => {
     if (!accountOpen) return;
     const close = (event: MouseEvent) => { if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false); };
@@ -97,6 +103,10 @@ export default function Navbar() {
                 <span className="bn-nav-panel-icon">{item.icon}</span>
                 <span><strong>{item.label}</strong><small>{item.blurb}</small></span>
               </Link>)}
+              {UPCOMING.map((item) => <span key={item.label} className="bn-nav-panel-soon" aria-disabled="true">
+                <span className="bn-nav-panel-icon">{item.icon}</span>
+                <span><strong>{item.label}<em>Coming soon</em></strong><small>{item.blurb}</small></span>
+              </span>)}
             </div>
           </div>
           <Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>
@@ -105,6 +115,7 @@ export default function Navbar() {
         {recruitmentDocked && <RecruitmentDockedSearch />}
         <div className="bn-header-actions">
           {!loading && user && featureFlags.notifications && <NotificationBell />}
+          {!loading && <Link className="bn-advertise" href={advertiseHref}>Advertise</Link>}
           {!loading && !user && pathname !== "/login" && pathname !== "/register" && <Link className="bn-sign-in" href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}
           {!loading && user && <div className="bn-account" ref={accountRef}>
             <button type="button" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => { setMenuOpen(false); setAccountOpen((value) => !value); }}><Avatar name={user.name} size={40} /></button>
@@ -122,7 +133,7 @@ export default function Navbar() {
             </div>}
           </div>}
           <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => { setAccountOpen(false); setMenuOpen((value) => !value); }}><MenuIcon open={menuOpen} /></button>
-          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
+          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}{UPCOMING.map((item) => <span key={item.label} className="bn-mobile-nav-soon" aria-disabled="true">{item.label}<em>Coming soon</em></span>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && <Link href={advertiseHref}>Advertise</Link>}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
         </div>
       </div>
     </header>

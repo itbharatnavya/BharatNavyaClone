@@ -3,135 +3,199 @@
   "body": {
     "data": [
       {
+        "about": "Manufacturer of CNC machines, packaging and material handling equipment for textile, engineering and process industries.",
         "badges": [
           "top_rated",
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Coimbatore",
+        "coverImage": "/demo/machinery-4.jpg",
+        "employeeCount": "50-200",
+        "gstNumber": "33ABCDE9499F1Z5",
         "id": "usr_cat_industrialmachinerye",
         "isVerified": true,
         "listingCount": 25,
+        "logo": null,
         "name": "Coimbatore Precision Machinery Works",
         "rating": 5,
         "responseRate": 89,
         "reviewCount": 1,
         "slug": "coimbatore-precision-machinery-works",
-        "state": "Tamil Nadu"
+        "state": "Tamil Nadu",
+        "trustSealVerified": true,
+        "yearEstablished": 2015
       },
       {
+        "about": "Manufacturer and wholesaler of cotton, silk and synthetic fabrics, yarn and technical textiles, supplying garment units and traders pan-India.",
         "badges": [
           "top_rated",
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Surat",
+        "coverImage": "/demo/textile-5.jpg",
+        "employeeCount": "11-50",
+        "gstNumber": "24ABCDE2630F1Z5",
         "id": "usr_cat_textilesfabricsyarn",
         "isVerified": true,
         "listingCount": 24,
+        "logo": null,
         "name": "Surat Silk & Textile Mills",
         "rating": 5,
         "responseRate": 88,
         "reviewCount": 1,
         "slug": "surat-silk-textile-mills",
-        "state": "Gujarat"
+        "state": "Gujarat",
+        "trustSealVerified": true,
+        "yearEstablished": 2014
       },
       {
+        "about": "Wholesale supplier of hand and power tools, hardware, fasteners, safety equipment and cleaning machines for retailers and contractors.",
         "badges": [
           "top_rated",
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Meerut",
+        "coverImage": "/demo/industry-4.jpg",
+        "employeeCount": "11-50",
+        "gstNumber": "09ABCDE2655F1Z5",
         "id": "usr_cat_tools",
         "isVerified": true,
         "listingCount": 44,
+        "logo": null,
         "name": "Meerut Tools & Hardware Depot",
         "rating": 5,
         "responseRate": 90,
         "reviewCount": 1,
         "slug": "meerut-tools-hardware-depot",
-        "state": "Uttar Pradesh"
+        "state": "Uttar Pradesh",
+        "trustSealVerified": true,
+        "yearEstablished": 2011
       },
       {
+        "about": "Authorized distributor of SS sheets, MS sections, TMT bars and non-ferrous metals for construction and fabrication.",
         "badges": [
           "top_rated",
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Raipur",
+        "coverImage": "/demo/steel-1.jpg",
+        "employeeCount": "50-200",
+        "gstNumber": "22ABCDE1547F1Z5",
         "id": "usr_pv1",
         "isVerified": true,
         "listingCount": 4,
+        "logo": null,
         "name": "Jindal Steel & Metals Depot",
         "rating": 5,
         "responseRate": 96,
         "reviewCount": 1,
         "slug": "jindal-steel-metals-depot",
-        "state": "Chhattisgarh"
+        "state": "Chhattisgarh",
+        "trustSealVerified": true,
+        "yearEstablished": 2007
       },
       {
+        "about": "Distributor of electronic components, sensors, connectors, LED lighting and switchgear for OEMs, contractors and retailers.",
         "badges": [
           "verified"
         ],
+        "category": null,
         "city": "Bengaluru",
+        "coverImage": "/demo/electronics-1.jpg",
+        "employeeCount": "200-500",
+        "gstNumber": "29ABCDE1327F1Z5",
         "id": "usr_cat_electronicselectrica",
         "isVerified": true,
         "listingCount": 22,
+        "logo": null,
         "name": "Bengaluru Circuit & Electricals",
         "rating": 4,
         "responseRate": 91,
         "reviewCount": 1,
         "slug": "bengaluru-circuit-electricals",
-        "state": "Karnataka"
+        "state": "Karnataka",
+        "trustSealVerified": true,
+        "yearEstablished": 2010
       },
       {
+        "about": "Web & mobile app development, cloud migration, ERP/CRM implementation and IT support.",
         "badges": [
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Bengaluru",
+        "coverImage": "/demo/business-3.jpg",
+        "employeeCount": "50-200",
+        "gstNumber": "27ABCDE1518F1Z5",
         "id": "usr_svc3",
         "isVerified": true,
         "listingCount": 2,
+        "logo": null,
         "name": "TechNova IT Solutions",
         "rating": 4,
         "responseRate": 97,
         "reviewCount": 1,
         "slug": "technova-it-solutions",
-        "state": "Karnataka"
+        "state": "Karnataka",
+        "trustSealVerified": true,
+        "yearEstablished": 2015
       },
       {
+        "about": "CA-led firm offering GST, income tax, bookkeeping, payroll and company registration services for MSMEs and startups.",
         "badges": [
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Pune",
+        "coverImage": "/demo/business-4.jpg",
+        "employeeCount": "11-50",
+        "gstNumber": "27ABCDE6056F1Z5",
         "id": "usr_cat_accounting",
         "isVerified": true,
         "listingCount": 39,
+        "logo": null,
         "name": "Pune TaxPro Accounting Services",
         "rating": 0,
         "responseRate": 95,
         "reviewCount": 0,
         "slug": "pune-taxpro-accounting-services",
-        "state": "Maharashtra"
+        "state": "Maharashtra",
+        "trustSealVerified": true,
+        "yearEstablished": 2013
       },
       {
+        "about": "Distributor of tractor implements, irrigation equipment, seeds, fertilizers and farm tools for retailers and cooperatives.",
         "badges": [
           "fast_responder",
           "verified"
         ],
+        "category": null,
         "city": "Nashik",
+        "coverImage": "/demo/agriculture-1.jpg",
+        "employeeCount": "11-50",
+        "gstNumber": "27ABCDE3229F1Z5",
         "id": "usr_cat_agriculturefarming",
         "isVerified": true,
         "listingCount": 21,
+        "logo": null,
         "name": "Nashik AgroFarm Supplies",
         "rating": 0,
         "responseRate": 97,
         "reviewCount": 0,
         "slug": "nashik-agrofarm-supplies",
-        "state": "Maharashtra"
+        "state": "Maharashtra",
+        "trustSealVerified": true,
+        "yearEstablished": 2000
       }
     ],
     "success": true

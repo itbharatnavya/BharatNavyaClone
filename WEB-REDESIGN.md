@@ -1484,6 +1484,75 @@ schema change. `rm -rf frontend/.next` + dev-server restart done before testing 
 
 ---
 
+### Pulled `origin/design` again (`f9afdc1..1e8cb88`) — merged 2026-10-08
+
+3 new commits from the UI dev (`04ac867`, `1ec77fe`, `1e8cb88`), 11 files (+386/-50). Merged with
+`git merge --no-ff --no-commit`, checked, then committed and pushed (no AI attribution line).
+**No conflicts.** One backend file changed (additive), no new dependency, no schema change.
+Restart the backend after pulling (the featured-sellers payload changed). Redeploy the backend too
+before the testing server's Directory landing can show the new cards properly.
+
+**What the design branch changed**
+- **Directory landing: company cards replace the products section.** New
+  `components/directory/CompanyShowcase.tsx` (`.cc-*` CSS), used in `DirectorySections.tsx` in place of
+  `ProductShowcase` (now unused, still on disk). Section is "The companies behind the listings", button
+  "Explore companies" to `/search`. Data is `useFeaturedSellers()` (8 sellers). Card: cover photo with logo
+  or initials overlapping, name and verified tick, category and city, two-line about, three stats (rating
+  with reviews, reply rate, years since founding), chips (GST registered, Trust seal, team size), listing
+  count and "View company". Grid 4/3/2/1 columns.
+- **Backend (additive):** `GET /api/sellers/featured` (`computeFeaturedSellerCards` in
+  `modules/identity/routes/users.routes.js`) now also returns `logo, coverImage, trustSealVerified,
+  gstNumber, yearEstablished, employeeCount, category` (first legacy category) and `about` (220 chars).
+  This closes backend gap **B1** (logo on featured sellers) in the list above, except the 8-row cap which
+  is unchanged.
+- **Directory hero** (`discovery/LandingHero.tsx`, `app/directory/page.tsx`): slideshow has no pause button
+  and no longer stops on hover or focus (only reduced motion or a hidden tab hold it). On 1024px and up the
+  photo fills the hero with a navy gradient behind the copy. First hero pill is "All categories", a native
+  `<select>` (`.bn-chip-menu`) with every top-level category and sub-categories in `<optgroup>`s,
+  navigating to `/search?category=`.
+- **Header** (`Navbar.tsx`): "Advertise" outlined button left of Join / Sign in (hidden under 900px, a link
+  in the phone menu). It goes to `/dashboard?tab=advertise`, via sign-in for guests. Products menu is now a
+  horizontal row of tiles, plus a muted non-link "Growth OS - Coming soon" tile (`UPCOMING`).
+- **Home** (`home/HomeSections.tsx`): stats card takes 2/3 and a `home_hero` ad tile
+  (`ApiAdvertisingSlot imageOnly`) 1/3 (`.hs-proof-row`, `.hs-proof-ad`); stats go full width when no ad is
+  live; ad stacks below under 900px.
+- **Recruitment hero search** (`SectionSearchDock.tsx`): workplace select removed from the bar (it stays in
+  the `/recruitment/jobs` filters) and the hero no longer sends `workplace`. Location label reads
+  "Anywhere". Compact desktop bar; phones stack role, location, full-width "Search jobs".
+- **Platform-wide CSS** (`counter-soft-system.css`, +150 lines appended): desktop root font size scales with
+  the window (`@media (min-width: 900px) { html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px) } }`,
+  16px at 1440x810; phones/tablets stay 16px); search-bar focus is a navy ring drawn as an `::after`
+  overlay (no outline on the input); footer is full width, transparent at the top fading to white.
+- **Guest sign-in popup** (`auth/GuestAccountNudge.tsx`): fixed the bug where it reopened on the next
+  scroll after being closed; survives blocked storage.
+- `HANDOFF.md` gains a 7 October block. Untracked on their side, not in this pull: `logo-options.html`,
+  `header-3d-options.html`, `logo-3d-options.html`.
+
+**Our changes made while merging**
+- `app/page.tsx`: removed this branch's own `home_hero` strip under the hero (the 7 Oct entry's flag 2).
+  The designer now places a `home_hero` tile inside the stats row, so two slots of one placement would
+  show the same campaigns twice. Other pages' ad strips from the carousel work are unchanged.
+- `backend/test/golden/sellers-featured.json` regenerated for the new fields (additive); `sellers-featured`
+  golden passes.
+
+**Checks run**
+- `npx tsc --noEmit`: clean.
+- Backend `npm run test:goldens`: `sellers-featured` passes. Jobs, job-detail, employer-detail, jobs-mine
+  and admin-users goldens still fail; same Recruitment/identity failures recorded in the 2026-10-05
+  entry (e.g. `googleId: null` extra field), not caused by this pull.
+- Not done: browser, overflow and zoom pass on the new cards, hero gradient and font scaling.
+
+**Flags for the owner**
+1. **Ad duplication resolved in favour of the designer's tile** on Home; tell the UI dev the other
+   carousel strips still exist (see 7 Oct flag 2) so they are not stripped.
+2. **Company cards depend on the 8-row featured cap**; the `alignedDirectorySlugs` allowlist question
+   (Pass 3) is separate and unchanged.
+3. **Desktop font scaling affects every rem-sized page**; designer asks for a check on a Windows laptop.
+4. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories`
+   hydration warning.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).
