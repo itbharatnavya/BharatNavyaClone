@@ -103,9 +103,9 @@ export default function Navbar() {
                 <span className="bn-nav-panel-icon">{item.icon}</span>
                 <span><strong>{item.label}</strong><small>{item.blurb}</small></span>
               </Link>)}
-              {UPCOMING.map((item) => <span key={item.label} className="bn-nav-panel-soon" aria-disabled="true">
+              {UPCOMING.map((item) => <span key={item.label} className="bn-nav-panel-soon" aria-disabled="true" title="Coming soon">
                 <span className="bn-nav-panel-icon">{item.icon}</span>
-                <span><strong>{item.label}<em>Coming soon</em></strong><small>{item.blurb}</small></span>
+                <span><strong>{item.label}</strong><small>{item.blurb}</small></span>
               </span>)}
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function Navbar() {
             </div>}
           </div>}
           <button className="bn-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => { setAccountOpen(false); setMenuOpen((value) => !value); }}><MenuIcon open={menuOpen} /></button>
-          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}{UPCOMING.map((item) => <span key={item.label} className="bn-mobile-nav-soon" aria-disabled="true">{item.label}<em>Coming soon</em></span>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && <Link href={advertiseHref}>Advertise</Link>}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
+          {menuOpen && <nav className="bn-mobile-nav" aria-label="Mobile navigation"><Link href="/" aria-current={links[0].match(pathname) ? "page" : undefined}>Home</Link><span className="bn-mobile-nav-group">Products</span>{PRODUCTS.map((item) => <Link key={item.href} className="is-sub" href={item.href} aria-current={(item.href === "/directory" ? inDirectoryContext : inRecruitmentContext) ? "page" : undefined}>{item.label}</Link>)}{UPCOMING.map((item) => <span key={item.label} className="bn-mobile-nav-soon" aria-disabled="true" title="Coming soon">{item.label}</span>)}<Link href="/about" aria-current={links[3].match(pathname) ? "page" : undefined}>About</Link>{!loading && <Link href={advertiseHref}>Advertise</Link>}{!loading && !user && <Link href={`/login?next=${encodeURIComponent(pathname)}`}>Join / Sign in</Link>}</nav>}
         </div>
       </div>
     </header>

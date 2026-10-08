@@ -3900,7 +3900,7 @@ main :is(h1, h2, h3, h4),
   border-radius: var(--r-lg);
 }
 .bn-header-search-desktop .bn-section-search--recruitment.bn-section-search--compact {
-  grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 8rem) minmax(6rem, 7.5rem) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 8rem) auto;
 }
 .bn-header-search-desktop .bn-section-search--compact :is(.bn-section-search-location, .bn-section-search-workplace) { display: flex; }
 .bn-header-search-desktop .bn-section-search--compact :is(input, select) { min-height: 2.5rem; font-size: var(--fs-sm); }
@@ -3928,7 +3928,7 @@ main :is(h1, h2, h3, h4),
 /* Recruitment's docked bar carries two selects, so its header slot is wider. */
 @media (min-width: 1024px) {
   .bn-header.is-search-docked .bn-header-inner:has([data-section="recruitment"]) { grid-template-columns: max-content minmax(20rem, 54rem) max-content; }
-  .bn-header-search-desktop .bn-section-search--recruitment.bn-section-search--compact { grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10rem) minmax(9.5rem, 11rem) auto; }
+  .bn-header-search-desktop .bn-section-search--recruitment.bn-section-search--compact { grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10rem) auto; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -5991,11 +5991,11 @@ small { font-size: var(--fs-xs); }
 
 /* Same amount of page on every laptop. Everything is sized in rem, so on desktop widths the
    root size follows the viewport (width for narrow screens, height for short ones), anchored
-   at 16px on a 1440x810 window. A 1366x768 or a 125%-scaled laptop therefore shows the same
-   slice of the page as a larger monitor instead of cutting off earlier. Phones and tablets
-   (under 900px) keep 16px. */
+   at 16px on a 1440x810 window. It only ever scales down (never above 16px, the original size),
+   so a 1366x768 or a 125%-scaled laptop shows the same slice as a larger monitor, and large
+   screens look exactly as before. Phones and tablets (under 900px) keep 16px. */
 @media (min-width: 900px) {
-  html { font-size: clamp(13px, min(1.111vw, 1.975vh), 22px); }
+  html { font-size: clamp(13px, min(1.111vw, 1.975vh), 16px); }
 }
 
 /* Hero "All categories" pill: a native select dressed as the first chip. */
@@ -6077,3 +6077,4 @@ small { font-size: var(--fs-xs); }
   background: linear-gradient(180deg, rgb(255 255 255 / 0) 0, rgb(255 255 255 / 0.7) 4rem, #fff 9rem);
   padding-top: clamp(3rem, 6vw, 5rem);
 }
+.bn-mobile-nav .bn-mobile-nav-soon:not(#_) { padding: 0 1rem 0 1.75rem; font-size: inherit; }

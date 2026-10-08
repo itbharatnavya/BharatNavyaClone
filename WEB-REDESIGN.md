@@ -1551,6 +1551,35 @@ before the testing server's Directory landing can show the new cards properly.
 4. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories`
    hydration warning.
 
+### Pulled `origin/design` again (`1e8cb88..ab0666a`) — merged 2026-10-08
+
+1 new commit from the UI dev (`ab0666a`, "Cap desktop font scaling at 16px, tidy recruitment search and
+Products menu"), 3 files (+21/-13): `app/counter-soft-system.css`, `components/Navbar.tsx`, `HANDOFF.md`.
+Merged with `git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed,
+pushed and deployed to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Font size regression fixed (owner-reported: text was too big).** The previous pull's desktop rule scaled
+  the root size up to 22px (about 18px on a 1920x1080 Windows screen). It is now
+  `clamp(13px, min(1.111vw, 1.975vh), 16px)`: never above the original 16px, it only shrinks on short or
+  zoomed laptops. 16px at 1920x930 and 1440x810.
+- **Recruitment docked header search:** the grid column left over from the removed workplace select is gone,
+  in both the base rule and the 1024px+ rule; the bar ends at the arrow.
+- **Products menu:** Growth OS tile has no visible "Coming soon" tag (tooltip only, desktop and phone menu);
+  phone-menu Growth OS aligned with the other sub-links (`.bn-mobile-nav-soon` padding).
+- `HANDOFF.md`: START HERE block updated to 8 Oct, and a note on how the dev pulls
+  `feature/design-integration` into `design` (fast-forward only).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment` return 200 on the local dev server.
+- Owner checked the changes locally (font size back to normal).
+
+**Flags for the owner**
+1. The 7 Oct entry's desktop font-scaling flag (check on a Windows laptop) is now about the *down-only*
+   scaling; still worth one look on a small or zoomed laptop.
+2. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories` hydration
+   warning.
+
 ---
 
 ## Reference material
