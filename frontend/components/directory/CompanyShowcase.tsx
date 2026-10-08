@@ -2,7 +2,7 @@
 
 // Directory "Top companies": category tabs over a compact two-column board, ranked by rating
 // (references: Justdial's result rows, IndiaMART's supplier cards). Every card shows everything
-// at once, no hover needed: a small photo with the rank, name and tick, category and city, one
+// at once, no hover needed: a small photo, name and tick, category and city, one
 // line of proof (rating, years in business, reply rate) and what they offer. Sized so the whole
 // board fits on one screen on desktop; phones show the top four. Data is the shared
 // featured-sellers list (lib/catalog), which carries each company's main category and a few
@@ -52,7 +52,7 @@ const SHORT: Record<string, string> = {
 const short = (company: Company) => (company.categorySlug && SHORT[company.categorySlug]) || (company.category || "Other").split(/[,&]/)[0].trim();
 const where = (company: Company) => [company.city, company.state && company.state !== company.city ? company.state : null].filter(Boolean).join(", ");
 
-function CompanyCard({ company, rank }: { company: Company; rank: number }) {
+function CompanyCard({ company }: { company: Company }) {
   const href = `/seller/${company.slug}`;
   const years = company.yearEstablished ? Math.max(1, new Date().getFullYear() - company.yearEstablished) : null;
   const photo = company.coverImage || (company.categorySlug && IMG_BY_SLUG[company.categorySlug] ? `/demo/${IMG_BY_SLUG[company.categorySlug]}.jpg` : null);
@@ -62,7 +62,6 @@ function CompanyCard({ company, rank }: { company: Company; rank: number }) {
     <div className="tc-photo">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {photo ? <img src={photo} alt="" loading="lazy" /> : <Avatar src={company.logo} name={company.name} size={96} />}
-      <span className="tc-rank" aria-label={`Rank ${rank}`}>{rank}</span>
     </div>
     <div className="tc-info">
       <h3><Link href={href}><span>{company.name}</span></Link>{company.isVerified && <Tick />}</h3>
@@ -104,8 +103,8 @@ export default function CompanyShowcase() {
         {item.label}<span>{item.count}</span>
       </button>)}
     </div>}
-    <ol className="tc-board" aria-label="Companies ranked by rating">
-      {shown.map((company, index) => <li key={company.slug}><CompanyCard company={company} rank={index + 1} /></li>)}
-    </ol>
+    <ul className="tc-board" role="list" aria-label="Top companies">
+      {shown.map((company) => <li key={company.slug}><CompanyCard company={company} /></li>)}
+    </ul>
   </div>;
 }
