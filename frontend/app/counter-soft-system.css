@@ -1547,10 +1547,6 @@
   transition: transform var(--counter-motion), background-color var(--counter-motion);
 }
 
-/* When back-to-top appears it takes the corner and the assistant bubble steps left. */
-body:has(.back-to-top) .navya-agent-dock {
-  right: max(5.5rem, calc(env(safe-area-inset-right) + 5.5rem));
-}
 
 body:has(.navya-agent-panel) .back-to-top {
   display: none;
@@ -6002,7 +5998,7 @@ small { font-size: var(--fs-xs); }
 .bn-landing-chips > .bn-chip-menu { position: relative; min-height: 2.5rem; display: inline-flex; align-items: center; gap: var(--counter-space-2); padding: 0 var(--counter-space-3); border: 1px solid #fff; border-radius: var(--r-pill); background: #fff; color: var(--counter-indigo); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background-color var(--counter-motion), box-shadow var(--counter-motion); }
 .bn-landing-chips > .bn-chip-menu:is(:hover, :focus-within) { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22); }
 .bn-chip-menu > svg { width: 1rem; height: 1rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.bn-chip-menu select { appearance: none; -webkit-appearance: none; width: 7.6rem; max-width: 11rem; min-height: 2.4rem; padding: 0 1.4rem 0 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; text-overflow: ellipsis; }
+.bn-chip-menu select { appearance: none; -webkit-appearance: none; width: 8.4rem; max-width: 11rem; min-height: 2.4rem; padding: 0 1.4rem 0 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; text-overflow: ellipsis; }
 .bn-chip-menu select option, .bn-chip-menu select optgroup { color: #0f172a; background: #fff; font-weight: 600; }
 .bn-chip-menu .bn-chip-menu-caret { position: absolute; right: var(--counter-space-3); pointer-events: none; width: 0.9rem; height: 0.9rem; }
 .bn-chip-menu:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
@@ -6078,3 +6074,58 @@ small { font-size: var(--fs-xs); }
   padding-top: clamp(3rem, 6vw, 5rem);
 }
 .bn-mobile-nav .bn-mobile-nav-soon:not(#_) { padding: 0 1rem 0 1.75rem; font-size: inherit; }
+
+/* Header logo blend (option 2B from public/logo-blend-options.html). The header's white bar is drawn by
+   .bn-header-surface instead of the header itself: ::before is the bar faded open where the logo sits,
+   ::after the plain solid bar. The shadow sits on the surface element so it fades with the white.
+   At the top of the page (.is-at-top) the solid layer is hidden and the logo is larger than the bar
+   with its own shadow; as soon as the page scrolls it returns to the normal solid bar. */
+.bn-header.is-counter-public:not(#_) { background: transparent; border-color: transparent; box-shadow: none; }
+.bn-header-surface { position: absolute; inset: -1px; z-index: 0; border-radius: inherit; pointer-events: none; filter: drop-shadow(0 8px 12px rgb(18 20 27 / 0.1)); }
+.bn-header-surface::before, .bn-header-surface::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px solid var(--counter-line); background: #fff; }
+.bn-header-surface::before { -webkit-mask: linear-gradient(90deg, transparent 0, transparent 7rem, rgb(0 0 0 / 0.9) 12.5rem, #000 17rem); mask: linear-gradient(90deg, transparent 0, transparent 7rem, rgb(0 0 0 / 0.9) 12.5rem, #000 17rem); }
+.bn-header-surface::after { transition: opacity 0.3s ease; }
+.bn-header.is-at-top .bn-header-surface::after { opacity: 0; }
+.bn-header.is-counter-public .bn-header-inner { position: relative; z-index: 1; }
+.bn-header.is-counter-public .bn-wordmark { transform-origin: left center; transition: transform 0.3s ease, filter 0.3s ease; }
+.bn-header.is-counter-public.is-at-top .bn-wordmark { transform: scale(1.8); filter: drop-shadow(0 8px 10px rgb(18 48 126 / 0.28)); }
+@media (max-width: 899px) {
+  .bn-header-surface::before { -webkit-mask: linear-gradient(90deg, transparent 0, transparent 4.6rem, rgb(0 0 0 / 0.9) 8rem, #000 11rem); mask: linear-gradient(90deg, transparent 0, transparent 4.6rem, rgb(0 0 0 / 0.9) 8rem, #000 11rem); }
+  .bn-header.is-counter-public.is-at-top .bn-wordmark { transform: scale(1.45); }
+}
+@media (prefers-reduced-motion: reduce) { .bn-header-surface::after, .bn-header.is-counter-public .bn-wordmark { transition: none; } }
+
+/* Bottom-right buttons in a diamond, like a controller's action buttons. Spaced so the visible gap
+   (edge to edge, rounded corners included) between the bubble and each of the other two is the same,
+   about 14px; the tab is bigger than back-to-top, so centre distances differ slightly:
+     top    "Post requirement", the tab stuck to the right edge
+     left   assistant bubble
+     bottom back-to-top
+   Nothing moves when back-to-top appears; it fills its own slot. */
+.back-to-top:not(#_) { width: 2.25rem; height: 2.25rem; right: max(0.5rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); border-radius: var(--r-md); }
+.back-to-top:not(#_) svg { width: 0.95rem; height: 0.95rem; }
+.navya-agent-dock:not(#_) { right: max(2.3rem, calc(env(safe-area-inset-right) + 1.8rem)); bottom: max(3.375rem, calc(env(safe-area-inset-bottom) + 2.375rem)); }
+.rfq-tab:not(#_) { right: 0; bottom: 7.1rem; height: 3rem; min-width: 3.25rem; padding: 0 1rem; justify-content: center; flex-direction: row-reverse; }
+.rfq-tab:not(#_):is(:hover, :focus-visible) .rfq-tab-label { margin: 0 0.55rem 0 0; }
+.bn-header .bn-advertise { gap: 0.45rem; }
+.bn-header .bn-advertise svg { width: 1.1rem; height: 1.1rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bn-header .bn-advertise svg:not(#_) { width: 1.25rem; height: 1.25rem; }
+
+/* Scrollbars: visible, in the button navy. The page bar is a 10px pill; scrollbars inside boxes are
+   slimmer and their track is inset from the ends so the thumb never runs into rounded corners.
+   Chrome ignores these ::-webkit rules on any box that sets scrollbar-width/-color, so those
+   properties are reset here (Firefox, which only understands them, gets the navy via @supports). */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: var(--counter-indigo); background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--counter-indigo-hover); background-clip: padding-box; }
+body *::-webkit-scrollbar { width: 8px; height: 8px; }
+body *::-webkit-scrollbar-track { margin: 0.85rem; }
+:is(.directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div):not(#_)::-webkit-scrollbar-thumb { background: var(--counter-indigo); background-clip: padding-box; }
+@supports not (-moz-appearance: none) {
+  :is(.bn-section-search-dropdown, .bn-dd-list, .directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div):not(#_) { scrollbar-width: auto; scrollbar-color: auto; }
+}
+@supports (-moz-appearance: none) {
+  html { scrollbar-color: var(--counter-indigo) transparent; }
+  :is(.bn-section-search-dropdown, .bn-dd-list, .directory-listing-filter-panel, .recruitment-results-filters, .recruitment-filter-sheet > div):not(#_) { scrollbar-color: var(--counter-indigo) transparent; }
+}

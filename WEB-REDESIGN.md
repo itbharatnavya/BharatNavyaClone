@@ -1580,6 +1580,41 @@ pushed and deployed to the testing server. No backend change, no schema change, 
 2. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories` hydration
    warning.
 
+### Pulled `origin/design` again (`ab0666a..bb7e84c`) — merged 2026-10-08 (later)
+
+1 new commit from the UI dev (`bb7e84c`, "Header logo blend, corner button diamond, navy scrollbars"), 3 files
+(+76/-8): `components/Navbar.tsx`, `app/counter-soft-system.css`, `HANDOFF.md`. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Header logo blend (option 2B).** `Navbar.tsx` renders a `bn-header-surface` span and an `atTop` state
+  (`window.scrollY <= 8`, class `is-at-top`, not while the search is docked). The header no longer paints its
+  own bar: `.bn-header-surface::before` is the white bar masked transparent where the logo sits, `::after` is
+  the solid bar. At the top of the page the solid layer is hidden and the logo is scaled 1.8x (1.45x on phones)
+  with its own shadow; on scroll it returns to the solid bar and the normal logo.
+- **Corner buttons in a diamond.** "Post requirement" (`.rfq-tab`) stays the navy tab on the right edge, the
+  assistant (`.navya-agent-dock`) is on the left, `.back-to-top` (2.25rem) at the bottom corner, with equal
+  visible gaps (about 14px). The old rule that moved the assistant sideways when back-to-top appeared is
+  removed, so nothing shifts.
+- **Advertise** button gets a megaphone icon (inline SVG).
+- **Scrollbars:** navy thumb everywhere, 8px inside boxes with the track inset from the ends; Firefox gets
+  `scrollbar-color` navy through `@supports`. Chrome ignores the webkit rules on boxes that set
+  `scrollbar-width`, so those are reset for the filter panels and dropdowns.
+- "All categories" hero pill widened to 8.4rem so the label fits on phones.
+- `HANDOFF.md`: 8 October (later) block; also lists the untracked `logo-blend-options.html` board.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/dashboard` return 200 locally.
+- Owner checked the changes locally.
+- Not done: 390px check that the three corner buttons do not overlap; header fade on every route.
+
+**Flags for the owner**
+1. Back-to-top is still in the bottom-right corner (FR-11/AC-7 expects lower-left); the diamond keeps it there.
+2. The header bar is now drawn by a separate element, so any page that sets its own header background or
+   shadow must target `.bn-header-surface`, not `.bn-header`.
+3. Pending from earlier passes, unchanged: GSAP visual pass, `/categories` hydration warning.
+
 ---
 
 ## Reference material
