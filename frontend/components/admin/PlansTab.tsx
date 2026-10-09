@@ -1,6 +1,6 @@
 "use client";
 
-// components/admin/PlansTab.tsx — subscription plan catalog (drives /pricing).
+// components/admin/PlansTab.tsx — subscription plan catalog (drives seller plans).
 // adminPlans() list + adminCreatePlan / adminUpdatePlan (all fields).
 
 import React, { useEffect, useState } from "react";
@@ -165,7 +165,7 @@ export default function PlansTab() {
     <div>
       <SectionHeader
         title="Plans"
-        subtitle="Subscription tiers. This catalog drives the public /pricing page."
+        subtitle="Subscription tiers. This catalog drives plans in the seller dashboard and /offer."
         actions={
           <Button variant="brand" onClick={openCreate}>
             + New plan
@@ -288,7 +288,7 @@ export default function PlansTab() {
               ]}
             />
             <Input
-              label="Tier rank (sort order on /pricing)"
+              label="Tier rank (sort order)"
               type="number"
               value={form.tierRank}
               onChange={(e) => setForm({ ...form, tierRank: e.target.value })}

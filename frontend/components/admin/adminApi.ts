@@ -243,7 +243,7 @@ export function adminReactivateAccount(id: string): Promise<{ id: string; status
 }
 
 // ============================================================
-// Subscription plans — real subscription-plans.json shape (drives /pricing)
+// Subscription plans — real subscription-plans.json shape (drives seller plans)
 // ============================================================
 export interface PlanPriceInfo {
   monthly?: number;

@@ -1,5 +1,6 @@
 "use client";
 
+import { ListingFlag, RatingPill } from "@/components/TrustBadges";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -274,6 +275,7 @@ export default function ListingDetailPage() {
         gstNumber: s.gstNumber,
         yearEstablished: s.yearEstablished,
         contactMobile: s.contactMobile,
+        badges: (s as { badges?: string[] }).badges || null,
       };
     }
     const ls = listing.seller;
@@ -453,9 +455,9 @@ export default function ListingDetailPage() {
               <div className="ld-summary" style={{ minWidth: 0 }}>
                 <div className="ld-topline">
                   <div className="ld-badges">
-                    <Badge variant="neutral">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</Badge>
-                    {listing.isSponsored && <Badge variant="sponsored">{t("common.sponsored", "Sponsored")}</Badge>}
-                    {listing.isFeatured && !listing.isSponsored && <Badge variant="premium">{t("common.featured", "Featured")}</Badge>}
+                    <ListingFlag sponsored={listing.isSponsored} featured={listing.isFeatured} />
+                    {!listing.isSponsored && !listing.isFeatured && <span className="tb-flag is-type">{listing.type === "service" ? t("listing.badge.service", "Service") : t("listing.badge.product", "Product")}</span>}
+                    {(() => { const own = (listing.rating ?? 0) > 0; return <RatingPill value={own ? listing.rating : profile?.seller?.rating} count={own ? listing.reviewCount : profile?.seller?.reviewCount} />; })()}
                     {listing.status === "sold" && <Badge variant="neutral">{t("listing.badge.sold", "Sold")}</Badge>}
                   </div>
                   <button

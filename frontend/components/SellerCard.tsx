@@ -24,6 +24,7 @@ export interface SellerCardSeller {
   reviewCount?: number;
   responseRate?: number;
   listingCount?: number;
+  badges?: string[] | null;
 }
 
 export interface SellerCardProps {
@@ -59,9 +60,10 @@ export default function SellerCard({ seller, href, className = "" }: SellerCardP
         </div>
       </div>
 
-      {(seller.isVerified || seller.trustSealVerified || seller.gstNumber || years || seller.responseRate) && (
+      {(seller.isVerified || seller.trustSealVerified || seller.gstNumber || years || seller.responseRate || seller.badges?.length) && (
         <div style={{ marginTop: 10 }}>
           <TrustBadges
+            badges={seller.badges}
             verified={seller.isVerified}
             trustSeal={seller.trustSealVerified}
             gst={!!seller.gstNumber}

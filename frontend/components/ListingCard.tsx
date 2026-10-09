@@ -6,6 +6,7 @@
 // save button and a single Sponsored/Featured flag. Styles: .lcard* in
 // app/counter-soft-system.css.
 
+import { RatingPill, VerifiedTag } from "@/components/TrustBadges";
 import React from "react";
 import Link from "next/link";
 import type { Listing } from "@/lib/types";
@@ -66,34 +67,7 @@ export function buildSpecs(listing: Listing): { label: string; value: string }[]
 // Compact solid rating pill (value + count) — denser than a 5-star row,
 // used by both layouts since vertical space is tight in each. Also reused by
 // SellerCard so ratings read identically across listing and company cards.
-export function RatingPill({ value, count }: { value: number; count?: number }) {
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 2,
-          background: "var(--success)",
-          color: "#fff",
-          fontSize: "var(--fs-xs)",
-          fontWeight: 700,
-          padding: "2px 6px",
-          borderRadius: "var(--r-xs)",
-          lineHeight: 1.3,
-        }}
-      >
-        {value.toFixed(1)}
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff" aria-hidden>
-          <path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" />
-        </svg>
-      </span>
-      {typeof count === "number" && count > 0 && (
-        <span style={{ fontSize: "var(--fs-xs)", color: "var(--muted)" }}>{count} Ratings</span>
-      )}
-    </span>
-  );
-}
+export { RatingPill };
 
 function flagOf(listing: Listing): { label: string; featured: boolean } | null {
   if (listing.isSponsored) return { label: "Sponsored", featured: false };
@@ -124,20 +98,22 @@ function SellerLine({ listing }: { listing: Listing }) {
     <span className="lcard-seller">
       <Avatar src={listing.seller?.logo} name={sellerName(listing)} size={30} />
       <span>{sellerName(listing)}</span>
-      {verified && <svg className="lcard-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}
+      {verified && <VerifiedTag />}
     </span>
   );
 }
 
 function PlaceLine({ listing }: { listing: Listing }) {
-  const rating = listing.seller?.rating ?? 0;
+  // Listing's own rating first (what buyers said about this item), else the company's.
+  const own = (listing.rating ?? 0) > 0;
+  const rating = own ? listing.rating : listing.seller?.rating ?? 0;
+  const count = own ? listing.reviewCount : listing.seller?.reviewCount;
   const city = sellerCity(listing);
   if (!city && !(rating > 0)) return null;
   return (
     <span className="lcard-place">
-      {city}
-      {city && rating > 0 && <i aria-hidden>·</i>}
-      {rating > 0 && <b>{rating.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg></b>}
+      {rating > 0 && <RatingPill value={rating} count={count} size="sm" />}
+      {city && <span className="lcard-city">{city}</span>}
     </span>
   );
 }
@@ -168,13 +144,12 @@ export default function ListingCard({ listing, href, onContact, className = "", 
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
         {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
         {!hideSeller && <div className="lcard-by"><SellerLine listing={listing} /><PlaceLine listing={listing} /></div>}
+        {/* One action: Contact opens the listing page, where the call / WhatsApp / enquiry options live
+            (a separate "details" icon went to the same page, so it was dropped). */}
         <div className="lcard-actions">
           {onContact
             ? <button type="button" className="lcard-cta" onClick={() => onContact(listing)}>Contact</button>
             : <Link href={detailHref} className="lcard-cta">Contact</Link>}
-          <Link href={detailHref} className="lcard-info" aria-label="View details" title="View details">
-            <svg aria-hidden viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6h.01" /></svg>
-          </Link>
         </div>
       </div>
     </article>

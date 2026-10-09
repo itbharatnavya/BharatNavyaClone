@@ -10,56 +10,55 @@ export interface TrustBadgesProps {
   responseRate?: number | null; // 0..100
   size?: "sm" | "md";
   className?: string;
+  // Earned badges from the API (backend lib/badges.js): top_rated, fast_responder, trusted
+  // ("verified" there duplicates `verified`, so it's ignored).
+  badges?: string[] | null;
+  rating?: number | null;
+  reviewCount?: number | null;
 }
 
-function Pill({
-  children,
-  tone = "brand",
-  size = "md",
-}: {
-  children: React.ReactNode;
-  tone?: "brand" | "neutral" | "success";
-  size?: "sm" | "md";
-}) {
-  const tones: Record<string, React.CSSProperties> = {
-    brand: { background: "#dbe4fb", color: "#1b3fa0", borderColor: "#b9c9f2" },
-    success: { background: "#e3ebff", color: "#2556c8", borderColor: "#c4d3f7" },
-    neutral: { background: "var(--bg-subtle)", color: "var(--muted)", borderColor: "var(--border)" },
-  };
-  return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 4,
-        fontSize: size === "sm" ? "var(--fs-xs)" : "var(--fs-xs)",
-        fontWeight: 600,
-        padding: size === "sm" ? "3px 8px" : "4px 10px",
-        borderRadius: "var(--r-pill)",
-        border: "1px solid transparent",
-        whiteSpace: "nowrap",
-        ...tones[tone],
-      }}
-    >
-      {children}
-    </span>
-  );
+// The trust tags used across the Directory (search rows, listing cards, company cards, company
+// page). Tiers: a green rating pill, proofs (verified / trust seal / GST) and earned badges
+// (top rated / fast reply / trusted) as a coloured icon disc + dark label, then facts (years,
+// reply rate) as one quiet line. Data comes straight from the API. Styles: .tb-* in
+// app/counter-soft-system.css.
+const ICONS = {
+  verified: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  seal: <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" />,
+  gst: <><path d="M7 3h7l4 4v14H7z" /><path d="M10 12h5M10 16h3" /></>,
+  top_rated: <path d="M12 4l2.3 4.7 5.2.8-3.75 3.65.9 5.15L12 15.9l-4.65 2.4.9-5.15L4.5 9.5l5.2-.8z" />,
+  fast_responder: <><circle cx="12" cy="13" r="7" /><path d="M12 9.5V13l2.2 1.6M9.5 3.5h5" /></>,
+  trusted: <><path d="M7 11l3-3 3 2 4-4" /><path d="M3 12l4 4 3-1 4 4 3-3" /></>,
+};
+type IconKey = keyof typeof ICONS;
+const EARNED: Record<string, { label: string; tone: string }> = {
+  top_rated: { label: "Top rated", tone: "is-amber" },
+  fast_responder: { label: "Fast reply", tone: "is-navy" },
+  trusted: { label: "Trusted", tone: "is-navy" },
+};
+
+const STAR = "M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z";
+
+// Green score pill plus the number of ratings, the convention Indian marketplace users know.
+export function RatingPill({ value, count, size = "md" }: { value?: number | null; count?: number | null; size?: "sm" | "md" }) {
+  if (!value || value <= 0) return null;
+  return <span className={`tb-rating${size === "sm" ? " is-sm" : ""}`}>
+    <b>{value.toFixed(1)}<svg aria-hidden viewBox="0 0 24 24"><path d={STAR} /></svg></b>
+    {count ? <small>{count.toLocaleString("en-IN")} {count === 1 ? "rating" : "ratings"}</small> : null}
+    <span className="sr-only">{value.toFixed(1)} out of 5</span>
+  </span>;
 }
 
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
+// Inline "Verified" mark for tight spots (a seller name in a row or card).
+export function VerifiedTag() {
+  return <span className="tb-verified"><span className="tb-icon is-green" aria-hidden><svg viewBox="0 0 24 24">{ICONS.verified}</svg></span>Verified</span>;
 }
 
-function ShieldIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z" />
-    </svg>
-  );
+// Sponsored / Featured label for a listing (null for a plain listing).
+export function ListingFlag({ sponsored, featured }: { sponsored?: boolean; featured?: boolean }) {
+  if (sponsored) return <span className="tb-flag is-sponsored">Sponsored</span>;
+  if (featured) return <span className="tb-flag is-featured">Featured</span>;
+  return null;
 }
 
 export default function TrustBadges({
@@ -70,55 +69,37 @@ export default function TrustBadges({
   responseRate,
   size = "md",
   className = "",
+  badges,
+  rating,
+  reviewCount,
 }: TrustBadgesProps) {
-  const items: React.ReactNode[] = [];
-  // Two distinct signals, two distinct pills — "verified" (admin-approved
-  // business) and "trust seal" (admin-granted seal) are different facts and
-  // shouldn't collapse into one badge that always just says "Verified".
-  if (verified) {
-    items.push(
-      <Pill key="verified" tone="brand" size={size}>
-        <CheckIcon /> Verified
-      </Pill>
-    );
-  }
-  if (trustSeal) {
-    items.push(
-      <Pill key="trustSeal" tone="success" size={size}>
-        <ShieldIcon /> Trust Seal
-      </Pill>
-    );
-  }
-  if (gst) {
-    items.push(
-      <Pill key="gst" tone="neutral" size={size}>
-        GST
-      </Pill>
-    );
-  }
-  if (typeof years === "number" && years > 0) {
-    items.push(
-      <Pill key="years" tone="neutral" size={size}>
-        {years} {years === 1 ? "yr" : "yrs"}
-      </Pill>
-    );
-  }
-  if (typeof responseRate === "number" && responseRate > 0) {
-    items.push(
-      <Pill key="rr" tone="success" size={size}>
-        {Math.round(responseRate)}% response
-      </Pill>
-    );
-  }
+  // "Verified" (admin-approved business) and "Trust seal" (admin-granted seal) are
+  // different facts, so they stay as two separate badges.
+  const isVerified = verified || badges?.includes("verified");
+  const proofs = [
+    isVerified ? { key: "verified", label: "Verified", tone: "is-green" } : null,
+    trustSeal ? { key: "seal", label: "Trust seal", tone: "is-navy" } : null,
+    gst ? { key: "gst", label: "GST registered", tone: "is-navy" } : null,
+    ...(badges || []).filter((badge) => EARNED[badge]).map((badge) => ({ key: badge, ...EARNED[badge] })),
+  ].filter(Boolean) as { key: IconKey; label: string; tone: string }[];
+  const facts = [
+    typeof years === "number" && years > 0 ? `${years} ${years === 1 ? "yr" : "yrs"} in business` : null,
+    typeof responseRate === "number" && responseRate > 0 ? `${Math.round(responseRate)}% reply rate` : null,
+  ].filter(Boolean) as string[];
+  const hasRating = typeof rating === "number" && rating > 0;
 
-  if (items.length === 0) return null;
+  if (!proofs.length && !facts.length && !hasRating) return null;
 
   return (
-    <div
-      className={className}
-      style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}
-    >
-      {items}
+    <div className={`tb${size === "sm" ? " is-sm" : ""} ${className}`.trim()}>
+      {(proofs.length > 0 || hasRating) && <ul className="tb-proofs" role="list">
+        {hasRating && <li className="tb-rating-item"><RatingPill value={rating} count={reviewCount} size={size} /></li>}
+        {proofs.map((item) => <li key={item.key}>
+          <span className={`tb-icon ${item.tone}`} aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>
+          {item.label}
+        </li>)}
+      </ul>}
+      {facts.length > 0 && <p className="tb-facts">{facts.join(" · ")}</p>}
     </div>
   );
 }

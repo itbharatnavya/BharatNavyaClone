@@ -48,9 +48,6 @@ export default function SellCta({ className = "" }: SellCtaProps) {
           <Button variant="primary" size="lg" href="/sell">
             {t("home.sell.cta", "+ Start selling")}
           </Button>
-          <Button variant="secondary" size="lg" href="/pricing">
-            {t("home.sell.secondary", "See plans")}
-          </Button>
         </div>
       </div>
     </div>

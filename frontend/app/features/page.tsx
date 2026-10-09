@@ -70,9 +70,6 @@ export default function FeaturesPage() {
           <Button href="/login?next=/features" variant="primary" className="is-on-blue">
             {t("features.getStartedFree", "Get started free")}
           </Button>
-          <Button href="/pricing" variant="secondary">
-            {t("features.seePricing", "See pricing")}
-          </Button>
         </div>
       </div>
 

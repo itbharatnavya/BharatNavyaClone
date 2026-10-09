@@ -166,7 +166,7 @@ export default function FeaturesTab() {
     <div>
       <SectionHeader
         title="Features"
-        subtitle="The living capability catalog — grouped by area. Powers /features and /pricing, and keeps sales current."
+        subtitle="The living capability catalog — grouped by area. Powers /features, and keeps sales current."
         actions={
           <Button variant="brand" onClick={openCreate}>
             + Add feature

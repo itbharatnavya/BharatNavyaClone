@@ -40,6 +40,7 @@ export function mapSeller(s: any): SellerCardSeller | null {
     reviewCount: s.reviewCount,
     responseRate: s.responseRate,
     listingCount: s.listingCount,
+    badges: Array.isArray(s.badges) ? s.badges : null,
   };
 }
 

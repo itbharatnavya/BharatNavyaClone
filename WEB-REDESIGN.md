@@ -1748,6 +1748,59 @@ looping hire scene, footer lockup"), 14 files (+493/-153), **backend touched (ad
   still says "ranked by rating").
 - `npx tsc --noEmit` clean; `/directory` 200 locally.
 
+### Pulled `origin/design` again (`67dbd1a..979347f`) — merged 2026-10-09 (company page, About, Pricing removed)
+
+2 new commits from the UI dev (`a1c734c` "Reviews and stories on company page, About section pages, API trust
+tags, ofbusiness-style nav dropdowns, footer app badges" and `979347f` "Remove the public Pricing page and every
+link to it"), 36 files (+1022/-408). Merged with `git merge --no-ff --no-commit`, **no conflicts**, owner checked
+it locally, then committed, pushed and deployed (frontend only). **No backend change, no schema change, no new
+dependency.** `next.config.mjs` changed, so restart the local dev server after pulling.
+
+**What the design branch changed**
+- **Company page `/seller/[slug]`** (new order: header with trust tags, stats, Stories, Work evidence, Reviews,
+  then about / facts / offerings). This closes the "Reviews and Products sections missing" item from the
+  2026-09-28 punch-list for Reviews.
+  - Reviews: new `components/seller/CompanyReviews.tsx` (`.cr-*`) on the existing `getReviews` / `postReview`
+    (`GET/POST /api/reviews`): summary, write / edit form (stars + optional text; one review per person per
+    company; cannot review your own), filter / sort list. Guests get `ContactAuthModal purpose="review"` and
+    return to the form. The old inline block read `profile.reviews`, which `GET /api/sellers/:slug` does not
+    return, so it was always empty; `ReviewsPanel.tsx` is now unused. The rating tile links to `#reviews`.
+  - Stories: `SellerStoriesSection` back on the page, behind admin flags `stories` / `storyHighlights`; own
+    `.sst-card` solid navy ring. Employer page: Recruitment reviews moved up after "About working here".
+- **Trust tags (from the API payload):** `components/TrustBadges.tsx` is the one source (`RatingPill`,
+  `VerifiedTag`, `ListingFlag`, `TrustBadges` with earned `badges` from `backend/lib/badges.js` and a facts
+  line). Used in search rows, listing hero and seller box, listing cards, company header, `SellerCard`.
+  Listing cards have one Contact button (the duplicate "i" details icon is removed). Solid colours, no gradients.
+- **About section:** navbar About is a dropdown. Pages `/about`, `/about/team`, `/careers`, `/blog`, `/contact`
+  share `components/about/AboutShell.tsx`; owner facts (contact details, leadership, open roles) live in
+  `components/about/company.tsx`, null values are hidden. `/careers` and `/contact` added to `ROOT_ROUTES` in
+  `lib/routePresentation.ts`. "More about us" blocks removed.
+- **Nav and footer:** ofbusiness-style dropdown rows (`NavRow`, `.bn-nav-row`); Advertise hidden on `/login` and
+  `/register`. Footer app badges (Google Play / App Store, not linked yet: set `href` in `APPS` in `Footer.tsx`),
+  links in two columns.
+- **Pricing page removed (owner request).** `app/pricing/` deleted; `next.config.mjs` redirects `/pricing` to `/`
+  (307, so it can return). All links removed or repointed: footer, Contact FAQ, `/features`, home `SellCta`,
+  seller dashboard Subscription tab buttons; "Choose plan" on `/offer` goes to `/dashboard?tab=subscription`;
+  Directory "Promote your company" and the ad-slot fallback go to `/dashboard?tab=advertise`. Plans still exist
+  (admin Plans tab, seller Subscription tab, `/offer`). Do not re-add Pricing links without asking.
+- Fixes: sidebar ads 4:3, blog page bottom ad removed, un-classed `<select>` padding restored, navy CTA text white.
+- Hero background still on hold (owner choosing from the designer's untracked option boards).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. Dev server restarted (config change). `/`, `/directory`, `/recruitment`, `/search`,
+  `/about`, `/about/team`, `/careers`, `/contact`, `/blog`, `/features`, `/offer`, `/seller/<slug>` return 200;
+  `/pricing` returns 307 to `/`. `GET /api/reviews?sellerId=` returns real reviews.
+- Owner checked the changes locally.
+- Not done: 390px pass on the company page, About pages and nav dropdowns; posting a review end to end.
+
+**Flags for the owner**
+1. Sellers no longer have an in-dashboard link to plan prices (the Subscription tab buttons were removed);
+   plans are reachable from `/offer`. Owner call, recorded here.
+2. `/pricing` is still listed in `ROOT_ROUTES` (harmless; the redirect runs first).
+3. Footer app badges have no links yet.
+4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
 ---
 
 ## Reference material
