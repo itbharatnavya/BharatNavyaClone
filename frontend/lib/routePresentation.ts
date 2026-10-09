@@ -1,6 +1,9 @@
 const COUNTER_PUBLIC_EXACT = new Set([
   "/",
   "/about",
+  "/about/team",
+  "/careers",
+  "/contact",
   "/pricing",
   "/blog",
   "/directory",
@@ -44,7 +47,7 @@ export function isRecruitmentPublicRoute(pathname: string) {
 // app/[category]/ owns every top-level path that no other route claims, so a first
 // segment missing from this list is a category (or category/city) page.
 const ROOT_ROUTES = new Set([
-  "about", "admin", "blog", "brand", "brands", "categories", "collection", "collections", "consultations",
+  "about", "admin", "blog", "brand", "brands", "careers", "categories", "collection", "collections", "consultations", "contact",
   "credit-card", "dashboard", "design-system", "directory", "employer", "features", "job", "listing", "login",
   "mutual", "offer", "post-job", "pricing", "profile", "recruitment", "register", "rfq", "search", "sell",
   "seller", "shortlist",

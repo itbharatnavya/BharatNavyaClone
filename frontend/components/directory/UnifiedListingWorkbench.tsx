@@ -1,5 +1,6 @@
 "use client";
 
+import { ListingFlag, RatingPill, VerifiedTag } from "@/components/TrustBadges";
 import { scrollToExpanded } from "@/lib/scrollToExpanded";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
@@ -282,10 +283,10 @@ export default function UnifiedListingWorkbench({
             <button type="button" className={`directory-listing-row${active ? " is-selected" : ""}`} onClick={(event) => { setSelectedId(listing.id); scrollToExpanded(event.currentTarget.closest("article")); }} aria-pressed={active}>
               <span className="directory-listing-thumb">{media ? <img src={media.url} alt="" loading="lazy" decoding="async" /> : listing.type.slice(0, 1).toUpperCase()}</span>
               <span className="directory-listing-row-copy">
-                <small>{listing.type}</small>
+                <small className="dlr-eyebrow"><ListingFlag sponsored={listing.isSponsored} featured={listing.isFeatured} />{!listing.isSponsored && !listing.isFeatured && (listing.type === "service" ? "Service" : "Product")}</small>
                 <strong>{listing.title}</strong>
-                <span className="dlr-seller">{sellerName(listing)}{(listing.isVerifiedSeller || listing.seller?.isVerified) && <svg className="dlr-tick" aria-label="Verified seller" role="img" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>}</span>
-                <span className="dlr-place">{[listing.seller?.city || listing.location?.city, (listing.seller?.rating ?? 0) > 0 ? `${(listing.seller?.rating ?? 0).toFixed(1)} rating` : ""].filter(Boolean).join(" · ")}</span>
+                <span className="dlr-seller">{sellerName(listing)}{(listing.isVerifiedSeller || listing.seller?.isVerified) && <VerifiedTag />}</span>
+                <span className="dlr-place">{(() => { const own = (listing.rating ?? 0) > 0; return <RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />; })()}{listing.seller?.city || listing.location?.city ? <span>{listing.seller?.city || listing.location?.city}</span> : null}</span>
               </span>
               <span className="dlr-aside">{buildSpecs(listing).slice(0, 2).map((spec, i) => <i key={i}>{spec.value}</i>)}</span>
               <Arrow />

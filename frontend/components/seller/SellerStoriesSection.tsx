@@ -128,16 +128,7 @@ export default function SellerStoriesSection({
                 key={s.id}
                 type="button"
                 onClick={() => setOpenAt(i)}
-                className="story-card"
-                style={{
-                  background: "linear-gradient(135deg, var(--brand), var(--action))",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 3,
-                  borderRadius: CARD_RADIUS + 3,
-                  width: CARD_W + 6,
-                  flexShrink: 0,
-                }}
+                className="sst-card"
                 aria-label={s.caption || `Story ${i + 1}`}
               >
                 <span

@@ -8,6 +8,10 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import ListingCard from "@/components/ListingCard";
 import { getSeller } from "@/lib/api";
+import TrustBadges from "@/components/TrustBadges";
+import CompanyReviews from "@/components/seller/CompanyReviews";
+import SellerStoriesSection from "@/components/seller/SellerStoriesSection";
+import { useConfig } from "@/lib/config";
 import type { SellerPublicProfile } from "@/lib/types";
 import { mapDirectoryCompany } from "@/lib/productDesign";
 
@@ -15,9 +19,16 @@ function Check() { return <svg aria-hidden viewBox="0 0 24 24"><path d="m5 12 4 
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
 export default function CompanyProfilePage() {
   const { slug } = useParams<{ slug: string }>();
+  // Stories (current, 24h) and highlights (kept), behind the admin flags `stories` / `storyHighlights`.
+  const { featureFlags } = useConfig();
+  const flags = (featureFlags || {}) as Record<string, boolean>;
+  const showStories = flags.stories === true, showHighlights = flags.storyHighlights === true;
   const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  // Refetch after a review is saved so the rating and count up top stay in sync.
+  const refresh = () => { getSeller(slug).then(setProfile).catch(() => {}); };
 
   useEffect(() => {
     let live = true;
@@ -51,13 +62,12 @@ export default function CompanyProfilePage() {
   const media = [seller.coverImage, ...listings.flatMap((listing) => listing.media.map((item) => item.url))]
     .filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index)
     .slice(0, 6);
-  const approvedReviews = (profile.reviews || []).filter((review) => review.status === "approved");
   const serviceListings = listings.filter((listing) => listing.type === "service");
   const productListings = listings.filter((listing) => listing.type === "product");
   const location = [seller.location?.city || profile.city, seller.location?.state || profile.state].filter(Boolean).join(", ") || "India";
   const inquiryHref = seller.contactEmail ? `mailto:${seller.contactEmail}?subject=${encodeURIComponent(`Inquiry via Bharat Navya for ${seller.companyName}`)}` : `/login?next=${encodeURIComponent(`/seller/${slug}`)}`;
   const stats: [string, string, boolean][] = [
-    [seller.rating ? `${seller.rating.toFixed(1)} / 5` : "New", `${seller.reviewCount || 0} public reviews`, Boolean(seller.rating)],
+    [seller.rating ? `${seller.rating.toFixed(1)} / 5` : "New", `${seller.reviewCount || 0} ratings · see reviews`, Boolean(seller.rating)],
     [seller.responseRate ? `${seller.responseRate}%` : "Not listed", "Response rate", Boolean(seller.responseRate)],
     [seller.yearEstablished ? String(seller.yearEstablished) : "Not listed", "Year established", Boolean(seller.yearEstablished)],
     [seller.employeeCount || "Not listed", "Team size", Boolean(seller.employeeCount)],
@@ -77,9 +87,9 @@ export default function CompanyProfilePage() {
       <div className="cp-identity">
         <Avatar src={seller.logo} name={seller.companyName} size={72} />
         <div className="cp-title">
-          <span className={`cp-chip${seller.isVerified ? " is-verified" : ""}`}>{seller.isVerified ? "Identity verified" : "Claimed company"}</span>
           <h1>{seller.companyName}</h1>
           <p>{location} · {company.serviceFamily}</p>
+          <TrustBadges className="cp-tags" rating={seller.rating} reviewCount={seller.reviewCount} verified={seller.isVerified} trustSeal={seller.trustSealVerified} gst={!!seller.gstNumber} badges={(seller as { badges?: string[] }).badges} years={seller.yearEstablished ? Math.max(1, new Date().getFullYear() - seller.yearEstablished) : null} responseRate={seller.responseRate} />
         </div>
         <div className="cp-actions">
           <a className="cp-button" href={inquiryHref}>{seller.contactEmail ? "Send inquiry" : "Sign in to inquire"}</a>
@@ -89,8 +99,15 @@ export default function CompanyProfilePage() {
     </header>
 
     <section className="cp-stats" aria-label="Company trust summary">
-      {stats.map(([value, label, known]) => <div key={label}><strong className={known ? undefined : "is-missing"}>{value}</strong><span>{label}</span></div>)}
+      {stats.map(([value, label, known], index) => index === 0
+        ? <a key={label} href="#reviews" className="cp-stat-link"><strong className={known ? undefined : "is-missing"}>{value}</strong><span>{label}</span></a>
+        : <div key={label}><strong className={known ? undefined : "is-missing"}>{value}</strong><span>{label}</span></div>)}
     </section>
+
+    {(showStories || showHighlights) && <section className="cp-block cp-stories" aria-labelledby="cp-stories">
+      <h2 id="cp-stories">Stories</h2>
+      <SellerStoriesSection sellerId={profile.id} sellerName={seller.companyName} sellerSlug={seller.slug} avatarUrl={seller.logo} isVerified={seller.isVerified} showNew={showStories} showHighlights={showHighlights} />
+    </section>}
 
     <section className="cp-block" aria-labelledby="cp-work">
       <h2 id="cp-work">Work evidence</h2>
@@ -99,6 +116,7 @@ export default function CompanyProfilePage() {
 
     <div className="cp-layout">
       <div className="cp-main">
+        <CompanyReviews sellerId={profile.id} companyName={seller.companyName} rating={seller.rating} reviewCount={seller.reviewCount} onChanged={refresh} />
         <section className="cp-block" aria-labelledby="cp-about">
           <h2 id="cp-about">What this company does</h2>
           <p className="cp-lead">{seller.about || "This company has not added a detailed overview yet."}</p>
@@ -120,10 +138,6 @@ export default function CompanyProfilePage() {
 
         <div className="bn-bottom-ad is-980"><ApiAdvertisingSlot compact placement="category_top" kind="native" context="Sponsored near company profiles" summary="A relevant promoted company or service, kept separate from this company’s own evidence and reviews." action="View promoted record" /></div>
 
-        <section className="cp-block" aria-labelledby="cp-reviews">
-          <h2 id="cp-reviews">Reviews</h2>
-          {approvedReviews.length ? <div className="cp-reviews">{approvedReviews.map((review) => <blockquote key={review.id}><span>{review.rating} / 5</span><p>“{review.reviewText}”</p><cite>{review.buyerName}</cite></blockquote>)}</div> : <p className="cp-empty">No approved public reviews are available yet.</p>}
-        </section>
       </div>
 
       <aside className="cp-aside" id="cp-inquiry">

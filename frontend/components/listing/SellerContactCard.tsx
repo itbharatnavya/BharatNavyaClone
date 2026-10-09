@@ -10,8 +10,7 @@ import { useToast } from "@/components/Toast";
 import { reportListing, createConversation } from "@/lib/api";
 import { waLink, enquiryText } from "@/lib/whatsapp";
 import Avatar from "@/components/Avatar";
-import Rating from "@/components/Rating";
-import TrustBadges from "@/components/TrustBadges";
+import TrustBadges, { RatingPill } from "@/components/TrustBadges";
 import Modal from "@/components/Modal";
 import Textarea from "@/components/Textarea";
 import ContactAuthModal from "@/components/auth/ContactAuthModal";
@@ -33,6 +32,7 @@ export interface ContactSeller {
   gstNumber?: string | null;
   yearEstablished?: number | null;
   contactMobile?: string | null;
+  badges?: string[] | null;
 }
 
 export interface SellerContactCardProps {
@@ -308,7 +308,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
             )}
             {typeof seller.rating === "number" && seller.rating > 0 && (
               <div style={{ marginTop: 6 }}>
-                <Rating value={seller.rating} count={seller.reviewCount} size={14} />
+                <RatingPill value={seller.rating} count={seller.reviewCount} size="sm" />
               </div>
             )}
           </div>
@@ -319,6 +319,7 @@ export default function SellerContactCard({ listing, seller, onContactUnlocked }
           own "credentials" zone instead of blending into the plain card. */}
       <div style={{ margin: "16px 0 0", padding: "10px 20px", background: "var(--bg-subtle)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <TrustBadges
+          badges={seller.badges}
           verified={seller.isVerified}
           trustSeal={seller.trustSealVerified}
           gst={!!seller.gstNumber}
