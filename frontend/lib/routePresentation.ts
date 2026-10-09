@@ -4,7 +4,6 @@ const COUNTER_PUBLIC_EXACT = new Set([
   "/about/team",
   "/careers",
   "/contact",
-  "/pricing",
   "/blog",
   "/directory",
   "/search",

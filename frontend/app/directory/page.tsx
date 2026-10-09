@@ -29,7 +29,7 @@ const actionIcon = (d: string) => <svg aria-hidden viewBox="0 0 24 24">{d.split(
 const directoryActions: HeroAction[] = [
   { title: "Search the Directory", detail: "Companies, products and services", href: "/search", icon: actionIcon("M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z|m20 20-4-4") },
   { title: "List your business", detail: "Add your company for free", href: "/sell", icon: actionIcon("M4 9l1.5-5h13L20 9|M4 9h16v11H4z|M9 20v-6h6v6") },
-  { title: "Promote your company", detail: "Get seen by more buyers", href: "/pricing", icon: actionIcon("M4 10v4l11 5V5z|M15 9a3 3 0 0 1 0 6|M7 15l1 5h3l-1-4") },
+  { title: "Promote your company", detail: "Get seen by more buyers", href: "/dashboard?tab=advertise", icon: actionIcon("M4 10v4l11 5V5z|M15 9a3 3 0 0 1 0 6|M7 15l1 5h3l-1-4") },
 ];
 
 

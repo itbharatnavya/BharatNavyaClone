@@ -16,7 +16,7 @@ const Arrow = () => <svg className="ap-help-arrow" aria-hidden viewBox="0 0 24 2
 const FAQ = [
   { q: "Does Bharat Navya take payments?", a: "No. You deal with the company directly. We never handle money between buyers and sellers." },
   { q: "How do I contact a company?", a: "Open the company's page and tap Call or WhatsApp. Sign in first to see their number." },
-  { q: "How do I list my business?", a: "Sign in and use List your business. Your company page goes live once it's set up. See Pricing for plans." },
+  { q: "How do I list my business?", a: "Sign in and use List your business. Your company page goes live once it's set up." },
   { q: "How do reviews work?", a: "Anyone signed in can rate a company once and edit it later. You can't review your own company." },
   { q: "How do I advertise?", a: "Sign in and open the Advertise tab in your dashboard to book a slot." },
   { q: "I can't sign in.", a: "Use your mobile number and the one-time code (OTP) instead of a password." },

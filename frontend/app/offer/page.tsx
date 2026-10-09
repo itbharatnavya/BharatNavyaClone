@@ -745,7 +745,7 @@ export default function OfferPage() {
 
                     <div style={{ marginTop: 18 }}>
                       <Link
-                        href={t.key === "free" ? "/register" : "/pricing"}
+                        href={t.key === "free" ? "/register" : "/dashboard?tab=subscription"}
                         className={`btn btn-block ${
                           highlight ? "btn-primary" : "btn-secondary"
                         }`}
@@ -759,20 +759,6 @@ export default function OfferPage() {
             </div>
           )}
 
-          <p
-            style={{
-              textAlign: "center",
-              marginTop: 18,
-              fontSize: "var(--fs-sm)",
-              color: "var(--muted)",
-            }}
-          >
-            See the full capability-by-plan matrix on the{" "}
-            <Link href="/pricing" style={{ color: "var(--brand)", fontWeight: 600 }}>
-              pricing page
-            </Link>
-            .
-          </p>
         </div>
       </section>
 

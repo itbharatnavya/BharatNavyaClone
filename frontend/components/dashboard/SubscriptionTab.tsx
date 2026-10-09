@@ -34,11 +34,6 @@ export default function SubscriptionTab({ user }: Props) {
             "dashboard.subscription.noSellerHint",
             "Set up a seller profile from the Profile tab to unlock plans."
           )}
-          action={
-            <Button href="/pricing" variant="secondary" rightIcon={<Icon name="external" size={15} />}>
-              {tr("dashboard.subscription.viewPlans", "View plans")}
-            </Button>
-          }
         />
       </div>
     );
@@ -51,11 +46,6 @@ export default function SubscriptionTab({ user }: Props) {
       <PanelHeader
         title={tr("dashboard.subscription.title", "Subscription")}
         subtitle={tr("dashboard.subscription.subtitle", "Manage your plan and lead quota.")}
-        actions={
-          <Button href="/pricing" variant="primary" rightIcon={<Icon name="external" size={15} />}>
-            {tr("dashboard.subscription.upgrade", "Upgrade / view plans")}
-          </Button>
-        }
       />
 
       <div

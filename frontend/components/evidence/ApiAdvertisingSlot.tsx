@@ -70,7 +70,7 @@ export default function ApiAdvertisingSlot({ placement, category, kind, context,
       context="Promote on Bharat Navya"
       title={fallbackTitle || (recruitmentPlacement ? "Reach candidates with a transparent employer or role profile." : "Put a credible company or listing in front of the right audience.")}
       summary={fallbackSummary || "Sponsored placements stay clearly labelled and separate from verification, editorial judgment and organic ranking."}
-      href="/pricing"
+      href="/dashboard?tab=advertise"
       action={fallbackAction || "Explore placements"}
       media={{ src: recruitmentPlacement ? "/seed-media/company/company-2.jpg" : "/seed-media/work/work-6.jpg", alt: recruitmentPlacement ? "A team working together" : "A team presenting its work", kind: recruitmentPlacement ? "workplace" : "work-sample", source: "prototype", attribution: "Bharat Navya promotional placement" }}
     />;

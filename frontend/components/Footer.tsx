@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isCounterPublicRoute, isCounterWorkspaceRoute } from "@/lib/routePresentation";
 
-const companyLinks = [...ABOUT_PAGES.map((page) => ({ label: page.label, href: page.href })), { label: "Pricing", href: "/pricing" }, { label: "Ask Navya", href: "/#ask-navya" }];
+const companyLinks = [...ABOUT_PAGES.map((page) => ({ label: page.label, href: page.href })), { label: "Ask Navya", href: "/#ask-navya" }];
 
 // App store badges. The apps aren't out yet, so these are labelled "Coming soon" and are not
 // links; give each one an href (store URL) once the apps are published. Store logos are inline

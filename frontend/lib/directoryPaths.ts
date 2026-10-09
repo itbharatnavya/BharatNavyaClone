@@ -11,7 +11,6 @@ const NON_DIRECTORY_PATHS = [
   "/credit-card",
   "/mutual",
   "/about",
-  "/pricing",
   "/features",
   "/offer",
   "/register",

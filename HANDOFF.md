@@ -590,3 +590,9 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 - **Footer**: app badges (Google Play / App Store, real marks as inline SVG, black, not linked yet; set `href` in `APPS` in `Footer.tsx` when live), text optically centred (`text-box: trim-both cap alphabetic`). Links in two columns.
 - **Fixes**: sidebar ads sized 4:3 so the title is never clipped; blog page bottom ad removed; listing cards have one Contact button (duplicate "i" removed); Tailwind's reset zeroed padding on un-classed `<select>`s, re-asserted at type specificity (`select { padding: 0 2.25rem 0 0.9rem }`); navy band CTAs are white.
 - No backend changes in this batch.
+
+## 9 October 2026 (late): Pricing page removed
+
+- Owner asked to remove the public Pricing page entirely. `app/pricing/` is deleted; `next.config.mjs` redirects `/pricing` to `/` (temporary redirect, so it can come back).
+- Every link to it was removed or repointed: footer, Contact FAQ, `/features` ("See pricing" button), home `SellCta` ("See plans"), seller dashboard Subscription tab buttons. "Choose plan" on `/offer` now goes to `/dashboard?tab=subscription`; Directory's "Promote your company" action and the ad-slot fallback go to `/dashboard?tab=advertise`.
+- Plans still exist (admin Plans tab, seller dashboard Subscription tab, `/offer`). Don't re-add Pricing links without asking.
