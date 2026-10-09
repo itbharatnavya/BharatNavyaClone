@@ -1801,6 +1801,50 @@ dependency.** `next.config.mjs` changed, so restart the local dev server after p
 4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
    warning, ad carousel script not re-run against the no-pause behaviour.
 
+### Pulled `origin/design` again (`979347f..3531304`) — merged 2026-10-09 (contact form, backend + migration 0019)
+
+2 new commits from the UI dev (`cf61d26` "Contact page form with admin inbox, compact search rows when a listing
+is open" and `3531304` "Search rows: seller names wrap; contact form button stays on one line"), 13 files
+(+335/-1). Merged with `git merge --no-ff --no-commit`, **no conflicts**, committed, pushed and deployed (backend
+and frontend) on the owner's standing go-ahead for this pull. **Backend + schema change: migration
+`0019_add_contact_messages.sql`.**
+
+**What the design branch changed**
+- **Contact form** on `/contact` (`components/about/ContactForm.tsx`, `.cf-*`, plus a "What happens next" panel).
+  Needs name + message (10+ characters) + email or phone; signed-in users are prefilled.
+- **Backend:** migration `0019_add_contact_messages.sql` (table `contact_messages`, also in `schema.sql`), flat
+  mapping `contact-messages.json`, file-DB seed `DB/contact-messages.json`. New
+  `modules/platform/routes/contact.routes.js`: `POST /api/contact` (public, optionalAuth, validated) and
+  `GET` / `PATCH /api/admin/contact-messages[/:id]` (admin, mounted in the `admin-sub` phase). Admin UI: Global >
+  Contact messages (`components/admin/ContactMessagesTab.tsx`): filter New / Handled / All, mark handled or reopen.
+- **Search rows:** container query on `.directory-listing-ledger`; below 36rem of list width (a listing open
+  beside it) smaller photo and no spec chips; seller names wrap.
+
+**Fixed while merging (our change to the designer's file)**
+- `contact.routes.js` called `messages.update(id, ...)`, but the shared repo only exposes `updateById`
+  (`modules/_shared/repository.js`). The admin PATCH ("mark handled") would have thrown a TypeError. Changed to
+  `messages.updateById(...)`; verified against the dev DB (status closed then reopened). Tell the UI dev.
+
+**Checks run**
+- Migration 0019 applied to the local dev DB; `POST /api/contact` returns `{success:true,data:{id:"cmsg_..."}}`;
+  admin list without a token returns 401. Backend restarted; architecture tests 6/6.
+- `npx tsc --noEmit`: clean. `/contact`, `/admin`, `/directory`, `/search` return 200 locally.
+- Not done: admin tab exercised through the UI with a signed-in admin; 390px pass on the contact page.
+
+**Testing server: migration 0019 NOT applied by this session.** Pulling the Neon connection string was blocked by
+the session's credential guard. Until it is applied, the contact form on the testing server shows an error and
+the admin Contact messages tab fails; everything else is unaffected. Apply it with:
+`cd backend && PG_URL=<neon-connection-string> npm run migrate-schema` (get the string from Vercel > `bharatnavya-api`
+> Settings > Environment Variables > `PG_URL`, as in TESTING-SERVER.md).
+
+**Flags for the owner**
+1. The public contact endpoint's rate limit (5 per IP per 10 minutes) is an in-memory `Map`, which on Vercel resets
+   per instance / cold start, so it only throttles loosely. CLAUDE.md section 9 says not to keep request state in
+   process memory; fine as a soft limit, a table-backed counter would be the proper fix.
+2. Contact messages hold names, emails and phone numbers (PII): admin-only read, but treat the table as sensitive.
+3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
 ---
 
 ## Reference material

@@ -675,6 +675,19 @@ export function postReview(body: {
   });
 }
 
+// Contact page form -> POST /api/contact (public). Needs a name, a message and an email or phone.
+export function sendContactMessage(body: { name: string; email?: string; phone?: string; topic: string; message: string }): Promise<{ id: string }> {
+  return request<{ id: string }>(`/api/contact`, { method: "POST", body: JSON.stringify(body) });
+}
+
+export interface ContactMessage { id: string; name: string; email?: string | null; phone?: string | null; topic: string; message: string; userId?: string | null; status: "new" | "closed"; createdAt: string }
+export function adminGetContactMessages(status?: "new" | "closed"): Promise<ContactMessage[]> {
+  return request<ContactMessage[]>(`/api/admin/contact-messages${status ? `?status=${status}` : ""}`);
+}
+export function adminSetContactMessageStatus(id: string, status: "new" | "closed"): Promise<ContactMessage> {
+  return request<ContactMessage>(`/api/admin/contact-messages/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ status }) });
+}
+
 // Directory homepage "Recent Activity" — real reviews joined with seller info.
 export function getRecentActivity(params: { limit?: number; city?: string } = {}): Promise<RecentActivityItem[]> {
   return request<RecentActivityItem[]>(`/api/reviews/recent${toQuery(params as Record<string, unknown>)}`);

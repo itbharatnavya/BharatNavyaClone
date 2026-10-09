@@ -18,7 +18,9 @@ const MOUNTS = [
   { path: "/api/admin/moderation", router: require("./routes/moderation.routes"), phase: "admin-sub" },
   { path: "/api/admin/listings", router: require("./routes/adminListings.routes"), phase: "admin-sub" },
   { path: "/api/admin/inquiries", router: require("./routes/adminInquiries.routes"), phase: "admin-sub" },
+  { path: "/api/admin/contact-messages", router: require("./routes/contact.routes").adminRouter, phase: "admin-sub" },
   { path: "/api/admin", router: require("./routes/admin.routes"), phase: "admin" },
+  { path: "/api/contact", router: require("./routes/contact.routes").publicRouter, phase: "late" },
   { path: "/api/notifications", router: require("./routes/notifications.routes"), phase: "late" },
   { path: "/api/uploads", router: require("./routes/uploads.routes"), phase: "late" },
 ];
