@@ -8,6 +8,7 @@
 import Link from "next/link";
 import AboutShell from "@/components/about/AboutShell";
 import { COMPANY } from "@/components/about/company";
+import ContactForm from "@/components/about/ContactForm";
 import { useAuth } from "@/lib/auth";
 
 const glyph = (d: string) => <svg aria-hidden viewBox="0 0 24 24">{d.split("|").map((path) => <path key={path} d={path} />)}</svg>;
@@ -51,6 +52,22 @@ export default function ContactPage() {
           <span className="ap-help-cta">{item.cta}<Arrow /></span>
         </Link></li>)}
       </ul>
+    </div></section>
+
+    <section className="hs-sec" id="write" aria-labelledby="form-title"><div className="le-shell">
+      <header className="le-section-head"><div><h2 id="form-title">Send us a message</h2></div></header>
+      <div className="cf-layout ap-rise">
+        <ContactForm />
+        <aside className="cf-aside" aria-label="What happens next">
+          <h3>What happens next</h3>
+          <ol>
+            <li><b>1</b><span>Your message reaches our team straight away.</span></li>
+            <li><b>2</b><span>The right person picks it up, based on the topic.</span></li>
+            <li><b>3</b><span>We reply by email or phone within 1 to 2 working days.</span></li>
+          </ol>
+          {COMPANY.email && <p>Prefer email? <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></p>}
+        </aside>
+      </div>
     </div></section>
 
     <section className="hs-sec" aria-labelledby="faq-title"><div className="le-shell">

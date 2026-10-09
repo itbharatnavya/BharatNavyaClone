@@ -33,6 +33,7 @@ import JobsAdminTab from "@/components/admin/JobsAdminTab";
 import RecruitmentTaxonomyTab from "@/components/admin/RecruitmentTaxonomyTab";
 import UnmatchedRfqsTab from "@/components/admin/UnmatchedRfqsTab";
 import RfqLogTab from "@/components/admin/RfqLogTab";
+import ContactMessagesTab from "@/components/admin/ContactMessagesTab";
 
 // Credit Card and Mutual aren't built out yet — no admin tooling exists for
 // either, so they're pruned from the switcher entirely (trivially reversible:
@@ -64,7 +65,8 @@ type TabKey =
   | "recruitmentAds"
   | "recruitmentContent"
   | "unmatchedRfqs"
-  | "rfqLog";
+  | "rfqLog"
+  | "contactMessages";
 
 interface NavItem {
   key: TabKey;
@@ -112,6 +114,7 @@ const ICONS: Record<TabKey, React.ReactNode> = {
   recruitmentAds: icon("M3 11l18-5v12L3 14v-3ZM11.6 16.8a3 3 0 1 1-5.8-1.6"),
   recruitmentContent: icon("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"),
   unmatchedRfqs: icon("M12 9v4M12 17h.01M10.29 3.86l-8.4 14.54A2 2 0 0 0 3.6 21.5h16.8a2 2 0 0 0 1.71-3.1l-8.4-14.54a2 2 0 0 0-3.42 0Z"),
+  contactMessages: icon("M4 6h16v12H4zM4 7l8 6 8-6"),
   rfqLog: icon("M9 3.5h6a1 1 0 011 1V5h1.5A1.5 1.5 0 0119 6.5v13A1.5 1.5 0 0117.5 21h-11A1.5 1.5 0 015 19.5v-13A1.5 1.5 0 016.5 5H8v-.5a1 1 0 011-1zM8.5 12h7M8.5 15.5h5M8.5 9h3"),
 };
 
@@ -141,6 +144,7 @@ const SECTIONS: Section[] = [
       nav("entitlements", "Entitlements"),
       nav("features", "Features"),
       nav("config", "Site Config"),
+      nav("contactMessages", "Contact messages"),
     ],
   },
   {
@@ -216,6 +220,7 @@ const TITLES: Record<TabKey, string> = {
   recruitmentContent: "Content",
   unmatchedRfqs: "Unmatched RFQs",
   rfqLog: "RFQ Log",
+  contactMessages: "Contact messages",
 };
 
 export default function AdminPage() {
@@ -388,6 +393,7 @@ export default function AdminPage() {
               {tab === "listingVerification" && <ListingVerificationTab />}
               {tab === "unmatchedRfqs" && <UnmatchedRfqsTab />}
               {tab === "rfqLog" && <RfqLogTab />}
+              {tab === "contactMessages" && <ContactMessagesTab />}
               {tab === "plans" && <PlansTab />}
               {tab === "ads" && <AdsTab product="directory" />}
               {tab === "boosts" && <BoostsTab />}

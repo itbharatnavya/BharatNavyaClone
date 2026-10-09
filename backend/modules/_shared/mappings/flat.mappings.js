@@ -348,6 +348,15 @@ function buildFlatConfigs(nextId) {
       },
     },
     {
+      file: "contact-messages.json",
+      table: "contact_messages",
+      columns: {
+        id: col("id", t), name: col("name", t), email: col("email", t), phone: col("phone", t),
+        topic: col("topic", t), message: col("message", t), userId: col("user_id", t),
+        status: col("status", t), createdAt: col("created_at", ts),
+      },
+    },
+    {
       file: "reports.json",
       table: "reports",
       columns: {

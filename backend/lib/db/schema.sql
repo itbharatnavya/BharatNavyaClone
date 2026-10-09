@@ -555,6 +555,18 @@ CREATE TABLE IF NOT EXISTS referrals (
   created_at        TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id          TEXT PRIMARY KEY,
+  name        TEXT NOT NULL,
+  email       TEXT,
+  phone       TEXT,
+  topic       TEXT,
+  message     TEXT NOT NULL,
+  user_id     TEXT REFERENCES users(id) ON DELETE SET NULL,
+  status      TEXT NOT NULL DEFAULT 'new',
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS reports (
   id            TEXT PRIMARY KEY,
   listing_id    TEXT REFERENCES listings(id) ON DELETE CASCADE,

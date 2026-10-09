@@ -596,3 +596,12 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 - Owner asked to remove the public Pricing page entirely. `app/pricing/` is deleted; `next.config.mjs` redirects `/pricing` to `/` (temporary redirect, so it can come back).
 - Every link to it was removed or repointed: footer, Contact FAQ, `/features` ("See pricing" button), home `SellCta` ("See plans"), seller dashboard Subscription tab buttons. "Choose plan" on `/offer` now goes to `/dashboard?tab=subscription`; Directory's "Promote your company" action and the ad-slot fallback go to `/dashboard?tab=advertise`.
 - Plans still exist (admin Plans tab, seller dashboard Subscription tab, `/offer`). Don't re-add Pricing links without asking.
+
+## 9 October 2026 (night): contact form, narrow search rows
+
+- **Contact form** on `/contact` (`components/about/ContactForm.tsx`, `.cf-*`, with a "What happens next" panel). Needs name + message + email or phone; signed-in users are prefilled.
+- **Backend (deploy steps: `npm run migrate-schema` in `backend/`, then restart the backend):**
+  - migration `0019_add_contact_messages.sql` (table `contact_messages`; also added to `schema.sql`), flat mapping `contact-messages.json`, file-DB seed `DB/contact-messages.json` (`[]`).
+  - `modules/platform/routes/contact.routes.js`: `POST /api/contact` (public, optionalAuth, validated, max 5 per IP per 10 min in memory) and `GET` / `PATCH /api/admin/contact-messages[/:id]` (admin, mounted in the "admin-sub" phase).
+  - Admin UI: Global > Contact messages (`components/admin/ContactMessagesTab.tsx`): filter New / Handled / All, mark handled or reopen.
+- **Search rows** use a container query on `.directory-listing-ledger`: below 36rem of list width (a listing open beside it), smaller photo and no spec chips, so title / seller / tags / rating keep their room.

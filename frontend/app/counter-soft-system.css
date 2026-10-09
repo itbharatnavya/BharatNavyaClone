@@ -6784,3 +6784,46 @@ textarea { padding: 0.6rem 0.85rem; }
 /* Navy band CTAs are white (inverted) so they stand out on navy. */
 .ap-band .le-button.is-primary:not(#_):not(.x) { background: #fff !important; border-color: #fff !important; color: var(--counter-indigo) !important; }
 .ap-band .le-button.is-primary:not(#_):not(.x):is(:hover, :focus-visible) { background: #e8effb !important; border-color: #e8effb !important; }
+
+/* Search rows in a narrow list (a listing is open beside it, or a mid-width screen): the row
+   sizes from its own column, not the viewport. Smaller photo, specs chips hidden, so the title,
+   seller, tags and rating get the room instead of being squeezed to nothing. */
+.directory-listing-ledger { container: dlr-list / inline-size; }
+@container dlr-list (max-width: 36rem) {
+  .directory-listing-ledger .directory-listing-row:not(#_) { min-height: 0; grid-template-columns: 4.75rem minmax(0, 1fr) 1rem; gap: 0.85rem; padding: 0.75rem; align-items: start; }
+  .directory-listing-ledger .directory-listing-thumb:not(#_) { width: 4.75rem; height: 4.75rem; }
+  .directory-listing-ledger .dlr-aside:not(#_) { display: none; }
+  .directory-listing-ledger .directory-listing-row > svg:last-child { align-self: center; }
+  .directory-listing-ledger .directory-listing-row-copy > strong:not(#_) { font-size: var(--fs-md); }
+}
+.directory-listing-ledger .directory-listing-row-copy > .dlr-seller:not(#_) { overflow-wrap: anywhere; }
+
+/* Contact form (components/about/ContactForm.tsx). */
+.cf { display: grid; gap: 1rem; max-width: 52rem; }
+.cf-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.cf-field { display: grid; gap: 0.4rem; min-width: 0; }
+.cf-field > span { color: var(--counter-ink); font-size: var(--fs-sm); font-weight: 700; }
+.cf-field small { color: var(--counter-muted); font-weight: 500; }
+.cf-field :is(input, select, textarea):not(#_) { width: 100%; min-height: 3rem; padding: 0 1rem; border: 1px solid var(--counter-line-strong); border-radius: 0.85rem; background-color: #fff; color: var(--counter-ink); font: inherit; font-size: 16px; }
+.cf-field select:not(#_) { padding-right: 2.5rem; }
+.cf-field textarea:not(#_) { min-height: 8rem; padding: 0.8rem 1rem; line-height: 1.5; resize: vertical; }
+.cf-field :is(input, select, textarea):focus { outline: none; border-color: var(--counter-indigo); box-shadow: 0 0 0 3px rgb(18 48 126 / 0.12); }
+.cf-error { margin: 0; padding: 0.7rem 1rem; border-radius: 0.75rem; background: #fef2f2; color: #b91c1c; font-size: var(--fs-sm); font-weight: 600; }
+.cf-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; }
+.cf-foot small { color: var(--counter-muted); font-size: var(--fs-sm); }
+.cf-done { justify-items: start; padding: 1.5rem; border: 1px solid var(--counter-line); border-radius: var(--r-lg); background: #f8fafe; }
+.cf-done h3 { margin: 0; font: 800 var(--fs-xl)/1.15 var(--font-anek-latin), sans-serif; }
+.cf-done p { margin: 0; color: var(--counter-muted); }
+.cf-done-icon { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: 50%; background: #16a34a; color: #fff; }
+.cf-done-icon svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 640px) { .cf-row { grid-template-columns: minmax(0, 1fr); } }
+.cf-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); gap: 1.5rem; align-items: start; }
+.cf-layout .cf { max-width: none; }
+.cf-aside { padding: 1.5rem; border-radius: var(--r-lg); background: var(--counter-indigo); color: #fff; }
+.cf-aside h3 { margin: 0 0 1rem; font: 800 var(--fs-xl)/1.15 var(--font-anek-latin), sans-serif; color: #fff; }
+.cf-aside ol { display: grid; gap: 0.9rem; margin: 0; padding: 0; list-style: none; }
+.cf-aside li { display: flex; gap: 0.75rem; align-items: flex-start; color: rgb(255 255 255 / 0.85); font-size: var(--fs-md); line-height: 1.45; }
+.cf-aside b { width: 1.75rem; height: 1.75rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--counter-indigo); font-size: var(--fs-sm); }
+.cf-aside p { margin: 1.2rem 0 0; color: rgb(255 255 255 / 0.8); }
+.cf-aside a { color: #fff; font-weight: 700; }
+@media (max-width: 900px) { .cf-layout { grid-template-columns: minmax(0, 1fr); } }
