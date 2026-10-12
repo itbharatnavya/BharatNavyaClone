@@ -1831,11 +1831,10 @@ and frontend) on the owner's standing go-ahead for this pull. **Backend + schema
 - `npx tsc --noEmit`: clean. `/contact`, `/admin`, `/directory`, `/search` return 200 locally.
 - Not done: admin tab exercised through the UI with a signed-in admin; 390px pass on the contact page.
 
-**Testing server: migration 0019 NOT applied by this session.** Pulling the Neon connection string was blocked by
-the session's credential guard. Until it is applied, the contact form on the testing server shows an error and
-the admin Contact messages tab fails; everything else is unaffected. Apply it with:
-`cd backend && PG_URL=<neon-connection-string> npm run migrate-schema` (get the string from Vercel > `bharatnavya-api`
-> Settings > Environment Variables > `PG_URL`, as in TESTING-SERVER.md).
+**Testing server: migration 0019 applied 2026-10-12** to the Neon DB (`npm run migrate-schema`; status before:
+only 0019 pending). Live check: `POST /api/contact` on `bharatnavya-api.vercel.app` saved a message (200) and
+`GET /api/admin/contact-messages` without a token returns 401. The test row was deleted afterwards. The session's
+credential guard had blocked pulling `PG_URL` from Vercel, so the owner supplied the connection string directly.
 
 **Flags for the owner**
 1. The public contact endpoint's rate limit (5 per IP per 10 minutes) is an in-memory `Map`, which on Vercel resets
