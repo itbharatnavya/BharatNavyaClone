@@ -5686,9 +5686,9 @@ small { font-size: var(--fs-xs); }
 .bn-header .bn-wordmark > .bn-mark { display: block !important; }
 
 /* In-feed ads: on phones the sponsored slot sits between listings; the bottom-of-page copy is hidden there. */
-.dlw-infeed-ad { display: none; }
+.dlw-infeed-ad, .dlw-grid > li.dlw-infeed-ad { display: none; }
 @media (max-width: 760px) {
-  .dlw-infeed-ad { display: block; grid-column: 1 / -1; min-width: 0; list-style: none; }
+  .dlw-infeed-ad, .dlw-grid > li.dlw-infeed-ad { display: block; grid-column: 1 / -1; min-width: 0; list-style: none; }
   .bn-ad-desktop-only { display: none; }
 }
 
