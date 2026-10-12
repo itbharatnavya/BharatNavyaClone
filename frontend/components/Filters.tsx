@@ -59,6 +59,9 @@ export interface FiltersProps {
   hideFeatured?: boolean;
   /** Suppress the internal title when a parent panel already labels the controls. */
   hideHeading?: boolean;
+  /** When given, the box searches the listings themselves (the parent re-queries / narrows the results) instead of only
+   *  narrowing this panel's long option lists. The parent owns the text so "Clear all" can reset it. */
+  quickSearch?: { value: string; onChange: (next: string) => void };
 }
 
 const PRICE_PRESETS = [500, 1000, 2000, 5000, 10000];
@@ -131,6 +134,7 @@ export default function Filters({
   hideVerified = false,
   hideFeatured = false,
   hideHeading = false,
+  quickSearch,
 }: FiltersProps) {
   const { t: rawT } = useT();
   const tr = (key: string, fallback: string) => {
@@ -145,8 +149,12 @@ export default function Filters({
     set({ brands: next.length ? next : undefined });
   };
 
-  const [q, setQ] = useState("");
-  const term = q.trim().toLowerCase();
+  const [localQ, setLocalQ] = useState("");
+  // With `quickSearch` the text drives the listings, so the option lists below must NOT also be cut by it
+  // (typing a product word would empty Category and Brand even though the results are right).
+  const q = quickSearch ? quickSearch.value : localQ;
+  const setQ = quickSearch ? quickSearch.onChange : setLocalQ;
+  const term = quickSearch ? "" : q.trim().toLowerCase();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [openIds, setOpenIds] = useState<Record<string, boolean>>({ subcats: true, category: true, brand: true, price: true, rating: true, city: true, tags: true });
   const toggle = (id: string) => setOpenIds((current) => ({ ...current, [id]: !current[id] }));
@@ -194,7 +202,7 @@ export default function Filters({
       {(!hideHeading || applied.length > 0) && (
         <header className="flt-head">
           {!hideHeading && <h2><Icon d={ICON.filter} />{tr("filters.title", "Filters")}{applied.length > 0 && <b>{applied.length}</b>}</h2>}
-          {applied.length > 0 && <button type="button" className="flt-clear" onClick={() => onChange({ sort: value.sort })}>{tr("filters.clearAll", "Clear all")}</button>}
+          {applied.length > 0 && <button type="button" className="flt-clear" onClick={() => { onChange({ sort: value.sort }); quickSearch?.onChange(""); }}>{tr("filters.clearAll", "Clear all")}</button>}
         </header>
       )}
 
@@ -208,8 +216,9 @@ export default function Filters({
 
       <label className="flt-search">
         <Icon d={ICON.search} />
-        <span className="sr-only">{tr("filters.quickSearch", "Search within filters")}</span>
-        <input value={q} onChange={(event) => setQ(event.target.value)} placeholder={tr("filters.quickSearch", "Search within filters")} />
+        <span className="sr-only">{quickSearch ? tr("filters.searchResults", "Search within results") : tr("filters.quickSearch", "Search within filters")}</span>
+        <input type="text" value={q} onChange={(event) => setQ(event.target.value)} placeholder={quickSearch ? tr("filters.searchResults", "Search within results") : tr("filters.quickSearch", "Search within filters")} enterKeyHint="search" autoComplete="off" />
+        {q && <button type="button" className="flt-search-clear" onClick={() => setQ("")} aria-label="Clear search"><Icon d={ICON.close} /></button>}
       </label>
 
       {!hideType && (

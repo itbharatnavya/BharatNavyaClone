@@ -154,6 +154,15 @@ export default function UnifiedListingWorkbench({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<"list" | "grid">("list");
   const didMount = useRef(false);
+  // "Search within results": what the visitor types in the filter panel. `withinQ` is the debounced value that is
+  // actually sent, so the list is not re-fetched on every keystroke.
+  const [within, setWithin] = useState("");
+  const [withinQ, setWithinQ] = useState("");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setWithinQ(within.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [within]);
+  useEffect(() => { setPage(1); }, [withinQ]);
 
   const seededKey = useRef(initialKey);
   useEffect(() => {
@@ -186,7 +195,9 @@ export default function UnifiedListingWorkbench({
     setLoading(true);
     setError(null);
     const request: ListingQuery = {
-      q: query || undefined,
+      // The search box's own words plus whatever was typed in the filter panel. The API needs every word to match
+      // (it only widens to "any word" when nothing matches); the widened case is trimmed again below.
+      q: [query, withinQ].filter(Boolean).join(" ") || undefined,
       type: filters.type || undefined,
       category: fixedCategory || filters.category,
       city: filters.city,
@@ -210,7 +221,7 @@ export default function UnifiedListingWorkbench({
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [query, serverKey, sort, page]);
+  }, [query, withinQ, serverKey, sort, page]);
 
   useEffect(() => {
     if (!didMount.current) { didMount.current = true; return; }
@@ -236,7 +247,15 @@ export default function UnifiedListingWorkbench({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sort, page, fixedCategory]);
 
-  const listings = data?.listings || [];
+  const loaded = data?.listings || [];
+  // Every word typed in the panel must really appear in the listing. The API widens to "any word" when no listing
+  // has them all, which would otherwise show unrelated rows for a term that matches nothing.
+  const withinWords = useMemo(() => withinQ.toLowerCase().split(/\s+/).filter(Boolean), [withinQ]);
+  const listings = useMemo(() => withinWords.length === 0 ? loaded : loaded.filter((listing) => {
+    const text = [listing.title, listing.description, (listing.keywords || []).join(" "), brandOf(listing), listing.legacyCategory, sellerName(listing), listing.seller?.city, listing.categoryPath?.join(" ")].filter(Boolean).join(" ").toLowerCase();
+    return withinWords.every((word) => text.includes(word));
+  }), [loaded, withinWords]);
+  const withinTrimmed = listings.length !== loaded.length;
   const brands = useMemo(() => brandOptions(listings), [listings]);
   const visibleListings = useMemo(() => listings.filter((listing) => {
     if (filters.brands?.length && !filters.brands.includes(brandOf(listing) || "")) return false;
@@ -251,11 +270,13 @@ export default function UnifiedListingWorkbench({
   const selected = visibleListings.find((listing) => listing.id === selectedId);
   const { categories: catalog } = useCategories();
   const categoryNames = useMemo(() => new Map(flattenCategories(catalog).map((category) => [category.slug, category.name])), [catalog]);
-  const categories = facetOptions(data?.facets?.categories).map((option) => ({ ...option, label: categoryNames.get(option.value) || option.label }));
-  const cities = facetOptions(data?.facets?.cities);
-  const shownTotal = filters.brands?.length || filters.minRating || filters.tags?.length ? visibleListings.length : data?.total || 0;
+  // The server counted the unfiltered match set; once rows were trimmed here those counts would be wrong, so hide them.
+  const categories = withinTrimmed ? [] : facetOptions(data?.facets?.categories).map((option) => ({ ...option, label: categoryNames.get(option.value) || option.label }));
+  const cities = withinTrimmed ? [] : facetOptions(data?.facets?.cities);
+  const clientFiltered = !!(filters.brands?.length || filters.minRating || filters.tags?.length) || withinTrimmed;
+  const shownTotal = clientFiltered ? visibleListings.length : data?.total || 0;
 
-  const activeCount = (filters.type ? 1 : 0) + (filters.verified ? 1 : 0) + (filters.featured ? 1 : 0) + (filters.category && !fixedCategory ? 1 : 0) + (filters.city ? 1 : 0) + (filters.priceMax ? 1 : 0) + (filters.minRating ? 1 : 0) + (filters.brands?.length || 0) + (filters.tags?.length || 0);
+  const activeCount = (withinQ ? 1 : 0) + (filters.type ? 1 : 0) + (filters.verified ? 1 : 0) + (filters.featured ? 1 : 0) + (filters.category && !fixedCategory ? 1 : 0) + (filters.city ? 1 : 0) + (filters.priceMax ? 1 : 0) + (filters.minRating ? 1 : 0) + (filters.brands?.length || 0) + (filters.tags?.length || 0);
 
   function updateFilters(next: ListingFilterState) {
     setFilters(next);
@@ -303,7 +324,7 @@ export default function UnifiedListingWorkbench({
         })}
       </div>}
       {!loading && !error && visibleListings.length === 0 && <div className="directory-listing-state"><strong>No services or products match.</strong><p>Try another need, category, location or price range.</p></div>}
-      {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating || filters.tags?.length) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
+      {data && data.totalPages > 1 && !clientFiltered && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
     </section>
 
     {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
@@ -311,7 +332,7 @@ export default function UnifiedListingWorkbench({
     <div className={`directory-listing-filter-rail${filtersOpen ? " is-open" : ""}`}>
       <aside id="directory-listing-filter-content" className="directory-listing-filter-panel" aria-label="Filter services and products">
         <button type="button" className="flt-sheet-close" onClick={() => setFiltersOpen(false)} aria-label="Close filters"><svg aria-hidden viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
-        <Filters hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} />
+        <Filters hideCategory={!!fixedCategory} value={filters} onChange={updateFilters} categories={categories} cities={cities} brands={brands} quickSearch={{ value: within, onChange: setWithin }} />
       </aside>
       {railAd && <div className="dlw-rail-ad">{railAd}</div>}
     </div>

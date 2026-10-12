@@ -1894,6 +1894,33 @@ backend change, no schema change, no migration, no new dependency.**
 4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
    warning, ad carousel script not re-run against the no-pause behaviour.
 
+### Fix: "Search within results" in the listing filter panel — 2026-10-12 (own change, not a design pull)
+
+Owner report: typing a product word (for example "angle") in the filter box on `/search` showed "No matches" under
+Category and Brand and changed nothing in the results.
+
+- **Cause:** the box only narrowed the Category / Brand / sub-category option lists (`term` in `Filters.tsx`), and
+  those lists are built from the 12 loaded rows (brands) or the current result set (categories), so a product word
+  matched none of their labels. It never searched the listings. The pre-redesign `Filters` behaved the same way.
+- **Fix:** `Filters` takes an optional `quickSearch={{ value, onChange }}`. When given, the text is owned by the
+  parent, the box reads "Search within results", has a clear button, and the option lists are no longer cut by it.
+  `UnifiedListingWorkbench` debounces it (300 ms) and sends `q = <search box words> + <typed words>` to
+  `GET /api/listings`, so the rows, total, and the Category / Brand / City lists all follow. The API needs every word
+  to match and only widens to "any word" when nothing does, so the rows are checked again in the browser (title,
+  description, keywords, brand, category, seller, city): a term with no real match shows 0 listings instead of
+  unrelated rows, and the stale server Category / City counts are hidden in that case. "Clear all" empties the box
+  and a typed term counts in the Filters badge on phones.
+- **Pages:** `/search` and every category page (`/[category]`, `/[category]/[city]`) use the same workbench, so one
+  change covers them. Brand page and `/brands` have no text filter; `/categories` has its own working filter;
+  `DiscoveryResults` / `GlobalSearchResults` are not imported by any page (unchanged, still use the old behaviour).
+- **API:** no backend change. `GET /api/listings?q=` already behaves as above.
+- Files: `components/Filters.tsx`, `components/directory/UnifiedListingWorkbench.tsx`, and three `.flt-search-clear`
+  rules in `app/counter-soft-system.css` (the designer's file; may be overwritten by a later design pull, tell the UI
+  dev).
+- **Checks:** headless Chrome on `/search`, `/metals-steel-alloys`, `/search?q=steel` with "angle", "angle zzzz",
+  "zzzz" and cleared (718 / 26 / 26 listings restored), plus 390px with the panel open: 0px overflow. `tsc` clean.
+- **Not done:** the typed term is not kept in the URL, so a refresh or shared link loses it.
+
 ---
 
 ## Reference material
