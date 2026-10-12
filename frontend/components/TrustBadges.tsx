@@ -67,6 +67,12 @@ export function TagRow({ seller, verified }: { seller?: { isVerified?: boolean; 
   return <span className="tb-row">{items.map((item) => <span key={item.key} className={`tb-chip ${item.tone}`}><span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>{item.label}</span>)}</span>;
 }
 
+// City with a location pin (search rows, cards, preview).
+export function CityTag({ city }: { city?: string | null }) {
+  if (!city) return null;
+  return <span className="tb-city"><svg aria-hidden viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>{city}</span>;
+}
+
 // Sponsored / Featured label for a listing (null for a plain listing).
 export function ListingFlag({ sponsored, featured }: { sponsored?: boolean; featured?: boolean }) {
   if (sponsored) return <span className="tb-flag is-sponsored">Sponsored</span>;

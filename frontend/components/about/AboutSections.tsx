@@ -14,7 +14,6 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { useStory } from "@/components/home/useStory";
-import { AboutSwitcher } from "./AboutShell";
 
 const Icon = ({ d }: { d: string }) => <svg aria-hidden viewBox="0 0 24 24">{d.split("|").map((path) => <path key={path} d={path} />)}</svg>;
 const ARROW = "M5 12h14|M13 6l6 6-6 6";
@@ -88,7 +87,6 @@ export default function AboutSections() {
         <Link className="le-button" href="/recruitment">Explore Recruitment</Link>
       </div>
     </div></section>
-    <div className="le-shell ap-switch-wrap"><AboutSwitcher /></div>
 
     <section className="hs-sec" aria-labelledby="problem-title"><div className="le-shell">
       <header className="le-section-head"><div><h2 id="problem-title">Why we started</h2></div></header>

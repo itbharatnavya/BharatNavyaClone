@@ -6983,3 +6983,23 @@ textarea { padding: 0.6rem 0.85rem; }
 .flt-tags { gap: 0.4rem; }
 .lp-company .lp-tags, .lp-company .lp-tags span { display: inline-flex; }
 .lp-company .lp-tags:not(#_) { display: flex; flex-wrap: wrap; }
+/* Tag chips: equal space on both sides of the content (icon + label), and the icon disc always
+   centres its glyph, even inside containers with their own span rules (search preview). */
+.tb-chip:not(#_):not(.x) { padding: 0.22rem 0.55rem; gap: 0.38rem; }
+.tb-chip .tb-icon:not(#_):not(.x) { display: grid !important; place-items: center; flex: 0 0 auto; }
+.lp-company .lp-tags .tb-chip:not(#_) { display: inline-flex; align-items: center; }
+
+/* City with a pin. */
+.tb-city { display: inline-flex; align-items: center; gap: 0.25rem; min-width: 0; color: var(--counter-muted); font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
+.tb-city svg { width: 0.95rem; height: 0.95rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+/* Listing cards: compact spec box with the city beside it. */
+.lcard-specrow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; min-width: 0; }
+.lcard-specrow .lcard-facts:not(#_) { width: fit-content; max-width: 100%; display: inline-grid; padding: 0.4rem 0.7rem; gap: 0.9rem; border-radius: 0.7rem; }
+.lcard-specrow .lcard-facts > div:not(#_) { display: flex; align-items: baseline; gap: 0.35rem; }
+.lcard-specrow .lcard-facts dt:not(#_) { font-size: 0.68rem; }
+.lcard-by .lcard-place:not(#_) { padding-left: 0; margin-top: 0; }
+.lcard-by:not(.is-tags-only) .lcard-place:not(#_) { padding-left: 2.15rem; }
+.bn-footer .bn-footer-mail:not(#_) { display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 1rem; color: var(--counter-indigo); font-size: var(--fs-sm); font-weight: 700; text-decoration: none; }
+.bn-footer .bn-footer-mail:hover { text-decoration: underline; }
+.bn-footer-mail svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bn-footer-brand { display: flex; flex-direction: column; align-items: flex-start; }

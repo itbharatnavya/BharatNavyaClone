@@ -6,7 +6,7 @@
 // save button and a single Sponsored/Featured flag. Styles: .lcard* in
 // app/counter-soft-system.css.
 
-import { RatingPill, VerifiedTag } from "@/components/TrustBadges";
+import { CityTag, RatingPill, VerifiedTag } from "@/components/TrustBadges";
 import React from "react";
 import Link from "next/link";
 import type { Listing } from "@/lib/types";
@@ -109,11 +109,10 @@ function PlaceLine({ listing }: { listing: Listing }) {
   const rating = own ? listing.rating : listing.seller?.rating ?? 0;
   const count = own ? listing.reviewCount : listing.seller?.reviewCount;
   const city = sellerCity(listing);
-  if (!city && !(rating > 0)) return null;
+  if (!(rating > 0)) return null;
   return (
     <span className="lcard-place">
       {rating > 0 && <RatingPill value={rating} count={count} size="sm" />}
-      {city && <span className="lcard-city">{city}</span>}
     </span>
   );
 }
@@ -142,7 +141,10 @@ export default function ListingCard({ listing, href, onContact, className = "", 
 
       <div className="lcard-body">
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
-        {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
+        {(facts.length > 0 || sellerCity(listing)) && <div className="lcard-specrow">
+          {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
+          <CityTag city={sellerCity(listing)} />
+        </div>}
         {/* Trust tags show on every card. On a company's own page (hideSeller) the company name is
             dropped but its Verified tag, the rating and the city stay. */}
         {hideSeller

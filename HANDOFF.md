@@ -616,3 +616,10 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 - **Backend (restart needed):** `identity.getSellerBrowseCards` now adds `trustSealVerified`, `gstRegistered`, `badges` (derived via `lib/badges.js`) to each search result's seller. Additive.
 - **Image viewer** `components/ImageViewer.tsx` (zoom buttons/wheel/pinch/double-click, drag pan, arrows/swipe/thumbs) on listing gallery, search preview photo and company work photos.
 - Search sticky panels cap at the viewport height; role finder is solid navy; contact form fields sized by content with a full-height panel; home closing CTA is just "Create your account".
+
+## 12 October 2026 (later): small polish
+
+- Company email `info@bharatnavya.com` set in `COMPANY` (`components/about/company.tsx`); shown in the footer (`.bn-footer-mail`) and on Contact (panel + "Reach us directly").
+- About page switcher row removed from all About pages (owner); navigation is via the navbar About menu, phone menu and footer.
+- Tag chips have equal side padding; listing cards show a compact spec pill with the city (pin icon, `CityTag`) beside it; rating sits on its own line.
+- Frontend only, no backend restart needed for this batch.

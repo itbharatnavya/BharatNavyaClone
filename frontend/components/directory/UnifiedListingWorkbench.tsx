@@ -1,6 +1,6 @@
 "use client";
 
-import { ListingFlag, RatingPill, TagRow } from "@/components/TrustBadges";
+import { CityTag, ListingFlag, RatingPill, TagRow } from "@/components/TrustBadges";
 import ImageViewer from "@/components/ImageViewer";
 import { scrollToExpanded } from "@/lib/scrollToExpanded";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -113,7 +113,7 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
       <p className="lp-price"><strong>{priceLabel(listing)}</strong></p>
       <div className="lp-company">
         <Avatar src={listing.seller?.logo} name={company} size={40} />
-        <span><strong>{company}</strong><span className="lp-tags"><TagRow seller={listing.seller} verified={listing.isVerifiedSeller} /><RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />{listing.seller?.city && <small>{listing.seller.city}</small>}</span></span>
+        <span><strong>{company}</strong><span className="lp-tags"><TagRow seller={listing.seller} verified={listing.isVerifiedSeller} /><RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" /><CityTag city={listing.seller?.city} /></span></span>
       </div>
       {listing.description && <p className="lp-about">{listing.description}</p>}
       <ul className="lp-facts">{facts.map(([label, value]) => <li key={label}><span>{label}</span><strong>{value}</strong></li>)}</ul>
@@ -296,7 +296,7 @@ export default function UnifiedListingWorkbench({
                 <strong>{listing.title}</strong>
                 <span className="dlr-seller">{sellerName(listing)}</span>
                 <TagRow seller={listing.seller} verified={listing.isVerifiedSeller} />
-                <span className="dlr-place">{(() => { const own = (listing.rating ?? 0) > 0; return <RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />; })()}{listing.seller?.city || listing.location?.city ? <span>{listing.seller?.city || listing.location?.city}</span> : null}</span>
+                <span className="dlr-place">{(() => { const own = (listing.rating ?? 0) > 0; return <RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />; })()}<CityTag city={listing.seller?.city || listing.location?.city} /></span>
               </span>
               <span className="dlr-aside">{buildSpecs(listing).slice(0, 2).map((spec, i) => <i key={i}>{spec.value}</i>)}</span>
               <Arrow />
