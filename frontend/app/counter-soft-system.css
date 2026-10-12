@@ -7003,3 +7003,29 @@ textarea { padding: 0.6rem 0.85rem; }
 .bn-footer .bn-footer-mail:hover { text-decoration: underline; }
 .bn-footer-mail svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .bn-footer-brand { display: flex; flex-direction: column; align-items: flex-start; }
+
+/* Role finder v3: hint line, per-option counts, disabled empties, live preview in the middle. */
+.rf-board:not(#_):not(.x):not(.y) { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) auto; }
+.rf-hint { margin: 0 0 0.25rem; max-width: 34rem; color: rgb(255 255 255 / 0.78); font-size: var(--fs-md); line-height: 1.45; }
+.rf-board .rf-group button i { margin-left: 0.4rem; padding: 0.05rem 0.4rem; border-radius: 999px; background: rgb(255 255 255 / 0.14); font-size: 0.72rem; font-style: normal; font-weight: 800; }
+.rf-board .rf-group button[aria-pressed="true"] i { background: rgb(18 48 126 / 0.12); }
+.rf-board .rf-group button:disabled:not(#_) { opacity: 0.35; cursor: not-allowed; border-style: dashed; }
+.rf-board .rf-group button:disabled:not(#_):hover { background: transparent; border-color: rgb(255 255 255 / 0.35); }
+.rf-preview { align-self: stretch; display: flex; flex-direction: column; gap: 0.6rem; padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 2vw, 1.5rem); border-left: 1px solid rgb(255 255 255 / 0.16); }
+.rf-preview .hs-eyebrow { margin: 0; color: var(--counter-sky, #9cc4ff); }
+.rf-preview ul { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.rf-preview a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.8rem; border-radius: 0.9rem; background: #fff; color: var(--counter-ink); text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease; animation: rf-pop 0.3s ease both; }
+@keyframes rf-pop { from { opacity: 0; transform: translateY(6px); } }
+.rf-preview a:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -12px rgb(0 0 0 / 0.5); }
+.rf-preview-avatar { width: 2.25rem; height: 2.25rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: 0.6rem; background: #e8effb; color: var(--counter-indigo); font-weight: 800; }
+.rf-preview-copy { min-width: 0; flex: 1 1 auto; display: grid; }
+.rf-preview-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sm); }
+.rf-preview-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--counter-muted); font-size: var(--fs-xs); }
+.rf-preview a svg { width: 1rem; height: 1rem; flex: 0 0 auto; fill: none; stroke: var(--counter-muted); stroke-width: 2; stroke-linecap: round; }
+.rf-preview li.is-loading span { display: block; height: 3.4rem; border-radius: 0.9rem; background: rgb(255 255 255 / 0.1); }
+.rf-preview-more { margin: 0.1rem 0 0; color: rgb(255 255 255 / 0.7); font-size: var(--fs-sm); font-weight: 700; }
+@media (max-width: 1000px) {
+  .rf-board:not(#_):not(.x):not(.y) { grid-template-columns: minmax(0, 1fr); }
+  .rf-preview { border-left: 0; border-top: 1px solid rgb(255 255 255 / 0.16); }
+}
+@media (prefers-reduced-motion: reduce) { .rf-preview a { animation: none; transition: none; } }

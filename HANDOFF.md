@@ -623,3 +623,8 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 - About page switcher row removed from all About pages (owner); navigation is via the navbar About menu, phone menu and footer.
 - Tag chips have equal side padding; listing cards show a compact spec pill with the city (pin icon, `CityTag`) beside it; rating sits on its own line.
 - Frontend only, no backend restart needed for this batch.
+
+## 12 October 2026 (evening): role finder never shows 0
+
+- `components/recruitment/RoleFinder.tsx` fetches all open jobs once (`getJobs({limit:200})`) and counts client-side (same rules as the jobs API, checked against it). Each option shows how many jobs it would leave; options that would leave 0 are disabled, so no combination reaches 0. Middle column shows the top 3 matches (`.rf-preview`), plus a one-line hint. If the job count grows past ~200, switch to a counts endpoint.
+- Frontend only.
