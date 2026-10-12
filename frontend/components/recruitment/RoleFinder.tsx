@@ -80,7 +80,6 @@ export default function RoleFinder() {
           <div>{group.options.map(([value, label]) => <button key={value || "any"} type="button" aria-pressed={choice[group.key] === value} onClick={() => setChoice((current) => ({ ...current, [group.key]: value }))}>{label}</button>)}</div>
         </div>)}
       </div>
-      <span className="rf-blend" aria-hidden />
       <div className="rf-result" aria-live="polite">
         <p className="hs-eyebrow">Matching jobs</p>
         <strong className="rf-number"><Figure value={shown} /></strong>

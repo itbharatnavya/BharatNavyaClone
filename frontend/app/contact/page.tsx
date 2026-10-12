@@ -66,6 +66,11 @@ export default function ContactPage() {
             <li><b>3</b><span>We reply by email or phone within 1 to 2 working days.</span></li>
           </ol>
           {COMPANY.email && <p>Prefer email? <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></p>}
+          <div className="cf-aside-quick">
+            <p>Need an answer right now?</p>
+            <Link href="/#ask-navya">Ask Navya<svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></Link>
+            <Link href="/rfq">Post a requirement<svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></Link>
+          </div>
         </aside>
       </div>
     </div></section>

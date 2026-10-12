@@ -143,7 +143,11 @@ export default function ListingCard({ listing, href, onContact, className = "", 
       <div className="lcard-body">
         <h3 className="lcard-title"><Link href={detailHref}>{listing.title}</Link></h3>
         {facts.length > 0 && <dl className="lcard-facts">{facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>}
-        {!hideSeller && <div className="lcard-by"><SellerLine listing={listing} /><PlaceLine listing={listing} /></div>}
+        {/* Trust tags show on every card. On a company's own page (hideSeller) the company name is
+            dropped but its Verified tag, the rating and the city stay. */}
+        {hideSeller
+          ? <div className="lcard-by is-tags-only">{(listing.isVerifiedSeller || listing.seller?.isVerified) && <VerifiedTag />}<PlaceLine listing={listing} /></div>
+          : <div className="lcard-by"><SellerLine listing={listing} /><PlaceLine listing={listing} /></div>}
         {/* One action: Contact opens the listing page, where the call / WhatsApp / enquiry options live
             (a separate "details" icon went to the same page, so it was dropped). */}
         <div className="lcard-actions">

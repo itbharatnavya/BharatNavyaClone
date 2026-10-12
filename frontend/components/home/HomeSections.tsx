@@ -94,7 +94,6 @@ export default function HomeSections({ children }: { children?: React.ReactNode 
         <h2 id="close-title" aria-label={CLOSING.join(" ")}>{CLOSING.map((word, index) => <span key={index} className="hs-w" aria-hidden><i>{word}</i></span>)}</h2>
         <div className="hs-close-actions hs-fade">
           <Link className="le-button is-primary" href="/register">Create your account</Link>
-          <Link className="le-button" href="/directory">Open the Directory</Link>
         </div>
       </div>
     </div></section>

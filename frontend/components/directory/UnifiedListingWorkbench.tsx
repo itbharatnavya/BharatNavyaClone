@@ -1,6 +1,7 @@
 "use client";
 
-import { ListingFlag, RatingPill, VerifiedTag } from "@/components/TrustBadges";
+import { ListingFlag, RatingPill, TagRow } from "@/components/TrustBadges";
+import ImageViewer from "@/components/ImageViewer";
 import { scrollToExpanded } from "@/lib/scrollToExpanded";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
@@ -93,7 +94,9 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   const media = listingImage(listing);
   const company = sellerName(listing);
   const verified = listing.isVerifiedSeller || listing.seller?.isVerified;
-  const rating = listing.seller?.rating;
+  const own = (listing.rating ?? 0) > 0;
+  const [viewer, setViewer] = React.useState(false);
+  const images = (listing.media || []).filter((m) => m?.url && m.type !== "video").map((m) => ({ src: m.url, alt: m.alt }));
   const facts: [string, string][] = [
     ["Terms", termsLabel(listing)],
     ["Delivery", deliveryLabel(listing).replace(/_/g, " ")],
@@ -101,21 +104,22 @@ function ListingPreview({ listing, onClose }: { listing?: Listing; onClose?: () 
   ];
   return <section className="directory-listing-preview lp" aria-label={`${listing.title} preview`}>
     <div className="lp-media">
-      {media ? <img src={media.url} alt={media.alt || `${listing.title} preview`} loading="lazy" decoding="async" /> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
-      <b className="lp-type">{listing.type === "service" ? "Service" : "Product"}</b>
+      {media ? <button type="button" className="lp-zoom" onClick={() => setViewer(true)} aria-label="View photos"><img src={media.url} alt={media.alt || `${listing.title} preview`} loading="lazy" decoding="async" /></button> : <span>{listing.type === "service" ? "Service" : "Product"}</span>}
+      <b className="lp-type"><ListingFlag sponsored={listing.isSponsored} featured={listing.isFeatured} />{!listing.isSponsored && !listing.isFeatured && (listing.type === "service" ? "Service" : "Product")}</b>
       {onClose && <button className="lp-close" type="button" onClick={onClose} aria-label="Close selected listing"><svg aria-hidden viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>}
     </div>
     <div className="lp-body">
       <h2>{listing.title}</h2>
-      <p className="lp-price"><strong>{priceLabel(listing)}</strong>{rating ? <span className="lp-rating"><svg aria-hidden viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z" /></svg>{rating.toFixed(1)}</span> : null}</p>
+      <p className="lp-price"><strong>{priceLabel(listing)}</strong></p>
       <div className="lp-company">
         <Avatar src={listing.seller?.logo} name={company} size={40} />
-        <span><strong>{company}</strong><small>{verified ? "Identity verified" : "Company record"}</small></span>
+        <span><strong>{company}</strong><span className="lp-tags"><TagRow seller={listing.seller} verified={listing.isVerifiedSeller} /><RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />{listing.seller?.city && <small>{listing.seller.city}</small>}</span></span>
       </div>
       {listing.description && <p className="lp-about">{listing.description}</p>}
       <ul className="lp-facts">{facts.map(([label, value]) => <li key={label}><span>{label}</span><strong>{value}</strong></li>)}</ul>
       <Link className="lp-open" href={`/listing/${listing.id}`}>Open complete listing <Arrow /></Link>
     </div>
+    {viewer && <ImageViewer images={images.length ? images : [{ src: media!.url }]} title={listing.title} onClose={() => setViewer(false)} />}
   </section>;
 }
 
@@ -237,16 +241,21 @@ export default function UnifiedListingWorkbench({
   const visibleListings = useMemo(() => listings.filter((listing) => {
     if (filters.brands?.length && !filters.brands.includes(brandOf(listing) || "")) return false;
     if (filters.minRating && (listing.seller?.rating || 0) < filters.minRating) return false;
+    for (const tag of filters.tags || []) {
+      const s = listing.seller;
+      const has = tag === "trust_seal" ? !!s?.trustSealVerified : tag === "gst" ? !!(s?.gstRegistered || s?.gstNumber) : !!s?.badges?.includes(tag);
+      if (!has) return false;
+    }
     return true;
-  }), [listings, filters.brands, filters.minRating]);
+  }), [listings, filters.brands, filters.minRating, filters.tags]);
   const selected = visibleListings.find((listing) => listing.id === selectedId);
   const { categories: catalog } = useCategories();
   const categoryNames = useMemo(() => new Map(flattenCategories(catalog).map((category) => [category.slug, category.name])), [catalog]);
   const categories = facetOptions(data?.facets?.categories).map((option) => ({ ...option, label: categoryNames.get(option.value) || option.label }));
   const cities = facetOptions(data?.facets?.cities);
-  const shownTotal = filters.brands?.length || filters.minRating ? visibleListings.length : data?.total || 0;
+  const shownTotal = filters.brands?.length || filters.minRating || filters.tags?.length ? visibleListings.length : data?.total || 0;
 
-  const activeCount = (filters.type ? 1 : 0) + (filters.verified ? 1 : 0) + (filters.featured ? 1 : 0) + (filters.category && !fixedCategory ? 1 : 0) + (filters.city ? 1 : 0) + (filters.priceMax ? 1 : 0) + (filters.minRating ? 1 : 0) + (filters.brands?.length || 0);
+  const activeCount = (filters.type ? 1 : 0) + (filters.verified ? 1 : 0) + (filters.featured ? 1 : 0) + (filters.category && !fixedCategory ? 1 : 0) + (filters.city ? 1 : 0) + (filters.priceMax ? 1 : 0) + (filters.minRating ? 1 : 0) + (filters.brands?.length || 0) + (filters.tags?.length || 0);
 
   function updateFilters(next: ListingFilterState) {
     setFilters(next);
@@ -285,7 +294,8 @@ export default function UnifiedListingWorkbench({
               <span className="directory-listing-row-copy">
                 <small className="dlr-eyebrow"><ListingFlag sponsored={listing.isSponsored} featured={listing.isFeatured} />{!listing.isSponsored && !listing.isFeatured && (listing.type === "service" ? "Service" : "Product")}</small>
                 <strong>{listing.title}</strong>
-                <span className="dlr-seller">{sellerName(listing)}{(listing.isVerifiedSeller || listing.seller?.isVerified) && <VerifiedTag />}</span>
+                <span className="dlr-seller">{sellerName(listing)}</span>
+                <TagRow seller={listing.seller} verified={listing.isVerifiedSeller} />
                 <span className="dlr-place">{(() => { const own = (listing.rating ?? 0) > 0; return <RatingPill value={own ? listing.rating : listing.seller?.rating} count={own ? listing.reviewCount : listing.seller?.reviewCount} size="sm" />; })()}{listing.seller?.city || listing.location?.city ? <span>{listing.seller?.city || listing.location?.city}</span> : null}</span>
               </span>
               <span className="dlr-aside">{buildSpecs(listing).slice(0, 2).map((spec, i) => <i key={i}>{spec.value}</i>)}</span>
@@ -296,7 +306,7 @@ export default function UnifiedListingWorkbench({
         })}
       </div>
       {!loading && !error && visibleListings.length === 0 && <div className="directory-listing-state"><strong>No services or products match.</strong><p>Try another need, category, location or price range.</p></div>}
-      {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
+      {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating || filters.tags?.length) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
     </section>
 
     {selected && <div className="directory-listing-detail"><ListingPreview listing={selected} onClose={() => setSelectedId(null)} /></div>}
