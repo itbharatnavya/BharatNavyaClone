@@ -278,13 +278,10 @@ export default function UnifiedListingWorkbench({
         </div>
       </div>
       {error && <div className="directory-listing-state" role="status"><strong>Listings could not be loaded.</strong><p>{error}</p></div>}
-      {view === "grid" && !loading && !error && visibleListings.length > 0 && <ul className="dlw-grid" role="list">{visibleListings.flatMap((listing, index) => [
-        <li key={listing.id}><ListingCard listing={listing} /></li>,
-        ...(infeedAd && index === INFEED_AFTER - 1 ? [<li key="infeed-ad" className="dlw-infeed-ad">{infeedAd}</li>] : []),
-      ])}</ul>}
+      {view === "grid" && !loading && !error && visibleListings.length > 0 && <ul className="dlw-grid" role="list">{visibleListings.map((listing) => <li key={listing.id}><ListingCard listing={listing} /></li>)}</ul>}
       {view === "grid" && loading && <div className="dlw-grid is-loading" aria-hidden>{[1, 2, 3, 4, 5, 6].map((item) => <span key={item} />)}</div>}
-      <div className="directory-listing-ledger" hidden={view === "grid"}>
-        {loading && [1, 2, 3, 4].map((item) => <div className="directory-listing-row is-loading" key={item} />)}
+      {view === "list" && <div className="directory-listing-ledger">
+        {loading &&[1, 2, 3, 4].map((item) => <div className="directory-listing-row is-loading" key={item} />)}
         {!loading && !error && visibleListings.map((listing, index) => {
           const media = listingImage(listing);
           const active = listing.id === selected?.id;
@@ -304,7 +301,7 @@ export default function UnifiedListingWorkbench({
             {active && <div className="directory-listing-preview-inline"><ListingPreview listing={listing} onClose={() => setSelectedId(null)} /></div>}
           </article></React.Fragment>;
         })}
-      </div>
+      </div>}
       {!loading && !error && visibleListings.length === 0 && <div className="directory-listing-state"><strong>No services or products match.</strong><p>Try another need, category, location or price range.</p></div>}
       {data && data.totalPages > 1 && !(filters.brands?.length || filters.minRating || filters.tags?.length) && <div className="directory-listing-pagination"><Pagination page={data.page} totalPages={data.totalPages} onChange={(next) => { setPage(next); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
     </section>
