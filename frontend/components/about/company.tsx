@@ -22,7 +22,7 @@ export const isAboutRoute = (path: string) => ABOUT_PAGES.some((page) => page.ma
 
 // TODO(owner): fill these in; each line appears on the site only once it has a value.
 export const COMPANY: { email: string | null; phone: string | null; address: string | null; hours: string | null; careersEmail: string | null } = {
-  email: null,
+  email: "info@bharatnavya.com",
   phone: null,
   address: null,
   hours: null,

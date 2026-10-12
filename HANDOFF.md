@@ -605,3 +605,26 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
   - `modules/platform/routes/contact.routes.js`: `POST /api/contact` (public, optionalAuth, validated, max 5 per IP per 10 min in memory) and `GET` / `PATCH /api/admin/contact-messages[/:id]` (admin, mounted in the "admin-sub" phase).
   - Admin UI: Global > Contact messages (`components/admin/ContactMessagesTab.tsx`): filter New / Handled / All, mark handled or reopen.
 - **Search rows** use a container query on `.directory-listing-ledger`: below 36rem of list width (a listing open beside it), smaller photo and no spec chips, so title / seller / tags / rating keep their room.
+
+## 12 October 2026: Trade Grid hero, one page width, tags v3 + badge filter, image viewer
+
+- **Home hero background = Trade Grid** (owner's pick, option 1 of `frontend/docs/hero-living-scenes.html`). Engine ported as-is into `components/home/tradeGrid.ts` (`@ts-nocheck`, canvas 2D), mounted by `TradeGridBg.tsx` inside `.bn-home-hero`. Pauses off screen / hidden tab, one still frame under reduced motion, no pause control (owner rule). The `hero-bg-*.html` boards in `public/` remain uncommitted.
+- **Hero height** scales with the visible height on desktop (`svh` clamps), so every screen shows the full hero plus a peek of the next sections.
+- **One page width everywhere**: `--page-max: 120rem` (1920px), `--bn-container` = page max; all shells/heads/footer align to the same text edge. If something looks centred-in-the-middle on a monitor again, it's a container still using its own cap.
+- **Trust tags v3**: per-tag colours (Verified green, Trust seal blue, GST teal, Top rated amber, Fast reply violet, Trusted orange) via `.tb-chip.is-*`; `TagRow` for rows/cards. Owner rule: solid fills, no gradients.
+- **Badge filter** in search (`TAG_LABELS` in `Filters.tsx`, `filters.tags`), client-side on the loaded page like rating/brand.
+- **Backend (restart needed):** `identity.getSellerBrowseCards` now adds `trustSealVerified`, `gstRegistered`, `badges` (derived via `lib/badges.js`) to each search result's seller. Additive.
+- **Image viewer** `components/ImageViewer.tsx` (zoom buttons/wheel/pinch/double-click, drag pan, arrows/swipe/thumbs) on listing gallery, search preview photo and company work photos.
+- Search sticky panels cap at the viewport height; role finder is solid navy; contact form fields sized by content with a full-height panel; home closing CTA is just "Create your account".
+
+## 12 October 2026 (later): small polish
+
+- Company email `info@bharatnavya.com` set in `COMPANY` (`components/about/company.tsx`); shown in the footer (`.bn-footer-mail`) and on Contact (panel + "Reach us directly").
+- About page switcher row removed from all About pages (owner); navigation is via the navbar About menu, phone menu and footer.
+- Tag chips have equal side padding; listing cards show a compact spec pill with the city (pin icon, `CityTag`) beside it; rating sits on its own line.
+- Frontend only, no backend restart needed for this batch.
+
+## 12 October 2026 (evening): role finder never shows 0
+
+- `components/recruitment/RoleFinder.tsx` fetches all open jobs once (`getJobs({limit:200})`) and counts client-side (same rules as the jobs API, checked against it). Each option shows how many jobs it would leave; options that would leave 0 are disabled, so no combination reaches 0. Middle column shows the top 3 matches (`.rf-preview`), plus a one-line hint. If the job count grows past ~200, switch to a counts endpoint.
+- Frontend only.

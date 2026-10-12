@@ -1361,8 +1361,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1371,7 +1376,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1456,8 +1462,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1466,7 +1477,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1554,8 +1566,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1564,7 +1581,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1648,8 +1666,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1658,7 +1681,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1744,8 +1768,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1754,7 +1783,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1840,8 +1870,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1850,7 +1885,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -1939,8 +1975,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -1949,7 +1990,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -2038,8 +2080,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -2048,7 +2095,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {
@@ -2157,8 +2205,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Mumbai",
             "companyName": "Mumbai Beauty & Wellness Traders",
+            "gstRegistered": true,
             "id": "usr_cat_beautypersonalcarewe",
             "isVerified": true,
             "logo": null,
@@ -2167,7 +2220,8 @@
             "responseRate": 97,
             "reviewCount": 0,
             "slug": "mumbai-beauty-wellness-traders",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_beautypersonalcarewe",
           "service": null,
@@ -2249,8 +2303,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Mumbai",
             "companyName": "Mumbai Beauty & Wellness Traders",
+            "gstRegistered": true,
             "id": "usr_cat_beautypersonalcarewe",
             "isVerified": true,
             "logo": null,
@@ -2259,7 +2318,8 @@
             "responseRate": 97,
             "reviewCount": 0,
             "slug": "mumbai-beauty-wellness-traders",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_beautypersonalcarewe",
           "service": null,
@@ -2318,8 +2378,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Mumbai",
             "companyName": "Mumbai Beauty & Wellness Traders",
+            "gstRegistered": true,
             "id": "usr_cat_beautypersonalcarewe",
             "isVerified": true,
             "logo": null,
@@ -2328,7 +2393,8 @@
             "responseRate": 97,
             "reviewCount": 0,
             "slug": "mumbai-beauty-wellness-traders",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_beautypersonalcarewe",
           "service": {
@@ -2437,8 +2503,12 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "verified"
+            ],
             "city": "Baddi",
             "companyName": "Baddi Pharma & Lab Supplies",
+            "gstRegistered": true,
             "id": "usr_cat_pharmaceuticalslabsu",
             "isVerified": true,
             "logo": null,
@@ -2447,7 +2517,8 @@
             "responseRate": 90,
             "reviewCount": 0,
             "slug": "baddi-pharma-lab-supplies",
-            "state": "Himachal Pradesh"
+            "state": "Himachal Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_pharmaceuticalslabsu",
           "service": null,

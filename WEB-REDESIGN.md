@@ -1844,6 +1844,56 @@ credential guard had blocked pulling `PG_URL` from Vercel, so the owner supplied
 3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
    warning, ad carousel script not re-run against the no-pause behaviour.
 
+### Pulled `origin/design` again (`3531304..bbbaa07`) — merged 2026-10-12 (Trade Grid hero, trust tags v3, image viewer)
+
+3 new commits from the UI dev (`56fbed4` "Trade Grid home hero, one page width on all screens, per-colour trust tags
+with badge filter, image viewer", `5e842b1` "Company email in footer and contact, remove About switcher, balanced
+tag chips, compact spec pill with city", `bbbaa07` "Role finder: per-option counts, disabled empty options,
+top-matches preview and hint line"), 22 files (+707/-76). Merged with `git merge --no-ff --no-commit`, **no
+conflicts**, owner checked it locally, then committed, pushed and deployed (backend and frontend). **One additive
+backend change, no schema change, no migration, no new dependency.**
+
+**What the design branch changed**
+- **Home hero = Trade Grid** (owner's pick from `frontend/docs/hero-living-scenes.html`): canvas engine in
+  `components/home/tradeGrid.ts` (`@ts-nocheck`), mounted by `TradeGridBg.tsx` inside `.bn-home-hero`. Pauses off
+  screen / hidden tab, one still frame under reduced motion, no pause control. Hero height scales with the
+  visible height on desktop. Home closing CTA is just "Create your account". The `hero-bg-*.html` boards in
+  `public/` stay uncommitted.
+- **One page width everywhere:** `--page-max: 120rem` (1920px); all shells, heads and the footer share one text edge.
+- **Trust tags v3:** per-tag solid colours (`.tb-chip.is-*`: Verified green, Trust seal blue, GST teal, Top rated
+  amber, Fast reply violet, Trusted orange), `TagRow` for rows and cards, equal side padding. Listing cards:
+  compact spec pill with the city (`CityTag`), rating on its own line.
+- **Badge filter in search:** "Company badges" section in `Filters.tsx` (`TAG_LABELS`, `filters.tags`), applied
+  client-side to the loaded page like rating and brand.
+- **Image viewer:** `components/ImageViewer.tsx` (zoom buttons / wheel / pinch / double-click, drag pan, arrows /
+  swipe / thumbs) on the listing gallery, the search preview photo and company work photos.
+- **Contact / About:** company email `info@bharatnavya.com` set in `COMPANY` (footer + Contact); Contact gets "Ask
+  Navya" and "Post a requirement" quick links; the About page switcher row is removed (navigation via navbar
+  About menu, phone menu and footer).
+- **Recruitment role finder:** fetches all open jobs once (`getJobs({limit:200})`) and counts client-side; each
+  option shows how many jobs it leaves, options that would leave 0 are disabled, top-3 preview and a hint line.
+  If open jobs pass about 200, switch to a counts endpoint.
+- **Backend (additive, restart needed):** `identity.getSellerBrowseCards` adds `trustSealVerified`,
+  `gstRegistered` and `badges` (derived through `lib/badges.js`) to the seller on each search / browse result.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/recruitment/jobs`, `/search`, `/about`,
+  `/contact`, `/seller/<slug>`, `/listing/1` return 200 locally. Backend restarted; architecture tests 6/6.
+- Goldens `listings-browse`, `listings-page2`, `brand-detail` regenerated (only by removing those three files and
+  re-running `test:goldens`); the diff is purely the three new seller fields. The admin-users and jobs goldens
+  still fail as in earlier entries (unrelated Recruitment / identity drift), not touched.
+- Owner checked the changes locally.
+- Not done: 390px pass on the Trade Grid hero, badge filter and image viewer.
+
+**Flags for the owner**
+1. `npm run validate:design` (the UI dev's own lint) fails: "missing shared search contract" in `globals.css`,
+   `bharat-navya-home.css`, `directory-design.css`, `RoleSearchBar.tsx`, `living-evidence.css`. None of those
+   files is in this merge, so it predates it; tell the UI dev.
+2. The role finder pulls up to 200 jobs on every visit; fine for the demo data, needs a counts endpoint at scale.
+3. `tradeGrid.ts` is `@ts-nocheck`, so type errors in it are not caught by `tsc`.
+4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
 ---
 
 ## Reference material

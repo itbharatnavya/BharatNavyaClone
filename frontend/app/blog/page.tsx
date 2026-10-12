@@ -7,7 +7,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { AboutSwitcher } from "@/components/about/AboutShell";
 import { getBlogs } from "@/lib/api";
 import type { Blog } from "@/lib/types";
 import { useTr } from "@/components/discovery/hooks";
@@ -47,7 +46,6 @@ export default function BlogIndexPage() {
           <p>Practical insights, company developments, and timely updates that help you understand businesses and make more informed decisions across Bharat Navya.</p>
         </div>
       </header>
-      <div className="counter-support-shell ap-blog-switch"><AboutSwitcher /></div>
 
       <div className="counter-support-shell counter-editorial-index">
 

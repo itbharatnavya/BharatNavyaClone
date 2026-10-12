@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import type { MediaItem } from "@/lib/types";
+import ImageViewer from "@/components/ImageViewer";
 
 export interface GalleryProps {
   media?: MediaItem[];
@@ -15,6 +16,8 @@ export interface GalleryProps {
 export default function Gallery({ media, title }: GalleryProps) {
   const items = (media || []).filter((m) => m && m.url);
   const [active, setActive] = useState(0);
+  const [viewer, setViewer] = useState(false);
+  const photos = items.filter((m) => m.type !== "video").map((m) => ({ src: m.url, alt: m.alt || title }));
 
   useEffect(() => {
     setActive(0);
@@ -48,12 +51,15 @@ export default function Gallery({ media, title }: GalleryProps) {
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={current.url}
-              alt={current.alt || title}
-              decoding="async"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+            <button type="button" className="gl-zoom" onClick={() => setViewer(true)} aria-label="Open photo viewer">
+              <img
+                src={current.url}
+                alt={current.alt || title}
+                decoding="async"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <span className="gl-zoom-hint" aria-hidden><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2M11 8.5v5M8.5 11h5" /></svg>Click to zoom</span>
+            </button>
           )
         ) : (
           <span style={{ color: "var(--faint)", fontSize: "var(--fs-sm)" }}>No image available</span>
@@ -120,6 +126,7 @@ export default function Gallery({ media, title }: GalleryProps) {
           })}
         </div>
       )}
+      {viewer && photos.length > 0 && <ImageViewer images={photos} start={Math.max(0, photos.findIndex((p) => p.src === current?.url))} title={title} onClose={() => setViewer(false)} />}
     </div>
   );
 }

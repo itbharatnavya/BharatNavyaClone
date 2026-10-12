@@ -31,10 +31,11 @@ const ICONS = {
   trusted: <><path d="M7 11l3-3 3 2 4-4" /><path d="M3 12l4 4 3-1 4 4 3-3" /></>,
 };
 type IconKey = keyof typeof ICONS;
+// Each tag has its own colour (Justdial-style) so they read apart at a glance.
 const EARNED: Record<string, { label: string; tone: string }> = {
   top_rated: { label: "Top rated", tone: "is-amber" },
-  fast_responder: { label: "Fast reply", tone: "is-navy" },
-  trusted: { label: "Trusted", tone: "is-navy" },
+  fast_responder: { label: "Fast reply", tone: "is-violet" },
+  trusted: { label: "Trusted", tone: "is-orange" },
 };
 
 const STAR = "M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z";
@@ -51,7 +52,25 @@ export function RatingPill({ value, count, size = "md" }: { value?: number | nul
 
 // Inline "Verified" mark for tight spots (a seller name in a row or card).
 export function VerifiedTag() {
-  return <span className="tb-verified"><span className="tb-icon is-green" aria-hidden><svg viewBox="0 0 24 24">{ICONS.verified}</svg></span>Verified</span>;
+  return <span className="tb-chip is-green tb-verified"><span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS.verified}</svg></span>Verified</span>;
+}
+
+// Compact tag line for result rows and cards: every tag the company has, from listing data.
+export function TagRow({ seller, verified }: { seller?: { isVerified?: boolean; trustSealVerified?: boolean; gstRegistered?: boolean; gstNumber?: string | null; badges?: string[] } | null; verified?: boolean }) {
+  const items = [
+    verified || seller?.isVerified ? { key: "verified" as IconKey, label: "Verified", tone: "is-green" } : null,
+    seller?.trustSealVerified ? { key: "seal" as IconKey, label: "Trust seal", tone: "is-blue" } : null,
+    seller?.gstRegistered || seller?.gstNumber ? { key: "gst" as IconKey, label: "GST", tone: "is-teal" } : null,
+    ...(seller?.badges || []).filter((b) => EARNED[b]).map((b) => ({ key: b as IconKey, ...EARNED[b] })),
+  ].filter(Boolean) as { key: IconKey; label: string; tone: string }[];
+  if (!items.length) return null;
+  return <span className="tb-row">{items.map((item) => <span key={item.key} className={`tb-chip ${item.tone}`}><span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>{item.label}</span>)}</span>;
+}
+
+// City with a location pin (search rows, cards, preview).
+export function CityTag({ city }: { city?: string | null }) {
+  if (!city) return null;
+  return <span className="tb-city"><svg aria-hidden viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>{city}</span>;
 }
 
 // Sponsored / Featured label for a listing (null for a plain listing).
@@ -78,8 +97,8 @@ export default function TrustBadges({
   const isVerified = verified || badges?.includes("verified");
   const proofs = [
     isVerified ? { key: "verified", label: "Verified", tone: "is-green" } : null,
-    trustSeal ? { key: "seal", label: "Trust seal", tone: "is-navy" } : null,
-    gst ? { key: "gst", label: "GST registered", tone: "is-navy" } : null,
+    trustSeal ? { key: "seal", label: "Trust seal", tone: "is-blue" } : null,
+    gst ? { key: "gst", label: "GST registered", tone: "is-teal" } : null,
     ...(badges || []).filter((badge) => EARNED[badge]).map((badge) => ({ key: badge, ...EARNED[badge] })),
   ].filter(Boolean) as { key: IconKey; label: string; tone: string }[];
   const facts = [
@@ -94,8 +113,8 @@ export default function TrustBadges({
     <div className={`tb${size === "sm" ? " is-sm" : ""} ${className}`.trim()}>
       {(proofs.length > 0 || hasRating) && <ul className="tb-proofs" role="list">
         {hasRating && <li className="tb-rating-item"><RatingPill value={rating} count={reviewCount} size={size} /></li>}
-        {proofs.map((item) => <li key={item.key}>
-          <span className={`tb-icon ${item.tone}`} aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>
+        {proofs.map((item) => <li key={item.key} className={`tb-chip ${item.tone}`}>
+          <span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>
           {item.label}
         </li>)}
       </ul>}

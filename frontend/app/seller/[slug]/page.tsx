@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import ListingCard from "@/components/ListingCard";
 import { getSeller } from "@/lib/api";
+import ImageViewer from "@/components/ImageViewer";
 import TrustBadges from "@/components/TrustBadges";
 import CompanyReviews from "@/components/seller/CompanyReviews";
 import SellerStoriesSection from "@/components/seller/SellerStoriesSection";
@@ -24,6 +25,7 @@ export default function CompanyProfilePage() {
   const flags = (featureFlags || {}) as Record<string, boolean>;
   const showStories = flags.stories === true, showHighlights = flags.storyHighlights === true;
   const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
+  const [viewerAt, setViewerAt] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -111,7 +113,7 @@ export default function CompanyProfilePage() {
 
     <section className="cp-block" aria-labelledby="cp-work">
       <h2 id="cp-work">Work evidence</h2>
-      {media.length ? <ul className="cp-gallery">{media.map((image, index) => <li key={`${image}-${index}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} loading="lazy" decoding="async" /></li>)}</ul> : <p className="cp-empty">No work media has been added. This missing evidence is shown intentionally.</p>}
+      {media.length ? <ul className="cp-gallery">{media.map((image, index) => <li key={`${image}-${index}`}><button type="button" className="cp-gallery-btn" onClick={() => setViewerAt(index)} aria-label={`Open photo ${index + 1} of ${media.length}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt={index === 0 ? `${seller.companyName} workplace or work sample` : `Work sample ${index + 1} from ${seller.companyName}`} loading="lazy" decoding="async" /></button></li>)}</ul> : <p className="cp-empty">No work media has been added. This missing evidence is shown intentionally.</p>}
     </section>
 
     <div className="cp-layout">
@@ -150,6 +152,7 @@ export default function CompanyProfilePage() {
       <div className="bn-side-ad"><ApiAdvertisingSlot imageOnly showFallback={false} placement="category_top" kind="native" context="Sponsored" summary="" action="View promotion" /></div>
       </aside>
     </div>
+    {viewerAt !== null && <ImageViewer images={media.map((src) => ({ src }))} start={viewerAt} title={seller.companyName} onClose={() => setViewerAt(null)} />}
     <a className="ld-mobile-cta" href="#cp-inquiry">Contact company</a>
   </div>;
 }

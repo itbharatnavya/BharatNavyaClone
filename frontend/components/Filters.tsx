@@ -20,8 +20,12 @@ export interface ListingFilterState {
   type?: ListingType | "";
   brands?: string[]; // selected brand names (facet from result set)
   minRating?: number; // e.g. 4 → "4★ & up"
+  tags?: string[]; // trust tags the company must have: trust_seal, gst, top_rated, fast_responder, trusted
   sort?: "relevance" | "price_asc" | "price_desc" | "rating" | "newest";
 }
+
+// Trust tags a buyer can require (matched against the company data on each result).
+export const TAG_LABELS: Record<string, string> = { trust_seal: "Trust seal", gst: "GST registered", top_rated: "Top rated", fast_responder: "Fast reply", trusted: "Trusted" };
 
 export interface FilterOption {
   value: string;
@@ -144,7 +148,7 @@ export default function Filters({
   const [q, setQ] = useState("");
   const term = q.trim().toLowerCase();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [openIds, setOpenIds] = useState<Record<string, boolean>>({ subcats: true, category: true, brand: true, price: true, rating: true, city: true });
+  const [openIds, setOpenIds] = useState<Record<string, boolean>>({ subcats: true, category: true, brand: true, price: true, rating: true, city: true, tags: true });
   const toggle = (id: string) => setOpenIds((current) => ({ ...current, [id]: !current[id] }));
   const [priceDraft, setPriceDraft] = useState("");
 
@@ -160,6 +164,7 @@ export default function Filters({
   if (value.city) applied.push({ key: "city", label: value.city, clear: () => set({ city: undefined }) });
   selectedBrands.forEach((brand) => applied.push({ key: `brand-${brand}`, label: brand, clear: () => toggleBrand(brand) }));
   if (value.priceMax) applied.push({ key: "price", label: `Under ${formatMoney(value.priceMax)}`, clear: () => set({ priceMax: undefined }) });
+  (value.tags || []).forEach((tag) => applied.push({ key: `tag-${tag}`, label: TAG_LABELS[tag] || tag, clear: () => set({ tags: (value.tags || []).filter((t) => t !== tag) }) }));
   if (value.minRating) applied.push({ key: "rating", label: `${value.minRating}★ & up`, clear: () => set({ minRating: undefined }) });
 
   function rows<T>(id: string, list: T[]): { shown: T[]; more: number } {
@@ -265,6 +270,12 @@ export default function Filters({
           </form>
         </Section>
       )}
+
+      <Section id="tags" title="Company badges" count={value.tags?.length || 0} open={openIds.tags} onToggle={() => toggle("tags")}>
+        <div className="flt-chips flt-tags">
+          {Object.entries(TAG_LABELS).map(([tag, label]) => { const on = !!value.tags?.includes(tag); return <Chip key={tag} label={label} active={on} onClick={() => set({ tags: on ? (value.tags || []).filter((t) => t !== tag) : [...(value.tags || []), tag] })} />; })}
+        </div>
+      </Section>
 
       <Section id="rating" title={tr("filters.rating", "Seller rating")} count={value.minRating ? 1 : 0} open={openIds.rating} onToggle={() => toggle("rating")}>
         <div className="flt-chips">

@@ -262,6 +262,8 @@ export interface ListingSeller {
   isVerified?: boolean;
   trustSealVerified?: boolean;
   gstNumber?: string | null;
+  gstRegistered?: boolean;
+  badges?: string[];
   yearEstablished?: number | null;
   rating?: number;
   reviewCount?: number;

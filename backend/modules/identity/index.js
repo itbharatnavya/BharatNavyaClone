@@ -26,6 +26,7 @@
 // Import the pool + id-generator leaves directly (not the _shared barrel) — the
 // barrel pulls in crudRouter, which requires middleware/authGuard, which requires
 // this module: a cycle. The kernel's leaves are importable at any depth.
+const { deriveBadges } = require("../../lib/badges");
 const { pool } = require("../_shared/pool");
 const { nextId } = require("../_shared/ids");
 const { createUsersStore } = require("../../lib/db/users");
@@ -251,7 +252,8 @@ async function getSellerBrowseCards(ids = []) {
   const { rows } = await pool.query(
     `SELECT u.id, u.name, u.avatar_url,
             sp.company_name, sp.slug, sp.logo, sp.location_city, sp.location_state,
-            sp.is_verified, sp.rating, sp.review_count, sp.response_rate
+            sp.is_verified, sp.rating, sp.review_count, sp.response_rate,
+            sp.trust_seal_verified, sp.gst_number, sp.perf_avg_response_time_hrs
        FROM users u
        JOIN seller_profiles sp ON sp.user_id = u.id
       WHERE u.id = ANY($1)`,
@@ -271,6 +273,15 @@ async function getSellerBrowseCards(ids = []) {
       rating: r.rating == null ? 0 : Number(r.rating),
       reviewCount: r.review_count == null ? 0 : Number(r.review_count),
       responseRate: r.response_rate == null ? 0 : Number(r.response_rate),
+      // Added for the trust tags and tag filters on search (additive).
+      trustSealVerified: !!r.trust_seal_verified,
+      gstRegistered: !!r.gst_number,
+      badges: deriveBadges({
+        rating: r.rating == null ? 0 : Number(r.rating),
+        reviewCount: r.review_count == null ? 0 : Number(r.review_count),
+        isVerified: !!r.is_verified,
+        performance: { avgResponseTimeHours: r.perf_avg_response_time_hrs == null ? undefined : Number(r.perf_avg_response_time_hrs) },
+      }),
     });
   }
   return m;
