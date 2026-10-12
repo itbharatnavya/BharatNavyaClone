@@ -5689,9 +5689,9 @@ small { font-size: var(--fs-xs); }
 .bn-header .bn-wordmark > .bn-mark { display: block !important; }
 
 /* In-feed ads: on phones the sponsored slot sits between listings; the bottom-of-page copy is hidden there. */
-.dlw-infeed-ad { display: none; }
+.dlw-infeed-ad, .dlw-grid > li.dlw-infeed-ad { display: none; }
 @media (max-width: 760px) {
-  .dlw-infeed-ad { display: block; grid-column: 1 / -1; min-width: 0; list-style: none; }
+  .dlw-infeed-ad, .dlw-grid > li.dlw-infeed-ad { display: block; grid-column: 1 / -1; min-width: 0; list-style: none; }
   .bn-ad-desktop-only { display: none; }
 }
 
@@ -6904,13 +6904,13 @@ textarea { padding: 0.6rem 0.85rem; }
   .counter-home-page .bn-hstage:not(#_) { height: clamp(15rem, 38svh, 22.5rem); margin-top: clamp(1.25rem, 3.5svh, 3rem); }
 }
 
-/* Home hero: Trade Grid living background (components/home/TradeGridBg.tsx). The canvas fills
+/* Home hero: Deal Flow living background (components/home/DealFlowBg.tsx). The canvas fills
    the hero behind the content; a soft veil keeps the headline readable. The old decorative
    glow layers are switched off on this hero. */
 .counter-home-page .bn-home-hero:not(#_) { position: relative; isolation: isolate; background: #0F2A70; }
 .counter-home-page .bn-home-hero::before, .counter-home-page .bn-home-hero::after { display: none !important; }
-.bn-tradegrid { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.bn-tradegrid-veil { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 40% 24% at 50% 19%, rgba(10, 28, 86, 0.72), rgba(10, 28, 86, 0) 72%); }
+.bn-herobg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.bn-herobg-veil { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 40% 24% at 50% 19%, rgba(10, 28, 86, 0.72), rgba(10, 28, 86, 0) 72%); }
 .counter-home-page .bn-home-hero > .le-shell { position: relative; z-index: 2; }
 .hs-close-actions:has(> a:only-child) a:not(#_) { flex: 0 0 auto; }
 
@@ -6918,9 +6918,9 @@ textarea { padding: 0.6rem 0.85rem; }
    the visible height or their bottom (the "Open complete listing" button) is unreachable.
    They now cap at the screen height and scroll inside if needed, and the photo shrinks on
    short screens so the details usually fit without scrolling. */
-.directory-listing-workbench > :is(.directory-listing-detail, .directory-listing-filter-rail):not(#_):not(.x) { max-height: calc(100svh - var(--bn-header-height) - 2.5rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.directory-listing-workbench > .directory-listing-detail:not(#_):not(.x) { max-height: calc(100svh - var(--bn-header-height) - 2.5rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 .directory-listing-detail .lp-media:not(#_) { aspect-ratio: auto; height: clamp(8rem, 26svh, 15rem); }
-.directory-listing-workbench > :is(.directory-listing-detail, .directory-listing-filter-rail):not(#_):not(.x) { max-height: calc(100svh - var(--bn-header-height) - 3.75rem); }
+.directory-listing-workbench > .directory-listing-detail:not(#_):not(.x) { max-height: calc(100svh - var(--bn-header-height) - 3.75rem); }
 /* Listing cards: the Verified tag never gets clipped; the company name truncates instead. */
 .lcard-seller:not(#_) { min-width: 0; }
 .lcard-seller > span:not(.tb-verified):not(.tb-icon) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -1921,6 +1921,40 @@ Category and Brand and changed nothing in the results.
   "zzzz" and cleared (718 / 26 / 26 listings restored), plus 390px with the panel open: 0px overflow. `tsc` clean.
 - **Not done:** the typed term is not kept in the URL, so a refresh or shared link loses it.
 
+### Pulled `origin/design` again (`bbbaa07..dda8164`) — merged 2026-10-12 (Deal Flow hero)
+
+2 new commits from the UI dev (`66ebd86` "Search: hide in-feed ad in desktop grid, drop half-outline focus underline
+on location select" and `dda8164` "Home hero: Deal Flow background replaces Trade Grid; filter rail no longer
+height-capped"), 6 frontend files (+193/-188). The owner pulled it into the working copy; merge completed by
+committing it with the `WEB-REDESIGN.md` entry, then pushed and deployed (frontend only). **No backend, schema,
+migration or dependency change.** No conflicts, and it sits cleanly on top of the "Search within results" fix
+(`33c03ed`).
+
+**What the design branch changed**
+- **Home hero background is now "Deal Flow"** (option 4 of `frontend/docs/hero-living-scenes.html`, owner's change
+  of mind from Trade Grid): `components/home/dealFlow.ts` (`@ts-nocheck`) + `DealFlowBg.tsx` replace
+  `tradeGrid.ts` / `TradeGridBg.tsx`. The suite drifts in depth behind the hero (Ask Navya questions, Directory RFQs,
+  quotes and verified suppliers, Recruitment posts); the canvas finds the hero, headline and `.bn-hstage` card row
+  from the DOM so the cards fade behind the headline. CSS classes renamed `.bn-tradegrid*` to `.bn-herobg*`.
+- **Search:** in-feed ad hidden in the desktop grid (`.dlw-grid > li.dlw-infeed-ad`; phones still show it); the
+  half-outline focus underline on the location select is dropped (`directory-design.css`).
+- **Filter rail** is no longer capped with the detail pane in that one CSS rule (only `.directory-listing-detail`
+  keeps the viewport-height cap).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/metals-steel-alloys` return 200.
+- Headless Chrome: home hero canvas present and painting at 1440 and 390px, 0px horizontal overflow, no uncaught
+  page errors; `/search` filter box still works ("angle" gives 1 listing).
+- Nothing else pending on `origin/design` after this pull.
+- Not done: a long-run check of the canvas animation (frame rate, pausing off screen).
+
+**Flags for the owner**
+1. `dealFlow.ts` is `@ts-nocheck`, so `tsc` does not check it.
+2. On `/search` the filter rail still reports `max-height` equal to the viewport and `overflow: hidden` in the
+   browser, so another rule caps it; the inner panel is what scrolls. Worth a look if the designer meant to lift the cap.
+3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour, `validate:design` failures.
+
 ---
 
 ## Reference material
