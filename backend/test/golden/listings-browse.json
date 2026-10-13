@@ -1361,8 +1361,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Kota",
             "companyName": "Kota Learning & Training Academy",
+            "gstRegistered": true,
             "id": "usr_cat_educationtrainingeve",
             "isVerified": true,
             "logo": null,
@@ -1371,7 +1376,8 @@
             "responseRate": 94,
             "reviewCount": 0,
             "slug": "kota-learning-training-academy",
-            "state": "Rajasthan"
+            "state": "Rajasthan",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_educationtrainingeve",
           "service": {
@@ -1458,8 +1464,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Kota",
             "companyName": "Kota Learning & Training Academy",
+            "gstRegistered": true,
             "id": "usr_cat_educationtrainingeve",
             "isVerified": true,
             "logo": null,
@@ -1468,7 +1479,8 @@
             "responseRate": 94,
             "reviewCount": 0,
             "slug": "kota-learning-training-academy",
-            "state": "Rajasthan"
+            "state": "Rajasthan",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_educationtrainingeve",
           "service": {
@@ -1553,8 +1565,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Kota",
             "companyName": "Kota Learning & Training Academy",
+            "gstRegistered": true,
             "id": "usr_cat_educationtrainingeve",
             "isVerified": true,
             "logo": null,
@@ -1563,7 +1580,8 @@
             "responseRate": 94,
             "reviewCount": 0,
             "slug": "kota-learning-training-academy",
-            "state": "Rajasthan"
+            "state": "Rajasthan",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_educationtrainingeve",
           "service": {
@@ -1650,8 +1668,12 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "verified"
+            ],
             "city": "Delhi",
             "companyName": "Delhi Swift Logistics & Cargo",
+            "gstRegistered": true,
             "id": "usr_cat_logisticstransportwa",
             "isVerified": true,
             "logo": null,
@@ -1660,7 +1682,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "delhi-swift-logistics-cargo",
-            "state": "Delhi"
+            "state": "Delhi",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_logisticstransportwa",
           "service": {
@@ -1747,8 +1770,12 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "verified"
+            ],
             "city": "Delhi",
             "companyName": "Delhi Swift Logistics & Cargo",
+            "gstRegistered": true,
             "id": "usr_cat_logisticstransportwa",
             "isVerified": true,
             "logo": null,
@@ -1757,7 +1784,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "delhi-swift-logistics-cargo",
-            "state": "Delhi"
+            "state": "Delhi",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_logisticstransportwa",
           "service": {
@@ -1843,8 +1871,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Chennai",
             "companyName": "Chennai Business Consulting Group",
+            "gstRegistered": true,
             "id": "usr_cat_professionalconsulti",
             "isVerified": true,
             "logo": null,
@@ -1853,7 +1886,8 @@
             "responseRate": 90,
             "reviewCount": 0,
             "slug": "chennai-business-consulting-group",
-            "state": "Tamil Nadu"
+            "state": "Tamil Nadu",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_professionalconsulti",
           "service": {
@@ -1939,8 +1973,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Pune",
             "companyName": "Pune TaxPro Accounting Services",
+            "gstRegistered": true,
             "id": "usr_cat_accounting",
             "isVerified": true,
             "logo": null,
@@ -1949,7 +1988,8 @@
             "responseRate": 95,
             "reviewCount": 0,
             "slug": "pune-taxpro-accounting-services",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_accounting",
           "service": {
@@ -2037,8 +2077,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Pune",
             "companyName": "Pune TaxPro Accounting Services",
+            "gstRegistered": true,
             "id": "usr_cat_accounting",
             "isVerified": true,
             "logo": null,
@@ -2047,7 +2092,8 @@
             "responseRate": 95,
             "reviewCount": 0,
             "slug": "pune-taxpro-accounting-services",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_accounting",
           "service": {
@@ -2136,8 +2182,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Pune",
             "companyName": "Pune TaxPro Accounting Services",
+            "gstRegistered": true,
             "id": "usr_cat_accounting",
             "isVerified": true,
             "logo": null,
@@ -2146,7 +2197,8 @@
             "responseRate": 95,
             "reviewCount": 0,
             "slug": "pune-taxpro-accounting-services",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_accounting",
           "service": {
@@ -2231,8 +2283,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Pune",
             "companyName": "Pune TaxPro Accounting Services",
+            "gstRegistered": true,
             "id": "usr_cat_accounting",
             "isVerified": true,
             "logo": null,
@@ -2241,7 +2298,8 @@
             "responseRate": 95,
             "reviewCount": 0,
             "slug": "pune-taxpro-accounting-services",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_accounting",
           "service": {
@@ -2326,8 +2384,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Pune",
             "companyName": "Pune TaxPro Accounting Services",
+            "gstRegistered": true,
             "id": "usr_cat_accounting",
             "isVerified": true,
             "logo": null,
@@ -2336,7 +2399,8 @@
             "responseRate": 95,
             "reviewCount": 0,
             "slug": "pune-taxpro-accounting-services",
-            "state": "Maharashtra"
+            "state": "Maharashtra",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_accounting",
           "service": {
@@ -2425,8 +2489,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Gurugram",
             "companyName": "Gurugram HomeCare Services",
+            "gstRegistered": true,
             "id": "usr_cat_homelocalservices",
             "isVerified": true,
             "logo": null,
@@ -2435,7 +2504,8 @@
             "responseRate": 92,
             "reviewCount": 0,
             "slug": "gurugram-homecare-services",
-            "state": "Haryana"
+            "state": "Haryana",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_homelocalservices",
           "service": {

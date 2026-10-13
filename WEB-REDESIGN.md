@@ -1551,6 +1551,410 @@ before the testing server's Directory landing can show the new cards properly.
 4. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories`
    hydration warning.
 
+### Pulled `origin/design` again (`1e8cb88..ab0666a`) — merged 2026-10-08
+
+1 new commit from the UI dev (`ab0666a`, "Cap desktop font scaling at 16px, tidy recruitment search and
+Products menu"), 3 files (+21/-13): `app/counter-soft-system.css`, `components/Navbar.tsx`, `HANDOFF.md`.
+Merged with `git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed,
+pushed and deployed to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Font size regression fixed (owner-reported: text was too big).** The previous pull's desktop rule scaled
+  the root size up to 22px (about 18px on a 1920x1080 Windows screen). It is now
+  `clamp(13px, min(1.111vw, 1.975vh), 16px)`: never above the original 16px, it only shrinks on short or
+  zoomed laptops. 16px at 1920x930 and 1440x810.
+- **Recruitment docked header search:** the grid column left over from the removed workplace select is gone,
+  in both the base rule and the 1024px+ rule; the bar ends at the arrow.
+- **Products menu:** Growth OS tile has no visible "Coming soon" tag (tooltip only, desktop and phone menu);
+  phone-menu Growth OS aligned with the other sub-links (`.bn-mobile-nav-soon` padding).
+- `HANDOFF.md`: START HERE block updated to 8 Oct, and a note on how the dev pulls
+  `feature/design-integration` into `design` (fast-forward only).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment` return 200 on the local dev server.
+- Owner checked the changes locally (font size back to normal).
+
+**Flags for the owner**
+1. The 7 Oct entry's desktop font-scaling flag (check on a Windows laptop) is now about the *down-only*
+   scaling; still worth one look on a small or zoomed laptop.
+2. Pending from earlier passes, unchanged: GSAP visual pass, back-to-top corner, `/categories` hydration
+   warning.
+
+### Pulled `origin/design` again (`ab0666a..bb7e84c`) — merged 2026-10-08 (later)
+
+1 new commit from the UI dev (`bb7e84c`, "Header logo blend, corner button diamond, navy scrollbars"), 3 files
+(+76/-8): `components/Navbar.tsx`, `app/counter-soft-system.css`, `HANDOFF.md`. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Header logo blend (option 2B).** `Navbar.tsx` renders a `bn-header-surface` span and an `atTop` state
+  (`window.scrollY <= 8`, class `is-at-top`, not while the search is docked). The header no longer paints its
+  own bar: `.bn-header-surface::before` is the white bar masked transparent where the logo sits, `::after` is
+  the solid bar. At the top of the page the solid layer is hidden and the logo is scaled 1.8x (1.45x on phones)
+  with its own shadow; on scroll it returns to the solid bar and the normal logo.
+- **Corner buttons in a diamond.** "Post requirement" (`.rfq-tab`) stays the navy tab on the right edge, the
+  assistant (`.navya-agent-dock`) is on the left, `.back-to-top` (2.25rem) at the bottom corner, with equal
+  visible gaps (about 14px). The old rule that moved the assistant sideways when back-to-top appeared is
+  removed, so nothing shifts.
+- **Advertise** button gets a megaphone icon (inline SVG).
+- **Scrollbars:** navy thumb everywhere, 8px inside boxes with the track inset from the ends; Firefox gets
+  `scrollbar-color` navy through `@supports`. Chrome ignores the webkit rules on boxes that set
+  `scrollbar-width`, so those are reset for the filter panels and dropdowns.
+- "All categories" hero pill widened to 8.4rem so the label fits on phones.
+- `HANDOFF.md`: 8 October (later) block; also lists the untracked `logo-blend-options.html` board.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/dashboard` return 200 locally.
+- Owner checked the changes locally.
+- Not done: 390px check that the three corner buttons do not overlap; header fade on every route.
+
+**Flags for the owner**
+1. Back-to-top is still in the bottom-right corner (FR-11/AC-7 expects lower-left); the diamond keeps it there.
+2. The header bar is now drawn by a separate element, so any page that sets its own header background or
+   shadow must target `.bn-header-surface`, not `.bn-header`.
+3. Pending from earlier passes, unchanged: GSAP visual pass, `/categories` hydration warning.
+
+### Pulled `origin/design` again (`bb7e84c..747a912`) — merged 2026-10-08 (evening)
+
+1 new commit from the UI dev (`747a912`, "Header spans the full bar on wide screens, 50/50 home split, text
+Advertise"), 1 file (+8/-2): `app/counter-soft-system.css`. CSS only. Merged with `git merge --no-ff --no-commit`,
+**no conflicts**, owner checked it locally, then committed, pushed and deployed (frontend only) to the testing
+server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Home stats row is 50/50.** `.hs-proof-row` columns go from `2fr 1fr` to `1fr 1fr`: the stats card and the
+  `home_hero` ad tile are now equal width. Still full width when no ad is live; stacks under 900px.
+- **Header content spans the whole bar.** `.bn-header.is-counter-public .bn-header-inner { max-width: none }`.
+  It was capped at 90rem and centred, which pulled the logo away from the bar's left end on wide monitors.
+- **Advertise** is a plain navy text link with the megaphone, no outline box; hover shows the
+  `--counter-indigo-soft` tint.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment` return 200 locally.
+- Owner checked the changes locally.
+- Not done: 1920px visual check of the logo and centred nav, ad tile balance at 50/50.
+
+**Flags for the owner**
+1. The 50/50 split doubles the ad tile's width; ad creatives sized for a narrow tile may now crop differently
+   (`ApiAdvertisingSlot imageOnly`).
+2. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning.
+
+### Pulled `origin/design` again (`747a912..dd63595`) — merged 2026-10-08 (night)
+
+1 new commit from the UI dev (`dd63595`, "Home redesign, plain-language copy, section panels, no-pause motion"),
+22 frontend files (+488/-320) plus `HANDOFF.md` and `counter-soft-system.css` (+223). Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(frontend only) to the testing server. No backend change, no schema change, no new dependency.
+
+**What the design branch changed**
+- **Plain-language copy (owner rule: short, simple, no slogans).** Home "Suppliers, services and jobs in one
+  place.", Recruitment "Find work. Hire people.", "Jobs by field", footer reduced to one line plus copyright,
+  stats labels "Categories / Listings / Open jobs", About copy shortened. Public copy now says "jobs" where
+  rewritten; the jobs page search and filters still say "roles". Not yet done: Pricing, Sell, RFQ, Post a
+  job, sign-in/register, dashboards, detail pages.
+- **Home:** the scroll-pinned "Three ways" tour is replaced by `components/home/ProductHub.tsx` (`.hub-*`): a
+  navy panel with an SVG hub that cycles Directory / Recruitment / Ask Navya, no pin, no pause. `RouteScene`
+  ("Say what you need") removed from Home (file kept, unused). "Why Bharat Navya" cards are navy. Closing
+  section shortened. Our Pass 1 live counts (`useHomeData`) are kept.
+- **Hero cards (`HeroStage`):** Directory scene = one requirement, three quotes, best one picked and accepted;
+  Recruitment scene = application status track (Applied, Viewed, Shortlisted, Interview) ending on an
+  interview card. Ask Navya unchanged.
+- **Section panels:** any `.hs-sec` / `.ps-sec` whose `.le-shell` holds a `header.le-section-head` is a white
+  rounded panel with a one-row head; the blurb paragraphs in those heads were deleted from the TSX.
+- **No pause anywhere (owner rule).** `components/ads/useAdRotation.ts`, `AdControls.tsx` and
+  `evidence/ApiAdvertisingSlot.tsx` (our ad carousel files) lose the pause button and the hover / keyboard
+  focus hold; the carousel only holds when the tab is hidden or the ad is scrolled out of view. The Directory
+  hero slideshow and the home ticker likewise. `CLAUDE.md`'s ad slider bullet updated to match.
+- **Directory:** "Get found by buyers" (`StorefrontScene`) autoplays in view and loops instead of pinning.
+  **Recruitment:** compact hero path cards, the role finder is one connected board.
+- Footer fade is stronger. `HANDOFF.md`: 8 October (evening) block.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/about`, `/recruitment/jobs`
+  return 200 locally.
+- Owner checked the changes locally.
+- Not done: 390px pass on the new hub panel and hero cards; the 78-check ad carousel script was not re-run and
+  may still assert the old hold / pause behaviour.
+
+**Flags for the owner**
+1. Removing the pause control drops the accessible way to stop auto-moving content (WCAG 2.2.2). Recorded
+   as the owner's call, not reversed here.
+2. The Directory hero card brings quote / "Accept" wording back into the home hero, while this doc records
+   quotation language as deliberately absent from the primary journey. Looks intentional; confirm.
+3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning.
+
+### Pulled `origin/design` again (`dd63595..6b24f5b`) — merged 2026-10-09
+
+1 new commit from the UI dev (`6b24f5b`, "Category mega menu, Top companies board, one-piece role finder,
+looping hire scene, footer lockup"), 14 files (+493/-153), **backend touched (additive)**. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(backend and frontend) to the testing server. No schema change, no migration, no new dependency.
+
+**What the design branch changed**
+- **Backend (additive):** `GET /api/sellers/featured` also returns `categorySlug` and `offers` (up to 3 active
+  listing titles), and `category` is now the seller's main top-level category (the root category most of their
+  active listings sit under, falling back to the legacy category). Comes from the new
+  `directory.sellerCardExtras(ids)` (one query in `listingStats.repository.js`, exported through the directory
+  port; `users.routes.js` calls it). Redeploy the backend for the Directory board to show real categories.
+- **"All categories" mega menu:** `components/discovery/CategoryMegaMenu.tsx` replaces the native `<select>`
+  pill. Desktop: left rail of top categories with photos, sub-categories on the right, search across all
+  levels. Phones: same attached dropdown, categories as a row of photos. No dim layer, no scroll lock. Data is
+  `categoryMenu` in `app/directory/page.tsx`. **Departs from the native-`<select>` rule (CLAUDE.md section 2)
+  at the owner's request.**
+- **Directory "Top companies":** `CompanyShowcase.tsx` (`.tc-*`) replaces the company cards (`.cc-*` CSS
+  removed). Category tabs with counts over a ranked two-column board: photo with rank, name and tick,
+  category and city, one proof line (rating, years, reply rate, GST), two offer chips. Whole card is the
+  link; phones show the top four. Still fed by `useFeaturedSellers()` (8 sellers), so some tabs hold only
+  one or two companies.
+- **Recruitment:** the role finder is one box (white choices, blend, navy result), one left-to-right wipe
+  reveal, arrow removed. `HireScene` loops while in view; "See pricing" button removed.
+- **Footer:** logo lockup (name and tagline stacked beside the logo), content starts below the fade.
+  Section heads on phones: title left, button right. Home closing CTAs side by side on phones.
+- **Hero titles restored** to the pre-copy-pass versions at the owner's request (Home "The B2B platform built
+  for what's next.", Directory "Turn business search into business action.", Recruitment "Find the right
+  people. Build the right team."). This reverses the hero titles listed in the previous entry; the designer asks
+  that hero titles are not rewritten in later copy passes without asking.
+- On hold: homepage hero background, waiting for the owner's pick from `public/hero-bg-abstract.html`
+  (untracked, not committed).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/about` return 200 locally.
+- Backend restarted; `npm test` architecture suite 6/6. `sellers-featured` golden regenerated (only that file,
+  by removing it and re-running `test:goldens`, since `goldens:update` would also bake in the unrelated
+  Recruitment/identity drift); it passes. Other goldens unchanged and still failing as before.
+- Owner checked the changes locally.
+- Not done: 390px pass on the mega menu and Top companies board.
+
+**Flags for the owner**
+1. The mega menu is not a native `<select>`; accepted per the owner's request.
+2. Top companies draws only from the 8 featured sellers (`/api/sellers/featured` is still capped at 8, backend
+   gap B1 in the list above).
+3. Pending from earlier passes, unchanged: back-to-top still bottom-right, GSAP visual pass, `/categories`
+   hydration warning, ad carousel script not re-run against the no-pause behaviour.
+
+### Pulled `origin/design` again (`6b24f5b..67dbd1a`) — merged 2026-10-09 (later)
+
+1 new commit from the UI dev (`67dbd1a`, "Top companies: drop rank numbers from the cards"), 2 files (+6/-8):
+`components/directory/CompanyShowcase.tsx`, `app/counter-soft-system.css`. Merged with
+`git merge --no-ff --no-commit`, **no conflicts**, owner checked it locally, then committed, pushed and deployed
+(frontend only). No backend, schema or dependency change.
+
+- The rank badge on the Directory "Top companies" cards is removed (`.tc-rank` CSS and the `rank` prop). The
+  list is an unnumbered `<ul>` labelled "Top companies" instead of an `<ol>` "ranked by rating"; the photo box
+  now fills for both photo and avatar. Order, tabs and card content are unchanged (the file's header comment
+  still says "ranked by rating").
+- `npx tsc --noEmit` clean; `/directory` 200 locally.
+
+### Pulled `origin/design` again (`67dbd1a..979347f`) — merged 2026-10-09 (company page, About, Pricing removed)
+
+2 new commits from the UI dev (`a1c734c` "Reviews and stories on company page, About section pages, API trust
+tags, ofbusiness-style nav dropdowns, footer app badges" and `979347f` "Remove the public Pricing page and every
+link to it"), 36 files (+1022/-408). Merged with `git merge --no-ff --no-commit`, **no conflicts**, owner checked
+it locally, then committed, pushed and deployed (frontend only). **No backend change, no schema change, no new
+dependency.** `next.config.mjs` changed, so restart the local dev server after pulling.
+
+**What the design branch changed**
+- **Company page `/seller/[slug]`** (new order: header with trust tags, stats, Stories, Work evidence, Reviews,
+  then about / facts / offerings). This closes the "Reviews and Products sections missing" item from the
+  2026-09-28 punch-list for Reviews.
+  - Reviews: new `components/seller/CompanyReviews.tsx` (`.cr-*`) on the existing `getReviews` / `postReview`
+    (`GET/POST /api/reviews`): summary, write / edit form (stars + optional text; one review per person per
+    company; cannot review your own), filter / sort list. Guests get `ContactAuthModal purpose="review"` and
+    return to the form. The old inline block read `profile.reviews`, which `GET /api/sellers/:slug` does not
+    return, so it was always empty; `ReviewsPanel.tsx` is now unused. The rating tile links to `#reviews`.
+  - Stories: `SellerStoriesSection` back on the page, behind admin flags `stories` / `storyHighlights`; own
+    `.sst-card` solid navy ring. Employer page: Recruitment reviews moved up after "About working here".
+- **Trust tags (from the API payload):** `components/TrustBadges.tsx` is the one source (`RatingPill`,
+  `VerifiedTag`, `ListingFlag`, `TrustBadges` with earned `badges` from `backend/lib/badges.js` and a facts
+  line). Used in search rows, listing hero and seller box, listing cards, company header, `SellerCard`.
+  Listing cards have one Contact button (the duplicate "i" details icon is removed). Solid colours, no gradients.
+- **About section:** navbar About is a dropdown. Pages `/about`, `/about/team`, `/careers`, `/blog`, `/contact`
+  share `components/about/AboutShell.tsx`; owner facts (contact details, leadership, open roles) live in
+  `components/about/company.tsx`, null values are hidden. `/careers` and `/contact` added to `ROOT_ROUTES` in
+  `lib/routePresentation.ts`. "More about us" blocks removed.
+- **Nav and footer:** ofbusiness-style dropdown rows (`NavRow`, `.bn-nav-row`); Advertise hidden on `/login` and
+  `/register`. Footer app badges (Google Play / App Store, not linked yet: set `href` in `APPS` in `Footer.tsx`),
+  links in two columns.
+- **Pricing page removed (owner request).** `app/pricing/` deleted; `next.config.mjs` redirects `/pricing` to `/`
+  (307, so it can return). All links removed or repointed: footer, Contact FAQ, `/features`, home `SellCta`,
+  seller dashboard Subscription tab buttons; "Choose plan" on `/offer` goes to `/dashboard?tab=subscription`;
+  Directory "Promote your company" and the ad-slot fallback go to `/dashboard?tab=advertise`. Plans still exist
+  (admin Plans tab, seller Subscription tab, `/offer`). Do not re-add Pricing links without asking.
+- Fixes: sidebar ads 4:3, blog page bottom ad removed, un-classed `<select>` padding restored, navy CTA text white.
+- Hero background still on hold (owner choosing from the designer's untracked option boards).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. Dev server restarted (config change). `/`, `/directory`, `/recruitment`, `/search`,
+  `/about`, `/about/team`, `/careers`, `/contact`, `/blog`, `/features`, `/offer`, `/seller/<slug>` return 200;
+  `/pricing` returns 307 to `/`. `GET /api/reviews?sellerId=` returns real reviews.
+- Owner checked the changes locally.
+- Not done: 390px pass on the company page, About pages and nav dropdowns; posting a review end to end.
+
+**Flags for the owner**
+1. Sellers no longer have an in-dashboard link to plan prices (the Subscription tab buttons were removed);
+   plans are reachable from `/offer`. Owner call, recorded here.
+2. `/pricing` is still listed in `ROOT_ROUTES` (harmless; the redirect runs first).
+3. Footer app badges have no links yet.
+4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
+### Pulled `origin/design` again (`979347f..3531304`) — merged 2026-10-09 (contact form, backend + migration 0019)
+
+2 new commits from the UI dev (`cf61d26` "Contact page form with admin inbox, compact search rows when a listing
+is open" and `3531304` "Search rows: seller names wrap; contact form button stays on one line"), 13 files
+(+335/-1). Merged with `git merge --no-ff --no-commit`, **no conflicts**, committed, pushed and deployed (backend
+and frontend) on the owner's standing go-ahead for this pull. **Backend + schema change: migration
+`0019_add_contact_messages.sql`.**
+
+**What the design branch changed**
+- **Contact form** on `/contact` (`components/about/ContactForm.tsx`, `.cf-*`, plus a "What happens next" panel).
+  Needs name + message (10+ characters) + email or phone; signed-in users are prefilled.
+- **Backend:** migration `0019_add_contact_messages.sql` (table `contact_messages`, also in `schema.sql`), flat
+  mapping `contact-messages.json`, file-DB seed `DB/contact-messages.json`. New
+  `modules/platform/routes/contact.routes.js`: `POST /api/contact` (public, optionalAuth, validated) and
+  `GET` / `PATCH /api/admin/contact-messages[/:id]` (admin, mounted in the `admin-sub` phase). Admin UI: Global >
+  Contact messages (`components/admin/ContactMessagesTab.tsx`): filter New / Handled / All, mark handled or reopen.
+- **Search rows:** container query on `.directory-listing-ledger`; below 36rem of list width (a listing open
+  beside it) smaller photo and no spec chips; seller names wrap.
+
+**Fixed while merging (our change to the designer's file)**
+- `contact.routes.js` called `messages.update(id, ...)`, but the shared repo only exposes `updateById`
+  (`modules/_shared/repository.js`). The admin PATCH ("mark handled") would have thrown a TypeError. Changed to
+  `messages.updateById(...)`; verified against the dev DB (status closed then reopened). Tell the UI dev.
+
+**Checks run**
+- Migration 0019 applied to the local dev DB; `POST /api/contact` returns `{success:true,data:{id:"cmsg_..."}}`;
+  admin list without a token returns 401. Backend restarted; architecture tests 6/6.
+- `npx tsc --noEmit`: clean. `/contact`, `/admin`, `/directory`, `/search` return 200 locally.
+- Not done: admin tab exercised through the UI with a signed-in admin; 390px pass on the contact page.
+
+**Testing server: migration 0019 applied 2026-10-12** to the Neon DB (`npm run migrate-schema`; status before:
+only 0019 pending). Live check: `POST /api/contact` on `bharatnavya-api.vercel.app` saved a message (200) and
+`GET /api/admin/contact-messages` without a token returns 401. The test row was deleted afterwards. The session's
+credential guard had blocked pulling `PG_URL` from Vercel, so the owner supplied the connection string directly.
+
+**Flags for the owner**
+1. The public contact endpoint's rate limit (5 per IP per 10 minutes) is an in-memory `Map`, which on Vercel resets
+   per instance / cold start, so it only throttles loosely. CLAUDE.md section 9 says not to keep request state in
+   process memory; fine as a soft limit, a table-backed counter would be the proper fix.
+2. Contact messages hold names, emails and phone numbers (PII): admin-only read, but treat the table as sensitive.
+3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
+### Pulled `origin/design` again (`3531304..bbbaa07`) — merged 2026-10-12 (Trade Grid hero, trust tags v3, image viewer)
+
+3 new commits from the UI dev (`56fbed4` "Trade Grid home hero, one page width on all screens, per-colour trust tags
+with badge filter, image viewer", `5e842b1` "Company email in footer and contact, remove About switcher, balanced
+tag chips, compact spec pill with city", `bbbaa07` "Role finder: per-option counts, disabled empty options,
+top-matches preview and hint line"), 22 files (+707/-76). Merged with `git merge --no-ff --no-commit`, **no
+conflicts**, owner checked it locally, then committed, pushed and deployed (backend and frontend). **One additive
+backend change, no schema change, no migration, no new dependency.**
+
+**What the design branch changed**
+- **Home hero = Trade Grid** (owner's pick from `frontend/docs/hero-living-scenes.html`): canvas engine in
+  `components/home/tradeGrid.ts` (`@ts-nocheck`), mounted by `TradeGridBg.tsx` inside `.bn-home-hero`. Pauses off
+  screen / hidden tab, one still frame under reduced motion, no pause control. Hero height scales with the
+  visible height on desktop. Home closing CTA is just "Create your account". The `hero-bg-*.html` boards in
+  `public/` stay uncommitted.
+- **One page width everywhere:** `--page-max: 120rem` (1920px); all shells, heads and the footer share one text edge.
+- **Trust tags v3:** per-tag solid colours (`.tb-chip.is-*`: Verified green, Trust seal blue, GST teal, Top rated
+  amber, Fast reply violet, Trusted orange), `TagRow` for rows and cards, equal side padding. Listing cards:
+  compact spec pill with the city (`CityTag`), rating on its own line.
+- **Badge filter in search:** "Company badges" section in `Filters.tsx` (`TAG_LABELS`, `filters.tags`), applied
+  client-side to the loaded page like rating and brand.
+- **Image viewer:** `components/ImageViewer.tsx` (zoom buttons / wheel / pinch / double-click, drag pan, arrows /
+  swipe / thumbs) on the listing gallery, the search preview photo and company work photos.
+- **Contact / About:** company email `info@bharatnavya.com` set in `COMPANY` (footer + Contact); Contact gets "Ask
+  Navya" and "Post a requirement" quick links; the About page switcher row is removed (navigation via navbar
+  About menu, phone menu and footer).
+- **Recruitment role finder:** fetches all open jobs once (`getJobs({limit:200})`) and counts client-side; each
+  option shows how many jobs it leaves, options that would leave 0 are disabled, top-3 preview and a hint line.
+  If open jobs pass about 200, switch to a counts endpoint.
+- **Backend (additive, restart needed):** `identity.getSellerBrowseCards` adds `trustSealVerified`,
+  `gstRegistered` and `badges` (derived through `lib/badges.js`) to the seller on each search / browse result.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/recruitment/jobs`, `/search`, `/about`,
+  `/contact`, `/seller/<slug>`, `/listing/1` return 200 locally. Backend restarted; architecture tests 6/6.
+- Goldens `listings-browse`, `listings-page2`, `brand-detail` regenerated (only by removing those three files and
+  re-running `test:goldens`); the diff is purely the three new seller fields. The admin-users and jobs goldens
+  still fail as in earlier entries (unrelated Recruitment / identity drift), not touched.
+- Owner checked the changes locally.
+- Not done: 390px pass on the Trade Grid hero, badge filter and image viewer.
+
+**Flags for the owner**
+1. `npm run validate:design` (the UI dev's own lint) fails: "missing shared search contract" in `globals.css`,
+   `bharat-navya-home.css`, `directory-design.css`, `RoleSearchBar.tsx`, `living-evidence.css`. None of those
+   files is in this merge, so it predates it; tell the UI dev.
+2. The role finder pulls up to 200 jobs on every visit; fine for the demo data, needs a counts endpoint at scale.
+3. `tradeGrid.ts` is `@ts-nocheck`, so type errors in it are not caught by `tsc`.
+4. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour.
+
+### Fix: "Search within results" in the listing filter panel — 2026-10-12 (own change, not a design pull)
+
+Owner report: typing a product word (for example "angle") in the filter box on `/search` showed "No matches" under
+Category and Brand and changed nothing in the results.
+
+- **Cause:** the box only narrowed the Category / Brand / sub-category option lists (`term` in `Filters.tsx`), and
+  those lists are built from the 12 loaded rows (brands) or the current result set (categories), so a product word
+  matched none of their labels. It never searched the listings. The pre-redesign `Filters` behaved the same way.
+- **Fix:** `Filters` takes an optional `quickSearch={{ value, onChange }}`. When given, the text is owned by the
+  parent, the box reads "Search within results", has a clear button, and the option lists are no longer cut by it.
+  `UnifiedListingWorkbench` debounces it (300 ms) and sends `q = <search box words> + <typed words>` to
+  `GET /api/listings`, so the rows, total, and the Category / Brand / City lists all follow. The API needs every word
+  to match and only widens to "any word" when nothing does, so the rows are checked again in the browser (title,
+  description, keywords, brand, category, seller, city): a term with no real match shows 0 listings instead of
+  unrelated rows, and the stale server Category / City counts are hidden in that case. "Clear all" empties the box
+  and a typed term counts in the Filters badge on phones.
+- **Pages:** `/search` and every category page (`/[category]`, `/[category]/[city]`) use the same workbench, so one
+  change covers them. Brand page and `/brands` have no text filter; `/categories` has its own working filter;
+  `DiscoveryResults` / `GlobalSearchResults` are not imported by any page (unchanged, still use the old behaviour).
+- **API:** no backend change. `GET /api/listings?q=` already behaves as above.
+- Files: `components/Filters.tsx`, `components/directory/UnifiedListingWorkbench.tsx`, and three `.flt-search-clear`
+  rules in `app/counter-soft-system.css` (the designer's file; may be overwritten by a later design pull, tell the UI
+  dev).
+- **Checks:** headless Chrome on `/search`, `/metals-steel-alloys`, `/search?q=steel` with "angle", "angle zzzz",
+  "zzzz" and cleared (718 / 26 / 26 listings restored), plus 390px with the panel open: 0px overflow. `tsc` clean.
+- **Not done:** the typed term is not kept in the URL, so a refresh or shared link loses it.
+
+### Pulled `origin/design` again (`bbbaa07..dda8164`) — merged 2026-10-12 (Deal Flow hero)
+
+2 new commits from the UI dev (`66ebd86` "Search: hide in-feed ad in desktop grid, drop half-outline focus underline
+on location select" and `dda8164` "Home hero: Deal Flow background replaces Trade Grid; filter rail no longer
+height-capped"), 6 frontend files (+193/-188). The owner pulled it into the working copy; merge completed by
+committing it with the `WEB-REDESIGN.md` entry, then pushed and deployed (frontend only). **No backend, schema,
+migration or dependency change.** No conflicts, and it sits cleanly on top of the "Search within results" fix
+(`33c03ed`).
+
+**What the design branch changed**
+- **Home hero background is now "Deal Flow"** (option 4 of `frontend/docs/hero-living-scenes.html`, owner's change
+  of mind from Trade Grid): `components/home/dealFlow.ts` (`@ts-nocheck`) + `DealFlowBg.tsx` replace
+  `tradeGrid.ts` / `TradeGridBg.tsx`. The suite drifts in depth behind the hero (Ask Navya questions, Directory RFQs,
+  quotes and verified suppliers, Recruitment posts); the canvas finds the hero, headline and `.bn-hstage` card row
+  from the DOM so the cards fade behind the headline. CSS classes renamed `.bn-tradegrid*` to `.bn-herobg*`.
+- **Search:** in-feed ad hidden in the desktop grid (`.dlw-grid > li.dlw-infeed-ad`; phones still show it); the
+  half-outline focus underline on the location select is dropped (`directory-design.css`).
+- **Filter rail** is no longer capped with the detail pane in that one CSS rule (only `.directory-listing-detail`
+  keeps the viewport-height cap).
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/recruitment`, `/search`, `/metals-steel-alloys` return 200.
+- Headless Chrome: home hero canvas present and painting at 1440 and 390px, 0px horizontal overflow, no uncaught
+  page errors; `/search` filter box still works ("angle" gives 1 listing).
+- Nothing else pending on `origin/design` after this pull.
+- Not done: a long-run check of the canvas animation (frame rate, pausing off screen).
+
+**Flags for the owner**
+1. `dealFlow.ts` is `@ts-nocheck`, so `tsc` does not check it.
+2. On `/search` the filter rail still reports `max-height` equal to the viewport and `overflow: hidden` in the
+   browser, so another rule caps it; the inner panel is what scrolls. Worth a look if the designer meant to lift the cap.
+3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour, `validate:design` failures.
+
 ---
 
 ## Reference material

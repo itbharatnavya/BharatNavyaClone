@@ -83,8 +83,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -93,7 +99,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -174,8 +181,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -184,7 +197,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -266,8 +280,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -276,7 +296,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -357,8 +378,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -367,7 +394,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -449,8 +477,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -459,7 +493,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -544,8 +579,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -554,7 +595,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -635,8 +677,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -645,7 +693,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -730,8 +779,14 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "top_rated",
+              "fast_responder",
+              "verified"
+            ],
             "city": "Meerut",
             "companyName": "Meerut Tools & Hardware Depot",
+            "gstRegistered": true,
             "id": "usr_cat_tools",
             "isVerified": true,
             "logo": null,
@@ -740,7 +795,8 @@
             "responseRate": 90,
             "reviewCount": 1,
             "slug": "meerut-tools-hardware-depot",
-            "state": "Uttar Pradesh"
+            "state": "Uttar Pradesh",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_tools",
           "service": null,
@@ -823,8 +879,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Ludhiana",
             "companyName": "Ludhiana AutoParts Traders",
+            "gstRegistered": true,
             "id": "usr_cat_automotivepartsacces",
             "isVerified": true,
             "logo": null,
@@ -833,7 +894,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "ludhiana-autoparts-traders",
-            "state": "Punjab"
+            "state": "Punjab",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_automotivepartsacces",
           "service": null,
@@ -914,8 +976,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Ludhiana",
             "companyName": "Ludhiana AutoParts Traders",
+            "gstRegistered": true,
             "id": "usr_cat_automotivepartsacces",
             "isVerified": true,
             "logo": null,
@@ -924,7 +991,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "ludhiana-autoparts-traders",
-            "state": "Punjab"
+            "state": "Punjab",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_automotivepartsacces",
           "service": null,
@@ -1005,8 +1073,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Ludhiana",
             "companyName": "Ludhiana AutoParts Traders",
+            "gstRegistered": true,
             "id": "usr_cat_automotivepartsacces",
             "isVerified": true,
             "logo": null,
@@ -1015,7 +1088,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "ludhiana-autoparts-traders",
-            "state": "Punjab"
+            "state": "Punjab",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_automotivepartsacces",
           "service": null,
@@ -1096,8 +1170,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Ludhiana",
             "companyName": "Ludhiana AutoParts Traders",
+            "gstRegistered": true,
             "id": "usr_cat_automotivepartsacces",
             "isVerified": true,
             "logo": null,
@@ -1106,7 +1185,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "ludhiana-autoparts-traders",
-            "state": "Punjab"
+            "state": "Punjab",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_automotivepartsacces",
           "service": null,
@@ -1186,8 +1266,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Ludhiana",
             "companyName": "Ludhiana AutoParts Traders",
+            "gstRegistered": true,
             "id": "usr_cat_automotivepartsacces",
             "isVerified": true,
             "logo": null,
@@ -1196,7 +1281,8 @@
             "responseRate": 91,
             "reviewCount": 0,
             "slug": "ludhiana-autoparts-traders",
-            "state": "Punjab"
+            "state": "Punjab",
+            "trustSealVerified": true
           },
           "sellerId": "usr_cat_automotivepartsacces",
           "service": null,
@@ -1269,8 +1355,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Delhi",
             "companyName": "Delhi Electronics Hub",
+            "gstRegistered": true,
             "id": "usr_s005",
             "isVerified": true,
             "logo": null,
@@ -1279,7 +1370,8 @@
             "responseRate": 94,
             "reviewCount": 1,
             "slug": "delhi-electronics-hub",
-            "state": "Delhi"
+            "state": "Delhi",
+            "trustSealVerified": true
           },
           "sellerId": "usr_s005",
           "service": null,
@@ -1363,8 +1455,13 @@
           "rating": 0,
           "reviewCount": 0,
           "seller": {
+            "badges": [
+              "fast_responder",
+              "verified"
+            ],
             "city": "Chennai",
             "companyName": "AutoZone Parts Hub",
+            "gstRegistered": true,
             "id": "usr_pv5",
             "isVerified": true,
             "logo": null,
@@ -1373,7 +1470,8 @@
             "responseRate": 93,
             "reviewCount": 0,
             "slug": "autozone-parts-hub",
-            "state": "Tamil Nadu"
+            "state": "Tamil Nadu",
+            "trustSealVerified": true
           },
           "sellerId": "usr_pv5",
           "service": null,

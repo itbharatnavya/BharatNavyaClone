@@ -4316,6 +4316,9 @@ main :is(h1, h2, h3, h4),
 .flt-search svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; fill: none; stroke: var(--counter-muted); stroke-width: 1.9; stroke-linecap: round; }
 .flt-search input { width: 100%; min-height: 2.6rem; border: 0; outline: 0; background: transparent; color: var(--counter-ink); font: inherit; font-size: var(--fs-sm); }
 .flt-search:focus-within { border-color: var(--counter-indigo); }
+.flt-search .flt-search-clear { flex: 0 0 auto; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; padding: 0; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--counter-muted); cursor: pointer; }
+.flt-search .flt-search-clear:hover { background: var(--counter-indigo-soft); color: var(--counter-indigo); }
+.flt-search .flt-search-clear svg { width: 0.9rem; height: 0.9rem; }
 .flt-block { display: grid; gap: 0.5rem; }
 .flt-label { margin: 0; color: var(--counter-muted); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
 .flt-segment { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 0.2rem; border: 1px solid var(--counter-line); border-radius: var(--r-pill); background: color-mix(in srgb, var(--counter-indigo) 6%, white); }

@@ -60,7 +60,7 @@ adminRouter.patch("/:id", async (req, res, next) => {
   try {
     const status = req.body && req.body.status;
     if (!["new", "closed"].includes(status)) return res.status(400).json({ success: false, error: "status must be new or closed" });
-    const updated = await messages.update(req.params.id, { status });
+    const updated = await messages.updateById(req.params.id, { status });
     if (!updated) return res.status(404).json({ success: false, error: "Message not found" });
     return res.json({ success: true, data: updated });
   } catch (err) { next(err); }
