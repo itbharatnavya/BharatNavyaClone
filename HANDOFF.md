@@ -1,6 +1,6 @@
 # Bharat Navya — canonical handoff
 
-## START HERE (updated 8 October 2026)
+## START HERE (updated 13 October 2026)
 
 If you are a new Claude/Codex session picking this up, read this block first, then `AGENTS.md`, `DESIGN-SYSTEM.md`, and the dated "what changed" blocks at the end of this file (newest last). Older sections (0 to 11) are history; where they disagree with this block, this block wins.
 
@@ -608,7 +608,7 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 
 ## 12 October 2026: Trade Grid hero, one page width, tags v3 + badge filter, image viewer
 
-- **Home hero background = Trade Grid** (owner's pick, option 1 of `frontend/docs/hero-living-scenes.html`). Engine ported as-is into `components/home/tradeGrid.ts` (`@ts-nocheck`, canvas 2D), mounted by `TradeGridBg.tsx` inside `.bn-home-hero`. Pauses off screen / hidden tab, one still frame under reduced motion, no pause control (owner rule). The `hero-bg-*.html` boards in `public/` remain uncommitted.
+- **Home hero background = Trade Grid** (SUPERSEDED on 12 Oct by Deal Flow, see the 12 Oct (late) block) (owner's pick, option 1 of `frontend/docs/hero-living-scenes.html`). Engine ported as-is into `components/home/tradeGrid.ts` (`@ts-nocheck`, canvas 2D), mounted by `TradeGridBg.tsx` inside `.bn-home-hero`. Pauses off screen / hidden tab, one still frame under reduced motion, no pause control (owner rule). The `hero-bg-*.html` boards in `public/` remain uncommitted.
 - **Hero height** scales with the visible height on desktop (`svh` clamps), so every screen shows the full hero plus a peek of the next sections.
 - **One page width everywhere**: `--page-max: 120rem` (1920px), `--bn-container` = page max; all shells/heads/footer align to the same text edge. If something looks centred-in-the-middle on a monitor again, it's a container still using its own cap.
 - **Trust tags v3**: per-tag colours (Verified green, Trust seal blue, GST teal, Top rated amber, Fast reply violet, Trusted orange) via `.tb-chip.is-*`; `TagRow` for rows/cards. Owner rule: solid fills, no gradients.
@@ -628,3 +628,19 @@ Branch `design`, commits `04ac867` and `1ec77fe`. Verified in the Browser pane w
 
 - `components/recruitment/RoleFinder.tsx` fetches all open jobs once (`getJobs({limit:200})`) and counts client-side (same rules as the jobs API, checked against it). Each option shows how many jobs it would leave; options that would leave 0 are disabled, so no combination reaches 0. Middle column shows the top 3 matches (`.rf-preview`), plus a one-line hint. If the job count grows past ~200, switch to a counts endpoint.
 - Frontend only.
+
+## 12 October 2026 (late): changes from a second Claude session, plus dev branch status
+
+Two commits were made from another Claude account in this same worktree and pushed to `origin/design`. This session did not write them; this block records them.
+
+- **`dda8164` Home hero background is now Deal Flow, not Trade Grid** (owner's request). Option 4 of `frontend/docs/hero-living-scenes.html`: the whole suite drifts in depth behind the hero, product-coloured cards (Ask Navya question, Directory RFQ / quote / verified supplier, Recruitment post / applicant / interview, Growth OS preview, promoted listing), each handing off to its next step with a pulse. Engine `components/home/dealFlow.ts` (`startDealFlow`, `@ts-nocheck`, canvas 2D, uses the app's next/font variables for card text), mounted by `components/home/DealFlowBg.tsx`. `tradeGrid.ts` and `TradeGridBg.tsx` were deleted. Classes renamed to the generic `.bn-herobg` / `.bn-herobg-veil`. Same behaviour rules as before: pauses off screen / hidden tab, still frame under reduced motion, no pause control.
+- **Same commit: search filter rail no longer height-capped.** The 12 Oct "sticky panels fit the screen" rule had also capped `.directory-listing-filter-rail`, which already scrolls its own `.directory-listing-filter-panel`, so two scrollbars showed. The cap now applies only to `.directory-listing-detail` (the open-listing preview).
+- **`66ebd86` Search polish:** the phone-only in-feed ad no longer renders as a broken tall card in the desktop grid view (`.dlw-grid > li` outranked its `display:none`); the location select's inset focus "underline" (which curved into half an outline on the pill) was dropped; keyboard focus keeps the global outline.
+
+**Dev branch (`origin/feature/design-integration`) has 3 own commits not yet in `design`** (it is otherwise a superset; `git rev-list --count origin/feature/design-integration..HEAD` is 0, so pulling is a fast-forward):
+- `33c03ed` "Search within results" in the listing filter panel: `Filters` takes `quickSearch={{ value, onChange }}`; `UnifiedListingWorkbench` debounces it and sends it to `GET /api/listings?q=`, re-checking rows in the browser so a term with no match shows 0. Adds three `.flt-search-clear` rules to `counter-soft-system.css` (keep them on future CSS edits).
+- `35bbdc3` Directory grid view no longer shows list rows or the in-feed ad.
+- `17dee4f` docs: migration 0019 (contact messages) is applied on the testing server.
+Pull these before the next design change to `Filters.tsx` / `UnifiedListingWorkbench.tsx` to avoid conflicts (see START HERE for the pull steps).
+
+**Still open:** owner details for `components/about/company.tsx` (team names/photos, phone, address, hours, careers email, open roles); the badge filter and role-finder counts work on loaded data only (see the 12 Oct blocks); on short screens the bottom of the filter rail can sit a few px below the viewport.
