@@ -637,10 +637,15 @@ Two commits were made from another Claude account in this same worktree and push
 - **Same commit: search filter rail no longer height-capped.** The 12 Oct "sticky panels fit the screen" rule had also capped `.directory-listing-filter-rail`, which already scrolls its own `.directory-listing-filter-panel`, so two scrollbars showed. The cap now applies only to `.directory-listing-detail` (the open-listing preview).
 - **`66ebd86` Search polish:** the phone-only in-feed ad no longer renders as a broken tall card in the desktop grid view (`.dlw-grid > li` outranked its `display:none`); the location select's inset focus "underline" (which curved into half an outline on the pill) was dropped; keyboard focus keeps the global outline.
 
-**Dev branch (`origin/feature/design-integration`) has 3 own commits not yet in `design`** (it is otherwise a superset; `git rev-list --count origin/feature/design-integration..HEAD` is 0, so pulling is a fast-forward):
+**Dev branch (`origin/feature/design-integration`) had 3 own commits, now merged into `design` (13 Oct, `e8175e6`, together with the dev's `contact.routes.js` fix `update` -> `updateById`):**
 - `33c03ed` "Search within results" in the listing filter panel: `Filters` takes `quickSearch={{ value, onChange }}`; `UnifiedListingWorkbench` debounces it and sends it to `GET /api/listings?q=`, re-checking rows in the browser so a term with no match shows 0. Adds three `.flt-search-clear` rules to `counter-soft-system.css` (keep them on future CSS edits).
 - `35bbdc3` Directory grid view no longer shows list rows or the in-feed ad.
 - `17dee4f` docs: migration 0019 (contact messages) is applied on the testing server.
-Pull these before the next design change to `Filters.tsx` / `UnifiedListingWorkbench.tsx` to avoid conflicts (see START HERE for the pull steps).
 
 **Still open:** owner details for `components/about/company.tsx` (team names/photos, phone, address, hours, careers email, open roles); the badge filter and role-finder counts work on loaded data only (see the 12 Oct blocks); on short screens the bottom of the filter rail can sit a few px below the viewport.
+
+## 13 October 2026: Deal Flow cards spread over the whole hero (Mahir)
+
+- Mahir: the drifting cards only showed at the top of the home hero, the lower part looked empty. In `components/home/dealFlow.ts`, `Deal.ry` now picks a height anywhere from the top to the bottom of the hero (was ~88% in the strip above the product cards), keeping the try that overlaps the fewest nearby cards and has the fewest cards at that height, so cards fill the side gaps and the space below the product cards evenly. Card count 15 -> 20 on desktop, 7 -> 10 on phones. Cards behind the headline still fade to 10%.
+- On phones the product cards are almost full width, so lower cards only peek at the edges.
+- Frontend only.
