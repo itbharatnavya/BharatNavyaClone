@@ -58,7 +58,17 @@ export default function CompanyProfilePage() {
   }) : null, [profile]);
 
   if (loading) return <div className="counter-public-page cp"><p className="cp-note">Loading company record…</p></div>;
-  if (error || !profile || !company) return <div className="counter-public-page cp"><section className="cp-block"><h1>{unavailable ? "This company is currently unavailable." : "We could not find this company."}</h1><p>{unavailable ? "You can browse other companies and listings." : "The record may be unavailable or the link may have changed."}</p><Link className="cp-button" href="/search">Browse services and products</Link></section></div>;
+  if (unavailable) return (
+    <div className="counter-public-page cp">
+      <div className="container-bs" style={{ paddingTop: 96, paddingBottom: 120, textAlign: "center" }}>
+        <span className="eyebrow">Company unavailable</span>
+        <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>This company is currently unavailable</h1>
+        <p style={{ color: "var(--muted)", maxWidth: 440, margin: "0 auto 28px" }}>This company page is not available right now. You can browse other companies and listings.</p>
+        <Link href="/search" className="btn btn-primary">Browse listings</Link>
+      </div>
+    </div>
+  );
+  if (error || !profile || !company) return <div className="counter-public-page cp"><section className="cp-block"><h1>We could not find this company.</h1><p>The record may be unavailable or the link may have changed.</p><Link className="cp-button" href="/search">Browse services and products</Link></section></div>;
 
   const seller = profile.seller;
   const listings = (profile.listings || []).filter((listing) => listing.status === "active");
