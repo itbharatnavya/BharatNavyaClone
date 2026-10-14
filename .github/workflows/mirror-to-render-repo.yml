@@ -1,0 +1,36 @@
+name: Mirror to Render repo
+
+# Whenever backend code changes on a tracked branch, push that same branch to
+# itbharatnavya/BharatNavyaClone, which Render watches and auto-deploys.
+# Needs repo secret MIRROR_PUSH_TOKEN: a GitHub token that can write to the clone repo.
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/design-integration
+    paths:
+      - "backend/**"
+      - "render.yaml"
+      - ".github/workflows/mirror-to-render-repo.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push branch to clone repo
+        env:
+          MIRROR_PUSH_TOKEN: ${{ secrets.MIRROR_PUSH_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -z "$MIRROR_PUSH_TOKEN" ]; then echo "MIRROR_PUSH_TOKEN secret missing"; exit 1; fi
+          git push "https://x-access-token:${MIRROR_PUSH_TOKEN}@github.com/itbharatnavya/BharatNavyaClone.git" \
+            "HEAD:refs/heads/${BRANCH}"

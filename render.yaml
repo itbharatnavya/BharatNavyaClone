@@ -1,0 +1,46 @@
+# Render blueprint — BharatSource backend (Express + Socket.IO, always-on).
+# Same codebase and same Neon Postgres as the Vercel testing API; Render is used
+# because Vercel serverless cannot hold WebSocket connections (realtime chat).
+# Secrets are set in the Render dashboard (sync: false), never committed.
+services:
+  - type: web
+    name: bharatnavya-backend
+    runtime: node
+    plan: free # free sleeps after 15 min idle -> sockets drop; use starter for always-on chat
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      # Same Neon connection string the Vercel backend uses -> identical data.
+      - key: DATABASE_URL
+        sync: false
+      - key: PG_SSL
+        value: "true"
+      - key: JWT_SECRET # must equal the Vercel value or existing logins break
+        sync: false
+      # Frontend origin allowed for CORS + Socket.IO (exact, no trailing slash).
+      - key: CORS_ORIGIN
+        value: https://bharatnavya.vercel.app
+      # Testing deployment only (no SMS gateway yet). Never on real production.
+      - key: OTP_ECHO
+        value: "true"
+      - key: RECRUITMENT_LIVE
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      # No `claude` CLI on Render -> AI falls back to deterministic search.
+      - key: AI_CLI_ENABLED
+        value: "false"
+      # Render disk is ephemeral; keep uploads in Vercel Blob.
+      - key: UPLOAD_STORAGE
+        value: vercel-blob
+      - key: BLOB_READ_WRITE_TOKEN
+        sync: false
+      # Optional: set only if FCM push is used (path to service account JSON).
+      # - key: FCM_SERVICE_ACCOUNT_PATH
+      #   sync: false
