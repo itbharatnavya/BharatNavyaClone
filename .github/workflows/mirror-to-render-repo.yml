@@ -21,6 +21,8 @@ concurrency:
 
 jobs:
   mirror:
+    # The mirrored copy of this file also lands in the clone repo; never run it there.
+    if: github.repository == 'mahir-bharat/BharatNavya'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
