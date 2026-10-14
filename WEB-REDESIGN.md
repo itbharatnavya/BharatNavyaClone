@@ -1955,6 +1955,43 @@ migration or dependency change.** No conflicts, and it sits cleanly on top of th
 3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
    warning, ad carousel script not re-run against the no-pause behaviour, `validate:design` failures.
 
+### Pulled `origin/design` again (`dda8164..333946f`) — merged 2026-10-14 (Deal Flow cards fill the hero)
+
+3 new commits from the UI dev (`8552537` "Handoff: record second-session commits ...", `e8175e6` "Merge
+feature/design-integration: search within results, grid view fix, migration 0019 note", `333946f` "Home hero:
+spread Deal Flow cards over the whole hero, add more cards (Mahir)"). The only code change is
+`components/home/dealFlow.ts` (+8/-5) plus `HANDOFF.md`. Merged with `git merge --no-ff --no-commit`, **no
+conflicts**, owner checked it locally, then committed, pushed and deployed (frontend only). **No backend, schema,
+migration or dependency change.**
+
+**What the design branch changed**
+- **Deal Flow hero cards fill the whole hero (Mahir's request).** `Deal.ry` now picks a height anywhere from the
+  top to the bottom of the hero (it was about 88% in the strip above the product cards): of 12 random tries it
+  keeps the one that overlaps the fewest nearby cards and has the fewest cards at that height, so the cards show in
+  the side gaps and below the product cards. Card count 15 to 20 on desktop, 7 to 10 on phones. Cards behind the
+  headline still fade to 10%. On phones the product cards are almost full width, so lower cards only peek at the
+  edges.
+- **The designer merged this branch into `design`** (`e8175e6`): our "search within results" fix (`33c03ed`), the
+  grid-view fix (`35bbdc3`), the `contact.routes.js` `updateById` fix and the migration 0019 note are now on `design`
+  too, so the two branches are in sync and this merge brought nothing new from them. `HANDOFF.md` records the second
+  Claude session's commits (`dda8164`, `66ebd86`) and these.
+- Their still-open list: owner details for `components/about/company.tsx` (team names and photos, phone, address,
+  hours, careers email, open roles); the badge filter and role-finder counts work on loaded data only; on short
+  screens the bottom of the filter rail can sit a few px below the viewport.
+
+**Checks run**
+- `npx tsc --noEmit`: clean. `/`, `/directory`, `/search`, `/recruitment` return 200 locally.
+- Headless Chrome (software rendering, no GPU): home hero canvas present and sized correctly at 1440 and 390px,
+  0px horizontal overflow, no uncaught page errors; about 17 fps at 1440 and 51 fps at 390.
+- Owner checked the changes locally. Nothing else pending on `origin/design` after this pull.
+
+**Flags for the owner**
+1. The canvas now draws 20 blurred cards; the 17 fps at desktop was measured without a GPU so it is pessimistic, but
+   watch for stutter on low-end laptops. If it shows, lower the desktop card count in `dealFlow.ts` (`const n`).
+2. `dealFlow.ts` is `@ts-nocheck`, so `tsc` does not cover it.
+3. Pending from earlier passes, unchanged: back-to-top bottom-right, GSAP visual pass, `/categories` hydration
+   warning, ad carousel script not re-run against the no-pause behaviour, `validate:design` failures.
+
 ---
 
 ## Reference material

@@ -124,14 +124,17 @@ const Deal={
       def.d(g,w,h);
       const b=document.createElement('canvas');b.width=c.width;b.height=c.height;const bg=b.getContext('2d');bg.filter='blur(5px)';bg.drawImage(c,0,0);
       return{c,b,w,h,pad,S,type:def.type,to:def.to||[],col:pc}});
-    const n=m?7:15;this.cards=[];
+    const n=m?10:20;this.cards=[];
     for(let k=0;k<n;k++){const c={img:this.imgs[k%this.imgs.length],z:.62+((k*.618)%1)*1.0,x:R()*(W+400)-200,ph:R()*TAU,seed:R()*3,flash:-9,fc:AMBER,pu:0};c.y=this.ry(c);this.cards.push(c)}
     this.cards.sort((a,b)=>b.z-a.z);
     this.o={cx:W/2,cy:H*.55,s:m?W/14:W/30,tilt:.35,yaw:0,f:30}},
-  // pick a height in the visible band that overlaps the fewest cards nearby
-  ry(c){const R=this.R,top=Math.max(60,FG.cardsBox.y-40);let best=0,bo=1e9;
-    for(let k=0;k<8;k++){const y=R()<.88?8+R()*(top-8):R()*H;let o=0;
-      if(c)for(const d of this.cards){if(d===c)continue;const sc=(this.m?.5:.74)/d.z;if(Math.abs(d.x-c.x)<d.img.w*sc*1.2)o+=Math.max(0,d.img.h*sc-Math.abs(d.y-y))}
+  // pick a height anywhere from the top to the bottom of the hero: of a few random tries, keep the
+  // one that overlaps the fewest cards nearby and has the fewest cards at that height overall, so
+  // the cards spread over the whole hero (they show in the side gaps and below the product cards)
+  ry(c){const R=this.R,lo=8,hi=Math.max(lo+10,H-56);let best=lo,bo=1e9;
+    for(let k=0;k<12;k++){const y=lo+R()*(hi-lo);let o=0;
+      if(c)for(const d of this.cards){if(d===c)continue;const sc=(this.m?.5:.74)/d.z,dh=d.img.h*sc,dy=Math.abs(d.y-y);
+        if(Math.abs(d.x-c.x)<d.img.w*sc*1.2)o+=Math.max(0,dh-dy);o+=Math.max(0,dh-dy)*.35}
       if(o<bo){bo=o;best=y}}return best},
   geo(c,t){const sc=(this.m?.5:.74)/c.z,w=c.img.w*sc,h=c.img.h*sc;return{x:c.x,y:c.y+Math.sin(t*.5+c.ph)*7,w,h,sc}},
   draw(dt,t){const m=this.m;
