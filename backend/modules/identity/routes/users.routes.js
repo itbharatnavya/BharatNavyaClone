@@ -20,6 +20,11 @@ const { coordsForCity } = require("../../../lib/geo");
 const { deriveBadges } = require("../../../lib/badges");
 const { trustScore } = require("../../../lib/trustScore");
 const { resolveUpload } = require("../../../lib/uploadStorage");
+const {
+  isHiddenFromViewer,
+  SELLER_UNAVAILABLE_BODY,
+  SELLER_LOCK_MESSAGES,
+} = require("../../../lib/accountStatus");
 
 /** Strip secrets (passwordHash) before a user leaves the API. */
 function sanitizeUser(u) {
@@ -298,6 +303,9 @@ router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
     if (!user || !user.sellerProfile) {
       return res.status(404).json({ success: false, error: "Seller not found" });
     }
+    if (isHiddenFromViewer(user, req.user)) {
+      return res.status(404).json(SELLER_UNAVAILABLE_BODY);
+    }
 
     // Phase 6b: indexed active-listing-ids probe + per-id composite hydrate (the
     // document read stays on store by design), was a store.findMany full scan.
@@ -333,6 +341,34 @@ router.get("/sellers/:slug", optionalAuth, async (req, res, next) => {
         listings,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/me/seller/resubmit — a REJECTED seller sends the application back for
+// review (rejected -> pending). A suspended seller can never clear it here: only an admin
+// reactivates (PUT /api/admin/sellers/:id/approve). Pending/approved sellers: no-op.
+router.post("/me/seller/resubmit", authGuard, async (req, res, next) => {
+  try {
+    const sp = req.user.sellerProfile;
+    if (!sp) {
+      return res.status(400).json({ success: false, error: "No seller profile to resubmit" });
+    }
+    if (sp.status === "suspended") {
+      return res.status(403).json({
+        success: false,
+        error: SELLER_LOCK_MESSAGES.suspended,
+        code: "seller_suspended",
+      });
+    }
+    if (sp.status !== "rejected") {
+      return res.json({ success: true, data: { user: sanitizeUser(req.user) } });
+    }
+    const updated = await identity.updateUser(req.user.id, {
+      sellerProfile: { ...sp, status: "pending" },
+    });
+    return res.json({ success: true, data: { user: sanitizeUser(updated) } });
   } catch (err) {
     next(err);
   }

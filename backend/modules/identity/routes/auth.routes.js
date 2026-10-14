@@ -7,6 +7,7 @@
  */
 
 const express = require("express");
+const { ACCOUNT_SUSPENDED_MESSAGE } = require("../../../lib/accountStatus");
 const router = express.Router();
 
 const identity = require("../index");
@@ -98,7 +99,7 @@ router.post("/verify-otp", validate(schemas.verifyOtp), async (req, res, next) =
     if (user.status === "suspended") {
       return res.status(403).json({
         success: false,
-        error: "This account has been suspended. Contact support.",
+        error: ACCOUNT_SUSPENDED_MESSAGE,
         code: "account_suspended",
       });
     }
@@ -130,7 +131,7 @@ router.post("/login", validate(schemas.passwordLogin), async (req, res, next) =>
     if (user.status === "suspended") {
       return res.status(403).json({
         success: false,
-        error: "This account has been suspended. Contact support.",
+        error: ACCOUNT_SUSPENDED_MESSAGE,
         code: "account_suspended",
       });
     }

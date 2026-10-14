@@ -13,6 +13,7 @@ const express = require("express");
 const router = express.Router();
 const { repoForCollection } = require("../../_shared");
 const { authGuard } = require("../../../middleware/authGuard");
+const { sellerLock } = require("../../../middleware/sellerLock");
 const { resolveUpload } = require("../../../lib/uploadStorage");
 
 const adBookingsRepo = repoForCollection("ad-bookings.json");
@@ -40,7 +41,7 @@ function isRecruitmentPlacement(placementType) {
 }
 
 // POST /api/my-ads — submit a campaign for admin review.
-router.post("/", authGuard, async (req, res, next) => {
+router.post("/", authGuard, sellerLock, async (req, res, next) => {
   try {
     const body = req.body || {};
     const creativeImageUrl =
@@ -114,7 +115,7 @@ router.get("/", authGuard, async (req, res, next) => {
 // PUT /api/my-ads/:id — owner (or admin) edits their own campaign. Status may only be
 // toggled between active/paused here — pending/booked stay admin-controlled (mirrors
 // how planTier/status fields are excluded from PUT /me/employer's whitelist).
-router.put("/:id", authGuard, async (req, res, next) => {
+router.put("/:id", authGuard, sellerLock, async (req, res, next) => {
   try {
     const ad = await adBookingsRepo.findById(req.params.id);
     if (!ad) {
@@ -155,7 +156,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
 });
 
 // DELETE /api/my-ads/:id — owner (or admin) deletes their own campaign.
-router.delete("/:id", authGuard, async (req, res, next) => {
+router.delete("/:id", authGuard, sellerLock, async (req, res, next) => {
   try {
     const ad = await adBookingsRepo.findById(req.params.id);
     if (!ad) {

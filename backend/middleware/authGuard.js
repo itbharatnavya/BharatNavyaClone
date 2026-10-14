@@ -7,6 +7,7 @@
  */
 
 const auth = require("../lib/auth");
+const { ACCOUNT_SUSPENDED_MESSAGE } = require("../lib/accountStatus");
 const identity = require("../modules/identity");
 
 function extractToken(req) {
@@ -38,7 +39,7 @@ async function authGuard(req, res, next) {
     if (user.status === "suspended") {
       return res.status(403).json({
         success: false,
-        error: "This account has been suspended. Contact support.",
+        error: ACCOUNT_SUSPENDED_MESSAGE,
         code: "account_suspended",
       });
     }

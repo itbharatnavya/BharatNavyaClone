@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { useAuth } from "@/lib/auth";
+import SellerLockBanner, { sellerLockOf } from "@/components/seller/SellerLockBanner";
 import { useToast } from "@/components/Toast";
 import { getCategories, createListing, updateListing, getMyListings, becomeSeller } from "@/lib/api";
 import { tokenize } from "@/lib/categorySuggest";
@@ -85,6 +86,15 @@ const LOC_CURRENT = "__current__";
 
 // useSearchParams needs a Suspense boundary in the App Router.
 export default function SellPage() {
+  const { user } = useAuth();
+  // A suspended / rejected seller cannot create or edit listings (the API refuses too).
+  if (sellerLockOf(user)) {
+    return (
+      <div className="container-bs" style={{ paddingTop: 48, paddingBottom: 64 }}>
+        <SellerLockBanner />
+      </div>
+    );
+  }
   return (
     <Suspense fallback={<div className="sl-page"><div className="skeleton" style={{ height: 220, width: "100%" }} /></div>}>
       <SellForm />

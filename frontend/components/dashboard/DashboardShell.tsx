@@ -26,6 +26,7 @@ import ReferralTab from "./ReferralTab";
 import ProfileTab from "./ProfileTab";
 import AdvertiseTab from "./AdvertiseTab";
 import ConsultationsTab from "./ConsultationsTab";
+import SellerLockBanner from "@/components/seller/SellerLockBanner";
 
 // Local widening of the shared TabId with this dashboard's own tabs ("advertise",
 // buyer "myrfqs", "bulk", "analytics", "promote", expert "consultations").
@@ -500,6 +501,8 @@ export default function DashboardShell() {
           </div>
         </div>
       </div>
+
+      <SellerLockBanner />
 
       <div style={{ display: "flex", flexDirection: narrow ? "column" : "row", gap: 28, alignItems: "flex-start" }}>
         {tabs.length > 1 && nav}

@@ -21,6 +21,7 @@
 
 const express = require("express");
 const { authGuard } = require("../../../middleware/authGuard");
+const { isHiddenFromViewer, SELLER_UNAVAILABLE_BODY } = require("../../../lib/accountStatus");
 const chat = require("../index");
 const identity = require("../../identity");
 const directory = require("../../directory");
@@ -132,6 +133,11 @@ router.post("/conversations", authGuard, async (req, res, next) => {
       return res
         .status(400)
         .json({ success: false, error: "cannot start a conversation with yourself" });
+    }
+
+    // No NEW thread with a suspended / rejected seller; existing threads stay readable.
+    if (isHiddenFromViewer(await identity.getAuthUser(toUserId), req.user)) {
+      return res.status(404).json(SELLER_UNAVAILABLE_BODY);
     }
 
     const pair = [me, toUserId];

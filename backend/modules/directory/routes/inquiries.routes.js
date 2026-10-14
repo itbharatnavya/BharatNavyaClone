@@ -28,6 +28,7 @@ const {
 } = require("../../../lib/leads");
 const { validate, schemas } = require("../../../lib/validate");
 const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
+const { isHiddenFromViewer, SELLER_UNAVAILABLE_BODY } = require("../../../lib/accountStatus");
 
 const inquiriesRepo = repoForCollection("inquiries.json");
 
@@ -104,6 +105,15 @@ async function resolveTargets(body, inquiry) {
 router.post("/", optionalAuth, validate(schemas.postInquiry), async (req, res, next) => {
   try {
     const body = req.body || {};
+
+    // No new enquiry to a suspended / rejected seller's listing (accountStatus.js).
+    if (body.listingId) {
+      const target = await directory.listingOwner(body.listingId);
+      if (target && isHiddenFromViewer(await identity.getAuthUser(target.sellerId), req.user)) {
+        return res.status(404).json(SELLER_UNAVAILABLE_BODY);
+      }
+    }
+
     const id = await nextId("inq");
 
     // The buyer identity is ONLY ever taken from the verified req.user — never

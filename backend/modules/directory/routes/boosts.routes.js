@@ -22,6 +22,7 @@ const { repoForCollection } = require("../../_shared");
 const identity = require("../../identity");
 const directory = require("../index");
 const { authGuard, requireRole } = require("../../../middleware/authGuard");
+const { sellerLock } = require("../../../middleware/sellerLock");
 
 const boostsRepo = repoForCollection("boost-requests.json");
 
@@ -59,7 +60,7 @@ function num(v) {
 }
 
 /* ------------------------------------- POST / (seller creates a request) ---- */
-router.post("/", authGuard, async (req, res, next) => {
+router.post("/", authGuard, sellerLock, async (req, res, next) => {
   try {
     const body = req.body || {};
     const listingId = body.listingId;

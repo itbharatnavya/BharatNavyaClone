@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { useToast } from "@/components/Toast";
-import { sendOtp } from "@/lib/api";
+import { sendOtp, isAccountSuspended } from "@/lib/api";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { useTr } from "@/components/discovery/hooks";
@@ -136,6 +136,10 @@ export default function LoginPage() {
       addToast("Signed in. Welcome back.", "success");
       goNext();
     } catch (err) {
+      if (isAccountSuspended(err)) {
+        router.push("/account-suspended");
+        return;
+      }
       addToast(err instanceof Error ? err.message : "Failed to verify OTP.", "error");
     } finally {
       setVerifying(false);
@@ -169,6 +173,10 @@ export default function LoginPage() {
       addToast("Signed in. Welcome back.", "success");
       goNext();
     } catch (err) {
+      if (isAccountSuspended(err)) {
+        router.push("/account-suspended");
+        return;
+      }
       addToast(err instanceof Error ? err.message : "Login failed.", "error");
     } finally {
       setLoggingIn(false);
@@ -182,6 +190,10 @@ export default function LoginPage() {
       addToast("Signed in with Google.", "success");
       goNext();
     } catch (err) {
+      if (isAccountSuspended(err)) {
+        router.push("/account-suspended");
+        return;
+      }
       addToast(err instanceof Error ? err.message : "Google sign-in failed.", "error");
     } finally {
       setGoogleLoading(false);

@@ -7,7 +7,7 @@ import Avatar from "@/components/Avatar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import ListingCard from "@/components/ListingCard";
-import { getSeller } from "@/lib/api";
+import { getSeller, isSellerUnavailable } from "@/lib/api";
 import ImageViewer from "@/components/ImageViewer";
 import TrustBadges from "@/components/TrustBadges";
 import CompanyReviews from "@/components/seller/CompanyReviews";
@@ -28,6 +28,7 @@ export default function CompanyProfilePage() {
   const [viewerAt, setViewerAt] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
 
   // Refetch after a review is saved so the rating and count up top stay in sync.
   const refresh = () => { getSeller(slug).then(setProfile).catch(() => {}); };
@@ -36,7 +37,7 @@ export default function CompanyProfilePage() {
     let live = true;
     getSeller(slug)
       .then((value) => { if (live) setProfile(value); })
-      .catch(() => { if (live) setError(true); })
+      .catch((err) => { if (live) { setError(true); setUnavailable(isSellerUnavailable(err)); } })
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, [slug]);
@@ -57,7 +58,7 @@ export default function CompanyProfilePage() {
   }) : null, [profile]);
 
   if (loading) return <div className="counter-public-page cp"><p className="cp-note">Loading company record…</p></div>;
-  if (error || !profile || !company) return <div className="counter-public-page cp"><section className="cp-block"><h1>We could not find this company.</h1><p>The record may be unavailable or the link may have changed.</p><Link className="cp-button" href="/search">Browse services and products</Link></section></div>;
+  if (error || !profile || !company) return <div className="counter-public-page cp"><section className="cp-block"><h1>{unavailable ? "This company is currently unavailable." : "We could not find this company."}</h1><p>{unavailable ? "You can browse other companies and listings." : "The record may be unavailable or the link may have changed."}</p><Link className="cp-button" href="/search">Browse services and products</Link></section></div>;
 
   const seller = profile.seller;
   const listings = (profile.listings || []).filter((listing) => listing.status === "active");

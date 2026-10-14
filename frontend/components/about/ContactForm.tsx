@@ -25,6 +25,19 @@ export default function ContactForm() {
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState("");
 
+  // Links like /contact?topic=support&message=... (account-suspended page, seller banner)
+  // open the form already filled in.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const topic = q.get("topic");
+    const message = q.get("message");
+    setForm((f) => ({
+      ...f,
+      topic: topic && TOPICS.some(([value]) => value === topic) ? topic : f.topic,
+      message: f.message || (message || "").slice(0, 1000),
+    }));
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     const u = user as { name?: string; email?: string; mobile?: string; phone?: string };

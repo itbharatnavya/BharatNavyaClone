@@ -78,6 +78,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("bs:session-expired", onSessionExpired);
   }, []);
 
+  // An admin suspended this account mid-session (lib/api.ts already dropped the token).
+  useEffect(() => {
+    const onSuspended = () => {
+      setUser(null);
+      if (window.location.pathname !== "/account-suspended") {
+        window.location.assign("/account-suspended");
+      }
+    };
+    window.addEventListener("bs:account-suspended", onSuspended);
+    return () => window.removeEventListener("bs:account-suspended", onSuspended);
+  }, []);
+
   const login = useCallback(
     async (email: string, password: string): Promise<User> => {
       const { token, user: u } = await api.login(email, password);

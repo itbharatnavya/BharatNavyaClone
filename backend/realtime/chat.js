@@ -129,6 +129,8 @@ function attachChat(io) {
       if (!payload || !payload.sub) return next(new Error("unauthorized"));
       const user = await identity.getAuthUser(payload.sub);
       if (!user) return next(new Error("unauthorized"));
+      // A suspended account cannot hold a socket (authGuard blocks its REST calls too).
+      if (user.status === "suspended") return next(new Error("account_suspended"));
       socket.user = user;
       return next();
     } catch (_err) {

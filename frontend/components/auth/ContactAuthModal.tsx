@@ -10,7 +10,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/Toast";
-import { sendOtp } from "@/lib/api";
+import { sendOtp, isAccountSuspended } from "@/lib/api";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
@@ -179,6 +179,10 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
       addToast("Logged in. Welcome back.", "success");
       handleSuccess();
     } catch (err) {
+      if (isAccountSuspended(err)) {
+        window.location.assign("/account-suspended");
+        return;
+      }
       addToast(err instanceof Error ? err.message : "Failed to verify OTP.", "error");
     } finally {
       setVerifying(false);
@@ -207,6 +211,10 @@ export default function ContactAuthModal({ open, onClose, onSuccess, purpose = "
       addToast("Logged in. Welcome back.", "success");
       handleSuccess();
     } catch (err) {
+      if (isAccountSuspended(err)) {
+        window.location.assign("/account-suspended");
+        return;
+      }
       addToast(err instanceof Error ? err.message : "Login failed.", "error");
     } finally {
       setLoggingIn(false);

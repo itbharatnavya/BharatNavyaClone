@@ -15,7 +15,9 @@ const router = express.Router();
 
 const identity = require("../../identity");
 const directory = require("../index");
-const { authGuard } = require("../../../middleware/authGuard");
+const { authGuard, optionalAuth } = require("../../../middleware/authGuard");
+const { sellerLock } = require("../../../middleware/sellerLock");
+const { isHiddenFromViewer, SELLER_UNAVAILABLE_BODY } = require("../../../lib/accountStatus");
 const { searchListings, computeFacets, slugify } = require("../../../lib/search");
 const { rankListings } = require("../../../lib/ranking");
 const { coordsForCity, distanceKm } = require("../../../lib/geo");
@@ -418,11 +420,18 @@ router.get("/", async (req, res, next) => {
 
 /* ----------------------------------------------- GET /:id (detail) --------- */
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", optionalAuth, async (req, res, next) => {
   try {
     const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
       return res.status(404).json({ success: false, error: "Listing not found" });
+    }
+
+    // A suspended / rejected seller's pages are hidden from everyone but the owner and
+    // admins (accountStatus.js) — a direct link must not bypass the search-side hiding.
+    const owner = await identity.getAuthUser(listing.sellerId);
+    if (isHiddenFromViewer(owner, req.user)) {
+      return res.status(404).json(SELLER_UNAVAILABLE_BODY);
     }
 
     // Light view tracking (SELLER ANALYTICS): best-effort increment of listing.views.
@@ -432,7 +441,7 @@ router.get("/:id", async (req, res, next) => {
     directory.bumpListingViews(listing.id).catch(() => {});
 
     let seller = null;
-    const user = await identity.getAuthUser(listing.sellerId);
+    const user = owner;
     if (user) {
       const sp = user.sellerProfile || {};
       // FLAT shape — the frontend's ListingSeller reads seller.slug / .companyName
@@ -550,7 +559,7 @@ router.get("/:id/offers", async (req, res, next) => {
 
 /* ----------------------------------------------- POST / (create) ----------- */
 
-router.post("/", authGuard, async (req, res, next) => {
+router.post("/", authGuard, sellerLock, async (req, res, next) => {
   try {
     const body = req.body || {};
     const type = body.type;
@@ -707,7 +716,7 @@ router.post("/", authGuard, async (req, res, next) => {
  * Returns { created, errors:[{row, message}] }. `row` is the 1-based index into the
  * received `rows` array. Capped at BULK_MAX_ROWS rows per request.
  */
-router.post("/bulk", authGuard, async (req, res, next) => {
+router.post("/bulk", authGuard, sellerLock, async (req, res, next) => {
   try {
     const body = req.body || {};
     const rows = Array.isArray(body.rows) ? body.rows : null;
@@ -914,7 +923,7 @@ function isMaterialChange(listing, patch) {
   return false;
 }
 
-router.put("/:id", authGuard, async (req, res, next) => {
+router.put("/:id", authGuard, sellerLock, async (req, res, next) => {
   try {
     const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
@@ -1089,7 +1098,7 @@ router.put("/:id", authGuard, async (req, res, next) => {
 
 /* --------------------------------------- PUT /:id/sold (mark as sold) ------- */
 
-router.put("/:id/sold", authGuard, async (req, res, next) => {
+router.put("/:id/sold", authGuard, sellerLock, async (req, res, next) => {
   try {
     const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {
@@ -1107,7 +1116,7 @@ router.put("/:id/sold", authGuard, async (req, res, next) => {
 
 /* --------------------------------------------- DELETE /:id (delete) -------- */
 
-router.delete("/:id", authGuard, async (req, res, next) => {
+router.delete("/:id", authGuard, sellerLock, async (req, res, next) => {
   try {
     const listing = await directory.listingsRepo.getById(req.params.id);
     if (!listing) {

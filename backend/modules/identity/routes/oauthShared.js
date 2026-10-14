@@ -12,6 +12,7 @@
  */
 
 const identity = require("../index");
+const { ACCOUNT_SUSPENDED_MESSAGE } = require("../../../lib/accountStatus");
 const auth = require("../../../lib/auth");
 
 /** Strip secrets (passwordHash) before a user ever leaves the API. Same
@@ -69,7 +70,7 @@ async function finishOauthLogin(res, profile) {
   if (user.status === "suspended") {
     res.status(403).json({
       success: false,
-      error: "This account has been suspended. Contact support.",
+      error: ACCOUNT_SUSPENDED_MESSAGE,
       code: "account_suspended",
     });
     return;

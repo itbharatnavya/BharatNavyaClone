@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Listing, SellerPublicProfile, Conversation } from "@/lib/types";
-import { getListing, getSeller, getListings, getListingOffers, getConversation, type Offer } from "@/lib/api";
+import { getListing, getSeller, getListings, getListingOffers, getConversation, isSellerUnavailable, type Offer } from "@/lib/api";
 import { formatLocation } from "@/lib/indiaGeo";
 import { useShortlist } from "@/lib/shortlist";
 import { useAuth } from "@/lib/auth";
@@ -140,6 +140,7 @@ export default function ListingDetailPage() {
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   const [deepChatConvo, setDeepChatConvo] = useState<Conversation | null>(null);
   const [deepChatOpen, setDeepChatOpen] = useState(false);
 
@@ -163,7 +164,9 @@ export default function ListingDetailPage() {
       } catch (err) {
         if (!cancelled) {
           setNotFound(true);
-          addToast(err instanceof Error ? err.message : "Listing not found.", "error");
+          // A suspended / rejected seller's page: a calm "unavailable" screen, no error toast.
+          if (isSellerUnavailable(err)) setUnavailable(true);
+          else addToast(err instanceof Error ? err.message : "Listing not found.", "error");
         }
       }
 
@@ -356,12 +359,16 @@ export default function ListingDetailPage() {
     return (
       <div className="directory-design counter-public-page listing-detail-page">
         <div className="container-bs" style={{ paddingTop: 120, paddingBottom: 120, textAlign: "center" }}>
-          <span className="eyebrow">{t("listing.notFound.eyebrow", "Listing not found")}</span>
+          <span className="eyebrow">
+            {unavailable ? "Seller unavailable" : t("listing.notFound.eyebrow", "Listing not found")}
+          </span>
           <h1 style={{ fontSize: "var(--fs-xl)", fontWeight: 800, margin: "12px 0 16px", color: "var(--ink)" }}>
-            {t("listing.notFound.title", "This listing doesn't exist")}
+            {unavailable ? "This seller is currently unavailable" : t("listing.notFound.title", "This listing doesn't exist")}
           </h1>
           <p style={{ color: "var(--muted)", maxWidth: 440, margin: "0 auto 28px" }}>
-            {t("listing.notFound.message", "It may have been removed or the link is incorrect.")}
+            {unavailable
+              ? "This listing is not available right now. You can browse other sellers."
+              : t("listing.notFound.message", "It may have been removed or the link is incorrect.")}
           </p>
           <Link href="/search" className="btn btn-primary">
             {t("listing.notFound.cta", "Browse listings")}

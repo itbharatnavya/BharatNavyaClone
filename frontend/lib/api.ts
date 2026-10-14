@@ -99,6 +99,25 @@ export function clearToken(): void {
   }
 }
 
+// An error from the API that keeps the server's machine-readable `code` (e.g.
+// "account_suspended", "seller_unavailable") next to the message, so callers can show
+// a dedicated screen instead of a generic toast. Still an `Error`, so every existing
+// `err instanceof Error ? err.message : ...` handler keeps working.
+export class ApiRequestError extends Error {
+  code?: string;
+  status: number;
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiRequestError";
+    this.status = status;
+    this.code = code;
+  }
+}
+export const isAccountSuspended = (err: unknown): boolean =>
+  err instanceof ApiRequestError && err.code === "account_suspended";
+export const isSellerUnavailable = (err: unknown): boolean =>
+  err instanceof ApiRequestError && err.code === "seller_unavailable";
+
 // In-flight GET de-dup: collapses concurrent identical requests (same path,
 // fired before the first one resolves — e.g. several components on the same
 // page each requesting the same data at mount) into one shared network call.
@@ -163,6 +182,16 @@ async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T>
         window.dispatchEvent(new Event("bs:session-expired"));
       }
     }
+    // Account suspended by an admin: the session is dead, so drop the token and tell
+    // AuthProvider (it sends the user to /account-suspended). With no token this is the
+    // login attempt itself — the login page shows the same screen from the error code.
+    const code = json && "code" in json ? String((json as { code?: unknown }).code || "") : "";
+    if (res.status === 403 && code === "account_suspended" && token) {
+      clearToken();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("bs:account-suspended"));
+      }
+    }
     // 429 (helmet + express-rate-limit — auth, AI, and the global /api limiter):
     // give callers a stable, friendly message instead of the raw backend body,
     // and honour Retry-After when the server sent it.
@@ -174,7 +203,7 @@ async function doRequest<T>(path: string, options: RequestInit = {}): Promise<T>
           : " Please wait a moment and try again.";
       throw new Error(`Too many requests.${wait}`);
     }
-    throw new Error(message);
+    throw new ApiRequestError(message, res.status, code || undefined);
   }
 
   return json.data;
@@ -286,6 +315,13 @@ export async function becomeSeller(
     method: "POST",
     body: JSON.stringify(body),
   });
+  return data.user;
+}
+
+// A rejected seller sends the application back for review (rejected -> pending).
+// A suspended seller gets a 403: only an admin can lift a suspension.
+export async function resubmitSeller(): Promise<User> {
+  const data = await request<{ user: User }>(`/api/me/seller/resubmit`, { method: "POST" });
   return data.user;
 }
 
