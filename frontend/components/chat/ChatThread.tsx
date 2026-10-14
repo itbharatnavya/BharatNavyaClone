@@ -101,12 +101,20 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
           const missed = page.messages;
           if (!missed?.length) return;
           setMessages((prev) => {
-            const seqs = new Set(prev.map((m) => m.seq));
+            // A message sent just before a reconnect is saved server-side but its live
+            // echo can be missed — settle those pending bubbles by clientMsgId.
+            const byClient = new Map(missed.filter((m) => m.clientMsgId).map((m) => [m.clientMsgId, m]));
+            const settled = prev.map((m) =>
+              m.pending && m.clientMsgId && byClient.has(m.clientMsgId)
+                ? { ...byClient.get(m.clientMsgId)!, pending: false }
+                : m
+            );
+            const seqs = new Set(settled.map((m) => m.seq));
             const add = missed.filter((m) => !seqs.has(m.seq));
-            add.forEach((m) => {
+            missed.forEach((m) => {
               if (m.seq > lastSeqRef.current) lastSeqRef.current = m.seq;
             });
-            return add.length ? [...prev, ...add] : prev;
+            return add.length ? [...settled, ...add] : settled;
           });
         })
         .catch(() => undefined);
@@ -146,7 +154,27 @@ export default function ChatThread({ conversationId, meId, onIncomingMessage, ma
     };
     setMessages((prev) => [...prev, optimistic]);
     setText("");
-    socket.emit("sendMessage", { conversationId, body, clientMsgId });
+    // The server acks every send ({ ok, message } or { ok:false, error }). Settle the
+    // bubble from the ack so it never depends on the room echo, which a reconnect can miss.
+    socket.emit(
+      "sendMessage",
+      { conversationId, body, clientMsgId },
+      (res?: { ok?: boolean; message?: Record<string, unknown>; error?: string }) => {
+        if (conversationIdRef.current !== conversationId) return;
+        if (res && res.ok && res.message) {
+          const { msg } = normalizeIncomingMessage(res.message);
+          if (msg.seq > lastSeqRef.current) lastSeqRef.current = msg.seq;
+          setMessages((prev) =>
+            prev.some((m) => m.seq === msg.seq && !m.pending)
+              ? prev
+              : prev.map((m) => (m.clientMsgId === clientMsgId ? { ...msg, pending: false } : m))
+          );
+        } else {
+          setMessages((prev) => prev.filter((m) => m.clientMsgId !== clientMsgId));
+          addToast((res && res.error) || tr("dashboard.inbox.offline", "Chat is offline, please retry"), "error");
+        }
+      }
+    );
   }, [text, meId, conversationId, addToast, tr]);
 
   return (

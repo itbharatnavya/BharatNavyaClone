@@ -209,6 +209,10 @@ function attachChat(io) {
           return { msg, duplicate: false };
         });
 
+        // Participant is verified above: make sure this socket is in the room so it
+        // receives its own echo even if it reconnected since joinConversation.
+        socket.join(roomFor(conversationId));
+
         // Live push (optimization) only for a newly-created message.
         if (!outcome.duplicate) {
           io.to(roomFor(conversationId)).emit("message", outcome.msg);
