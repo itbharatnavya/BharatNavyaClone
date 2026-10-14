@@ -26,6 +26,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Without this, checkout leaves the default GITHUB_TOKEN in git config and it
+          # overrides the mirror token below (403 as github-actions[bot]).
+          persist-credentials: false
       - name: Push branch to clone repo
         env:
           MIRROR_PUSH_TOKEN: ${{ secrets.MIRROR_PUSH_TOKEN }}
