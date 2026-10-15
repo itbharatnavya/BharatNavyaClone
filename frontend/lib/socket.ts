@@ -28,10 +28,23 @@ export function getSocket(): Socket {
   socket = io(socketUrl(), {
     autoConnect: true,
     transports: ["websocket", "polling"],
-    auth: { token: getToken() || undefined },
+    // Function form: socket.io re-reads the token on every (re)connect, so it never replays an old login.
+    auth: (cb) => cb({ token: getToken() || undefined }),
   });
 
   return socket;
+}
+
+/**
+ * Re-authenticate the shared socket after the login changes (login, logout, switching account).
+ * The socket is a singleton that lives across the whole session, so without this it stays signed in as
+ * the previous user and the server saves new messages under that user. Keeps the same Socket object so
+ * the listeners other components attached stay in place; chat threads re-join their room on reconnect.
+ */
+export function syncSocketAuth(): void {
+  if (!socket) return;
+  socket.disconnect();
+  socket.connect();
 }
 
 /** Force a fresh connection (e.g. after login/logout swaps the token). */

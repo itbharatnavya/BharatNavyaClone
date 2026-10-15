@@ -14,6 +14,7 @@ import React, {
 } from "react";
 import type { User } from "./types";
 import * as api from "./api";
+import { syncSocketAuth } from "./socket";
 
 interface RegisterInput {
   name: string;
@@ -66,6 +67,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  // The chat socket authenticates with the token it connected with; reconnect it whenever the signed-in
+  // account changes so messages and notifications belong to the account now logged in.
+  const userId = user?.id;
+  useEffect(() => {
+    if (loading) return;
+    syncSocketAuth();
+  }, [userId, loading]);
 
   // A mid-session 401 (token revoked, or the rare expiry) is reported here by
   // lib/api.ts's doRequest via a plain DOM event rather than a direct import,
