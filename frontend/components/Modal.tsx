@@ -33,11 +33,15 @@ export default function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // Callers usually pass a new onClose every render. Keeping it in a ref stops the effect below from re-running
+  // on each keystroke, which re-focused the first button (the close icon) and stole focus from inputs.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
     if (!open) return;
     const previousFocus = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
       if (e.key === "Tab" && dialogRef.current) {
         const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'));
         if (!focusable.length) return;
@@ -56,7 +60,7 @@ export default function Modal({
       document.body.style.overflow = prev;
       previousFocus?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
