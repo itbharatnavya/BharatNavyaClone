@@ -2069,9 +2069,16 @@ main :is(h1, h2, h3, h4),
   border-top: 0;
 }
 
-:is(.directory-result-scope, .directory-mobile-filters, .recruitment-results-tools, .recruitment-state) {
+:is(.directory-result-scope, .directory-mobile-filters, .recruitment-state) {
   overflow: hidden;
   border-radius: var(--r-lg);
+}
+
+/* Desktop results strip is bare text on the page (no border, padding or fill). Clipping it with a
+   radius cut the left edge off the count and caption; the padded card version lives in the
+   max-width: 850px block further down. */
+.recruitment-results-tools {
+  overflow: visible;
 }
 
 /* Company, role and employer records */
