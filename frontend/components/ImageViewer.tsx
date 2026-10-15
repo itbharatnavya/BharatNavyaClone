@@ -128,8 +128,8 @@ export default function ImageViewer({ images, start = 0, onClose, title }: { ima
       <img ref={img} key={current.src} src={current.src} alt={current.alt || ""} draggable={false}
         style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} />
       {images.length > 1 && <>
-        <button type="button" className="iv-nav is-prev" onClick={() => go(-1)} aria-label="Previous image"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" /></svg></button>
-        <button type="button" className="iv-nav is-next" onClick={() => go(1)} aria-label="Next image"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg></button>
+        <button type="button" className="iv-nav is-prev" onPointerDown={(e) => e.stopPropagation()} onClick={() => go(-1)} aria-label="Previous image"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" /></svg></button>
+        <button type="button" className="iv-nav is-next" onPointerDown={(e) => e.stopPropagation()} onClick={() => go(1)} aria-label="Next image"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg></button>
       </>}
     </div>
 
