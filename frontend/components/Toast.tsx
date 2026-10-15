@@ -70,7 +70,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           position: "fixed",
           top: 20,
           right: 20,
-          zIndex: 200,
+          zIndex: 5000, // above Modal (2000) and the image viewer (1000), or toasts hide behind them
           display: "flex",
           flexDirection: "column",
           gap: 10,
