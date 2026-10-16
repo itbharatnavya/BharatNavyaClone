@@ -649,3 +649,27 @@ Two commits were made from another Claude account in this same worktree and push
 - Mahir: the drifting cards only showed at the top of the home hero, the lower part looked empty. In `components/home/dealFlow.ts`, `Deal.ry` now picks a height anywhere from the top to the bottom of the hero (was ~88% in the strip above the product cards), keeping the try that overlaps the fewest nearby cards and has the fewest cards at that height, so cards fill the side gaps and the space below the product cards evenly. Card count 15 -> 20 on desktop, 7 -> 10 on phones. Cards behind the headline still fade to 10%.
 - On phones the product cards are almost full width, so lower cards only peek at the edges.
 - Frontend only.
+
+## 15 to 16 October 2026: full audit fixes, phone tags, home hero on phones
+
+**Backend (dev must redeploy the backend):** `backend/lib/security.js` — the login rate limiter (10 per 15 min, keyed on IP) also counted `GET /api/auth/me`, which runs on every page load of a signed-in user; after ~10 loads everyone behind that IP got 429 and the frontend cleared their token (signed them out). The auth limiter now skips GET; only POST login/register/OTP count. `makeLimiter` gained an optional `skip`.
+
+**Frontend fixes from the audit** (30 public pages + every dashboard tab as demo buyer/seller/employer at 390 and 1440, 343 internal links all 200, main flows clicked through):
+- `lib/auth.tsx`: a failed `/auth/me` that isn't a 401 (rate limit, network, backend restart) no longer clears the token; it retries up to 4 times with loading kept on.
+- `lib/useRequireAuth.ts`: default redirect is now `/login?next=<current path+query>`; `SellerHeader` follow-gate keeps `next` too.
+- Tab titles: root metadata has a `%s | Bharat Navya` template; static routes got tiny `layout.tsx` files with a title; data pages use `lib/usePageTitle.ts` (re-applies after Next resets the title on URL rewrites).
+- Not found: `app/not-found.tsx` and the category not-found use the same `EmptyState` (now takes `headingLevel="h1"`), copy "We couldn't find that page" + "Go to the Directory".
+- `/blog` author links: employer authors go to `/employer/<slug>` (were 404 `/seller/<slug>`).
+- Phone list cards: save heart moved onto the photo corner (sat on the Contact button); specs wrap instead of "M... 100 pi...".
+- Phone lists (search rows, listing cards): trust tags on one line — first tag keeps its word, the rest are icon-only (`.tb-label` visually hidden, `title` on the chip). Company/listing pages keep full chips.
+- `/credit-card`, `/mutual`, `/consultations`, `/offer`, `/features` now use the public floating header (`routePresentation.ts`); coming-soon badge was white on white.
+- Recruitment blog hero: navy (was black `is-ink`) and normal height. About "Before" strike runs through wrapped lines; About hero buttons stack on phones.
+- Copy: removed "ordered by current API results", job ledger "Posted / 14 days ago", admin login placeholder no longer shows the admin email, city placeholder "State first".
+- Reduced motion: category marquees become a full-width grid.
+- Home hero (Deal Flow) on phones: about half the cards sit in the band above the product cards, and cards behind the title show blurred at ~30% (desktop still fades them to 10%).
+
+**Local data note:** a test review was posted and deleted on the local DB; that recomputed Chennai MedTech Supplies' stored rating locally (4.0 / 1). Re-seed to restore.
+
+**Still uncommitted on purpose:** `frontend/public/recruitment-hero-options.html` and `directory-hero-options.html` (six full-hero animation options each, owner choosing), plus the older boards listed in START HERE.
+
+Left alone for the owner: the Chat button on listing pages (dev added it; CLAUDE.md says no chat there).

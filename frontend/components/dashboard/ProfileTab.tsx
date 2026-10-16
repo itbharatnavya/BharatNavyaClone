@@ -53,7 +53,7 @@ function CityField({
     <div>
       <Select
         label={label}
-        placeholder={state ? "Select city" : "Select state first"}
+        placeholder={state ? "Select city" : "State first"}
         value={selectValue}
         disabled={!state}
         onChange={(e) => {

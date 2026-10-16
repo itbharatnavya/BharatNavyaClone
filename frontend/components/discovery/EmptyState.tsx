@@ -11,6 +11,8 @@ export interface EmptyStateProps {
   actionHref?: string;
   onAction?: () => void;
   className?: string;
+  /** Use "h1" when the empty state is the whole page (e.g. not found). */
+  headingLevel?: "h1" | "h3";
 }
 
 function DefaultIcon() {
@@ -30,7 +32,9 @@ export default function EmptyState({
   actionHref,
   onAction,
   className = "",
+  headingLevel = "h3",
 }: EmptyStateProps) {
+  const Heading = headingLevel;
   return (
     <div
       className={["card card-flat card-pad", className].filter(Boolean).join(" ")}
@@ -58,7 +62,7 @@ export default function EmptyState({
       >
         {icon || <DefaultIcon />}
       </div>
-      <h3 style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>{title}</h3>
+      <Heading style={{ fontSize: "var(--fs-lg)", fontWeight: 700, color: "var(--ink)" }}>{title}</Heading>
       {message && (
         <p style={{ fontSize: "var(--fs-sm)", color: "var(--muted)", maxWidth: 420 }}>{message}</p>
       )}

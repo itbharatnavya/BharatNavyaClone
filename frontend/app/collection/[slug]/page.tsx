@@ -12,6 +12,7 @@ import type { CollectionDetail } from "@/lib/api";
 import Breadcrumbs, { Crumb } from "@/components/Breadcrumbs";
 import ListingCard from "@/components/ListingCard";
 import EmptyState from "@/components/discovery/EmptyState";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const GRID: React.CSSProperties = {
   display: "grid",
@@ -40,6 +41,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
   const { slug } = params;
 
   const [data, setData] = useState<CollectionDetail | null>(null);
+  usePageTitle(data?.title);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 

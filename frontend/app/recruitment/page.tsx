@@ -12,6 +12,7 @@ import { getJobFunctions, getJobs, getStories } from "@/lib/api";
 import RecruitmentSections from "@/components/recruitment/RecruitmentSections";
 import { dockEdge, useSearchDock } from "@/lib/searchDock";
 import type { Job, JobFunction, StoryGroup } from "@/lib/types";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const svg = (d: string) => <svg aria-hidden viewBox="0 0 24 24">{d.split("|").map((path) => <path key={path} d={path} />)}</svg>;
 
@@ -49,6 +50,7 @@ export default function RecruitmentPage() {
   const heroFocusedRef = useRef(false);
   const pendingDockRef = useRef<boolean | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
+  usePageTitle("Recruitment");
   const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
   const [stories, setStories] = useState<StoryGroup[]>([]);
   const [loading, setLoading] = useState(true);

@@ -92,7 +92,7 @@ export default function AboutSections() {
       <header className="le-section-head"><div><h2 id="problem-title">Why we started</h2></div></header>
       <div className="ab-pairs">
         {PAIRS.map((pair) => <article key={pair.before} className="ab-pair">
-          <p className="ab-before"><span>Before</span><em>{pair.before}</em></p>
+          <p className="ab-before"><span>Before</span><em><i>{pair.before}</i></em></p>
           <span className="ab-pair-arrow" aria-hidden><Icon d={ARROW} /></span>
           <p className="ab-after"><span>With Bharat Navya</span><strong>{pair.after}</strong></p>
         </article>)}

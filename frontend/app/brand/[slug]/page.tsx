@@ -15,6 +15,7 @@ import ApiAdvertisingSlot from "@/components/evidence/ApiAdvertisingSlot";
 import Pagination from "@/components/Pagination";
 import EmptyState from "@/components/discovery/EmptyState";
 import { Monogram } from "@/components/brand/BrandCard";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 type Sort = "newest" | "price_asc" | "price_desc";
 type ViewValue = "list" | "grid";
@@ -131,6 +132,7 @@ export default function BrandPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
 
   const [data, setData] = useState<BrandDetail | null>(null);
+  usePageTitle(data?.brand.name);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [sort, setSort] = useState<Sort>("newest");

@@ -10,6 +10,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { User } from "./types";
@@ -41,8 +42,9 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const retries = useRef(0);
 
-  const refresh = useCallback(async (): Promise<User | null> => {
+  const refresh = useCallback(async function load(): Promise<User | null> {
     if (!api.getToken()) {
       setUser(null);
       setLoading(false);
@@ -50,15 +52,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       const me = await api.getMe();
+      retries.current = 0;
       setUser(me);
+      setLoading(false);
       return me;
     } catch {
-      // token invalid/expired → clear it
-      api.clearToken();
-      setUser(null);
+      // A dead session comes back as 401, and request() has already cleared the token.
+      if (!api.getToken()) {
+        setUser(null);
+        setLoading(false);
+        return null;
+      }
+      // Anything else (rate limit, network blip, backend restarting) is temporary: keep the
+      // token and the current user, and retry. On first load the loading state stays on
+      // meanwhile, so signed-in pages don't bounce to /login. Give up after a few tries.
+      if (retries.current < 4) {
+        retries.current += 1;
+        window.setTimeout(() => void load(), 1500 * retries.current);
+      } else {
+        retries.current = 0;
+        setLoading(false);
+      }
       return null;
-    } finally {
-      setLoading(false);
     }
   }, []);
 

@@ -165,7 +165,7 @@ export default function SellerHeader(props: SellerHeaderProps) {
   async function toggleFollow() {
     if (!user) {
       addToast("Please log in to follow this seller", "info");
-      router.push("/login");
+      router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     setFollowBusy(true);

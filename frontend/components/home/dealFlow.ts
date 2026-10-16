@@ -124,7 +124,7 @@ const Deal={
       def.d(g,w,h);
       const b=document.createElement('canvas');b.width=c.width;b.height=c.height;const bg=b.getContext('2d');bg.filter='blur(5px)';bg.drawImage(c,0,0);
       return{c,b,w,h,pad,S,type:def.type,to:def.to||[],col:pc}});
-    const n=m?10:20;this.cards=[];
+    const n=m?12:20;this.cards=[];
     for(let k=0;k<n;k++){const c={img:this.imgs[k%this.imgs.length],z:.62+((k*.618)%1)*1.0,x:R()*(W+400)-200,ph:R()*TAU,seed:R()*3,flash:-9,fc:AMBER,pu:0};c.y=this.ry(c);this.cards.push(c)}
     this.cards.sort((a,b)=>b.z-a.z);
     this.o={cx:W/2,cy:H*.55,s:m?W/14:W/30,tilt:.35,yaw:0,f:30}},
@@ -132,7 +132,10 @@ const Deal={
   // one that overlaps the fewest cards nearby and has the fewest cards at that height overall, so
   // the cards spread over the whole hero (they show in the side gaps and below the product cards)
   ry(c){const R=this.R,lo=8,hi=Math.max(lo+10,H-56);let best=lo,bo=1e9;
-    for(let k=0;k<12;k++){const y=lo+R()*(hi-lo);let o=0;
+    // phones: the product cards cover almost everything below the title, so about half the
+    // cards go in the band above them, where they can actually be seen
+    const band=this.m&&R()<.55?Math.max(lo+10,FG.cardsBox.y-30):hi;
+    for(let k=0;k<12;k++){const y=lo+R()*(band-lo);let o=0;
       if(c)for(const d of this.cards){if(d===c)continue;const sc=(this.m?.5:.74)/d.z,dh=d.img.h*sc,dy=Math.abs(d.y-y);
         if(Math.abs(d.x-c.x)<d.img.w*sc*1.2)o+=Math.max(0,dh-dy);o+=Math.max(0,dh-dy)*.35}
       if(o<bo){bo=o;best=y}}return best},
@@ -154,8 +157,11 @@ const Deal={
       for(const p of [p0,p1]){ctx.fillStyle=`rgba(${col},.8)`;ctx.beginPath();ctx.arc(p[0],p[1],2.5,0,TAU);ctx.fill()}
       const u=((t+c.seed)%2.8)/2.8;if(u<c.pu){d.flash=t;d.fc=col}c.pu=u;const hd=bz(easeIO(u));glowDot(hd[0],hd[1],13,col)}
     for(const c of this.cards){const g=geos.get(c),im=c.img;if(g.x>W||g.x+g.w<0)continue;
-      let a=clamp(1.32-c.z*.6,.3,.95);const r=FG.h1;if(g.x<r.x+r.w+20&&g.x+g.w>r.x-20&&g.y<r.y+r.h+20&&g.y+g.h>r.y-20)a*=.1;
-      ctx.globalAlpha=a;const pd=im.pad*g.sc;ctx.drawImage(c.z>1.15?im.b:im.c,g.x-pd,g.y-pd,g.w+2*pd,g.h+2*pd);
+      let a=clamp(1.32-c.z*.6,.3,.95);const r=FG.h1,under=g.x<r.x+r.w+20&&g.x+g.w>r.x-20&&g.y<r.y+r.h+20&&g.y+g.h>r.y-20;
+      // behind the title: on desktop nearly hidden; on phones (where the title is most of the visible
+      // hero) shown soft and blurred, so the top still moves but the title stays easy to read
+      if(under)a=m?Math.min(a,.3):a*.1;
+      ctx.globalAlpha=a;const pd=im.pad*g.sc;ctx.drawImage(c.z>1.15||(under&&m)?im.b:im.c,g.x-pd,g.y-pd,g.w+2*pd,g.h+2*pd);
       const fa=1-(t-c.flash)/1.4;if(fa>0){ctx.globalAlpha=a*fa;ctx.strokeStyle=`rgb(${c.fc})`;ctx.lineWidth=2;rr(ctx,g.x-1,g.y-1,g.w+2,g.h+2,16*g.sc);ctx.stroke();
         ctx.globalAlpha=a*fa*.5;ctx.lineWidth=1;rr(ctx,g.x-6*(1-fa)-1,g.y-6*(1-fa)-1,g.w+12*(1-fa)+2,g.h+12*(1-fa)+2,18*g.sc);ctx.stroke()}
       ctx.globalAlpha=1}

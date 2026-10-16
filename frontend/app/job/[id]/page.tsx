@@ -16,6 +16,7 @@ import { getEmployer, getJob, getJobs, getMyApplications } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { closingContext, formatSalary, jobFreshness, jobLocation, rolePreviewModel } from "@/lib/recruitmentDesign";
 import type { Job } from "@/lib/types";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function employmentLabel(value: Job["employmentType"]) { return value ? value.split("-").map((word) => word[0].toUpperCase() + word.slice(1)).join("-") : "Not provided"; }
 function experienceLabel(value: Job["experienceLevel"]) { return value ? `${value[0].toUpperCase()}${value.slice(1)} level` : "Not provided"; }
@@ -29,6 +30,7 @@ function JobDetailInner() {
   const id = typeof params.id === "string" ? params.id : "";
   const { user } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
+  usePageTitle(job?.title);
   const [related, setRelated] = useState<Job[]>([]);
   const [cover, setCover] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ function JobDetailInner() {
       <div className="recruitment-detail-title"><div className="recruitment-detail-identity"><Avatar src={job.employer?.logo} name={company} size={58} /><span>{job.employer?.slug ? <Link href={`/employer/${job.employer.slug}`}>{company}</Link> : <strong>{company}</strong>}<small>{job.employer?.isVerified ? "Verified employer" : "Employer profile"}</small></span></div><h1 id="job-title">{job.title}</h1><div className="recruitment-result-skills">{job.skills.slice(0, 5).map((skill) => <span key={skill}>{skill}</span>)}</div></div>
       <EvidenceMedia asset={preview?.employerCover} ratio="wide" priority />
     </section>
-    <dl className="recruitment-role-ledger"><div><dt>Salary</dt><dd>{formatSalary(job, true)}</dd></div><div><dt>Workplace</dt><dd>{jobLocation(job)}</dd></div><div><dt>Published</dt><dd>{jobFreshness(job.postedAt)}</dd></div><div><dt>Closing</dt><dd>{closingContext(job.expiresAt)}</dd></div><div><dt>Experience</dt><dd>{experienceLabel(job.experienceLevel)}</dd></div><div><dt>Employment</dt><dd>{employmentLabel(job.employmentType)}</dd></div></dl>
+    <dl className="recruitment-role-ledger"><div><dt>Salary</dt><dd>{formatSalary(job, true)}</dd></div><div><dt>Workplace</dt><dd>{jobLocation(job)}</dd></div><div><dt>Posted</dt><dd>{((s) => s.charAt(0).toUpperCase() + s.slice(1))(jobFreshness(job.postedAt).replace(/^Published /, ""))}</dd></div><div><dt>Closing</dt><dd>{closingContext(job.expiresAt)}</dd></div><div><dt>Experience</dt><dd>{experienceLabel(job.experienceLevel)}</dd></div><div><dt>Employment</dt><dd>{employmentLabel(job.employmentType)}</dd></div></dl>
     <div className="recruitment-detail-layout">
       <div className="recruitment-detail-copy">
         <section><h2>About this role</h2><p>{job.description || "The employer has not provided a role description."}</p></section>

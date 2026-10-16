@@ -174,12 +174,12 @@ const DICT: Record<string, { en: string; hi: string }> = {
   "nav.home": { en: "Home", hi: "होम" },
   "nav.directoryCrumb": { en: "Directory", hi: "डायरेक्टरी" },
   "nav.consultationsCrumb": { en: "Consultations", hi: "परामर्श" },
-  "category.notFound.title": { en: "We couldn't find that category", hi: "हमें वह श्रेणी नहीं मिली" },
+  "category.notFound.title": { en: "We couldn't find that page", hi: "हमें वह पेज नहीं मिला" },
   "category.notFound.message": {
-    en: "The category may have moved or been renamed. Try searching or browse from the homepage.",
-    hi: "श्रेणी हटाई या नाम बदली गई हो सकती है। खोजें या होमपेज से ब्राउज़ करें।",
+    en: "The link may be wrong, or the page has moved. Search the Directory or go back home.",
+    hi: "लिंक गलत हो सकता है या पेज हट गया है। डायरेक्टरी में खोजें या होम पर जाएँ।",
   },
-  "category.notFound.cta": { en: "Back to home", hi: "होम पर वापस जाएँ" },
+  "category.notFound.cta": { en: "Go to the Directory", hi: "डायरेक्टरी पर जाएँ" },
   "category.empty.title": { en: "No listings here yet", hi: "यहाँ अभी कोई लिस्टिंग नहीं" },
   "category.empty.message": {
     en: "Be the first to list in this category, or adjust your filters to see more.",
