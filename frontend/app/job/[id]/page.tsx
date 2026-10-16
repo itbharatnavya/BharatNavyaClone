@@ -71,9 +71,10 @@ function JobDetailInner() {
 
   return <div className="recruitment-core"><div className="recruitment-core-shell recruitment-detail">
     <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Recruitment", href: "/recruitment" }, { label: "Roles", href: "/recruitment/jobs" }, { label: job.title }]} />
-    <section className="recruitment-detail-hero" aria-labelledby="job-title">
-      <div className="recruitment-detail-title"><div className="recruitment-detail-identity"><Avatar src={job.employer?.logo} name={company} size={58} /><span>{job.employer?.slug ? <Link href={`/employer/${job.employer.slug}`}>{company}</Link> : <strong>{company}</strong>}<small>{job.employer?.isVerified ? "Verified employer" : "Employer profile"}</small></span></div><h1 id="job-title">{job.title}</h1><div className="recruitment-result-skills">{job.skills.slice(0, 5).map((skill) => <span key={skill}>{skill}</span>)}</div></div>
-      <EvidenceMedia asset={preview?.employerCover} ratio="wide" priority />
+    <section className="recruitment-detail-hero is-merged" aria-labelledby="job-title">
+      {/* The employer's photo sits under the title card and fades into the navy behind the text
+          (same treatment as the Directory hero). Styles: .rd-media in counter-soft-system.css. */}
+      <div className="recruitment-detail-title">{preview?.employerCover && <span className="rd-media" aria-hidden>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={preview.employerCover.src} alt="" onError={(e) => { (e.currentTarget.parentElement as HTMLElement).hidden = true; }} /></span>}<div className="recruitment-detail-identity"><Avatar src={job.employer?.logo} name={company} size={58} /><span>{job.employer?.slug ? <Link href={`/employer/${job.employer.slug}`}>{company}</Link> : <strong>{company}</strong>}<small>{job.employer?.isVerified ? "Verified employer" : "Employer profile"}</small></span></div><h1 id="job-title">{job.title}</h1><div className="recruitment-result-skills">{job.skills.slice(0, 5).map((skill) => <span key={skill}>{skill}</span>)}</div></div>
     </section>
     <dl className="recruitment-role-ledger"><div><dt>Salary</dt><dd>{formatSalary(job, true)}</dd></div><div><dt>Workplace</dt><dd>{jobLocation(job)}</dd></div><div><dt>Posted</dt><dd>{((s) => s.charAt(0).toUpperCase() + s.slice(1))(jobFreshness(job.postedAt).replace(/^Published /, ""))}</dd></div><div><dt>Closing</dt><dd>{closingContext(job.expiresAt)}</dd></div><div><dt>Experience</dt><dd>{experienceLabel(job.experienceLevel)}</dd></div><div><dt>Employment</dt><dd>{employmentLabel(job.employmentType)}</dd></div></dl>
     <div className="recruitment-detail-layout">
@@ -89,6 +90,8 @@ function JobDetailInner() {
     </div>
   </div>
   <div className="bn-bottom-ad is-850"><ApiAdvertisingSlot compact placement="recruitment_home" kind="native" context="Sponsored near role details" summary="A clearly labelled hiring placement, separate from the role’s employer facts and application path." action="View opportunity" /></div>
+  {/* Phones: Apply stays one tap away while reading the role (same floating bar as "Contact seller"). */}
+  {!isOwner && user?.recruitmentRole !== "recruiter" && !alreadyApplied && <button type="button" className="ld-mobile-cta" onClick={startApply}>Apply now</button>}
   <ContactAuthModal purpose="apply" open={authOpen} onClose={() => setAuthOpen(false)} onSuccess={() => setApplyOpen(true)} />
   {applyOpen && <ApplyModal open={applyOpen} job={job} onClose={() => setApplyOpen(false)} onApplied={() => setAlreadyApplied(true)} />}
   </div>;

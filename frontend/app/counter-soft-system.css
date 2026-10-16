@@ -7075,3 +7075,27 @@ textarea { padding: 0.6rem 0.85rem; }
   :is(.directory-listing-item, .lcard) .tb-row .tb-chip:not(:first-child):not(#_) { padding: 0.18rem; }
   :is(.directory-listing-item, .lcard) .tb-row .tb-chip:not(:first-child) .tb-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
+/* Listing page on phones: "Contact seller" runs full width, centred, along the bottom, and the
+   floating buttons (assistant, back to top, Post requirement tab) move up above it. */
+@media (max-width: 720px) {
+  .ld-mobile-cta:not(#_) { left: var(--counter-space-4); right: var(--counter-space-4); bottom: max(var(--counter-space-4), env(safe-area-inset-bottom)); }
+  body:has(.ld-mobile-cta) .back-to-top:not(#_) { bottom: max(4.75rem, calc(env(safe-area-inset-bottom) + 3.75rem)); }
+  body:has(.ld-mobile-cta) .navya-agent-dock:not(#_) { bottom: max(7.125rem, calc(env(safe-area-inset-bottom) + 6.125rem)); }
+  body:has(.ld-mobile-cta) .rfq-tab:not(#_) { bottom: 10.85rem; }
+  body:has(.ld-mobile-cta) main { padding-bottom: 4.5rem; }
+}
+/* Job page on phones: the bottom ad sat flush under the Apply panel; give it the layout's gap. */
+@media (max-width: 850px) { .recruitment-core > .bn-bottom-ad.is-850:not(#_) { margin-top: 2.5rem; } }
+.ld-mobile-cta:is(button) { border: 0; cursor: pointer; }
+/* Job page: one hero card. The employer photo sits under the title card on the right and fades
+   into the navy behind the text (like the Directory hero); on phones it shows at the bottom. */
+.recruitment-detail-hero.is-merged:not(#_) { grid-template-columns: minmax(0, 1fr); }
+.recruitment-detail-hero.is-merged .recruitment-detail-title { position: relative; isolation: isolate; overflow: hidden; min-height: 17rem; }
+.rd-media { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
+.rd-media img { position: absolute; inset: 0 0 0 auto; width: 62%; height: 100%; object-fit: cover; }
+.rd-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--counter-indigo) 0%, var(--counter-indigo) 38%, color-mix(in srgb, var(--counter-indigo) 55%, transparent) 62%, transparent 100%); }
+@media (max-width: 640px) {
+  .recruitment-detail-hero.is-merged .recruitment-detail-title { min-height: 0; padding-bottom: 10rem; }
+  .rd-media img { inset: auto 0 0 0; width: 100%; height: 13rem; object-position: center 60%; }
+  .rd-media::after { background: linear-gradient(180deg, var(--counter-indigo) 0%, var(--counter-indigo) calc(100% - 13rem), color-mix(in srgb, var(--counter-indigo) 45%, transparent) calc(100% - 8rem), transparent 100%); }
+}

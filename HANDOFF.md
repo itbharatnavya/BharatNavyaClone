@@ -673,3 +673,10 @@ Two commits were made from another Claude account in this same worktree and push
 **Still uncommitted on purpose:** `frontend/public/recruitment-hero-options.html` and `directory-hero-options.html` (six full-hero animation options each, owner choosing), plus the older boards listed in START HERE.
 
 Left alone for the owner: the Chat button on listing pages (dev added it; CLAUDE.md says no chat there).
+
+## 16 October 2026: listing/job page phone actions, job hero photo
+
+- Listing page on phones: the floating "Contact seller" bar (`.ld-mobile-cta`) is full width and centred; the assistant bubble, back-to-top and Post requirement tab move up above it (`body:has(.ld-mobile-cta)` rules), and `main` gets bottom padding so nothing hides behind it.
+- Job page (`app/job/[id]/page.tsx`): the same floating bar now says "Apply now" (opens sign-in when logged out, else the apply form); hidden for the job's owner, recruiter accounts and jobs already applied to. The phone bottom ad got the 40px layout gap.
+- Job page hero: the employer photo moved inside the navy title card (`.rd-media`), fading into the navy behind the text like the Directory hero (photo on the right on desktop, along the bottom on phones). The separate photo box and its "Prototype media" caption are gone.
+- Floating buttons order unchanged everywhere: back-to-top below the assistant bubble (owner's call; a version that put it above was reverted).
