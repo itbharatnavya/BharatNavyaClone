@@ -1994,6 +1994,85 @@ migration or dependency change.**
 
 ---
 
+### Pulled `origin/design` again (`333946f..4b71e58`) — merged 2026-10-16 (full-site audit fixes, phone actions, login rate-limit fix)
+
+3 new commits from the UI dev: `6a715c5` "Full-site audit fixes: keep users signed in, return to page after
+sign-in, tab titles, not-found, phone cards and compact trust tags, home hero cards on phones", `d1ceabf` "Phone
+actions: centred Contact seller bar, floating Apply now on job pages, job hero photo inside the title card",
+`4b71e58` "Handoff: date START HERE, list the Recruitment and Directory hero option boards". 59 files (+414/-86):
+one backend file, about 25 tiny route `layout.tsx` title files, and a spread of small frontend fixes. Merged with
+`git merge --no-ff --no-commit`, **no conflicts** (auto-merged `lib/auth.tsx`, `app/seller/[slug]/page.tsx` and
+`counter-soft-system.css`, which our own seller-lock work from 14 Oct also touches; both sides kept). **No schema,
+migration or dependency change. One backend change: the dev must redeploy the backend (see below).**
+
+**What the design branch changed**
+- **Backend, `backend/lib/security.js` (real bug fix).** The auth rate limiter (10 per 15 min per IP) also counted
+  `GET /api/auth/me`, which runs on every page load of a signed-in user. After about 10 reloads everyone behind one
+  IP got 429 and the frontend cleared their token, so people were signed out (a whole office behind one IP shared
+  the budget). `makeLimiter` takes an optional `skip`, and the auth limiter now skips every GET; only POST login,
+  register and OTP count.
+- **Stay signed in.** `lib/auth.tsx`: a failed `/auth/me` that is not a 401 (rate limit, network blip, backend
+  restart) no longer clears the token. It keeps the user, retries up to 4 times (1.5 s, 3 s, ...) and keeps the
+  loading state on, so signed-in pages stop bouncing to `/login`. A real dead session (401) still clears it.
+- **Return to the page after sign-in.** `useRequireAuth` default redirect is `/login?next=<current path+query>`
+  (tab and filters included); the `SellerHeader` follow gate keeps `next` too.
+- **Tab titles.** Root metadata has a `%s | Bharat Navya` template; static routes got tiny `layout.tsx` files that
+  set a title (about, blog, brands, careers, categories, collections, contact, credit-card, dashboard, directory,
+  features, login, mutual, offer, post-job, profile, recruitment/*, register, rfq, search, sell, shortlist, admin);
+  pages named after loaded data (company, job, employer, brand, collection, blog post, consultation, category landing,
+  Recruitment home) call the new `lib/usePageTitle.ts` (the listing page is not wired to it, so it keeps the default title), which re-applies the title when Next resets it on URL rewrites.
+- **Not found.** `app/not-found.tsx` and the category not-found share one `EmptyState` (new `headingLevel="h1"`
+  prop): "We couldn't find that page" with a "Go to the Directory" button.
+- **Phone actions.** Listing page: the floating "Contact seller" bar is full width and centred, and the assistant
+  bubble, back-to-top and Post requirement tab move up above it. Job page: the same bar says "Apply now" (sign-in
+  when logged out, else the apply form; hidden for the job's owner, recruiter accounts and jobs already applied to).
+  Job hero: the employer photo moved inside the navy title card, fading into the navy (right on desktop, along the
+  bottom on phones); the separate photo box and its "Prototype media" caption are gone.
+- **Phone cards.** Save heart moved to the photo corner (it sat on the Contact button); specs wrap instead of
+  truncating; trust tags on phone lists show one line, first tag with its word, the rest icon-only (`.tb-label`
+  visually hidden, `title` on the chip); company and listing pages keep full chips.
+- **Smaller fixes.** `/credit-card`, `/mutual`, `/consultations`, `/offer`, `/features` use the public floating header
+  (`routePresentation.ts`); `/blog` author links for employers go to `/employer/<slug>` (were a 404 `/seller/<slug>`);
+  Recruitment blog hero is navy and normal height; About hero buttons stack on phones; copy cleanups (admin login
+  placeholder no longer shows the admin email, city placeholder "State first", "ordered by current API results"
+  removed); reduced-motion category marquees become a grid; home Deal Flow hero on phones puts about half the cards in
+  the band above the product cards and shows cards behind the title blurred at about 30%.
+- `HANDOFF.md` START HERE is dated 16 Oct and now lists the two new hero option boards
+  (`recruitment-hero-options.html`, `directory-hero-options.html`, six moving backgrounds each, owner still
+  choosing, kept untracked on purpose).
+
+**Our own follow-up on this merge**
+- `frontend/app/account-suspended/page.tsx` (our 14 Oct page) set its title to "Account suspended | Bharat Navya";
+  with the design branch's new title template that would render "... | Bharat Navya | Bharat Navya". Changed to
+  "Account suspended".
+- The new stay-signed-in retry in `lib/auth.tsx` does not fight our suspended-account handling: `lib/api.ts` clears
+  the token on a 403 `account_suspended` before the retry logic runs, so the retry branch sees no token and stops,
+  and the `bs:account-suspended` listener sends the user to `/account-suspended`.
+
+**Checks run**
+- `npx tsc --noEmit`: clean after the merge.
+- Local backend restarted on the merged code (picks up `security.js`); `/health` ok. Frontend dev server rebuilt:
+  `/`, `/directory`, `/search`, `/recruitment`, `/recruitment/jobs`, `/login`, `/contact`, `/account-suspended`,
+  `/credit-card`, `/mutual`, `/offer`, `/features`, `/consultations`, `/listing/lst_000016`, `/dashboard` all 200;
+  an unknown path renders the new "We couldn't find that page" screen.
+- Backend tests `seller-lock`, `phase1-security`, `auth.behavior`: 11 of 11 pass.
+- Headless Chrome screenshots: job page at 1440 (photo inside the navy title card, Apply now in the side card) and
+  the listing and job pages at a 390 window (floating "Contact seller" and "Apply now" bars centred above the page
+  bottom). The 390 captures were cropped by the headless window, so they do not prove the "no sideways scroll at
+  390px" rule; that still needs a real phone-width check.
+
+**Flags for the owner**
+1. The backend must be redeployed for the rate-limit fix (Render picks it up through the mirror when this is pushed).
+   Until then signed-in users behind one IP can still hit 429 on reloads.
+2. The dev's note says the Chat button on listing pages was "left alone for the owner" because an older `CLAUDE.md`
+   line said no chat there. The current `CLAUDE.md` §2 documents chat as in-page and flag-gated, so keeping it
+   matches the docs.
+3. Pending from earlier passes, unchanged: the hero option boards (owner choosing), `company.tsx` details (team,
+   phone, address, hours), back-to-top bottom-right, GSAP visual pass, `/categories` hydration warning,
+   `dealFlow.ts` is `@ts-nocheck`.
+
+---
+
 ## Reference material
 
 - `frontend-backup/` — pre-redesign `frontend/` snapshot (local, gitignored).

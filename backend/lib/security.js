@@ -28,14 +28,14 @@ function jsonTooMany(req, res) {
   });
 }
 
-function makeLimiter({ windowMs, max, keyGenerator }) {
+function makeLimiter({ windowMs, max, keyGenerator, skip }) {
   return rateLimit({
     windowMs,
     max,
     standardHeaders: true,
     legacyHeaders: false,
     validate: false,
-    skip: () => !config.RATE_LIMIT_ENABLED,
+    skip: (req) => !config.RATE_LIMIT_ENABLED || Boolean(skip && skip(req)),
     keyGenerator: keyGenerator || ((req) => req.ip),
     handler: jsonTooMany,
   });
@@ -56,6 +56,10 @@ const authLimiter = makeLimiter({
     const b = req.body || {};
     return `${req.ip}|${b.mobile || b.email || ""}`;
   },
+  // Only credential attempts (POST login / register / OTP) count. GET /api/auth/me runs on
+  // every full page load of a signed-in user; throttling it signed people out after ~10
+  // reloads, and everyone behind one office IP shared that budget.
+  skip: (req) => req.method === "GET",
 });
 
 // AI endpoints each spawn the `claude` CLI (2-permit semaphore) — throttle per

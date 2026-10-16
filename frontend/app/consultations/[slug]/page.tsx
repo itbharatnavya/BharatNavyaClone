@@ -34,6 +34,7 @@ import {
   CheckIcon,
   formatPrice,
 } from "@/components/consultations/icons";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 // One "fact" line in the header / trust panel (icon + label + value).
 function Fact({
@@ -79,6 +80,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export default function ExpertProfilePage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const [expert, setExpert] = useState<ConsultationExpertDetail | null>(null);
+  usePageTitle(expert?.name);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 

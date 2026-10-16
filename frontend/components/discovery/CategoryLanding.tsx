@@ -19,6 +19,7 @@ import BrandRail from "./BrandRail";
 import EmptyState from "./EmptyState";
 import { useTr } from "./hooks";
 import { imgFor } from "@/lib/categoryImages";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 export interface CategoryLandingProps {
   slug: string;
@@ -49,6 +50,7 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
   } = useSearchDock();
 
   const [node, setNode] = useState<CategoryNode | null>(null);
+  usePageTitle(node ? (city ? `${node.category.name} in ${city}` : node.category.name) : null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -91,13 +93,14 @@ export default function CategoryLanding({ slug, city, initialFilters, query }: C
     return (
       <div className="container-bs section-pad">
         <EmptyState
-          title={t("category.notFound.title", "We couldn't find that category")}
+          headingLevel="h1"
+          title={t("category.notFound.title", "We couldn't find that page")}
           message={t(
             "category.notFound.message",
-            "The category may have moved or been renamed. Try searching or browse from the homepage."
+            "The link may be wrong, or the page has moved. Search the Directory or go back home."
           )}
-          actionLabel={t("category.notFound.cta", "Back to home")}
-          actionHref="/"
+          actionLabel={t("category.notFound.cta", "Go to the Directory")}
+          actionHref="/directory"
         />
       </div>
     );

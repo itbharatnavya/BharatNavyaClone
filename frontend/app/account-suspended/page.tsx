@@ -3,7 +3,7 @@ import Link from "next/link";
 import { COMPANY } from "@/components/about/company";
 
 export const metadata: Metadata = {
-  title: "Account suspended | Bharat Navya",
+  title: "Account suspended",
 };
 
 const CONTACT_HREF =

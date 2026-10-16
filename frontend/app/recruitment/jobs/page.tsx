@@ -127,7 +127,7 @@ function JobsBrowseInner() {
     <div className="recruitment-core-shell counter-results-stack">
       <SearchContextSwitch destination="directory" query={query} city={filters.city} />
       <div className="bn-ad-desktop-only bn-ad-below-rail is-rec"><ApiAdvertisingSlot compact placement={["recruitment_search_top", "recruitment_home"]} kind="native" context="Sponsored in role results" summary="A clearly labelled hiring placement that does not alter organic role order or employer verification." action="View opportunity" /></div>
-      <div className="recruitment-results-tools"><div className="recruitment-results-count"><strong aria-live="polite">{loading ? "Finding current roles…" : `${data?.total || 0} ${(data?.total || 0) === 1 ? "role" : "roles"}`}</strong><span>Real roles, ordered by current API results</span></div><button className="recruitment-filter-toggle" type="button" onClick={() => setFiltersOpen(true)}><FilterIcon /> Refine roles</button></div>
+      <div className="recruitment-results-tools"><div className="recruitment-results-count"><strong aria-live="polite">{loading ? "Finding current roles…" : `${data?.total || 0} ${(data?.total || 0) === 1 ? "role" : "roles"}`}</strong><span>Open roles from companies on Bharat Navya</span></div><button className="recruitment-filter-toggle" type="button" onClick={() => setFiltersOpen(true)}><FilterIcon /> Refine roles</button></div>
       <div className="recruitment-results-layout">
         <div className="recruitment-results-filter-rail">
           <aside className="recruitment-results-filters" aria-label="Filter roles">{filterPanel}</aside>

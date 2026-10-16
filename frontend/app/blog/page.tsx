@@ -123,7 +123,7 @@ export default function BlogIndexPage() {
                 <div className="blog-author">
                   {vendor.slug ? (
                     <Link
-                      href={`/seller/${vendor.slug}`}
+                      href={vendor.type === "employer" ? `/employer/${vendor.slug}` : `/seller/${vendor.slug}`}
                       className="blog-author-link"
                       title={`Visit ${vendor.name}`}
                     >

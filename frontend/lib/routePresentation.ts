@@ -11,6 +11,11 @@ const COUNTER_PUBLIC_EXACT = new Set([
   "/categories",
   "/brands",
   "/collections",
+  "/consultations",
+  "/credit-card",
+  "/mutual",
+  "/offer",
+  "/features",
 ]);
 
 const COUNTER_PUBLIC_PREFIXES = [
@@ -23,6 +28,7 @@ const COUNTER_PUBLIC_PREFIXES = [
   "/listing/",
   "/job/",
   "/employer/",
+  "/consultations/",
 ];
 
 const COUNTER_WORKSPACE_EXACT = new Set([

@@ -15,6 +15,7 @@ import StatusTimeline from "@/components/recruitment/StatusTimeline";
 import { getBlogs, getEmployer, getStories, type PublicEmployer } from "@/lib/api";
 import { closingContext, formatSalary, jobLocation, prototypeEmployerMedia } from "@/lib/recruitmentDesign";
 import type { Blog, Job, Story } from "@/lib/types";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
 
@@ -22,6 +23,7 @@ function EmployerProfileInner() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : "";
   const [employer, setEmployer] = useState<PublicEmployer | null>(null);
+  usePageTitle(employer?.companyName);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [stories, setStories] = useState<Story[]>([]);

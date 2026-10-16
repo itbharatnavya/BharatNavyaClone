@@ -15,6 +15,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Avatar from "@/components/Avatar";
 import { useTr } from "@/components/discovery/hooks";
 import { useVendorProfile } from "@/components/seller/vendorAuthors";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const fmtDate = (iso?: string | null) => {
   if (!iso) return "";
@@ -34,6 +35,7 @@ export default function BlogArticlePage({
 }) {
   const t = useTr();
   const [blog, setBlog] = useState<Blog | null>(null);
+  usePageTitle(blog?.title);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { author, profile } = useVendorProfile(blog);

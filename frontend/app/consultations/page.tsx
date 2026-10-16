@@ -15,6 +15,7 @@ import AISearchBar from "@/components/AISearchBar";
 import ExpertCard from "@/components/consultations/ExpertCard";
 import { getExperts } from "@/lib/api";
 import type { ConsultationExpert, ExpertsMeta } from "@/lib/types";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 const SERVICE_EXAMPLES = [
   "CA in Pune for GST filing",
@@ -49,6 +50,7 @@ const controlStyle: React.CSSProperties = {
 
 export default function ConsultationsPage() {
   const [experts, setExperts] = useState<ConsultationExpert[]>([]);
+  usePageTitle("Consultations");
   const [meta, setMeta] = useState<ExpertsMeta>({ professions: [], cities: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

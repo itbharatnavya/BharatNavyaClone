@@ -20,7 +20,7 @@ interface Options {
 
 export function useRequireAuth({
   role,
-  redirectTo = "/login",
+  redirectTo,
   unauthorizedRedirectTo = "/",
 }: Options = {}) {
   const router = useRouter();
@@ -31,7 +31,9 @@ export function useRequireAuth({
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.replace(redirectTo);
+      // Default: sign in, then come back to this exact page (tab and filters included).
+      const here = window.location.pathname + window.location.search;
+      router.replace(redirectTo || `/login?next=${encodeURIComponent(here)}`);
       return;
     }
     if (role && !authorized) {

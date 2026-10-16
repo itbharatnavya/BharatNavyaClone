@@ -15,6 +15,7 @@ import SellerStoriesSection from "@/components/seller/SellerStoriesSection";
 import { useConfig } from "@/lib/config";
 import type { SellerPublicProfile } from "@/lib/types";
 import { mapDirectoryCompany } from "@/lib/productDesign";
+import { usePageTitle } from "@/lib/usePageTitle";
 
 function Check() { return <svg aria-hidden viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg>; }
 function Arrow() { return <svg aria-hidden viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>; }
@@ -25,6 +26,7 @@ export default function CompanyProfilePage() {
   const flags = (featureFlags || {}) as Record<string, boolean>;
   const showStories = flags.stories === true, showHighlights = flags.storyHighlights === true;
   const [profile, setProfile] = useState<SellerPublicProfile | null>(null);
+  usePageTitle(profile?.seller.companyName);
   const [viewerAt, setViewerAt] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

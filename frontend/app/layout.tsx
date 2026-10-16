@@ -50,7 +50,9 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Bharat Navya — Companies, work and opportunity connected",
+  // Pages set their own name through a route layout (static pages) or usePageTitle (pages
+  // named after loaded data); the template adds the brand.
+  title: { default: "Bharat Navya — Companies, work and opportunity connected", template: "%s | Bharat Navya" },
   description:
     "Discover credible companies, useful services and transparent startup and SME roles across India.",
 };

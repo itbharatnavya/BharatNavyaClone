@@ -35,7 +35,7 @@ export default function RecruitmentBlogPage() {
 
   return (
     <div className="counter-public-page counter-editorial counter-recruitment-editorial">
-      <header className="counter-support-hero is-ink">
+      <header className="counter-support-hero is-green">
         <div className="counter-support-shell counter-editorial-heading">
           <h1>Hiring context from companies on Bharat Navya.</h1>
           <p>Guides, workplace notes and hiring updates published by the recruiters and companies behind current roles.</p>

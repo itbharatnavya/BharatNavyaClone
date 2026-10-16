@@ -47,7 +47,7 @@ export default function AdminLogin() {
               type="email"
               name="email"
               autoComplete="username"
-              placeholder="admin@bharatsource.in"
+              placeholder="you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

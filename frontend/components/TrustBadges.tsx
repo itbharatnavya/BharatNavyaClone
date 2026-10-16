@@ -64,7 +64,9 @@ export function TagRow({ seller, verified }: { seller?: { isVerified?: boolean; 
     ...(seller?.badges || []).filter((b) => EARNED[b]).map((b) => ({ key: b as IconKey, ...EARNED[b] })),
   ].filter(Boolean) as { key: IconKey; label: string; tone: string }[];
   if (!items.length) return null;
-  return <span className="tb-row">{items.map((item) => <span key={item.key} className={`tb-chip ${item.tone}`}><span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span>{item.label}</span>)}</span>;
+  // In phone lists (search rows, listing cards) only the first tag keeps its word; the rest show
+  // as their coloured icon on one line (name in the tooltip / screen-reader label). Styles: .tb-row.
+  return <span className="tb-row">{items.map((item) => <span key={item.key} className={`tb-chip ${item.tone}`} title={item.label}><span className="tb-icon" aria-hidden><svg viewBox="0 0 24 24">{ICONS[item.key]}</svg></span><span className="tb-label">{item.label}</span></span>)}</span>;
 }
 
 // City with a location pin (search rows, cards, preview).

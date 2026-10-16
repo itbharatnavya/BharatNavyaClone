@@ -1,55 +1,20 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import EmptyState from "@/components/discovery/EmptyState";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | Bharat Navya — India’s B2B Platform",
+  title: "Page not found",
 };
 
 export default function NotFound() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "96px 24px",
-      }}
-    >
-      <span
-        className="font-mono"
-        style={{
-          fontSize: "var(--fs-3xl)",
-          lineHeight: 1,
-          fontWeight: 700,
-          color: "var(--border)",
-        }}
-      >
-        404
-      </span>
-      <h2
-        className="t-h2"
-        style={{ marginTop: 16, color: "var(--text-primary)" }}
-      >
-        PAGE NOT FOUND
-      </h2>
-      <p
-        style={{
-          marginTop: 12,
-          fontSize: "var(--fs-sm)",
-          color: "var(--text-secondary)",
-          maxWidth: 420,
-        }}
-      >
-        The page you&apos;re looking for doesn&apos;t exist or has been moved.
-      </p>
-      <div style={{ marginTop: 32 }}>
-        <Link href="/" className="btn btn-primary">
-          Back to Home
-        </Link>
-      </div>
+    <div className="container-bs section-pad">
+      <EmptyState
+        headingLevel="h1"
+        title="We couldn't find that page"
+        message="The link may be wrong, or the page has moved. Search the Directory or go back home."
+        actionLabel="Go to the Directory"
+        actionHref="/directory"
+      />
     </div>
   );
 }
